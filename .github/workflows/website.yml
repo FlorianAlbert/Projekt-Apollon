@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Delete old Website Content
+      run: rm -r /var/www/html
     - name: Move Website Content to root
       run: mv -r website/build/* /var/www/html
       working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon
