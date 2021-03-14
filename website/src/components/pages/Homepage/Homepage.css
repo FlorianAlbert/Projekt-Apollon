@@ -1,0 +1,72 @@
+
+  /* CUSTOMIZE THE INTRO
+  -------------------------------------------------- */
+#intro {
+    background:linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("../../../images/griechenland.jpg")no-repeat center center fixed;
+    height: 60vh;
+    position: relative;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin-bottom: 5em;
+}
+
+.intro h1 {
+    color: white;
+}
+
+.intro .button{
+    margin-right: 4em;
+}
+
+  /* MARKETING CONTENT
+  -------------------------------------------------- */
+  
+  /* Center align the text within the three columns below the carousel */
+.marketing .col-lg-4 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.marketing h2 {
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+.marketing .col-lg-4 p {
+    margin-right: .75rem;
+    margin-left: .75rem;
+}
+  
+  
+  /* Featurettes
+  ------------------------- */
+  
+.featurette-divider {
+    margin: 5rem 0; /* Space out the Bootstrap <hr> more */
+}
+
+/* Thin out the marketing headings */
+.featurette-heading {
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -.05rem;
+}
+
+
+/* RESPONSIVE CSS
+-------------------------------------------------- */
+
+@media (min-width: 40em) {
+/* Bump up size of carousel content */
+
+.featurette-heading {
+    font-size: 50px;
+}
+}
+
+@media (min-width: 62em) {
+.featurette-heading {
+    margin-top: 7rem;
+}
+}
