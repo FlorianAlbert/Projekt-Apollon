@@ -1,7 +1,6 @@
 import './App.css';
 import React, {Component} from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
-import { render } from '@testing-library/react';
 import Navbar from './components/Navbar/Navbar';
 import Cookies from './components/Cookies/Cookies';
 import Footer from './components/Footer/Footer';
