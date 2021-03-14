@@ -1,0 +1,23 @@
+.App {
+  text-align: center;
+}
+
+.bg-dark {
+  background: #181818 !important
+}
+
+a:link{
+  text-decoration: none !important;
+  color: #3fb3da;
+}
+
+a:link:hover{
+  color:#71bed8 !important
+}
+
+
+@media (prefers-reduced-motion: no-preference) {
+
+}
+
+

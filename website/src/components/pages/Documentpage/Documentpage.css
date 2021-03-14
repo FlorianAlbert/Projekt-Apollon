@@ -1,0 +1,46 @@
+.accordion-body{
+    text-align: left;
+}
+
+.dokumente button:hover{
+    background-color: #DBDBDB;
+}
+
+.dokumente button:disabled{
+    opacity: 0.8;
+    background-color: white;
+}
+
+.dokumente button:enabled {
+    color:black;
+    background-color: white;
+}
+
+.dokumente .list-group-item{
+    text-align: left;
+}
+
+a:link{
+    text-decoration: none !important;
+    color: #3fb3da;
+  }
+  
+a:link:hover{
+    color:#71bed8 !important
+}
+
+a[href$='.pdf'] {
+    color: #3fb3da;
+  }
+
+.ul {
+    list-style-type: circle !important;
+}
+
+.li {
+    list-style-type: circle !important;
+}
+
+#allgemein {
+    list-style-type: disc  !important;
+}
