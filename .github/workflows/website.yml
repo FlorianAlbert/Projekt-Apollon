@@ -1,0 +1,20 @@
+name: Website
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Delete old Website Content
+      run: rm -r /var/www/html/*
+    - name: Move new Website Content
+      run: cp -r * /var/www/html
+      working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon/website/build
