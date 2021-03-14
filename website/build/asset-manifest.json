@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/static/css/main.b460b3ac.chunk.css",
-    "main.js": "/static/js/main.0668899b.chunk.js",
-    "main.js.map": "/static/js/main.0668899b.chunk.js.map",
+    "main.js": "/static/js/main.c3a562e0.chunk.js",
+    "main.js.map": "/static/js/main.c3a562e0.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.42e8dc65.js",
     "runtime-main.js.map": "/static/js/runtime-main.42e8dc65.js.map",
     "static/js/2.514835fb.chunk.js": "/static/js/2.514835fb.chunk.js",
@@ -15,13 +15,15 @@
     "static/media/Alfred.8747c896.png": "/static/media/Alfred.8747c896.png",
     "static/media/Apollon.08e61b9f.jpg": "/static/media/Apollon.08e61b9f.jpg",
     "static/media/Apollon_Projektplan.9d9ef915.xlsx": "/static/media/Apollon_Projektplan.9d9ef915.xlsx",
+    "static/media/Apollon_Risikoanalyse.fe73c357.xlsx": "/static/media/Apollon_Risikoanalyse.fe73c357.xlsx",
+    "static/media/Apollon_Rollenverteilung.f6e9ae8c.xlsx": "/static/media/Apollon_Rollenverteilung.f6e9ae8c.xlsx",
+    "static/media/Aufgabenblatt1.65c6de8b.pdf": "/static/media/Aufgabenblatt1.65c6de8b.pdf",
     "static/media/Dani.e9ea8c4d.png": "/static/media/Dani.e9ea8c4d.png",
     "static/media/Etienne.c2f484d5.jpg": "/static/media/Etienne.c2f484d5.jpg",
     "static/media/Flo.90d15cd3.png": "/static/media/Flo.90d15cd3.png",
     "static/media/Leon.31b7e204.png": "/static/media/Leon.31b7e204.png",
     "static/media/Paul.e3c18de6.png": "/static/media/Paul.e3c18de6.png",
-    "static/media/Projektplan.132149e6.png": "/static/media/Projektplan.132149e6.png",
-    "static/media/Protokoll.6d5b69f4.pdf": "/static/media/Protokoll.6d5b69f4.pdf",
+    "static/media/Projektplan.c4fea256.png": "/static/media/Projektplan.c4fea256.png",
     "static/media/Wuerfel.5c78d9bf.jpg": "/static/media/Wuerfel.5c78d9bf.jpg",
     "static/media/empty500.17c98b51.svg": "/static/media/empty500.17c98b51.svg",
     "static/media/Homepage.css": "/static/media/griechenland.b586657e.jpg",
@@ -31,6 +33,6 @@
     "static/js/runtime-main.42e8dc65.js",
     "static/js/2.514835fb.chunk.js",
     "static/css/main.b460b3ac.chunk.css",
-    "static/js/main.0668899b.chunk.js"
+    "static/js/main.c3a562e0.chunk.js"
   ]
 }
