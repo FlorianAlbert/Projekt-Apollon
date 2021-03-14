@@ -8,8 +8,8 @@ const Impressum = () =>{
     <React.Fragment> 
         <div class="container mt-4 vh-100">
             <p><strong>Impressum</strong></p>
-            <p>Anbieter:<br />Max Mustermann<br />Musterstraße 1<br />80999 München</p>
-            <p>Kontakt:<br />Telefon: 089/1234567-8<br />Telefax: 089/1234567-9<br />E-Mail: mail@mustermann.de<br />Website: www.mustermann.de</p>
+            <p>Projektleiter:<br />Paul-Benedict Burkard<br />Hirschkopfweg 22<br />72270 Baiersbronn</p>
+            <p>Kontakt:<br />E-Mail: i19007@hb.dhbw-stuttgart.de<br />Website: apollon-dungeons.de</p>
         </div>
     </React.Fragment>
     );

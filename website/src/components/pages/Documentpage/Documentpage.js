@@ -4,7 +4,9 @@ import React, {Component} from 'react';
 import Projektplan from '../../../documents/allgemein/Apollon_Projektplan.xlsx';
 
 /* Imports Aufgabenblatt 1 */
-import blatt1 from '../../../documents/aufgaben1/Protokoll.pdf';
+import Risikoanalyse from '../../../documents/aufgaben1/Apollon_Risikoanalyse.xlsx';
+import Rollenverteilung from '../../../documents/aufgaben1/Apollon_Rollenverteilung.xlsx';
+import Aufgabenblatt1 from '../../../documents/aufgaben1/Aufgabenblatt1.pdf';
 
 
 import './Documentpage.css'
@@ -27,7 +29,7 @@ const Documentpage = () =>{
                     <div class="card mt-3" style={{textAlign: "left"}}>
                         <div class="card-body text-align-left">
                             <ul>
-                                <li><a href={Projektplan} >Projektplan</a> <span class="badge badge-dark" style={{background: "#31574B"}}>Neu</span></li>
+                                <li><a href={Projektplan} >Projektplan.xlsx</a> <span class="badge badge-dark" style={{background: "#31574B"}}>Neu</span></li>
                             </ul>
                         </div>
                     </div>      
@@ -43,14 +45,14 @@ const Documentpage = () =>{
                             </button>
                             </h2>
                             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordion">
-                            <div class="accordion-body">
-                            <ul>
-                                <li><a href={blatt1} >Einführung</a></li>
-                                <li><a href={blatt1}>Review</a></li> 
-                                <li><a href={blatt1}>Aufgabenblatt 1</a></li>
-                            </ul>
-                                <strong>Wichtiger Hinweis!</strong> Irgendwelche Infos über das Projekt...blabla
-                            </div>
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li><a href={Aufgabenblatt1} >Aufgabenblatt1.pdf</a></li>
+                                        <li><a href={Risikoanalyse} >Risikoanalyse.xlsx</a></li>
+                                        <li><a href={Rollenverteilung}>Rollenverteilung.xlsx</a></li> 
+                                        <li><a href='#'>Aufwandserfassung.xlsx</a></li> 
+                                    </ul>
+                                </div>
                             </div>
                         </div>
 

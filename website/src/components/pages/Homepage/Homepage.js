@@ -75,7 +75,7 @@ const Homepage = () =>{
         <div class="row featurette">
             <div class="col-md-7">
             <h2 class="featurette-heading">Projekt Apollon. <span class="text-muted">Woher kommt der Name?</span></h2>
-            <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+            <p class="lead">Apollon ist ein griechisch-römischer Gott, geboren auf der Insel Delos: einer heiligen Stätte. Im selben Stile wurde dieses Projekt gegründet, aufbauend auf unserer heiligen Stätte des Zusammenhalts, der Teamarbeit und dem höchsten Grade an Motivation, das bestmöglichste Ergebnisse für unsere Kunden zu liefern. Als Beschützer der Künste ist Apollon ein Mahnmal unseres Teams, selbst Produkte zu entwickeln, die als "Kunst" gesehen werden.</p>
             </div>
             <div class="col-md-5">
             <img class="featurette-image img-fluid mx-auto" src={Bild1} alt="Generic placeholder image"/>
@@ -87,7 +87,7 @@ const Homepage = () =>{
         <div class="row featurette">
             <div class="col-md-7 order-md-2">
             <h2 class="featurette-heading">Die Aufgabe. <span class="text-muted">Worum geht es?</span></h2>
-            <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+            <p class="lead"> Ziel des Projekts ist die Entwicklung einer Multi User Dungeon Umgebung. Mit dieser soll es möglich sein ein Spiel als Dungeon Master zu konfigurieren und zu hosten oder als normaler Spieler, mit einem eigens erstellten Avatar, an einem dieser Spiele teilzunehmen.</p>
             </div>
             <div class="col-md-5 order-md-1">
             <img class="featurette-image img-fluid mx-auto" src={Bild2} alt="Generic placeholder image"/>
@@ -99,11 +99,11 @@ const Homepage = () =>{
         <div class="row featurette">
             <div class="col-md-7">
                 <h2 class="featurette-heading">Der Projektplan. <span class="text-muted">Wie ist der Ablauf?</span></h2>
-                <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
-                <a class="btn" href="/documents" role="button" style={{background: "#3fb3da", color: "white"}}>Zum Projektplan</a>
+                <p class="lead">Die Grundlage eines jeden erfolgreichen Projekts ist die Planung. Ein ausgeklügelter Projektplan ermöglicht es dem Team, jederzeit Überblick über die Deadlines und die bis dahin zu erledigenden Aufgaben zu behalten.</p>
+                <a class="btn" href="/documents#" role="button" style={{background: "#3fb3da", color: "white"}}>Zum Projektplan</a>
             </div>
             <div class="col-md-5">
-            <a href="/documents"><img class="featurette-image img-fluid mx-auto" src={Bild3} alt="Generic placeholder image"/></a>
+            <a href="/documents#"><img class="featurette-image img-fluid mx-auto" src={Bild3} alt="Generic placeholder image"/></a>
             </div>
         </div>
 

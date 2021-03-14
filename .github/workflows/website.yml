@@ -13,8 +13,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Install Modules
+      run: npm install
+      working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon/website
+    - name: Build Website Content
+      run: CI='' npm run build
+      working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon/website
     - name: Delete old Website Content
       run: rm -r /var/www/html/*
-    - name: Move new Website Content
+    - name: Copy Website Content to root
       run: cp -r * /var/www/html
       working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon/website/build
