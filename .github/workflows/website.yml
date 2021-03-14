@@ -14,5 +14,5 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Move Website Content to root
-      run: sudo mv website/build/* /var/www/html
+      run: mv website/build/* /var/www/html
       working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon
