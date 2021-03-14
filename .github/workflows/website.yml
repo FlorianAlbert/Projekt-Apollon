@@ -1,4 +1,4 @@
-name: .NET
+name: Website
 
 on:
   push:
@@ -14,5 +14,5 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Move Website Content to root
-      run: mv -r website/build/* /var/www/html
+      run: sudo mv -r website/build/* /var/www/html
       working-directory: /home/github/actions-runner/deploy/Projekt-Apollon
