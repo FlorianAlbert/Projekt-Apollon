@@ -17,7 +17,7 @@ jobs:
       run: npm install
       working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon/website
     - name: Build Website Content
-      run: npm run-script build
+      run: CI='' npm run build
       working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon/website
     - name: Delete old Website Content
       run: rm -r /var/www/html/*
