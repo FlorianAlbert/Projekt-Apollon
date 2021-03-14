@@ -18,6 +18,6 @@ jobs:
     - name: Build Website Content
       run: CI='' npm run build
       working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon/website
-    - name: Copy Website Content to root
+    - name: Copy Website Content
       run: cp -r * /var/www/html
       working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon/website/build
