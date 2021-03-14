@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 
 /* Imports Allgemein */
 import Projektplan from '../../../documents/allgemein/Apollon_Projektplan.xlsx';
@@ -6,6 +6,7 @@ import Projektplan from '../../../documents/allgemein/Apollon_Projektplan.xlsx';
 /* Imports Aufgabenblatt 1 */
 import Risikoanalyse from '../../../documents/aufgaben1/Apollon_Risikoanalyse.xlsx';
 import Rollenverteilung from '../../../documents/aufgaben1/Apollon_Rollenverteilung.xlsx';
+import Aufwandserfassung from '../../../documents/aufgaben1/Apollon_Aufwandserfassung.xlsx';
 import Aufgabenblatt1 from '../../../documents/aufgaben1/Aufgabenblatt1.pdf';
 
 
@@ -50,7 +51,7 @@ const Documentpage = () =>{
                                         <li><a href={Aufgabenblatt1} >Aufgabenblatt1.pdf</a></li>
                                         <li><a href={Risikoanalyse} >Risikoanalyse.xlsx</a></li>
                                         <li><a href={Rollenverteilung}>Rollenverteilung.xlsx</a></li> 
-                                        <li><a href='#'>Aufwandserfassung.xlsx</a></li> 
+                                        <li><a href={Aufwandserfassung}>Aufwandserfassung.xlsx</a></li> 
                                     </ul>
                                 </div>
                             </div>
