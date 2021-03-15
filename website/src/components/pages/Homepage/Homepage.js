@@ -73,7 +73,7 @@ const Homepage = () =>{
         <div class="row featurette">
             <div class="col-md-7">
             <h2 class="featurette-heading">Projekt Apollon. <span class="text-muted">Woher kommt der Name?</span></h2>
-            <p class="lead">Apollon ist ein griechisch-römischer Gott, geboren auf der Insel Delos: einer heiligen Stätte. Im selben Stile wurde dieses Projekt gegründet, aufbauend auf unserer heiligen Stätte des Zusammenhalts, der Teamarbeit und dem höchsten Grade an Motivation, das bestmöglichste Ergebnis für unsere Kunden zu liefern. Als Beschützer der Künste ist Apollon ein Mahnmal unseres Teams, selbst Produkte zu entwickeln, die als "Kunst" gesehen werden.</p>
+            <p class="lead">Apollon ist ein griechisch-römischer Gott, geboren auf der Insel Delos: einer heiligen Stätte. Im selben Stile wurde dieses Projekt gegründet, aufbauend auf unserer heiligen Stätte des Zusammenhalts, der Teamarbeit und dem höchsten Grade an Motivation, das bestmögliche Ergebnis für unsere Kunden zu liefern. Als Beschützer der Künste ist Apollon ein Mahnmal unseres Teams, selbst Produkte zu entwickeln, die als "Kunst" gesehen werden.</p>
             </div>
             <div class="col-md-5">
             <img class="featurette-image img-fluid mx-auto" src={Bild1} alt="Bild1"/>
