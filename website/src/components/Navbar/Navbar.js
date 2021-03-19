@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 import Logo from "../../images/harp.svg"
+import AuthNav from "../Auth/AuthNav";
+import AuthenticationButton from "../Auth/AuthButton";
 
 const Navbar = (props) => {
     return (
@@ -21,12 +23,14 @@ const Navbar = (props) => {
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <div className="collapse navbar-collapse" id="navbarResponsive">
-                    <ul className="navbar-nav ml-auto">
-                        <li class="nav-item active">
-                            <Link className="nav-link" to="/documents">Dokumente</Link>
+                    <ul className="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <Link className="nav-link" to="/documents"><span style={{textDecoration: "underline", textDecorationColor: "#3fb3da"}}>Dokumente</span></Link>
                         </li>
+                        <AuthNav/>
                     </ul>
                 </div>
+                
             </div>
         </nav>
     )
