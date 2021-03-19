@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import './Navbar.css';
 import Logo from "../../images/harp.svg"
 import AuthNav from "../Auth/AuthNav";
-import AuthenticationButton from "../Auth/AuthButton";
 
 const Navbar = (props) => {
     return (
