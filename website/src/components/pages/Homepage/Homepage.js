@@ -1,5 +1,4 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
 import Etienne from '../../../images/Etienne.jpg';
 import Leon from '../../../images/Leon.png';
 import Paul from '../../../images/Paul.png';
@@ -24,7 +23,7 @@ const Homepage = () =>{
                             <h1 class="display-4 font-weight-bold white-text pt-5 mb-2" style={{marginTop:"20%"}}>Projekt Apollon</h1>
                             <hr class="hr-light" />
                             <a href="https://github.com/FlorianAlbert/Projekt-Apollon"><button type="button" class="btn btn-lg btn-outline-light" style={{fontSize:18}}>Github</button></a>
-                            <button type="button" class="btn btn-lg btn-outline-light" style={{fontSize:18},{marginLeft:"2em"}} disabled>Projekt</button>
+                            <button type="button" class="btn btn-lg btn-outline-light" style={{fontSize:18, marginLeft:"2em"}} disabled>Projekt</button>
                         </div>
                     </div>
                 </div>

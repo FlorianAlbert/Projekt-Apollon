@@ -6,7 +6,7 @@ const LoginButton = () => {
   const { loginWithRedirect } = useAuth0();
   return (
     <Link class="nav-link" onClick={() => loginWithRedirect()}>
-        <span style={{textDecoration: "underline", textDecorationColor: "#3fb3da"}}>LogIn</span>
+        <span style={{textDecoration: "underline", textDecorationColor: "#3fb3da"}}>Login</span>
     </Link>
   );
 };
