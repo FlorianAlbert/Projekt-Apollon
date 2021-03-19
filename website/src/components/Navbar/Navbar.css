@@ -5,3 +5,12 @@
 .navbar-nav {
     font-size: x-large;
 }
+
+
+.nav-link {
+    color: white !important;    
+}
+
+.nav-link:hover {
+    color: #3fb3da !important;
+}
