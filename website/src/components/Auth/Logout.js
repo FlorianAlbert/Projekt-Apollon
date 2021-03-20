@@ -10,7 +10,7 @@ const LogoutButton = () => {
       onClick={() => logout({returnTo: window.location.origin,})}
       style={{color: "white"}}
     >
-      <span style={{textDecoration: "underline", textDecorationColor: "#3fb3da"}}>LogOut</span>
+      <span style={{textDecoration: "underline", textDecorationColor: "#3fb3da"}}>Logout</span>
     </Link>
   );
 };
