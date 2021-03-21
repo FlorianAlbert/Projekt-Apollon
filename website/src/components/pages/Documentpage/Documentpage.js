@@ -8,11 +8,11 @@ import Projektplan from '../../../documents/allgemein/Apollon_Projektplan.xlsx';
 /* Imports KW10 */
 import Risikoanalyse from '../../../documents/KW10/Apollon_Risikoanalyse.xlsx';
 import Rollenverteilung from '../../../documents/KW10/Apollon_Rollenverteilung.xlsx';
-import Aufwandserfassung from '../../../documents/KW10/Apollon_Aufwandserfassung.xlsx';
 import Aufgabenblatt1 from '../../../documents/KW10/Aufgabenblatt1.pdf';
 
 /* Imports KW11 */
 import Aufgabenblatt2 from '../../../documents/KW11/Aufgabenblatt2.pdf';
+import Recherchebericht from '../../../documents/KW11/Apollon_Recherchebericht.pdf';
 
 
 import './Documentpage.css'
@@ -62,9 +62,8 @@ const Documentpage = () =>{
                                         <li><a href={Aufgabenblatt1} >Aufgabenblatt1.pdf</a></li>
                                         <li><a href={Risikoanalyse} >Risikoanalyse.xlsx</a></li>
                                         <li><a href={Rollenverteilung}>Rollenverteilung.xlsx</a></li> 
-                                        <li><a href={Aufwandserfassung}>Aufwandserfassung.xlsx</a></li> 
-
                                     </ul>
+                                    <strong>Hinweis:</strong> Die Aufwandserfassung befindet sich im privaten Bereich. 
                                 </div>
                             </div>
                         </div>
@@ -79,8 +78,9 @@ const Documentpage = () =>{
                             <div class="accordion-body">
                                 <ul>
                                     <li><a href={Aufgabenblatt2} >Aufgabenblatt2.pdf</a></li>
-
-                                </ul>                               
+                                    <li><a href={Recherchebericht} >Recherchebericht.pdf</a></li>
+                                </ul>
+                                <strong>Hinweis:</strong> Die Aufwandserfassung befindet sich im privaten Bereich.                               
                             </div>
                             </div>
                         </div>
