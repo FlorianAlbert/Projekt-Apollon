@@ -28,7 +28,7 @@ const Privat = () => {
     return (
         <div class="alert mt-4">
             <div class="alert alert-info" role="alert">
-                Sie müssen angemeldet sein, um diesen Bereich zusehen!
+                Sie müssen angemeldet sein, um diesen Bereich zu sehen!
             </div>
         </div>
     );
