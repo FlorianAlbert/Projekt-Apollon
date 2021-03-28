@@ -14,6 +14,12 @@ import Aufgabenblatt1 from '../../../documents/KW10/Aufgabenblatt1.pdf';
 import Aufgabenblatt2 from '../../../documents/KW11/Aufgabenblatt2.pdf';
 import Recherchebericht from '../../../documents/KW11/Apollon_Recherchebericht.pdf';
 
+/* Imports KW12 */
+import Aufgabenblatt3 from '../../../documents/KW12/Aufgabenblatt3.pdf';
+import Designbeschreibung from '../../../documents/KW12/Apollon_Designbeschreibung.pdf';
+import Dokumentationskonzept from '../../../documents/KW12/Apollon_Dokumentationskonzept.pdf';
+import Glossar from '../../../documents/KW12/Apollon_Glossar.pdf';
+import Lastenheft from '../../../documents/KW12/Apollon_28032021_Lastenheft.pdf';
 
 import './Documentpage.css'
 
@@ -52,7 +58,7 @@ const Documentpage = () =>{
 
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                                 <span class="text">KW 10: Initialisierungsphase</span>
                             </button>
                             </h2>
@@ -70,11 +76,11 @@ const Documentpage = () =>{
 
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button show" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                                 <span class="text">KW 11: Recherchephase</span>
                             </button>
                             </h2>
-                            <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordion">
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordion">
                             <div class="accordion-body">
                                 <ul>
                                     <li><a href={Aufgabenblatt2} >Aufgabenblatt2.pdf</a></li>
@@ -87,13 +93,20 @@ const Documentpage = () =>{
 
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingThree">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="hide" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" disabled>
-                                <span class="text-muted">KW 12: Einarbeitungsphase </span>
+                            <button class="accordion-button show" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                                <span class="text">KW 12: Einarbeitungsphase </span>
                             </button>
                             </h2>
-                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordion">
+                            <div id="collapseThree" class="accordion-collapse collapse show" aria-labelledby="headingThree" data-bs-parent="#accordion">
                             <div class="accordion-body">
- 
+                                <ul>
+                                    <li><a href={Aufgabenblatt3} >Aufgabenblatt3.pdf</a></li>
+                                    <li><a href={Designbeschreibung} >Designbeschreibung.pdf</a></li>
+                                    <li><a href={Dokumentationskonzept} >Dokumentationskonzept.pdf</a></li>
+                                    <li><a href={Glossar} >Glossar.pdf</a></li>
+                                    <li><a href={Lastenheft} >Lastenheft.pdf</a></li>
+                                </ul>
+                                <strong>Hinweis:</strong> Die Aufwandserfassung befindet sich im privaten Bereich. 
                             </div>
                             </div>
                         </div>
