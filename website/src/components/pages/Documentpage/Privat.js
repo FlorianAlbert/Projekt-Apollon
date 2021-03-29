@@ -7,6 +7,7 @@ import StatusberichtKW11 from '../../../documents/Privat/Apollon_Statusbericht_K
 import StatusberichtKW12 from '../../../documents/Privat/Apollon_Statusbericht_KW12.pdf';
 
 
+
 const Privat = () => {
     const { isAuthenticated } = useAuth0();
     if (isAuthenticated) {
