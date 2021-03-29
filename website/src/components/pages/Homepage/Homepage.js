@@ -23,7 +23,7 @@ const Homepage = () =>{
                             <h1 class="display-4 font-weight-bold white-text pt-5 mb-2" style={{marginTop:"20%"}}>Projekt Apollon</h1>
                             <hr class="hr-light" />
                             <a href="https://github.com/FlorianAlbert/Projekt-Apollon"><button type="button" class="btn btn-lg btn-outline-light" style={{fontSize:18}}>Github</button></a>
-                            <button type="button" class="btn btn-lg btn-outline-light" style={{fontSize:18, marginLeft:"2em"}} disabled>Projekt</button>
+                            <a href="http://h2928535.stratoserver.net/"><button type="button" class="btn btn-lg btn-outline-light" style={{fontSize:18, marginLeft:"2em"}}>Prototyp</button></a>
                         </div>
                     </div>
                 </div>
