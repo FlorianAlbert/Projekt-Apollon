@@ -5,7 +5,7 @@ import Aufwandserfassung from '../../../documents/Privat/Apollon_Aufwandserfassu
 import StatusberichtKW10 from '../../../documents/Privat/Apollon_Statusbericht_KW10.pdf';
 import StatusberichtKW11 from '../../../documents/Privat/Apollon_Statusbericht_KW11.pdf';
 import StatusberichtKW12 from '../../../documents/Privat/Apollon_Statusbericht_KW12.pdf';
-
+import StatusberichtKW13 from '../../../documents/Privat/Apollon_Statusbericht_KW13.pdf';
 
 
 const Privat = () => {
@@ -22,7 +22,8 @@ const Privat = () => {
                         <ul>
                             <li><a href={StatusberichtKW10} >Statusbericht_KW10.pdf</a></li>
                             <li><a href={StatusberichtKW11} >Statusbericht_KW11.pdf</a></li>
-                            <li><a href={StatusberichtKW12} >Statusbericht_KW12.pdf</a> <span class="badge badge-dark" style={{background: "#31574B"}}>Neu</span></li>
+                            <li><a href={StatusberichtKW12} >Statusbericht_KW12.pdf</a></li>
+                            <li><a href={StatusberichtKW13} >Statusbericht_KW13.pdf</a> <span class="badge badge-dark" style={{background: "#31574B"}}>Neu</span></li>
                         </ul>
                     </div>
                 </div>      
