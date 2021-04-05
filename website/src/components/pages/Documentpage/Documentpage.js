@@ -21,6 +21,11 @@ import Dokumentationskonzept from '../../../documents/KW12/Apollon_Dokumentation
 import Glossar from '../../../documents/KW12/Apollon_Glossar.pdf';
 import Lastenheft from '../../../documents/KW12/Apollon_28032021_Lastenheft.pdf';
 
+/* Imports KW13 */
+import Aufgabenblatt4 from '../../../documents/KW13/Aufgabenblatt4.pdf';
+import Glossar2 from '../../../documents/KW13/Apollon_Glossar.pdf';
+import Pflichtenheft from '../../../documents/KW13/Apollon_05042021_Pflichtenheft.pdf';
+
 import './Documentpage.css'
 
 
@@ -93,7 +98,7 @@ const Documentpage = () =>{
 
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingThree">
-                            <button class="accordion-button show" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                                 <span class="text">KW 12: Einarbeitungsphase </span>
                             </button>
                             </h2>
@@ -113,13 +118,17 @@ const Documentpage = () =>{
 
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingFour">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="hide" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour" disabled>
-                                <span class="text-muted">KW 13: Anforderungsanalyse</span>
+                            <button class="accordion-button show" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+                                <span class="text">KW 13: Anforderungsanalyse</span>
                             </button>
                             </h2>
-                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordion">
+                            <div id="collapseFour" class="accordion-collapse collapse show" aria-labelledby="headingFour" data-bs-parent="#accordion">
                             <div class="accordion-body">
-
+                                <ul>
+                                    <li><a href={Aufgabenblatt4} >Aufgabenblatt4.pdf</a></li>
+                                    <li><a href={Glossar2}>Glossar.pdf</a></li>
+                                    <li><a href={Pflichtenheft}>Pflichtenheft.pdf</a></li>
+                                </ul>
                             </div>
                             </div>
                         </div>
