@@ -21,7 +21,6 @@ import Dokumentationskonzept from '../../../documents/KW12/Apollon_Dokumentation
 import Glossar from '../../../documents/KW12/Apollon_Glossar.pdf';
 import Lastenheft from '../../../documents/KW12/Apollon_28032021_Lastenheft.pdf';
 
-
 /* Imports KW13 */
 import Aufgabenblatt4 from '../../../documents/KW13/Aufgabenblatt4.pdf';
 import Glossar2 from '../../../documents/KW13/Apollon_Glossar.pdf';
@@ -103,7 +102,7 @@ const Documentpage = () =>{
                                 <span class="text">KW 12: Einarbeitungsphase </span>
                             </button>
                             </h2>
-                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordion">
+                            <div id="collapseThree" class="accordion-collapse collapse show" aria-labelledby="headingThree" data-bs-parent="#accordion">
                             <div class="accordion-body">
                                 <ul>
                                     <li><a href={Aufgabenblatt3} >Aufgabenblatt3.pdf</a></li>
