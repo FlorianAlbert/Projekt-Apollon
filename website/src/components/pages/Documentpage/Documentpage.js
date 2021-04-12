@@ -26,7 +26,6 @@ import Aufgabenblatt4 from '../../../documents/KW13/Aufgabenblatt4.pdf';
 import Glossar2 from '../../../documents/KW13/Apollon_Glossar.pdf';
 import Pflichtenheft from '../../../documents/KW13/Apollon_05042021_Pflichtenheft.pdf';
 
-
 import './Documentpage.css'
 
 
