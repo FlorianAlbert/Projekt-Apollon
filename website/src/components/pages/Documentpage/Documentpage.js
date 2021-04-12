@@ -63,7 +63,7 @@ const Documentpage = () =>{
 
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="hide" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                                 <span class="text">KW 10: Initialisierungsphase</span>
                             </button>
                             </h2>
@@ -81,7 +81,7 @@ const Documentpage = () =>{
 
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <button class="accordion-button" type="button" data-bs-toggle="hide" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                                 <span class="text">KW 11: Recherchephase</span>
                             </button>
                             </h2>
@@ -98,11 +98,11 @@ const Documentpage = () =>{
 
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingThree">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            <button class="accordion-button" type="button" data-bs-toggle="hide" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                                 <span class="text">KW 12: Einarbeitungsphase </span>
                             </button>
                             </h2>
-                            <div id="collapseThree" class="accordion-collapse collapse show" aria-labelledby="headingThree" data-bs-parent="#accordion">
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordion">
                             <div class="accordion-body">
                                 <ul>
                                     <li><a href={Aufgabenblatt3} >Aufgabenblatt3.pdf</a></li>
