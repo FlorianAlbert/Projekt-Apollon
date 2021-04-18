@@ -24,7 +24,12 @@ import Lastenheft from '../../../documents/KW12/Apollon_28032021_Lastenheft.pdf'
 /* Imports KW13 */
 import Aufgabenblatt4 from '../../../documents/KW13/Aufgabenblatt4.pdf';
 import Glossar2 from '../../../documents/KW13/Apollon_Glossar.pdf';
-import Pflichtenheft from '../../../documents/KW13/Apollon_11042021_Pflichtenheft.pdf';
+import Pflichtenheft from '../../../documents/KW13/Apollon_15042021_Pflichtenheft.pdf';
+
+/* Imports KW15 */
+import Aufgabenblatt5 from '../../../documents/KW15/Aufgabenblatt5.pdf';
+import Testkonzept from '../../../documents/KW15/Apollon_Testkonzept.pdf';
+import Designmodell from '../../../documents/KW15/Apollon_Designmodell.pdf';
 
 import './Documentpage.css'
 
@@ -118,11 +123,11 @@ const Documentpage = () =>{
 
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingFour">
-                            <button class="accordion-button show" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
                                 <span class="text">KW 13: Anforderungsanalyse</span>
                             </button>
                             </h2>
-                            <div id="collapseFour" class="accordion-collapse collapse show" aria-labelledby="headingFour" data-bs-parent="#accordion">
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordion">
                             <div class="accordion-body">
                                 <ul>
                                     <li><a href={Aufgabenblatt4} >Aufgabenblatt4.pdf</a></li>
@@ -135,13 +140,17 @@ const Documentpage = () =>{
 
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingFive">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="hide" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive" disabled>
-                                <span class="text-muted">KW 14&15: Implementierungsphase</span>
+                            <button class="accordion-button show" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
+                                <span class="text">KW 14&15: Implementierungsphase</span>
                             </button>
                             </h2>
-                            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordion">
+                            <div id="collapseFive" class="accordion-collapse collapse show" aria-labelledby="headingFive" data-bs-parent="#accordion">
                             <div class="accordion-body">
-                              
+                                <ul>
+                                    <li><a href={Aufgabenblatt5} >Aufgabenblatt5.pdf</a></li>
+                                    <li><a href={Designmodell}>Designmodell.pdf</a></li>
+                                    <li><a href={Testkonzept}>Testkonzept.pdf</a></li>
+                                </ul>
                             </div>
                             </div>
                         </div>
