@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollon.Mud.Client", "Apollon.Mud.Client\Apollon.Mud.Client.csproj", "{C7375472-2D8F-45E9-836A-6CAD48EC927D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Client", "Client\Apollon.Mud.Client.csproj", "{C7375472-2D8F-45E9-836A-6CAD48EC927D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollon.Mud.Server", "Apollon.Mud.Server\Apollon.Mud.Server.csproj", "{1466C2EC-016C-4A34-ADA1-8B24CD7B5306}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Server", "Server\Apollon.Mud.Server.csproj", "{1466C2EC-016C-4A34-ADA1-8B24CD7B5306}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
