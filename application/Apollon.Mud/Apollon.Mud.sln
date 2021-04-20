@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Client", "Clien
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Server", "Server\Apollon.Mud.Server.csproj", "{1466C2EC-016C-4A34-ADA1-8B24CD7B5306}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollon.Mud.Server.Model", "Server.Model\Apollon.Mud.Server.Model.csproj", "{71497482-0EC6-49DF-8200-EB03D71D49BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{1466C2EC-016C-4A34-ADA1-8B24CD7B5306}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1466C2EC-016C-4A34-ADA1-8B24CD7B5306}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1466C2EC-016C-4A34-ADA1-8B24CD7B5306}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71497482-0EC6-49DF-8200-EB03D71D49BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71497482-0EC6-49DF-8200-EB03D71D49BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71497482-0EC6-49DF-8200-EB03D71D49BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71497482-0EC6-49DF-8200-EB03D71D49BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
