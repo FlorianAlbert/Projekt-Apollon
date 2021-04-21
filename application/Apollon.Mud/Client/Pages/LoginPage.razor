@@ -1,45 +1,74 @@
 ﻿@page "/Identity/Account/Login"
 
+@using Apollon.Mud.Client.Data.Models
 
-<div class="container-fluid bg-white">
-    <div class="container">
-        <h1 class="display-2">Anmelden</h1>
-        <div class="row">
+
+<div class="container d-flex justify-content-center">
+    <div class="card mt-5" style="width:45rem">
+        <div class="card-body text-center">
+            <h1 class="display-2">Anmelden</h1>
+
             <section>
-                <form class="needs-validation">
-                    <h4 class="ml-2">Nutze deinen bereits erstellten Account um dich anzumelden</h4>
-                    <hr />
+                <h4 class="ml-2">Nutze deinen bereits erstellten Account um dich anzumelden</h4>
+                <hr />
+                <EditForm EditContext="@loginContext" OnSubmit="@HandleLoginSubmit" novalidate>
+                    <DataAnnotationsValidator />
 
-                    <div class="col-md-5">
-                        <div class="form-group">
-                            <label for="Input_Email">E-Mail</label>
-                            <input class="form-control" type="email" id="Input_Email" placeholder="E-Mail" required>
-                            <div class="valid-feedback">Sehr gut!</div>
-                            <div class="invalid-feedback">Du musst eine korrekte E-Mail Adresse angeben</div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="Input_Password">Passwort</label>
-                            <input class="form-control" type="password" id="Input_Password" required>
-                            <div class="valid-feedback">Bla</div>
-                            <div class="invalid-feedback">Du musst dein Passwort eingeben</div>
-                        </div>
-                        <button class="btn btn-primary" type="submit" href="/">Anmelden</button>
-                        <div class="form-group">
-                            <p>
-                                <a id="forgot-password" href="/Identity/Account/ForgotPassword">Passwort vergessen?</a>
-                            </p>
-                            <p>
-                                <a href="/Identity/Account/Register">Jetzt registrieren</a>
-                            </p>
+                    <div class="form-group mt-5">
+                        <label for="Input_Email">E-Mail</label>
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" style="width:25rem" type="email" placeholder="E-Mail" id="Email" @bind-Value="loginModel.Email" />
                         </div>
                     </div>
-                </form>
+                    <div class="text-danger">
+                        <ValidationMessage For=@(() => loginModel.Email) />
+                    </div>
+                    <div class="form-group mt-4">
+                        <label for="Input_Password">Passwort</label>
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" style="width:25rem" type="password" placeholder="Passwort" id="Passwort" @bind-Value="loginModel.Password" />
+                        </div>
+                    </div>
+                    <div class="text-danger">
+                        <ValidationMessage For=@(() => loginModel.Password) />
+                    </div>
+                    <button class="btn btn-primary mt-5" type="submit">Anmelden</button>
+                </EditForm>
+                <p></p>
+                <p>
+                    <a id="forgot-password" href="/Identity/Account/ForgotPassword">Passwort vergessen?</a>
+                </p>
+                <p class="mt-5">
+                    <label class="text-muted">Du hast noch keinen Account?</label>
+                    <a class="text-muted" href="/Identity/Account/Register"> Jetzt registrieren</a>
+                </p>
             </section>
         </div>
     </div>
 </div>
 
 @code {
+
+    private LoginModel loginModel = new LoginModel();
+
+    private EditContext loginContext;
+
+    protected override void OnInitialized()
+    {
+        loginContext = new EditContext(loginModel);
+    }
+
+    private async Task HandleLoginSubmit()
+    {
+        var validLogin = loginContext.Validate();
+        if (validLogin)
+        {
+            //TODO Daten absenden
+        }
+        else
+        {
+            //TODO User Ficken
+        }
+    }
 
 }
