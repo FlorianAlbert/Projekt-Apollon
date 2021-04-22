@@ -9,6 +9,8 @@ using FluentAssertions;
 using AutoFixture.AutoNSubstitute;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Consumable;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
 {
@@ -131,20 +133,19 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
             var result = avatar.AddItemToInventory(null);
 
             result.Should().Be(false);
-            avatar.Inventory.Should().BeEmpty();
+            avatar.Inventory.Should().NotContainNulls();
         }
 
         [Fact]
         public void ConsumeItem_Success()
         {
             var consumableMock = Substitute.For<IConsumable>();
-            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
-
-            var insertResult = avatar.AddItemToInventory(consumableMock);
+            var inventoryMock = Substitute.For<ICollection<ITakeable>>();
+            inventoryMock.FirstOrDefault(x => x.Name == consumableMock.Name).Returns(consumableMock);
+            var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Inventory, inventoryMock).Create();
+            
             var consumeResult = avatar.ConsumeItem(consumableMock.Name);
 
-            insertResult.Should().Be(true);
-            avatar.Inventory.Should().BeEmpty();
             consumeResult.Should().Be(consumableMock.EffectDescription);
         }
 
@@ -166,12 +167,16 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         public void ConsumeItem_ItemNotInInventory_Fail()
         {
             var itemName = _Fixture.Create<string>();
-            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
+            var inventoryMock = Substitute.For<ICollection<ITakeable>>();
+            var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Inventory, inventoryMock).Create();
 
             var consumeResult = avatar.ConsumeItem(itemName);
 
-            avatar.Inventory.Should().BeEmpty();
             consumeResult.Should().Be("Dieses Item befindet sich nicht in deinem Inventar.");
+            Received.InOrder(() =>
+            {
+                inventoryMock.FirstOrDefault();
+            });
         }
 
         [Fact]

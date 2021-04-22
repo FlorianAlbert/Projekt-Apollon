@@ -47,6 +47,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
         {
             get => Race.DefaultHealth + Class.DefaultHealth;
         }
+        // TODO: Setter mit Berechnung der neuen HealthDifference anlegen
         public int CurrentHealth 
         {
             get => MaxHealth - _HealthDifference;
@@ -75,7 +76,8 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
         }
         public ICollection<ITakeable> Inventory 
         { 
-            get => _Inventory ??= new Inventory(); init;
+            get => _Inventory ??= new Inventory();
+            init => _Inventory = value;
         }
         public ITakeable HoldingItem { get; set; }
         public IWearable Armor { get; set; }
