@@ -18,7 +18,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
 {
     public class Avatar : IAvatar
     {
-        private ICollection<ITakeable> _Inventory;
+        private IInventory _Inventory;
 
         private int _HealthDifference = 0;
 
@@ -74,7 +74,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
                 return result;
             }
         }
-        public ICollection<ITakeable> Inventory 
+        public IInventory Inventory 
         { 
             get => _Inventory ??= new Inventory();
             init => _Inventory = value;

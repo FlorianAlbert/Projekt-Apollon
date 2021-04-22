@@ -28,7 +28,7 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar
 
         int Protection { get; }
 
-        ICollection<ITakeable> Inventory { get; }
+        IInventory Inventory { get; }
 
         ITakeable HoldingItem { get; set; }
 

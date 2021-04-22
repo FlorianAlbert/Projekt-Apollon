@@ -11,6 +11,8 @@ using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Consumable;
 using System.Collections.Generic;
 using System.Linq;
+using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
+using System;
 
 namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
 {
@@ -117,31 +119,41 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         public void AddItemToInventoryWithNotNull_Success()
         {
             var takeableMock = Substitute.For<ITakeable>();
-            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
+            var inventoryMock = Substitute.For<IInventory>();
+            inventoryMock.Contains(takeableMock).Returns(true);
+            var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Inventory, inventoryMock).Create();
 
             var result = avatar.AddItemToInventory(takeableMock);
 
+            Received.InOrder(() =>
+            {
+                inventoryMock.Add(takeableMock);
+                inventoryMock.Contains(takeableMock);
+            });
+
             result.Should().Be(true);
-            avatar.Inventory.Should().Contain(takeableMock);
         }
 
         [Fact]
         public void AddItemToInventoryWithNull_Fail()
         {
-            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
+            var inventoryMock = Substitute.For<IInventory>();
+            inventoryMock.Contains(null).Returns(false);
+            var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Inventory, inventoryMock).Create();
 
             var result = avatar.AddItemToInventory(null);
 
+            inventoryMock.DidNotReceive().Add(Arg.Any<ITakeable>());
+            inventoryMock.Received(1).Contains(null);
             result.Should().Be(false);
-            avatar.Inventory.Should().NotContainNulls();
         }
 
         [Fact]
         public void ConsumeItem_Success()
         {
             var consumableMock = Substitute.For<IConsumable>();
-            var inventoryMock = Substitute.For<ICollection<ITakeable>>();
-            inventoryMock.FirstOrDefault(x => x.Name == consumableMock.Name).Returns(consumableMock);
+            var inventoryMock = Substitute.For<IInventory>();
+            inventoryMock.FirstOrDefault(Arg.Any<Func<ITakeable, bool>>()).Returns(consumableMock);
             var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Inventory, inventoryMock).Create();
             
             var consumeResult = avatar.ConsumeItem(consumableMock.Name);
@@ -153,13 +165,12 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         public void ConsumeItem_ItemNotConsumable_Fail()
         {
             var takeableMock = Substitute.For<ITakeable>();
-            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
+            var inventoryMock = Substitute.For<IInventory>();
+            inventoryMock.FirstOrDefault(x => x.Name == takeableMock.Name).Returns(takeableMock);
+            var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Inventory, inventoryMock).Create();
 
-            var insertResult = avatar.AddItemToInventory(takeableMock);
             var consumeResult = avatar.ConsumeItem(takeableMock.Name);
 
-            insertResult.Should().Be(true);
-            avatar.Inventory.Should().Contain(takeableMock);
             consumeResult.Should().Be("Dieses Item kannst du nicht konsumieren.");
         }
 
@@ -167,7 +178,8 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         public void ConsumeItem_ItemNotInInventory_Fail()
         {
             var itemName = _Fixture.Create<string>();
-            var inventoryMock = Substitute.For<ICollection<ITakeable>>();
+            var inventoryMock = Substitute.For<IInventory>();
+            inventoryMock.FirstOrDefault(Arg.Any<Func<ITakeable, bool>>()).Returns(null as ITakeable);
             var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Inventory, inventoryMock).Create();
 
             var consumeResult = avatar.ConsumeItem(itemName);
@@ -175,7 +187,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
             consumeResult.Should().Be("Dieses Item befindet sich nicht in deinem Inventar.");
             Received.InOrder(() =>
             {
-                inventoryMock.FirstOrDefault();
+                inventoryMock.FirstOrDefault(Arg.Any<Func<ITakeable, bool>>());
             });
         }
 
@@ -183,13 +195,12 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         public void ThrowAway_Success()
         {
             var takeableMock = Substitute.For<ITakeable>();
-            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
+            var inventoryMock = Substitute.For<IInventory>();
+            inventoryMock.FirstOrDefault(Arg.Any<Func<ITakeable, bool>>()).Returns(takeableMock);
+            var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Inventory, inventoryMock).Create();
 
-            var insertResult = avatar.AddItemToInventory(takeableMock);
             var throwResult = avatar.ThrowAway(takeableMock.Name);
 
-            insertResult.Should().Be(true);
-            avatar.Inventory.Should().BeEmpty();
             throwResult.Should().BeSameAs(takeableMock);
         }
 
@@ -197,11 +208,12 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         public void ThrowAway_ItemNotInInventory_Fail()
         {
             var itemName = _Fixture.Create<string>();
-            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
+            var inventoryMock = Substitute.For<IInventory>();
+            inventoryMock.FirstOrDefault(Arg.Any<Func<ITakeable, bool>>()).Returns(null as ITakeable);
+            var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Inventory, inventoryMock).Create();
 
             var throwResult = avatar.ThrowAway(itemName);
 
-            avatar.Inventory.Should().BeEmpty();
             throwResult.Should().BeNull();
         }
     }

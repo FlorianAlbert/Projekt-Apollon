@@ -1,5 +1,6 @@
 ﻿using Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar;
 using Apollon.Mud.Server.Model.Interfaces;
+using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Class;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
 using System;
@@ -22,8 +23,8 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Class
             Status = Status.Pending;
         }
 
-        private ICollection<ITakeable> _StartInventory;
-        public ICollection<ITakeable> StartInventory 
+        private IInventory _StartInventory;
+        public IInventory StartInventory 
         { 
             get => _StartInventory ??= new Inventory(); 
         }

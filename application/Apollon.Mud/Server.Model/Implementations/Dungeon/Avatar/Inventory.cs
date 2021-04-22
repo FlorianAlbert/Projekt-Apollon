@@ -1,4 +1,5 @@
-﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
+﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
+using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
 {
-    public class Inventory : ICollection<ITakeable>
+    public class Inventory : IInventory
     {
         // TODO: diskutieren ob Wert realistisch
         private const int _MaxWeight = 100;
@@ -58,6 +59,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
         IEnumerator IEnumerable.GetEnumerator()
         {
             return Items.GetEnumerator();
+        }
+
+        public ITakeable FirstOrDefault(Func<ITakeable, bool> predicate)
+        {
+            return Items.FirstOrDefault(predicate);
         }
     }
 }
