@@ -13,6 +13,7 @@ using Apollon.Mud.Server.Model.Interfaces.Dungeon;
 using Apollon.Mud.Server.Model.Implementations.User;
 using AutoFixture.AutoNSubstitute;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
+using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Consumable;
 
 namespace Apollon.Mud.Server.Model.Test
 {
@@ -107,7 +108,7 @@ namespace Apollon.Mud.Server.Model.Test
             var raceMock = Substitute.For<IRace>();
             raceMock.DefaultProtection.Returns(raceProtection);
             var classMock = Substitute.For<IClass>();
-            classMock.DefaultProtection.Returns(classProtection);   
+            classMock.DefaultProtection.Returns(classProtection);
             var avatar = _Fixture.Build<Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.Armor, null as IWearable).Create();
 
             var result = avatar.Protection;
@@ -121,22 +122,87 @@ namespace Apollon.Mud.Server.Model.Test
             var takeableMock = Substitute.For<ITakeable>();
             var avatar = _Fixture.Create<Avatar>();
 
-            avatar.AddItemToInventory 
+            var result = avatar.AddItemToInventory(takeableMock);
 
+            result.Should().Be(true);
+            avatar.Inventory.Should().Contain(takeableMock);
         }
 
         [Fact]
         public void AddItemToInventoryWithNull_Fail()
         {
+            var avatar = _Fixture.Create<Avatar>();
 
+            var result = avatar.AddItemToInventory(null);
+
+            result.Should().Be(false);
+            avatar.Inventory.Should().BeEmpty();
         }
 
-        [Theory]
-        [InlineData()]
-
+        [Fact]
         public void ConsumeItem_Success()
         {
+            var consumableMock = Substitute.For<IConsumable>();
+            var avatar = _Fixture.Create<Avatar>();
 
+            var insertResult = avatar.AddItemToInventory(consumableMock);
+            var consumeResult = avatar.ConsumeItem(consumableMock.Name);
+
+            insertResult.Should().Be(true);
+            avatar.Inventory.Should().BeEmpty();
+            consumeResult.Should().Be(consumableMock.EffectDescription);
+        }
+
+        [Fact]
+        public void ConsumeItem_ItemNotConsumable_Fail()
+        {
+            var takeableMock = Substitute.For<ITakeable>();
+            var avatar = _Fixture.Create<Avatar>();
+
+            var insertResult = avatar.AddItemToInventory(takeableMock);
+            var consumeResult = avatar.ConsumeItem(takeableMock.Name);
+
+            insertResult.Should().Be(true);
+            avatar.Inventory.Should().Contain(takeableMock);
+            consumeResult.Should().Be("Dieses Item kannst du nicht konsumieren.");
+        }
+
+        [Fact]
+        public void ConsumeItem_ItemNotInInventory_Fail()
+        {
+            var itemName = _Fixture.Create<string>();
+            var avatar = _Fixture.Create<Avatar>();
+
+            var consumeResult = avatar.ConsumeItem(itemName);
+
+            avatar.Inventory.Should().BeEmpty();
+            consumeResult.Should().Be("Dieses Item befindet sich nicht in deinem Inventar.");
+        }
+
+        [Fact]
+        public void ThrowAway_Success()
+        {
+            var takeableMock = Substitute.For<ITakeable>();
+            var avatar = _Fixture.Create<Avatar>();
+
+            var insertResult = avatar.AddItemToInventory(takeableMock);
+            var throwResult = avatar.ThrowAway(takeableMock.Name);
+
+            insertResult.Should().Be(true);
+            avatar.Inventory.Should().BeEmpty();
+            throwResult.Should().BeSameAs(takeableMock);
+        }
+
+        [Fact]
+        public void ThrowAway_ItemNotInInventory_Fail()
+        {
+            var itemName = _Fixture.Create<string>();
+            var avatar = _Fixture.Create<Avatar>();
+
+            var throwResult = avatar.ThrowAway(itemName);
+
+            avatar.Inventory.Should().BeEmpty();
+            throwResult.Should().BeNull();
         }
     }
 }
