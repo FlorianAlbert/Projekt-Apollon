@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Apollon.Mud.Shared
+namespace Apollon.Mud.Shared.Dungeon.Requestable
 {
-    class DungeonUserDto
+    /// <summary>
+    /// ToDo
+    /// </summary>
+    class RequestableDto
     {
     }
 }

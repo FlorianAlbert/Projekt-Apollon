@@ -5,16 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Dungeon\Avatar\" />
-    <Folder Include="Dungeon\Class\" />
-    <Folder Include="Dungeon\Inspectable\Takeable\Consumable\" />
-    <Folder Include="Dungeon\Inspectable\Takeable\Usable\" />
-    <Folder Include="Dungeon\Inspectable\Takeable\Wearable\" />
-    <Folder Include="Dungeon\Npc\" />
-    <Folder Include="Dungeon\Race\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
