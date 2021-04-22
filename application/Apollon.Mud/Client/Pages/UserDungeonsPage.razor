@@ -1,5 +1,7 @@
 ﻿@page "/YourDungeons"
 
+@using Apollon.Mud.Shared.Dungeon
+
 <div class="container-fluid">
     <div class="jumbotron mt-5 mb-5 bg-transparent">
         <div class="container">
@@ -19,23 +21,24 @@
                 <h2 class="text-muted">Du hast noch keinen eigenen Dungeon erstellt.</h2>
 
             }
-            <div class="col-md-4">
-                <div class="card mb-4 box-shadow border-secondary" style="height:15rem">
-                    <h5 class="card-header" style="height:2.5rem">Dungeon Eins</h5>
-                    <div class="card-body">
-                        <p class="card-text">This is an example text of a Dungeon that you already created. This text will be given by you once you create the dungeon. Currently it is not possible to save a created dungeon.</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+            @foreach (DungeonDto dungeon in userDungeons)
+            {
+                <div class="col-md-4">
+                    <div class="card mb-4 box-shadow border-secondary" style="height:15rem">
+                        <h5 class="card-header" style="height:2.5rem">@dungeon.DungeonName</h5>
+                        <div class="card-body">
+                            <p class="card-text" style="height:7.5rem">@dungeon.DungeonDescription</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                </div>
+                                <small class="text-muted">9 mins</small>
                             </div>
-                            <small class="text-muted">9 mins</small>
                         </div>
                     </div>
                 </div>
-            </div>
-
-
+            }
 
             <div class="col-md-4">
                 <div class="card mb-4 box-shadow" style="height:15rem">
@@ -59,6 +62,16 @@
 </div>
 
 @code {
-    private List<string> userDungeons = new List<string>();
+
+    private List<DungeonDto> userDungeons = new List<DungeonDto>();
+
+    protected override void OnInitialized()
+    {
+        DungeonDto quciktest = new DungeonDto();
+        quciktest.DungeonName = "TestDungeon";
+        quciktest.DungeonDescription = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,";
+        userDungeons.Add(quciktest);
+    }
+
 
 }

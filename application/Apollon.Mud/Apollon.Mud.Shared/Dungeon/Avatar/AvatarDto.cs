@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Apollon.Mud.Shared.Dungeon.Avatar
 {
     //ToDo
-    class AvatarDto
+    public class AvatarDto
     {
     }
 }

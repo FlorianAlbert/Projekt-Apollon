@@ -9,7 +9,7 @@ namespace Apollon.Mud.Shared.Dungeon.Class
     /// <summary>
     /// ToDo
     /// </summary>
-    class ClassDto
+    public class ClassDto
     {
     }
 }

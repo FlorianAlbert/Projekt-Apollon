@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Shared.Dungeon.Inspectable
 {
-    class InspectableDto
+    public class InspectableDto
     {
     }
 }

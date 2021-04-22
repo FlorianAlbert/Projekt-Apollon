@@ -8,13 +8,20 @@ using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Dungeon.User;
 using Newtonsoft.Json;
 
-namespace Apollon.Mud.Shared.Dungeon
+namespace Apollon.Mud
 {
     /// <summary>
     /// ToDo
     /// </summary>
-    class DungeonDto
+    public class DungeonDto
     {
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("DungeonName")]
+        public string DungeonName { get; set; }
+
         /// <summary>
         /// ToDo
         /// </summary>

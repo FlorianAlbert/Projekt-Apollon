@@ -9,7 +9,7 @@ namespace Apollon.Mud.Shared.Dungeon.Requestable
     /// <summary>
     /// ToDo
     /// </summary>
-    class RequestableDto
+    public class RequestableDto
     {
     }
 }
