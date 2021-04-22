@@ -34,6 +34,9 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
 
             CurrentRoom = Dungeon.DefaultRoom;
             Status = Status.Pending;
+
+            // CHECK: überprüfen ob Referenz oder Kopie genommen wird
+            Inventory = chosenClass.StartInventory;
         }
 
         public IRace Race { get; set; }
@@ -72,7 +75,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
         }
         public ICollection<ITakeable> Inventory 
         { 
-            get => _Inventory ??= new Inventory();
+            get => _Inventory ??= new Inventory(); init;
         }
         public ITakeable HoldingItem { get; set; }
         public IWearable Armor { get; set; }

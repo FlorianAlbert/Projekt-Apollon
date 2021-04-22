@@ -5,7 +5,7 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Class
 {
     public interface IClass : IChoosable
     {
-        ICollection<ITakeable> StartInventory { get; set; }
+        ICollection<ITakeable> StartInventory { get; }
 
     }
 }

@@ -8,6 +8,6 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable
 {
     public interface ITakeable : IInspectable
     {
-        short Weight { get; set; }
+        int Weight { get; set; }
     }
 }
