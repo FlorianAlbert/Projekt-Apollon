@@ -2,7 +2,7 @@
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Consumable;
 using System;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Insectable.Takeable.Consumable
+namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable.Takeable.Consumable
 {
     public class Consumable : IConsumable
     {

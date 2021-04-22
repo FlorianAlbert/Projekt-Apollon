@@ -2,12 +2,7 @@
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Requestable;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Room
 {
     public interface IRoom : IApprovable
@@ -17,7 +12,7 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Room
 
         string Name { get; set; }
 
-        ICollection<IInspectable> Inspectables { get; set; }
+        ICollection<IInspectable> Inspectables { get; }
 
         IRoom NeighborNorth { get; set; }
 
@@ -27,12 +22,12 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Room
 
         IRoom NeighborWest { get; set; }
 
-        ICollection<IRequestable> SpecialActions { get; set; }
+        ICollection<IRequestable> SpecialActions { get; }
 
         #endregion
 
         #region Methods
-        void Inspect(IAvatar avatar, string objectName);
+        string GetDescription(string objectName);
 
         void InspectRoom(IAvatar avatar);
 
@@ -44,7 +39,7 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Room
 
         void EnterRoom(IAvatar avatar);
 
-        void DoSpecialAction(IAvatar avatar, string action);
+        bool SupportsSpecialAction(string action);
 
         #endregion
     }

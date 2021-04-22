@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Insectable.Takeable.Usable
+namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable.Takeable.Usable
 {
     public class Usable : IUsable
     {
