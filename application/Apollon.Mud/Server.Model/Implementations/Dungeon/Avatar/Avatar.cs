@@ -83,7 +83,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
             get => $"{ Name } ist von der Rasse { Race.Name } vom Geschlecht { Gender.GetGermanGender() }.\n" +
                 $"Diese Rasse zeichnet sich durch folgende Beschreibung aus: \n" +
                 $"{ Race.Description } \n\n" +
-                $"Außerdem hat { Name } die Klasse {Class.Name}, welche sich durch folgende Beschreibung auszeichnet: \n" +
+                $"Außerdem hat { Name } die Klasse { Class.Name }, welche sich durch folgende Beschreibung auszeichnet: \n" +
                 $"{ Class.Description }";
             set 
             { 
@@ -105,9 +105,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
 
             if (takeableItem == null) return "Dieses Item befindet sich nicht in deinem Inventar.";
 
-            var item = takeableItem as IConsumable;
-
-            if (item == null) return "Dieses Item kannst du nicht konsumieren.";
+            if (takeableItem is not IConsumable item) return "Dieses Item kannst du nicht konsumieren.";
 
             Inventory.Remove(item);
 
@@ -124,9 +122,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
         {
             var item = Inventory.FirstOrDefault(takeable => takeable.Name == itemName);
 
-            if (item == null) return null;
-
-            Inventory.Remove(item);
+            if (item != null) Inventory.Remove(item);
 
             return item;
         }

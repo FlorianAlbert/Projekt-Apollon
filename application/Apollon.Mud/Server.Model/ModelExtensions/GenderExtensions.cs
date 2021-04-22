@@ -11,19 +11,14 @@ namespace Apollon.Mud.Server.Model.ModelExtensions
     {
         public static string GetGermanGender(this Gender gender)
         {
-            switch (gender)
+            return gender switch
             {
-                case Gender.Male:
-                    return "Männlich";
-                case Gender.Female:
-                    return "Weiblich";
-                case Gender.Diverse:
-                    return "Divers";
-                case Gender.Neutral:
-                    return "Neutral";
-                default:
-                    return "Unbekannt";
-            }
+                Gender.Male => "Männlich",
+                Gender.Female => "Weiblich",
+                Gender.Diverse => "Divers",
+                Gender.Neutral => "Neutral",
+                _ => "Unbekannt",
+            };
         }
     }
 }
