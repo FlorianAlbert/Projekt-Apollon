@@ -1,21 +1,16 @@
 using AutoFixture;
-using System;
 using Xunit;
-using Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar;
 using NSubstitute;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Race;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Class;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Usable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Wearable;
 using FluentAssertions;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon;
-using Apollon.Mud.Server.Model.Implementations.User;
 using AutoFixture.AutoNSubstitute;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Consumable;
 
-namespace Apollon.Mud.Server.Model.Test
+namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
 {
     public class AvatarTests
     {
@@ -35,7 +30,7 @@ namespace Apollon.Mud.Server.Model.Test
             raceMock.DefaultHealth.Returns(raceHealth);
             var classMock = Substitute.For<IClass>();
             classMock.DefaultHealth.Returns(classHealth);
-            var avatar = _Fixture.Build<Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).Create();
+            var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).Create();
 
             var result = avatar.MaxHealth;
 
@@ -55,7 +50,7 @@ namespace Apollon.Mud.Server.Model.Test
             classMock.DefaultDamage.Returns(classDamage);
             var weaponMock = Substitute.For<IUsable>();
             weaponMock.DamageBoost.Returns(weaponBoost);
-            var avatar = _Fixture.Build<Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.HoldingItem, weaponMock).Create();
+            var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.HoldingItem, weaponMock).Create();
 
             var result = avatar.Damage;
 
@@ -72,7 +67,7 @@ namespace Apollon.Mud.Server.Model.Test
             raceMock.DefaultDamage.Returns(raceDamage);
             var classMock = Substitute.For<IClass>();
             classMock.DefaultDamage.Returns(classDamage);
-            var avatar = _Fixture.Build<Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.HoldingItem, null as IUsable).Create();
+            var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.HoldingItem, null as IUsable).Create();
 
             var result = avatar.Damage;
 
@@ -92,7 +87,7 @@ namespace Apollon.Mud.Server.Model.Test
             classMock.DefaultProtection.Returns(classProtection);
             var protectionMock = Substitute.For<IWearable>();
             protectionMock.ProtectionBoost.Returns(protectionBoost);
-            var avatar = _Fixture.Build<Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.Armor, protectionMock).Create();
+            var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.Armor, protectionMock).Create();
 
             var result = avatar.Protection;
 
@@ -109,7 +104,7 @@ namespace Apollon.Mud.Server.Model.Test
             raceMock.DefaultProtection.Returns(raceProtection);
             var classMock = Substitute.For<IClass>();
             classMock.DefaultProtection.Returns(classProtection);
-            var avatar = _Fixture.Build<Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.Armor, null as IWearable).Create();
+            var avatar = _Fixture.Build<Implementations.Dungeon.Avatar.Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.Armor, null as IWearable).Create();
 
             var result = avatar.Protection;
 
@@ -120,7 +115,7 @@ namespace Apollon.Mud.Server.Model.Test
         public void AddItemToInventoryWithNotNull_Success()
         {
             var takeableMock = Substitute.For<ITakeable>();
-            var avatar = _Fixture.Create<Avatar>();
+            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
 
             var result = avatar.AddItemToInventory(takeableMock);
 
@@ -131,7 +126,7 @@ namespace Apollon.Mud.Server.Model.Test
         [Fact]
         public void AddItemToInventoryWithNull_Fail()
         {
-            var avatar = _Fixture.Create<Avatar>();
+            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
 
             var result = avatar.AddItemToInventory(null);
 
@@ -143,7 +138,7 @@ namespace Apollon.Mud.Server.Model.Test
         public void ConsumeItem_Success()
         {
             var consumableMock = Substitute.For<IConsumable>();
-            var avatar = _Fixture.Create<Avatar>();
+            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
 
             var insertResult = avatar.AddItemToInventory(consumableMock);
             var consumeResult = avatar.ConsumeItem(consumableMock.Name);
@@ -157,7 +152,7 @@ namespace Apollon.Mud.Server.Model.Test
         public void ConsumeItem_ItemNotConsumable_Fail()
         {
             var takeableMock = Substitute.For<ITakeable>();
-            var avatar = _Fixture.Create<Avatar>();
+            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
 
             var insertResult = avatar.AddItemToInventory(takeableMock);
             var consumeResult = avatar.ConsumeItem(takeableMock.Name);
@@ -171,7 +166,7 @@ namespace Apollon.Mud.Server.Model.Test
         public void ConsumeItem_ItemNotInInventory_Fail()
         {
             var itemName = _Fixture.Create<string>();
-            var avatar = _Fixture.Create<Avatar>();
+            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
 
             var consumeResult = avatar.ConsumeItem(itemName);
 
@@ -183,7 +178,7 @@ namespace Apollon.Mud.Server.Model.Test
         public void ThrowAway_Success()
         {
             var takeableMock = Substitute.For<ITakeable>();
-            var avatar = _Fixture.Create<Avatar>();
+            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
 
             var insertResult = avatar.AddItemToInventory(takeableMock);
             var throwResult = avatar.ThrowAway(takeableMock.Name);
@@ -197,7 +192,7 @@ namespace Apollon.Mud.Server.Model.Test
         public void ThrowAway_ItemNotInInventory_Fail()
         {
             var itemName = _Fixture.Create<string>();
-            var avatar = _Fixture.Create<Avatar>();
+            var avatar = _Fixture.Create<Implementations.Dungeon.Avatar.Avatar>();
 
             var throwResult = avatar.ThrowAway(itemName);
 
