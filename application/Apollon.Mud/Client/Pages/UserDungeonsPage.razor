@@ -1,0 +1,64 @@
+﻿@page "/YourDungeons"
+
+<div class="container-fluid">
+    <div class="jumbotron mt-5 mb-5 bg-transparent">
+        <div class="container">
+            <h1 class="display-3 text-white">Deine Dungeons!</h1>
+            <p class="text-white">Hier kannst du die von dir erstellten Dungeons verwalten </p>
+            <p class="text-white">Falls du noch keinen Dungeon erstellt hast, kannst du hier auch neue Dungeons anlegen.</p>
+            <a class="btn btn-primary btn-lg" href="#">Neuer Dungeon</a>
+        </div>
+    </div>
+</div>
+
+<div class="dungeons py-5 bg-light mb-5" style="min-height:50rem">
+    <div class="container">
+        <div class="row">
+            @if (userDungeons.Count == 0)
+            {
+                <h2 class="text-muted">Du hast noch keinen eigenen Dungeon erstellt.</h2>
+
+            }
+            <div class="col-md-4">
+                <div class="card mb-4 box-shadow border-secondary" style="height:15rem">
+                    <h5 class="card-header" style="height:2.5rem">Dungeon Eins</h5>
+                    <div class="card-body">
+                        <p class="card-text">This is an example text of a Dungeon that you already created. This text will be given by you once you create the dungeon. Currently it is not possible to save a created dungeon.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                            </div>
+                            <small class="text-muted">9 mins</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-md-4">
+                <div class="card mb-4 box-shadow" style="height:15rem">
+                    <div class="card-header" style="min-height:2.5rem" />
+                    <a href="/">
+                        <div class="card-body d-flex justify-content-center">
+                            <svg height="8rem" viewBox="0 0 512 512" width="8rem" xmlns="http://www.w3.org/2000/svg" opacity="0.75">
+                                <path d="m368 272h-224c-8.832031 0-16-7.167969-16-16s7.167969-16 16-16h224c8.832031 0 16 7.167969 16 16s-7.167969 16-16 16zm0 0" />
+                                <path d="m256 384c-8.832031 0-16-7.167969-16-16v-224c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v224c0 8.832031-7.167969 16-16 16zm0 0" />
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<string> userDungeons = new List<string>();
+
+}

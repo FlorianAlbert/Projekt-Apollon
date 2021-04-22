@@ -1,6 +1,8 @@
 ﻿@page "/Identity/Account/Login"
+@inject IAuthorizationService authorizationService
 
 @using Apollon.Mud.Client.Data.Models
+
 
 
 <div class="container d-flex justify-content-center">
@@ -67,7 +69,7 @@
         }
         else
         {
-            //TODO User Ficken
+            //TODO User Benachrichtigen
         }
     }
 
