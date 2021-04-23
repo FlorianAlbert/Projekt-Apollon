@@ -23,5 +23,11 @@ namespace Apollon.Mud.Shared.Dungeon.Requestable
         /// </summary>
         [JsonProperty("Status")]
         public int Status { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("Message")]
+        public string Message { get; set; }
     }
 }
