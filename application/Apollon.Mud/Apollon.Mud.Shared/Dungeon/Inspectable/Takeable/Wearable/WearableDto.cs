@@ -23,5 +23,17 @@ namespace Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
         /// </summary>
         [JsonProperty("Status")]
         public int Status { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("Description")]
+        public string Description { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("Name")]
+        public string Name { get; set; }
     }
 }
