@@ -23,5 +23,23 @@ namespace Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable
         /// </summary>
         [JsonProperty("Status")]
         public int Status { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("Description")]
+        public string Description { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("Name")]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("Weight")]
+        public int Weight { get; set; }
     }
 }
