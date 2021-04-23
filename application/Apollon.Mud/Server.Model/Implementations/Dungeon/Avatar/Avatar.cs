@@ -1,18 +1,14 @@
 ﻿using Apollon.Mud.Server.Model.Implementations.User;
-using Apollon.Mud.Server.Model.Interfaces;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Class;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Consumable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Usable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Race;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Room;
 using Apollon.Mud.Server.Model.ModelExtensions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
 {
@@ -98,6 +94,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
         public Guid Id { get; }
         public Status Status { get; set; }
 
+        /**
         public bool AddItemToInventory(ITakeable item)
         {
             if (item != null) Inventory.Add(item);
@@ -130,6 +127,6 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
             if (item != null) Inventory.Remove(item);
 
             return item;
-        }
+        } **/
     }
 }

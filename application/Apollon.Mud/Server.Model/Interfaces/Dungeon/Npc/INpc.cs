@@ -6,6 +6,7 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Npc
     {
         string Text { get; set; }
 
-        string Speak();
+        // TODO: Nicht vergessen zu verschieben oder löschen
+        //string Speak();
     }
 }

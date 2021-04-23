@@ -26,9 +26,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Npc
 
         public Status Status { get; set; }
 
+        /** TODO: Nicht vergessen zu löschen oder zu verschieben
         public string Speak()
         {
             return Text;
-        }
+        } **/
     }
 }

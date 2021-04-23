@@ -1,10 +1,5 @@
-﻿using Apollon.Mud.Server.Model.Interfaces;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Usable;
+﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Usable;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable.Takeable.Usable
 {

@@ -1,11 +1,11 @@
-﻿using Apollon.Mud.Server.Model.Implementations.User;
+﻿using Apollon.Mud.Server.Model.Implementations.Dungeon;
+using Apollon.Mud.Server.Model.Implementations.User;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Class;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Race;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Requestable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Room;
-using System;
 using System.Collections.Generic;
 
 namespace Apollon.Mud.Server.Model.Interfaces.Dungeon
@@ -19,25 +19,25 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon
 
         IRoom DefaultRoom { get; set; }
 
-        ICollection<IRace> ConfiguredRaces { get; set; }
+        ICollection<IRace> ConfiguredRaces { get; }
 
-        ICollection<IClass> ConfiguredClasses { get; set; }
+        ICollection<IClass> ConfiguredClasses { get; }
 
-        ICollection<IRoom> ConfiguredRooms { get; set; }
+        ICollection<IRoom> ConfiguredRooms { get; }
 
-        ICollection<IInspectable> ConfiguredInspectables { get; set; }
+        ICollection<IInspectable> ConfiguredInspectables { get; }
 
-        ICollection<IRequestable> ConfiguredRequestables { get; set; }
+        ICollection<IRequestable> ConfiguredRequestables { get; }
 
-        ICollection<IAvatar> RegisteredAvatars { get; set; }
+        ICollection<IAvatar> RegisteredAvatars { get; }
 
-        ICollection<DungeonUser> DungeonMasters { get; set; }
+        ICollection<DungeonUser> DungeonMasters { get; }
 
-        ICollection<DungeonUser> WhiteList { get; set; }
+        ICollection<DungeonUser> WhiteList { get; }
 
-        ICollection<DungeonUser> BlackList { get; set; }
+        ICollection<DungeonUser> BlackList { get; }
 
-        ICollection<DungeonUser> OpenRequests { get; set; }
+        ICollection<DungeonUser> OpenRequests { get; }
 
         DungeonUser CurrentDungeonMaster { get; set; }
 
@@ -47,7 +47,8 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon
 
         #endregion
 
-        #region Methods
+        /** TODO: Nach PlayerService/KonfigurationsService verlagern 
+         * #region Methods
         bool AddNeighborship(IRoom roomSource, Direction direction, IRoom roomSink);
 
         bool RemoveNeigborship(IRoom room1, IRoom room2);
@@ -62,6 +63,6 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon
 
         void EnterDungeon(IAvatar avatar);
 
-        #endregion
+        #endregion **/
     }
 }

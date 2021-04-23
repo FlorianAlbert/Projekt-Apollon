@@ -1,6 +1,4 @@
-﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
+﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Requestable;
 using System.Collections.Generic;
 namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Room
@@ -26,10 +24,11 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Room
 
         #endregion
 
-        #region Methods
+        /** TODO: Nach PlayerService/KonfigurationsServices verlagern
+         * #region Methods
         string GetDescription(string objectName);
 
-        void InspectRoom(IAvatar avatar);
+        string GetRoomDescription();
 
         void Leave(IAvatar avatar);
 
@@ -41,6 +40,6 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Room
 
         bool SupportsSpecialAction(string action);
 
-        #endregion
+        #endregion **/
     }
 }

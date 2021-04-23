@@ -1,9 +1,4 @@
-﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar;
 
 namespace Apollon.Mud.Server.Model.ModelExtensions
 {

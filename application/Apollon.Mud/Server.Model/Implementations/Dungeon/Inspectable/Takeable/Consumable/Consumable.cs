@@ -1,5 +1,4 @@
-﻿using Apollon.Mud.Server.Model.Interfaces;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Consumable;
+﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Consumable;
 using System;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable.Takeable.Consumable

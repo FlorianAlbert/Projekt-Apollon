@@ -1,4 +1,4 @@
-﻿namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar
+﻿namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
 {
     public enum Gender
     {

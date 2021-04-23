@@ -1,5 +1,4 @@
-﻿using Apollon.Mud.Server.Model.Interfaces;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
+﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 using System;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable

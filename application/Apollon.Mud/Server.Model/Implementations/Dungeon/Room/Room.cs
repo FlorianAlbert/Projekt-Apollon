@@ -1,13 +1,9 @@
 ﻿using Apollon.Mud.Server.Model.Interfaces;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Requestable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Room;
-using Apollon.Mud.Server.Model.ModelExtensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Room
 {
@@ -49,6 +45,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Room
 
         public Status Status { get; set; }
 
+        /**
         public bool SupportsSpecialAction(string action)
         {
             return SpecialActions.Any(x => x.Message.NormalizeString() == action.NormalizeString());
@@ -57,7 +54,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Room
         public void EnterRoom(IAvatar avatar)
         {
             avatar.CurrentRoom = this;
-            Inspectables.Add(avatar);
+            if (!Inspectables.Contains(avatar)) Inspectables.Add(avatar);
         }
 
         public string GetDescription(string objectName)
@@ -66,24 +63,33 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Room
             return inspectable is not null ? inspectable.Description : $"Es befindet sich kein untersuchbares Objekt mit Namen {objectName} in diesem Raum.";
         }
 
-        public void InspectRoom(IAvatar avatar)
+        public string GetRoomDescription()
         {
-            ;
+            return Description;
         }
 
         public void Leave(IAvatar avatar)
         {
-            ;
+            Inspectables.Remove(avatar);
         }
 
         public void PlaceItem(ITakeable item)
         {
-            ;
+            Inspectables.Add(item);
         }
 
-        public void TakeItem(IAvatar avatar, string itemName)
+         TODO: Logik in PlayerService auslagern, damit Unterscheidung möglich zwischen existiert nicht versus kein takeable
+        public ITakeable TakeItem(string itemName)
         {
-            ;
+            var inspectable = Inspectables.Where(x => x.Name.NormalizeString() == itemName.NormalizeString()).FirstOrDefault();
+            
+            if (inspectable is not null && inspectable is ITakeable takeable)
+            {
+                Inspectables.Remove(takeable);
+                return takeable;
+            }
+            return null;
         }
+        **/
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Apollon.Mud.Server.Model.Interfaces
+﻿namespace Apollon.Mud.Server.Model.Implementations
 {
     public enum Status
     {

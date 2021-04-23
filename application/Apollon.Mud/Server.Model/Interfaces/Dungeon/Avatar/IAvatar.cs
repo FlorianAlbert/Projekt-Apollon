@@ -1,11 +1,11 @@
-﻿using Apollon.Mud.Server.Model.Implementations.User;
+﻿using Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar;
+using Apollon.Mud.Server.Model.Implementations.User;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Class;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Race;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Room;
-using System.Collections.Generic;
 
 namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar
 {
@@ -40,7 +40,8 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar
 
         #endregion
 
-        #region Methods
+        /** TODO: Nach PlayerService/KonfigurationsServices verlagern 
+         * #region Methods
         void SendPrivateMessage(string message);
 
         string ConsumeItem(string itemName);
@@ -49,6 +50,6 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar
 
         ITakeable ThrowAway(string itemName);
 
-        #endregion
+        #endregion **/
     }
 }

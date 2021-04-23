@@ -1,4 +1,4 @@
-﻿namespace Apollon.Mud.Server.Model.Interfaces.Dungeon
+﻿namespace Apollon.Mud.Server.Model.Implementations.Dungeon
 {
     public enum Visibility
     {
