@@ -61,7 +61,7 @@ namespace Apollon.Mud.Shared.Dungeon
         /// ToDo
         /// </summary>
         [JsonProperty("DungeonMasters")]
-        public List<DungeonUserDto> DungeonMasters { get; set; }
+        public ICollection<DungeonUserDto> DungeonMasters { get; set; }
 
         /// <summary>
         /// ToDo
@@ -79,19 +79,19 @@ namespace Apollon.Mud.Shared.Dungeon
         /// ToDo
         /// </summary>
         [JsonProperty("WhiteList")]
-        public List<DungeonUserDto> WhiteList { get; set; }
+        public ICollection<DungeonUserDto> WhiteList { get; set; }
 
         /// <summary>
         /// ToDo
         /// </summary>
         [JsonProperty("BlackList")]
-        public List<DungeonUserDto> BlackList { get; set; }
+        public ICollection<DungeonUserDto> BlackList { get; set; }
 
         /// <summary>
         /// ToDo
         /// </summary>
         [JsonProperty("OpenRequests")]
-        public List<DungeonUserDto> OpenRequests { get; set; }
+        public ICollection<DungeonUserDto> OpenRequests { get; set; }
 
     }
 }
