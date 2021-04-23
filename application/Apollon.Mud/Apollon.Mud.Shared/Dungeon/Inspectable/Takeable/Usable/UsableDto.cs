@@ -41,5 +41,11 @@ namespace Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable
         /// </summary>
         [JsonProperty("Weight")]
         public int Weight { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("DamageBoost")]
+        public int DamageBoost { get; set; }
     }
 }
