@@ -9,7 +9,7 @@ namespace Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
     /// <summary>
     /// ToDo
     /// </summary>
-    class WearableDto
+    public class WearableDto
     {
     }
 }

@@ -9,7 +9,7 @@ namespace Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable
     /// <summary>
     /// ToDo
     /// </summary>
-    class UsableDto
+    public class UsableDto
     {
     }
 }

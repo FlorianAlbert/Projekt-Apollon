@@ -13,7 +13,7 @@ namespace Apollon.Mud.Shared.Dungeon
     /// <summary>
     /// ToDo
     /// </summary>
-    class DungeonDto
+    public class DungeonDto
     {
         /// <summary>
         /// ToDo
@@ -38,6 +38,18 @@ namespace Apollon.Mud.Shared.Dungeon
         /// </summary>
         [JsonProperty("DefaultRoom")]
         public int Visibility { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("Id")]
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("Status")]
+        public int Status { get; set; }
 
         /// <summary>
         /// ToDo
@@ -74,5 +86,6 @@ namespace Apollon.Mud.Shared.Dungeon
         /// </summary>
         [JsonProperty("OpenRequests")]
         public List<DungeonUserDto> OpenRequests { get; set; }
+
     }
 }
