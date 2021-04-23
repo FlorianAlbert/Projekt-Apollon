@@ -83,30 +83,6 @@ namespace Apollon.Mud.Shared.Dungeon.Avatar
         /// <summary>
         /// ToDo
         /// </summary>
-        [JsonProperty("InventoryTakeableDtos")]
-        public ICollection<TakeableDto> InventoryTakeableDtos { get; set; }
-
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        [JsonProperty("InventoryUsableDtos")]
-        public ICollection<UsableDto> InventoryUsableDtos { get; set; }
-
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        [JsonProperty("InventoryConsumableDtos")]
-        public ICollection<ConsumableDto> InventoryConsumableDtos { get; set; }
-
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        [JsonProperty("InventoryWearableDtos")]
-        public ICollection<WearableDto> InventoryWearableDtos { get; set; }
-
-        /// <summary>
-        /// ToDo
-        /// </summary>
         [JsonProperty("HoldingItem")]
         public TakeableDto HoldingItem { get; set; }
 
