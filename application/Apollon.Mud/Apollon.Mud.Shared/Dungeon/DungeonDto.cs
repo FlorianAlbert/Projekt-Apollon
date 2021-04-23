@@ -18,6 +18,12 @@ namespace Apollon.Mud.Shared.Dungeon
         /// <summary>
         /// ToDo
         /// </summary>
+        [JsonProperty("DungeonName")]
+        public string DungeonName { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
         [JsonProperty("DungeonDescription")]
         public string DungeonDescription { get; set; }
 
@@ -34,9 +40,9 @@ namespace Apollon.Mud.Shared.Dungeon
         public RoomDto DefaultRoom { get; set; }
 
         /// <summary>
-        /// ToDo passt es wenn es int ist?
+        /// ToDo 
         /// </summary>
-        [JsonProperty("DefaultRoom")]
+        [JsonProperty("Visibility")]
         public int Visibility { get; set; }
 
         /// <summary>

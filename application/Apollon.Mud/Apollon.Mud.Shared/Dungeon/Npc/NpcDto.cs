@@ -40,6 +40,6 @@ namespace Apollon.Mud.Shared.Dungeon.Npc
         /// ToDo
         /// </summary>
         [JsonProperty("Text")]
-        string Text { get; set; }
+        public string Text { get; set; }
     }
 }
