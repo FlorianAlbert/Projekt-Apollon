@@ -35,6 +35,12 @@ namespace Apollon.Mud.Shared.Dungeon.Avatar
         /// <summary>
         /// ToDo
         /// </summary>
+        [JsonProperty("Name")]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
         [JsonProperty("Race")]
         public RaceDto Race { get; set; }
 
@@ -50,23 +56,12 @@ namespace Apollon.Mud.Shared.Dungeon.Avatar
         [JsonProperty("Gender")]
         public int Gender { get; set; }
 
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        [JsonProperty("Dungeon")]
-        public DungeonDto Dungeon { get; set; }
-
+        /** ToDo besprechen der Read-Properties
         /// <summary>
         /// ToDo
         /// </summary>
         [JsonProperty("MaxHealth")]
         public int MaxHealth { get; set; }
-
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        [JsonProperty("CurrentHealth")]
-        public int CurrentHealth { get; set; }
 
         /// <summary>
         /// ToDo
@@ -79,6 +74,13 @@ namespace Apollon.Mud.Shared.Dungeon.Avatar
         /// </summary>
         [JsonProperty("Protection")]
         public int Protection { get; set; }
+        */
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("CurrentHealth")]
+        public int CurrentHealth { get; set; }
 
         /// <summary>
         /// ToDo
@@ -98,10 +100,5 @@ namespace Apollon.Mud.Shared.Dungeon.Avatar
         [JsonProperty("CurrentRoom")]
         public RoomDto CurrentRoom { get; set; }
 
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        [JsonProperty("Owner")]
-        public DungeonUserDto Owner { get; set; }
     }
 }
