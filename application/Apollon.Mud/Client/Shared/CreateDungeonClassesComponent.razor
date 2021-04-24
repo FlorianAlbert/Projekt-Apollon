@@ -1,0 +1,146 @@
+﻿@using Apollon.Mud.Client.Data.Models
+@using Apollon.Mud.Shared.Dungeon.Class
+
+<div class="card">
+    <div class="card-header">
+        <h2>Klassen</h2>
+    </div>
+    <div class="card-body">
+
+        <EditForm EditContext="@classContext" OnSubmit="@HandleClassSubmit" novalidate>
+            <DataAnnotationsValidator />
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Klassenauswahl</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <select class="form-select" aria-label="Default select example" style="width:25rem">
+                            @if (!(dungeonClasses is null))
+                            {
+                                @foreach (ClassDto dungeonClass in dungeonClasses)
+                                {
+                                    <option selected value="@dungeonClass.Name">@dungeonClass.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            @*<div class="text-danger">
+                    <ValidationMessage For=@(() => dungeonClassModel.Name) />
+                </div>*@
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Name</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" style="width:25rem" placeholder="Name" id="Name" @bind-Value="dungeonClassModel.Name" />
+                        </div>
+                    </div>
+                </div>
+                @*<div class="text-danger">
+                        <ValidationMessage For=@(() => dungeonClassModel.Name) />
+                    </div>*@
+            </div>
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Beschreibung</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <InputTextArea class="form-control" style="width:25rem" placeholder="Beschreibung" @bind-Value="dungeonClassModel.Description" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<div class="text-danger">
+                    <ValidationMessage For=@(() => dungeonClassModel.Description) />
+                </div>*@
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Lebenspunkte</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" style="width:25rem" placeholder="Lebenspunkte" type="number" @bind-Value="dungeonClassModel.Health" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<div class="text-danger">
+                    <ValidationMessage For=@(() => dungeonClassModel.Health) />
+                </div>*@
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Schaden</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" style="width:25rem" placeholder="Schaden" type="number" @bind-Value="dungeonClassModel.Damage" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<div class="text-danger">
+                    <ValidationMessage For=@(() => dungeonClassModel.Damage) />
+                </div>*@
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Verteidigung</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" style="width:25rem" placeholder="Verteidigung" type="number" @bind-Value="dungeonClassModel.Protection" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<div class="text-danger">
+                    <ValidationMessage For=@(() => dungeonClassModel.Protection) />
+                </div>*@
+
+        </EditForm>
+    </div>
+</div>
+
+@code {
+
+    DungeonClassModel dungeonClassModel = new DungeonClassModel();
+
+    EditContext classContext;
+
+    List<ClassDto> dungeonClasses = new List<ClassDto>();
+
+    protected override void OnInitialized()
+    {
+        classContext = new EditContext(dungeonClassModel);
+
+        ClassDto testClass = new ClassDto();
+        testClass.DefaultDamage = 10;
+        testClass.DefaultHealth = 10;
+        testClass.DefaultProtection = 10;
+        testClass.Description = "KLa";
+        testClass.Name = "Leon";
+
+        dungeonClasses.Add(testClass);
+    }
+
+    private void HandleClassSubmit()
+    {
+        //TODO
+    }
+
+}

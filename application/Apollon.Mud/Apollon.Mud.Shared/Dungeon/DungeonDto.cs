@@ -25,12 +25,6 @@ namespace Apollon.Mud
         /// <summary>
         /// ToDo
         /// </summary>
-        [JsonProperty("DungeonName")]
-        public string DungeonName { get; set; }
-
-        /// <summary>
-        /// ToDo
-        /// </summary>
         [JsonProperty("DungeonDescription")]
         public string DungeonDescription { get; set; }
 

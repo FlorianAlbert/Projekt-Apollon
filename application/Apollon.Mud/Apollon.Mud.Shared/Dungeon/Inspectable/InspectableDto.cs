@@ -7,7 +7,10 @@ using Newtonsoft.Json;
 
 namespace Apollon.Mud.Shared.Dungeon.Inspectable
 {
-    class InspectableDto
+    /// <summary>
+    /// Class which represents the data representation of IInspectable.
+    /// </summary>
+    public class InspectableDto
     {
         /// <summary>
         /// The id of the InspectableDto.
