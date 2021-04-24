@@ -25,6 +25,12 @@ namespace Apollon.Mud
         /// <summary>
         /// ToDo
         /// </summary>
+        [JsonProperty("DungeonName")]
+        public string DungeonName { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
         [JsonProperty("DungeonDescription")]
         public string DungeonDescription { get; set; }
 
@@ -41,16 +47,28 @@ namespace Apollon.Mud
         public RoomDto DefaultRoom { get; set; }
 
         /// <summary>
-        /// ToDo passt es wenn es int ist?
+        /// ToDo 
         /// </summary>
-        [JsonProperty("DefaultRoom")]
+        [JsonProperty("Visibility")]
         public int Visibility { get; set; }
 
         /// <summary>
         /// ToDo
         /// </summary>
+        [JsonProperty("Id")]
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("Status")]
+        public int Status { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
         [JsonProperty("DungeonMasters")]
-        public List<DungeonUserDto> DungeonMasters { get; set; }
+        public ICollection<DungeonUserDto> DungeonMasters { get; set; }
 
         /// <summary>
         /// ToDo
@@ -68,18 +86,19 @@ namespace Apollon.Mud
         /// ToDo
         /// </summary>
         [JsonProperty("WhiteList")]
-        public List<DungeonUserDto> WhiteList { get; set; }
+        public ICollection<DungeonUserDto> WhiteList { get; set; }
 
         /// <summary>
         /// ToDo
         /// </summary>
         [JsonProperty("BlackList")]
-        public List<DungeonUserDto> BlackList { get; set; }
+        public ICollection<DungeonUserDto> BlackList { get; set; }
 
         /// <summary>
         /// ToDo
         /// </summary>
         [JsonProperty("OpenRequests")]
-        public List<DungeonUserDto> OpenRequests { get; set; }
+        public ICollection<DungeonUserDto> OpenRequests { get; set; }
+
     }
 }

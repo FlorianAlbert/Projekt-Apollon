@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Shared.Dungeon.User
 {
+    /// <summary>
+    /// ToDo
+    /// </summary>
     public class DungeonUserDto
     {
     }
