@@ -13,6 +13,8 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon
     public interface IDungeon : IApprovable
     {
         #region Properties
+        string DungeonName { get; set; }
+
         string DungeonEpoch { get; set; }
 
         string DungeonDescription { get; set; }

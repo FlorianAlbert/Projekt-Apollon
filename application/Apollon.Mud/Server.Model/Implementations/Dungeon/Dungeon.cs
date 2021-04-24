@@ -117,6 +117,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon
         public Guid Id { get; }
 
         public Status Status { get; set; }
+        public string DungeonName { get; set; }
 
         /** TODO: In PlayerService zu verlagern
         public bool AddNeighborship(IRoom roomSource, Direction direction, IRoom roomSink)
