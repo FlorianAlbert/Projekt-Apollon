@@ -16,15 +16,17 @@
                         <h5 class="mt-1">Klassenauswahl</h5>
                     </div>
                     <div class="col-md-auto">
-                        <select class="form-select" aria-label="Default select example" style="width:25rem">
-                            @if (!(dungeonClasses is null))
-                            {
-                                @foreach (ClassDto dungeonClass in dungeonClasses)
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" aria-label="Default select example" style="width:25rem">
+                                @if (!(dungeonClasses is null))
                                 {
-                                    <option selected value="@dungeonClass.Name">@dungeonClass.Name</option>
+                                    @foreach (ClassDto dungeonClass in dungeonClasses)
+                                    {
+                                        <option selected value="@dungeonClass.Name">@dungeonClass.Name</option>
+                                    }
                                 }
-                            }
-                        </select>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
