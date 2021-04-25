@@ -8,6 +8,7 @@ import StatusberichtKW12 from '../../../documents/Privat/Apollon_Statusbericht_K
 import StatusberichtKW13 from '../../../documents/Privat/Apollon_Statusbericht_KW13.pdf';
 import StatusberichtKW14 from '../../../documents/Privat/Apollon_Statusbericht_KW14.pdf';
 import StatusberichtKW15 from '../../../documents/Privat/Apollon_Statusbericht_KW15.pdf';
+import StatusberichtKW16 from '../../../documents/Privat/Apollon_Statusbericht_KW16.pdf';
 
 const Privat = () => {
     const { isAuthenticated } = useAuth0();
@@ -26,7 +27,8 @@ const Privat = () => {
                             <li><a href={StatusberichtKW12} >Statusbericht_KW12.pdf</a></li>
                             <li><a href={StatusberichtKW13} >Statusbericht_KW13.pdf</a></li>
                             <li><a href={StatusberichtKW14} >Statusbericht_KW14.pdf</a></li>
-                            <li><a href={StatusberichtKW15} >Statusbericht_KW15.pdf</a> <span class="badge badge-dark" style={{background: "#31574B"}}>Neu</span></li>
+                            <li><a href={StatusberichtKW15} >Statusbericht_KW15.pdf</a></li>
+                            <li><a href={StatusberichtKW16} >Statusbericht_KW16.pdf</a> <span class="badge badge-dark" style={{background: "#31574B"}}>Neu</span></li>
                         </ul>
                     </div>
                 </div>      
