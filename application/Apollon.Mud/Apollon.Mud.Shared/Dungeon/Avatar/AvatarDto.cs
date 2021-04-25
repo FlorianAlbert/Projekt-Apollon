@@ -56,26 +56,6 @@ namespace Apollon.Mud.Shared.Dungeon.Avatar
         [JsonProperty("Gender")]
         public int Gender { get; set; }
 
-        /** ToDo besprechen der Read-Properties
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        [JsonProperty("MaxHealth")]
-        public int MaxHealth { get; set; }
-
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        [JsonProperty("Damage")]
-        public int Damage { get; set; }
-
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        [JsonProperty("Protection")]
-        public int Protection { get; set; }
-        */
-
         /// <summary>
         /// ToDo
         /// </summary>

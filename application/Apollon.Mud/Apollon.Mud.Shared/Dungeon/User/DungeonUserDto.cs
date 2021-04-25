@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Apollon.Mud.Shared.Dungeon.User
 {
     /// <summary>
-    /// ToDo ausreichend?!
+    /// ToDo
     /// </summary>
     public class DungeonUserDto
     {
@@ -23,12 +23,6 @@ namespace Apollon.Mud.Shared.Dungeon.User
         /// </summary>
         [JsonProperty("Email")]
         public string Email { get; set; }
-
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        [JsonProperty("PasswordHash")]
-        public string PasswordHash { get; set; }
 
         /// <summary>
         /// ToDo
