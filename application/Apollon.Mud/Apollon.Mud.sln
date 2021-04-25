@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Client", "Client\Apollon.Mud.Client.csproj", "{C7375472-2D8F-45E9-836A-6CAD48EC927D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Server", "Server\Apollon.Mud.Server.csproj", "{1466C2EC-016C-4A34-ADA1-8B24CD7B5306}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C7375472-2D8F-45E9-836A-6CAD48EC927D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7375472-2D8F-45E9-836A-6CAD48EC927D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7375472-2D8F-45E9-836A-6CAD48EC927D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7375472-2D8F-45E9-836A-6CAD48EC927D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1466C2EC-016C-4A34-ADA1-8B24CD7B5306}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1466C2EC-016C-4A34-ADA1-8B24CD7B5306}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1466C2EC-016C-4A34-ADA1-8B24CD7B5306}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1466C2EC-016C-4A34-ADA1-8B24CD7B5306}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5EB142CE-46BB-48F3-9FEF-9527EADCC833}
+	EndGlobalSection
+EndGlobal
