@@ -1,5 +1,6 @@
 ﻿@using Apollon.Mud.Client.Data.Models
 @using Apollon.Mud.Shared.Dungeon.Class
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable
 
 <div class="card">
     <div class="card-header">
@@ -10,31 +11,32 @@
         <EditForm EditContext="@classContext" OnSubmit="@HandleClassSubmit" novalidate>
             <DataAnnotationsValidator />
 
-            <div class="form-group mt-5">
+            <div class="form-group">
                 <div class="row">
                     <div class="col-md-3">
                         <h5 class="mt-1">Klassenauswahl</h5>
                     </div>
                     <div class="col-md-auto">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" style="width:25rem">
+                            <select class="form-select" aria-label="Default select example" style="width:21rem">
                                 @if (!(dungeonClasses is null))
                                 {
+                                    <option value="NoClass"></option>
                                     @foreach (ClassDto dungeonClass in dungeonClasses)
                                     {
-                                        <option selected value="@dungeonClass.Name">@dungeonClass.Name</option>
+                                        <option value="@dungeonClass.Name">@dungeonClass.Name</option>
                                     }
                                 }
                             </select>
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button"><TooltipComponent Text="Neue Klasse erstellen"><strong>+</strong></TooltipComponent></button>
                         </div>
                     </div>
                 </div>
             </div>
-            @*<div class="text-danger">
-                    <ValidationMessage For=@(() => dungeonClassModel.Name) />
-                </div>*@
 
-            <div class="form-group mt-5">
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-2">
                 <div class="row">
                     <div class="col-md-3">
                         <h5 class="mt-1">Name</h5>
@@ -43,11 +45,11 @@
                         <div class="d-flex justify-content-center">
                             <InputText class="form-control" style="width:25rem" placeholder="Name" id="Name" @bind-Value="dungeonClassModel.Name" />
                         </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonClassModel.Name) />
+                        </div>
                     </div>
                 </div>
-                @*<div class="text-danger">
-                        <ValidationMessage For=@(() => dungeonClassModel.Name) />
-                    </div>*@
             </div>
 
             <div class="form-group mt-5">
@@ -59,12 +61,12 @@
                         <div class="d-flex justify-content-center">
                             <InputTextArea class="form-control" style="width:25rem" placeholder="Beschreibung" @bind-Value="dungeonClassModel.Description" />
                         </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonClassModel.Description) />
+                        </div>
                     </div>
                 </div>
             </div>
-            @*<div class="text-danger">
-                    <ValidationMessage For=@(() => dungeonClassModel.Description) />
-                </div>*@
 
             <div class="form-group mt-5">
                 <div class="row">
@@ -73,14 +75,14 @@
                     </div>
                     <div class="col-md-auto">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Lebenspunkte" type="number" @bind-Value="dungeonClassModel.Health" />
+                            <InputText class="form-control" style="width:25rem" placeholder="Lebenspunkte" type="number<Int64>" @bind-Value="dungeonClassModel.Health" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonClassModel.Health) />
                         </div>
                     </div>
                 </div>
             </div>
-            @*<div class="text-danger">
-                    <ValidationMessage For=@(() => dungeonClassModel.Health) />
-                </div>*@
 
             <div class="form-group mt-5">
                 <div class="row">
@@ -91,12 +93,12 @@
                         <div class="d-flex justify-content-center">
                             <InputText class="form-control" style="width:25rem" placeholder="Schaden" type="number" @bind-Value="dungeonClassModel.Damage" />
                         </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonClassModel.Damage) />
+                        </div>
                     </div>
                 </div>
             </div>
-            @*<div class="text-danger">
-                    <ValidationMessage For=@(() => dungeonClassModel.Damage) />
-                </div>*@
 
             <div class="form-group mt-5">
                 <div class="row">
@@ -107,25 +109,111 @@
                         <div class="d-flex justify-content-center">
                             <InputText class="form-control" style="width:25rem" placeholder="Verteidigung" type="number" @bind-Value="dungeonClassModel.Protection" />
                         </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonClassModel.Protection) />
+                        </div>
                     </div>
                 </div>
             </div>
-            @*<div class="text-danger">
-                    <ValidationMessage For=@(() => dungeonClassModel.Protection) />
-                </div>*@
 
+            @for (int i = 1; i < defaultItemCount; i++)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h5 class="mt-1">Startausrüstung</h5>
+                        </div>
+                        <div class="col-md-auto">
+                            <div class="d-flex justify-content-center">
+                                @if (i == defaultItemCount - 1)
+                                {
+                                    <select class="form-select" style="width:20rem">
+                                        <option selected value="NoItem"></option>
+                                        @foreach (TakeableDto takeable in dungeonTakeables)
+                                        {
+                                            <option value="@takeable.Name">@takeable.Name</option>
+                                        }
+                                    </select>
+
+                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="RemoveDefaultItemButtonClicked"><TooltipComponent Text="Startitem entfernen"><strong>-</strong></TooltipComponent></button>
+                                }
+                                else
+                                {
+                                    <select class="form-select" style="width:25rem">
+                                        <option selected value="NoItem"></option>
+                                        @foreach (TakeableDto takeable in dungeonTakeables)
+                                        {
+                                            <option value="@takeable.Name">@takeable.Name</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Startausrüstung</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" style="width:20rem">
+                                <option selected value="NoItem"></option>
+                                @foreach (TakeableDto takeable in dungeonTakeables)
+                                {
+                                    <option value="@takeable.Name">@takeable.Name</option>
+                                }
+                            </select>
+                            <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="AddDefaultItemButtonClicked"><TooltipComponent Text="Weiteres Startitem hinzufügen"><strong>+</strong></TooltipComponent></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-auto">
+                    <button class="btn btn-success mt-5" style="width:25rem" type="submit">Speichern</button>
+                </div>
+            </div>
         </EditForm>
+
     </div>
 </div>
 
 @code {
 
+    /// <summary>
+    /// TODO
+    /// </summary>
     DungeonClassModel dungeonClassModel = new DungeonClassModel();
 
+    /// <summary>
+    /// TODO
+    /// </summary>
     EditContext classContext;
 
+    /// <summary>
+    /// TODO
+    /// </summary>
     List<ClassDto> dungeonClasses = new List<ClassDto>();
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    int defaultItemCount = 1;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
     protected override void OnInitialized()
     {
         classContext = new EditContext(dungeonClassModel);
@@ -138,11 +226,48 @@
         testClass.Name = "Leon";
 
         dungeonClasses.Add(testClass);
+
+        for (int i = 0; i <= 3; i++)
+        {
+            TakeableDto exDto = new TakeableDto();
+            exDto.Name = "Dies ist ein test";
+            exDto.Description = "Diest ist nur ein Test!";
+            dungeonTakeables.Add(exDto);
+        }
     }
 
-    private void HandleClassSubmit()
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleClassSubmit()
     {
-        //TODO
+        var validClass = classContext.Validate();
+        if (validClass)
+        {
+            //TODO
+        }
+        else
+        {
+            //TODO
+        }
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private void AddDefaultItemButtonClicked()
+    {
+        if (defaultItemCount < 5)
+            defaultItemCount++;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private void RemoveDefaultItemButtonClicked()
+    {
+        if (defaultItemCount > 1)
+            defaultItemCount--;
+    }
 }

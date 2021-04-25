@@ -4,18 +4,18 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Apollon.Mud.Client.Data.Models
 {
-    class DungeonClassModel
+    class DungeonRaceModel
     {
         /// <summary>
         /// TODO 
         /// </summary>
-        [Required(ErrorMessage = "Du musst der Klasse einen Namen geben")]
+        [Required(ErrorMessage = "Du musst der Rasse einen Namen geben")]
         public string Name { get; set; }
 
         /// <summary>
         /// TODO
         /// </summary>
-        [Required(ErrorMessage = "Du musst eine Beschreibung der Klasse angeben")]
+        [Required(ErrorMessage = "Du musst eine Beschreibung der Rasse angeben")]
         public string Description { get; set; }
 
         /// <summary>
@@ -45,3 +45,4 @@ namespace Apollon.Mud.Client.Data.Models
         public List<string> startInventory { get; set; }
     }
 }
+
