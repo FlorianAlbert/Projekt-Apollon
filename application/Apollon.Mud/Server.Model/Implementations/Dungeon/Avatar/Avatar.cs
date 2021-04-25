@@ -43,10 +43,16 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
         {
             get => Race.DefaultHealth + Class.DefaultHealth;
         }
-        // TODO: Setter mit Berechnung der neuen HealthDifference anlegen
+        // TODO: Tests schreiben
         public int CurrentHealth 
         {
             get => MaxHealth - _HealthDifference;
+            set
+            {
+                if (value <= 0) _HealthDifference = MaxHealth;
+                else if (value >= MaxHealth) _HealthDifference = 0;
+                else _HealthDifference = MaxHealth - value;
+            }
         }
         public int Damage 
         {
@@ -82,7 +88,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
         public string Description 
         {
             get => $"{ Name } ist von der Rasse { Race.Name } vom Geschlecht { Gender.GetGermanGender() }.\n" +
-                $"Diese Rasse zeichnet sich durch folgende Beschreibung aus: \n" +
+                "Diese Rasse zeichnet sich durch folgende Beschreibung aus: \n" +
                 $"{ Race.Description } \n\n" +
                 $"Außerdem hat { Name } die Klasse { Class.Name }, welche sich durch folgende Beschreibung auszeichnet: \n" +
                 $"{ Class.Description }";

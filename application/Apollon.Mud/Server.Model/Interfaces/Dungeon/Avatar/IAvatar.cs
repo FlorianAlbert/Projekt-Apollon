@@ -22,7 +22,7 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar
 
         int MaxHealth { get; }
 
-        int CurrentHealth { get; }
+        int CurrentHealth { get; set; }
 
         int Damage { get; }
 

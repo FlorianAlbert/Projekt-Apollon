@@ -4,8 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
 {
@@ -14,12 +12,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
         // TODO: diskutieren ob Wert realistisch
         private const int _MaxWeight = 100;
 
-        private List<ITakeable> _Items;
+        private ICollection<ITakeable> _Items;
 
-        private List<ITakeable> Items
-        {
-            get => _Items ??= new List<ITakeable>();
-        }
+        private ICollection<ITakeable> Items => _Items ??= new List<ITakeable>();
+
+        public int WeightSum => Items.Sum(takeable => takeable.Weight);
 
         public int Count => Items.Count;
 
@@ -27,7 +24,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
 
         public void Add(ITakeable item)
         {
-            if (item != null && Items.Sum(takeable => takeable.Weight) + item.Weight <= _MaxWeight)
+            if (item != null && WeightSum + item.Weight <= _MaxWeight)
                 Items.Add(item);
         }
 
