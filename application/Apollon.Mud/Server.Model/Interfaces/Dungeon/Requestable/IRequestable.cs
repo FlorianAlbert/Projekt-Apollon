@@ -2,6 +2,8 @@
 {
     public interface IRequestable : IApprovable
     {
-        string Message { get; set; }
+        string MessageRegex { get; set; }
+
+        string PatternForPlayer { get; set; }
     }
 }

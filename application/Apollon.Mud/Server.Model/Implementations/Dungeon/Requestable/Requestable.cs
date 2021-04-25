@@ -5,18 +5,20 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Requestable
 {
     public class Requestable : IRequestable
     {
-        public Requestable(string message)
+        public Requestable(string messageRegex, string patternForPlayer)
         {
             Id = Guid.NewGuid();
 
-            message = Message;
+            MessageRegex = messageRegex;
+            PatternForPlayer = patternForPlayer;
 
             Status = Status.Pending;
         }
-        public string Message { get; set; }
 
         public Guid Id { get; }
 
         public Status Status { get; set; }
+        public string MessageRegex { get; set; }
+        public string PatternForPlayer { get; set; }
     }
 }

@@ -13,8 +13,8 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Room
         {
             Id = Guid.NewGuid();
 
-            description = Description;
-            name = Name;
+            Description = description;
+            Name = name;
 
             Status = Status.Pending;
         }
