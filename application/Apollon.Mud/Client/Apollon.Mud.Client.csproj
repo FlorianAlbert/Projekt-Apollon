@@ -9,7 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Apollon.Mud.Shared\Apollon.Mud.Shared.csproj" />
     <ProjectReference Include="..\Shared\Apollon.Mud.Shared.csproj" />
   </ItemGroup>
 
