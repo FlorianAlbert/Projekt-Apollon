@@ -22,7 +22,7 @@ namespace Apollon.Mud.Client.Data.Models
         /// TODO
         /// </summary>
         [Required(ErrorMessage = "Du musst einen Standard Lebenspunktewert angeben")]
-        [RegularExpression("[0-9]*", ErrorMessage = "Lebenspunkte können nur als Ganzzahl angegeben betragen")]
+        [RegularExpression("[0-9]*", ErrorMessage = "Lebenspunkte können nur als Ganzzahl angegeben werden")]
         public string Health { get; set; }
 
         /// <summary>
