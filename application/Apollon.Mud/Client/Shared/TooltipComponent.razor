@@ -1,0 +1,19 @@
+﻿
+<div class="tooltip-wrapper">
+    <span>@Text</span>
+    @ChildContent
+</div>
+
+@code {
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [Parameter] 
+        public RenderFragment ChildContent { get; set; }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [Parameter] 
+        public string Text { get; set; }
+}
