@@ -67,12 +67,6 @@ namespace Apollon.Mud
         /// <summary>
         /// ToDo
         /// </summary>
-        [JsonProperty("CurrentDungeonMaster")]
-        public DungeonUserDto CurrentDungeonMaster { get; set; }
-
-        /// <summary>
-        /// ToDo
-        /// </summary>
         [JsonProperty("DungeonOwner")]
         public DungeonUserDto DungeonOwner { get; set; }
 
