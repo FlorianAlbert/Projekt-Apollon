@@ -27,7 +27,13 @@ namespace Apollon.Mud.Shared.Dungeon.Requestable
         /// <summary>
         /// ToDo
         /// </summary>
-        [JsonProperty("Message")]
-        public string Message { get; set; }
+        [JsonProperty("MessageRegex")]
+        public string MessageRegex { get; set; }
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        [JsonProperty("PatternForPlayer")]
+        public string PatternForPlayer { get; set; }
     }
 }
