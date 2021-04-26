@@ -15,6 +15,7 @@ namespace Apollon.Mud.Shared.Dungeon
     /// </summary>
     public class DungeonDto
     {
+
         /// <summary>
         /// ToDo
         /// </summary>
