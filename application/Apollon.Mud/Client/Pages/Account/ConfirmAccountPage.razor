@@ -1,4 +1,4 @@
-﻿@page "/Identity/Account/ConfirmAccount/"
+﻿@page "/Identity/Account/ConfirmAccount/{id:guid}"
 
 @using Apollon.Mud.Client.Data.Models
 
@@ -69,15 +69,30 @@
 
 @code {
 
-    //[Parameter]
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
     public Guid Id { get; set; }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
     bool? succesfullConfirmation = false;
 
+    /// <summary>
+    /// TODO
+    /// </summary>
     private ForgotPasswordModel resendEmailModel = new ForgotPasswordModel();
 
+    /// <summary>
+    /// TODO
+    /// </summary>
     private EditContext resendEmailContext;
 
+    /// <summary>
+    /// TODO
+    /// </summary>
     protected override void OnInitialized()
     {
         resendEmailContext = new EditContext(resendEmailModel);
@@ -85,6 +100,10 @@
 
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
     private async Task HandleResendSubmit()
     {
         var validCredentials = resendEmailContext.Validate();
