@@ -5,14 +5,14 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    
+env:
+  SOLUTION_PATH: application/Apollon.Mud
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-    
-    env:
-      SOLUTION_PATH: application/Apollon.Mud
 
     steps:
     - uses: actions/checkout@v2
@@ -22,10 +22,10 @@ jobs:
         dotnet-version: 5.0.x
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: ${{SOLUTION_PATH}}
+      working-directory: ${{env.SOLUTION_PATH}}
     - name: Build
       run: dotnet build --no-restore
-      working-directory: ${{SOLUTION_PATH}}
+      working-directory: ${{env.SOLUTION_PATH}}
     - name: Test
       run: dotnet test --no-build --verbosity normal
-      working-directory: ${{SOLUTION_PATH}}
+      working-directory: ${{env.SOLUTION_PATH}}
