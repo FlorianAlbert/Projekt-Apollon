@@ -1,4 +1,6 @@
 using Apollon.Mud.Client.Data;
+using Apollon.Mud.Client.Services.Implementiations;
+using Apollon.Mud.Client.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +31,14 @@ namespace Apollon.Mud.Client
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+            services.AddHttpClient("RestHttpClient", httpClient =>
+            {
+                httpClient.BaseAddress = new Uri(string.Empty);
+
+            });
+            services.AddTransient<IAuthorizationService, AuthorizationService>();
+            //services.AddScoped<UserContext>()
+            //TODO Klasse UserContext mit Bool isLoggedIn und String Token
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
