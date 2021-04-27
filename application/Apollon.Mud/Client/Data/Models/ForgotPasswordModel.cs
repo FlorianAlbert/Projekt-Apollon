@@ -10,7 +10,7 @@ namespace Apollon.Mud.Client.Data.Models
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Bitte bestätige Deine E-Mail Adresse")]
-        [CompareProperty("Email", ErrorMessage = "Die E-Mail Adresse stimmen nicht überein")]
+        [CompareProperty("Email", ErrorMessage = "Die E-Mail Adressen stimmen nicht überein")]
         public string EmailVerification { get; set; }
     }
 }
