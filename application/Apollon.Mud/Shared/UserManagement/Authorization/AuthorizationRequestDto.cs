@@ -14,7 +14,7 @@ namespace Apollon.Mud.Shared.UserManagement.Authorization
         public string UserEmail { get; set; }
 
         /// <summary>
-        /// ToDo Hash statt Password versenden?! was braucht das Identity?
+        /// ToDo 
         /// </summary>
         [JsonProperty("Password")]
         public string Password { get; set; }

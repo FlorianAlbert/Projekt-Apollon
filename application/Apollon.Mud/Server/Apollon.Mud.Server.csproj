@@ -11,6 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Apollon.Mud.Server.Domain\Apollon.Mud.Server.Domain.csproj" />
+    <ProjectReference Include="..\Client\Apollon.Mud.Client.csproj" />
     <ProjectReference Include="..\Server.Model\Apollon.Mud.Server.Model.csproj" />
     <ProjectReference Include="..\Shared\Apollon.Mud.Shared.csproj" />
   </ItemGroup>
