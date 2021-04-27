@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Server", "Serve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Server.Model", "Server.Model\Apollon.Mud.Server.Model.csproj", "{71497482-0EC6-49DF-8200-EB03D71D49BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollon.Mud.Server.Model.Test", "Server.Model.Test\Apollon.Mud.Server.Model.Test.csproj", "{507BA289-6C1E-41DC-BBD7-10B767444898}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Server.Model.Test", "Server.Model.Test\Apollon.Mud.Server.Model.Test.csproj", "{507BA289-6C1E-41DC-BBD7-10B767444898}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Shared", "Shared\Apollon.Mud.Shared.csproj", "{F0D8D546-C7C5-4C5D-876D-4F119F199381}"
 EndProject

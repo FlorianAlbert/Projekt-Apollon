@@ -1,0 +1,141 @@
+﻿@using Apollon.Mud.Client.Data.Models
+@using Apollon.Mud.Shared.Dungeon.Npc
+<div class="card">
+    <div class="card-header">
+        <h2>NPCs</h2>
+    </div>
+    <div class="card-body">
+
+        <EditForm EditContext="@npcContext" OnSubmit="@HandleNpcSubmit" novalidate>
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">NPC Auswahl</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" aria-label="Default select example" style="width:21rem">
+                                <option value="NoNpc" selected></option>
+                                @if (!(dungeonNpcs is null))
+                                {
+                                    @foreach (NpcDto dungeonNpc in dungeonNpcs)
+                                    {
+                                        <option value="@dungeonNpc.Name">@dungeonNpc.Name</option>
+                                    }
+                                }
+                            </select>
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button"><TooltipComponent Text="Neue Klasse erstellen"><strong>+</strong></TooltipComponent></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-2">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Name</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" style="width:25rem" placeholder="Name" id="Name" @bind-Value="dungeonNpcModel.Name" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonNpcModel.Name) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Beschreibung</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <InputTextArea class="form-control" style="width:25rem" placeholder="Beschreibung" @bind-Value="dungeonNpcModel.Description" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonNpcModel.Description) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Text</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <InputTextArea class="form-control" style="width:25rem" placeholder="Text" @bind-Value="dungeonNpcModel.Text" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonNpcModel.Text) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-auto">
+                    <button class="btn btn-success mt-5" style="width:25rem" type="submit">Speichern</button>
+                </div>
+            </div>
+        </EditForm>
+
+    </div>
+</div>
+
+@code {
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    DungeonNpcModel dungeonNpcModel = new DungeonNpcModel();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    EditContext npcContext;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<NpcDto> dungeonNpcs = new List<NpcDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        npcContext = new EditContext(dungeonNpcModel);
+
+        NpcDto testNpc = new NpcDto();
+        testNpc.Description = "KLa";
+        testNpc.Name = "Leon";
+        testNpc.Text = "Test Text????";
+
+        dungeonNpcs.Add(testNpc);
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleNpcSubmit()
+    {
+        var validNpc = npcContext.Validate();
+        if (validNpc)
+        {
+            //TODO
+        }
+        else
+        {
+            //TODO
+        }
+    }
+}

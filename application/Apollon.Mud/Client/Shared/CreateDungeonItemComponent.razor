@@ -22,27 +22,28 @@
                     <div class="col-md-auto">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" aria-label="Default select example" style="width:21rem">
+                                <option value="Noitem" selected></option>
                                 @if (!(dungeonItems is null))
                                 {
                                     @foreach (InspectableDto dungeonInspectable in dungeonInspectables)
                                     {
-                                        <option selected value="@dungeonInspectable.Name + itemCategoryCounter">@dungeonInspectable.Name</option>
+                                        <option value="@dungeonInspectable.Name + itemCategoryCounter">@dungeonInspectable.Name</option>
                                     }
                                     @foreach (TakeableDto dungeonTakeable in dungeonTakeables)
                                     {
-                                        <option selected value="@dungeonTakeable.Name + itemCategoryCounter">@dungeonTakeable.Name</option>
+                                        <option value="@dungeonTakeable.Name + itemCategoryCounter">@dungeonTakeable.Name</option>
                                     }
                                     @foreach (ConsumableDto dungeonConsumable in dungeonConsumables)
                                     {
-                                        <option selected value="@dungeonConsumable.Name + itemCategoryCounter">@dungeonConsumable.Name</option>
+                                        <option value="@dungeonConsumable.Name + itemCategoryCounter">@dungeonConsumable.Name</option>
                                     }
                                     @foreach (UsableDto dungeonUsable in dungeonUsables)
                                     {
-                                        <option selected value="@dungeonUsable.Name + itemCategoryCounter">@dungeonUsable.Name</option>
+                                        <option value="@dungeonUsable.Name + itemCategoryCounter">@dungeonUsable.Name</option>
                                     }
                                     @foreach (WearableDto dungeonWearable in dungeonWearables)
                                     {
-                                        <option selected value="@dungeonWearable.Name + itemCategoryCounter">@dungeonWearable.Name</option>
+                                        <option value="@dungeonWearable.Name + itemCategoryCounter">@dungeonWearable.Name</option>
                                     }
                                 }
                             </select>

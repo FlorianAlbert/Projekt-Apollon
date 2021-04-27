@@ -18,11 +18,12 @@
                     <div class="col-md-auto">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" aria-label="Default select example" style="width:21rem">
+                                <option value="NoRace" selected></option>
                                 @if (!(dungeonRaces is null))
                                 {
                                     @foreach (RaceDto dungeonRace in dungeonRaces)
                                     {
-                                        <option selected value="@dungeonRace.Name">@dungeonRace.Name</option>
+                                        <option value="@dungeonRace.Name">@dungeonRace.Name</option>
                                     }
                                 }
                             </select>

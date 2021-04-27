@@ -21,7 +21,7 @@
                             <select class="form-select" aria-label="Default select example" style="width:21rem">
                                 @if (!(dungeonClasses is null))
                                 {
-                                    <option value="NoClass"></option>
+                                    <option value="NoClass" selected></option>
                                     @foreach (ClassDto dungeonClass in dungeonClasses)
                                     {
                                         <option value="@dungeonClass.Name">@dungeonClass.Name</option>
