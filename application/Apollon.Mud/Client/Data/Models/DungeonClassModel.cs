@@ -38,10 +38,5 @@ namespace Apollon.Mud.Client.Data.Models
         [Required(ErrorMessage = "Du musst einen Standard Verteidigungswert angeben")]
         [RegularExpression("[0-9]*", ErrorMessage = "Die Verteidigung kann nur eine Ganzzahl sein")]
         public string Protection { get; set; }
-
-        /// <summary>
-        /// TODO Template ändern
-        /// </summary>
-        public List<string> startInventory { get; set; }
     }
 }
