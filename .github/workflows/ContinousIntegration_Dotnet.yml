@@ -1,4 +1,4 @@
-name: .NET
+name: .NET Continous Integration PR
 
 on:
   pull_request:
