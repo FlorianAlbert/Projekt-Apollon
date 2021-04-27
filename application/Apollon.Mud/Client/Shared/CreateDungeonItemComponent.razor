@@ -1,0 +1,282 @@
+﻿@using Apollon.Mud.Client.Data.Models
+@using Apollon.Mud.Shared.Dungeon.Inspectable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
+
+<div class="card">
+    <div class="card-header">
+        <h2>Items</h2>
+    </div>
+    <div class="card-body">
+
+        <EditForm EditContext="@itemContext" OnSubmit="@HandleItemSubmit" novalidate>
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Itemauswahl</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" aria-label="Default select example" style="width:21rem">
+                                @if (!(dungeonItems is null))
+                                {
+                                    @foreach (InspectableDto dungeonInspectable in dungeonInspectables)
+                                    {
+                                        <option selected value="@dungeonInspectable.Name + itemCategoryCounter">@dungeonInspectable.Name</option>
+                                    }
+                                    @foreach (TakeableDto dungeonTakeable in dungeonTakeables)
+                                    {
+                                        <option selected value="@dungeonTakeable.Name + itemCategoryCounter">@dungeonTakeable.Name</option>
+                                    }
+                                    @foreach (ConsumableDto dungeonConsumable in dungeonConsumables)
+                                    {
+                                        <option selected value="@dungeonConsumable.Name + itemCategoryCounter">@dungeonConsumable.Name</option>
+                                    }
+                                    @foreach (UsableDto dungeonUsable in dungeonUsables)
+                                    {
+                                        <option selected value="@dungeonUsable.Name + itemCategoryCounter">@dungeonUsable.Name</option>
+                                    }
+                                    @foreach (WearableDto dungeonWearable in dungeonWearables)
+                                    {
+                                        <option selected value="@dungeonWearable.Name + itemCategoryCounter">@dungeonWearable.Name</option>
+                                    }
+                                }
+                            </select>
+
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button"><TooltipComponent Text="Neue Rasse erstellen"><strong>+</strong></TooltipComponent></button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="featurette-divider" />
+
+
+            <div class="form-group mt-2">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Kategorie</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" aria-label="Default select example" style="width:25rem" @bind="chosenItemCategory">
+                                <option selected value="Inspectable">Inspectable</option>
+                                <option selected value="Takeable">Takeable</option>
+                                <option selected value="Consumable">Consumable</option>
+                                <option selected value="Usable">Usable</option>
+                                <option selected value="Wearable">Wearable</option>
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Name</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" style="width:25rem" placeholder="Name" id="Name" @bind-Value="dungeonItemModel.Name" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonItemModel.Name) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Beschreibung</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <InputTextArea class="form-control" style="width:25rem" placeholder="Beschreibung" @bind-Value="dungeonItemModel.Description" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonItemModel.Description) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (chosenItemCategory.Equals("Takeable") || chosenItemCategory.Equals("Usable") || chosenItemCategory.Equals("Wearable") || chosenItemCategory.Equals("Consumable"))
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h5 class="mt-1">Gewicht</h5>
+                        </div>
+                        <div class="col-md-auto">
+                            <div class="d-flex justify-content-center">
+                                <InputText class="form-control" style="width:25rem" placeholder="Gewicht" @bind-Value="dungeonItemModel.Weight" />
+                            </div>
+                            <div class="text-danger">
+                                <ValidationMessage For=@(() => dungeonItemModel.Weight) />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (chosenItemCategory.Equals("Consumable"))
+                {
+                    <div class="form-group mt-5">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h5 class="mt-1">Effekt</h5>
+                            </div>
+                            <div class="col-md-auto">
+                                <div class="d-flex justify-content-center">
+                                    <InputText class="form-control" style="width:25rem" placeholder="Effekt" @bind-Value="dungeonItemModel.EffectDescription" />
+                                </div>
+                                <div class="text-danger">
+                                    <ValidationMessage For=@(() => dungeonItemModel.EffectDescription) />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (chosenItemCategory.Equals("Usable"))
+                {
+                    <div class="form-group mt-5">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h5 class="mt-1">Schadensboost</h5>
+                            </div>
+                            <div class="col-md-auto">
+                                <div class="d-flex justify-content-center">
+                                    <InputText class="form-control" style="width:25rem" placeholder="Schadensboost" @bind-Value="dungeonItemModel.DamageBoost" />
+                                </div>
+                                <div class="text-danger">
+                                    <ValidationMessage For=@(() => dungeonItemModel.DamageBoost) />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (chosenItemCategory.Equals("Wearable"))
+                {
+                    <div class="form-group mt-5">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h5 class="mt-1">Verteidigungsboost</h5>
+                            </div>
+                            <div class="col-md-auto">
+                                <div class="d-flex justify-content-center">
+                                    <InputText class="form-control" style="width:25rem" placeholder="Verteidigungsboost" @bind-Value="dungeonItemModel.ProtectionBoost" />
+                                </div>
+                                <div class="text-danger">
+                                    <ValidationMessage For=@(() => dungeonItemModel.ProtectionBoost) />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-auto">
+                    <button class="btn btn-success mt-5" style="width:25rem" type="submit">Speichern</button>
+                </div>
+            </div>
+        </EditForm>
+
+    </div>
+</div>
+
+@code {
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    int itemCategoryCounter = 0;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    string chosenItemCategory = string.Empty;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    DungeonItemModel dungeonItemModel = new DungeonItemModel();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    EditContext itemContext;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<string> dungeonItems = new List<string>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<InspectableDto> dungeonInspectables = new List<InspectableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<UsableDto> dungeonUsables = new List<UsableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<WearableDto> dungeonWearables = new List<WearableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        itemContext = new EditContext(dungeonItemModel);
+
+        InspectableDto testItem = new InspectableDto();
+
+        testItem.Name = "TestItem";
+        testItem.Description = "Beschreibung";
+
+        dungeonInspectables.Add(testItem);
+        dungeonItems.Add(testItem.Name);
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleItemSubmit()
+    {
+        var validItem = itemContext.Validate();
+        if (validItem)
+        {
+            //TODO
+        }
+        else
+        {
+            //TODO
+        }
+    }
+}

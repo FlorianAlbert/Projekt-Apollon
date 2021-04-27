@@ -1,0 +1,35 @@
+﻿.tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+span {
+    visibility: hidden;
+    position: absolute;
+    min-width: 120px;
+    max-width: 200px;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -60px;
+    background-color: rgb(40 40 40 / 0.8);
+    color: #fff;
+    text-align: center;
+    font-size: 15px;
+    border-radius: 4px;
+}
+
+    span::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
+
+.tooltip-wrapper:hover span {
+    visibility: visible;
+}

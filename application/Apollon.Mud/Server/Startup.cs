@@ -1,16 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Apollon.Mud.Server.DbContext;
+using Apollon.Mud.Server.Model.Implementations.User;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Apollon.Mud.Server
 {
@@ -32,6 +29,13 @@ namespace Apollon.Mud.Server
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Apollon.Mud.Server", Version = "v1" });
             });
+
+            services.AddDbContext<DungeonDbContext>(options =>
+                options.UseSqlite(
+                    Configuration.GetConnectionString("DungeonDbConnection")));
+            services.AddIdentityCore<DungeonUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddSignInManager<SignInManager<DungeonUser>>()
+                .AddEntityFrameworkStores<DungeonDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
