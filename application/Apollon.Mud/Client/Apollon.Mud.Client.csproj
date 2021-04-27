@@ -13,4 +13,10 @@
     <ProjectReference Include="..\Shared\Apollon.Mud.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Apollon.Mud.Shared">
+      <HintPath>..\Shared\bin\Debug\net5.0\Apollon.Mud.Shared.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
