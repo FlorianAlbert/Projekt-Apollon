@@ -12,10 +12,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Server.Model\Apollon.Mud.Server.Model.csproj" />
+    <ProjectReference Include="..\Shared\Apollon.Mud.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="DbContext\" />
+    <Folder Include="Hubs\Interfaces\" />
+    <Folder Include="Hubs\Implementations\" />
   </ItemGroup>
 
 </Project>
