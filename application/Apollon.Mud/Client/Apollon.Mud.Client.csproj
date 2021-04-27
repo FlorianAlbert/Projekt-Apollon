@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>72928872-f6e4-4495-a221-8701c9131bcd</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +11,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Apollon.Mud.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Apollon.Mud.Shared">
+      <HintPath>..\Shared\bin\Debug\net5.0\Apollon.Mud.Shared.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
