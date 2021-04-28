@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.User;
 using Microsoft.AspNetCore.Identity;
@@ -24,14 +25,24 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             _userManager = userManager;
         }
 
-        public bool CreateUser(DungeonUser user)
+        public bool CreateUser(DungeonUser user, string password)
         {
-            throw new NotImplementedException();
+            //ToDo User wird ohne Passwort angelegt
+            if (_userManager.CreateAsync(user).Result.Succeeded)
+            {
+                if (_userManager.AddPasswordAsync(user, password).Result.Succeeded)
+                {
+                    return true;
+                }
+                _userManager.DeleteAsync(user);
+            }
+            return false;
         }
 
         public DungeonUser GetUser(Guid userId)
         {
-            throw new NotImplementedException();
+            //ToDo wie funktioniert es mit GetUserAsync?!
+            return _userManager.Users.FirstOrDefault(x => x.Id == userId.ToString());
         }
 
         public ICollection<DungeonUser> GetUsers()
@@ -48,7 +59,11 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
         public bool DeleteUser(Guid userId)
         {
-            throw new NotImplementedException();
+            //ToDo wie funktioniert es mit GetUserAsync?!
+            //Sollte das asynchron sein bzw. passt es auf Result zu warten?!
+            var user = _userManager.Users.FirstOrDefault(x => x.Id == userId.ToString());
+            if (user == null) return false;
+            return _userManager.DeleteAsync(user).Result.Succeeded;
         }
 
         public DungeonUser GetUserByEmail(string userEmail)

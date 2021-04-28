@@ -38,20 +38,27 @@ namespace Apollon.Mud.Server.Controllers
         [Route("/login")]
         [ProducesResponseType(typeof(AuthorizationResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Login([FromBody] AuthorizationRequestDto authorizationRequestDto)
         {
             var loginResult = _authorizationService.Login(authorizationRequestDto.UserEmail, authorizationRequestDto.Password);
 
-            return Ok(new AuthorizationResponseDto
+            if (loginResult.Status == LoginResultStatus.Unauthorized) return Unauthorized();
+            else if (loginResult.Status == LoginResultStatus.OK)
             {
-                Token = loginResult.Token,
-                DungeonUserDto = new DungeonUserDto
+                return Ok(new AuthorizationResponseDto
                 {
-                    Email = loginResult.User.Email,
-                    EmailConfirmed = loginResult.User.EmailConfirmed,
-                    LastActive = loginResult.User.LastActive
-                }
-            });
+                    Token = loginResult.Token,
+                    DungeonUserDto = new DungeonUserDto
+                    {
+                        Email = loginResult.User.Email,
+                        EmailConfirmed = loginResult.User.EmailConfirmed,
+                        LastActive = loginResult.User.LastActive
+                    }
+                });
+            }
+            else return BadRequest();
         }
     }
 }

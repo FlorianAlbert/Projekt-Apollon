@@ -14,7 +14,7 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        bool CreateUser(DungeonUser user);
+        bool CreateUser(DungeonUser user, string password); //ToDo in UML anpassen und absprechen
 
         /// <summary>
         /// ToDo

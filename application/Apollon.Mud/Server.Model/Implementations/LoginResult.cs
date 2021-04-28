@@ -17,5 +17,10 @@ namespace Apollon.Mud.Server.Model.Implementations
         /// </summary>
         public DungeonUser User { get; set; }
 
+        /// <summary>
+        /// ToDo in Modellierung eintragen
+        /// </summary>
+        public LoginResultStatus Status { get; set; }
+
     }
 }

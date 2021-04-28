@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.User;
@@ -9,17 +10,18 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
     /// <summary>
     /// ToDo
     /// </summary>
-    public class AuthorizationService: IAuthorizationService
+    public class AuthorizationService : IAuthorizationService
     {
-        //ToDo implement
         /// <summary>
         /// ToDo
         /// </summary>
         private IUserDBService _userDbService;
+
         /// <summary>
         /// ToDo
         /// </summary>
         private SignInManager<DungeonUser> _signInManager;
+
         /// <summary>
         /// ToDo
         /// </summary>
@@ -39,19 +41,29 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         public LoginResult Login(string email, string secret)
         {
             var user = _userDbService.GetUserByEmail(email);
-            var loginTask = _signInManager.CheckPasswordSignInAsync(user, secret, true);
-            if (loginTask.Result.Succeeded)
+            if (user == null) return new LoginResult
+            {
+                Status = LoginResultStatus.BadRequest
+            };
+
+            var task = _signInManager.CheckPasswordSignInAsync(user, secret, false);
+            if (task.Result.Succeeded)
             {
                 //ToDo generate Token
+                
                 var token = "";
                 return new LoginResult
                 {
                     User = user,
-                    Token = token
+                    Token = token,
+                    Status = LoginResultStatus.OK
                 };
             }
-            //ToDo was zurückgeben, wenn login fehlschlägt?!
-            return null;
+
+            return new LoginResult
+            {
+                Status = LoginResultStatus.Unauthorized
+            };
         }
     }
 }
