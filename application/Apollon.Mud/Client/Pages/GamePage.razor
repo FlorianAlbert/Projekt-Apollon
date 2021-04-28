@@ -1,0 +1,130 @@
+﻿@page "/Game"
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
+@*@implements IAsyncDisposable*@
+
+@*<AuthorizeView>
+    <Authorized>*@
+<div class="container-fluid max-vh-100">
+    <div class="row text-end">
+        <div class="col-2" style="background:linear-gradient(90deg, rgba(33,37,41,0) 0%, rgba(255,255,255,1) 100%);" />
+        <div class="col-6 bg-white">
+            <div class="row mt-2">
+                <div class="col-8 text-end">
+                    <h5>Du möchtest mehr über MUDs und ihre Geshichte erfahren?</h5>
+                </div>
+                <div class="col-4 text-start">
+                    <button class="btn btn-primary">Zum Wiki</button>
+                </div>
+            </div>
+            <div class="row mb-2 mt-2">
+                <div class="col-8 text-end">
+                    <h5>Du suchst Tipps und Tricks fürs Spielen?</h5>
+                </div>
+                <div class="col-4 text-start">
+                    <button class="btn btn-primary">Zur Hilfe</button>
+                </div>
+            </div>
+        </div>
+        <div class="col" style="background: linear-gradient(90deg, rgba(255,255,255,1), rgba(33,37,41,0));"/>
+    </div>
+    <div class="play">
+        <div class="window">
+            <div class="row">
+                <div class="col">
+                    <div id="terminal" class="terminal mt-3 rounded" style="font-family: Monaco, monospace;">
+                        <span> </span>
+                        <span>Welcome to Apollon Dungeons</span>
+                        <span>   _____                .__  .__                           </span>
+                        <span>  /  _  \ ______   ____ |  | |  |   ____   ____            </span>
+                        <span> /  /_\  \\____ \ /  _ \|  | |  |  /  _ \ /    \           </span>
+                        <span>/    |    \  |_&gt; &gt;  &lt;_&gt; )  |_|  |_(  &lt;_&gt; )   |  \          </span>
+                        <span>\____|__  /   __/ \____/|____/____/\____/|___|  /          </span>
+                        <span>        \/|__|                                \/           </span>
+                        <span>________                                                   </span>
+                        <span>\______ \  __ __  ____    ____   ____  ____   ____   ______</span>
+                        <span> |    |  \|  |  \/    \  / ___\_/ __ \/  _ \ /    \ /  ___/</span>
+                        <span> |    `   \  |  /   |  \/ /_/  &gt;  ___(  &lt;_&gt; )   |  \\___ \ </span>
+                        <span>/_______  /____/|___|  /\___  / \___  &gt;____/|___|  /____  &gt;</span>
+                        <span>        \/           \//_____/      \/           \/     \/ </span>
+                        <span> </span>
+                        <span>> Bitte gib deinen Namen ein: </span><br />
+                        @foreach (var entry in entries)
+                        {
+                            <span> </span>
+                            <span>@entry</span><br />
+                            <span> </span><br />
+                        }
+                    </div>
+                    <div class="prompt d-flex">
+                        <input @bind="messageInput" @onkeyup="@Check4Enter" id="prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" autofocus />
+                        <button type="submit" id="send" class="btn btn-primary" @onclick="Send" disabled="@(!isConnected)">Send</button>
+                    </div>
+                </div>
+                <div class="col-3">
+                    @*<Chat />*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*</Authorized>
+        <NotAuthorized>
+            <div class="alert alert-danger" role="alert">
+                You need to be logged in to see this page.<a href="Identity/Account/Login" class="alert-link">Login</a>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>*@
+
+
+@code {
+    private Queue<string> entries = new Queue<string>();
+    private string messageInput;
+    bool isConnected = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //hubConnection = new HubConnectionBuilder()
+        //    .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/ConsoleHub"))
+        //    .Build();
+
+        //hubConnection.On<string>("ReceiveMessage", message =>
+        //{
+        //    var encodedMsg = $"> {message}\n";
+        //    entries.Enqueue(encodedMsg);
+        //    while (entries.Count > 20)
+        //    {
+        //        entries.Dequeue();
+        //    }
+        //    StateHasChanged();
+        //    JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
+        //});
+
+        //await hubConnection.StartAsync();
+        //hubConnection.SendAsync("EnterMockDungeonRequest");
+    }
+
+    public void Check4Enter(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            Send();
+        }
+    }
+
+    async Task Send()
+    {
+        //entries.Enqueue(messageInput + "\n");
+
+        //while (entries.Count > 20)
+        //{
+        //    entries.Dequeue();
+        //}
+
+        //StateHasChanged();
+        //hubConnection.SendAsync("SendMessage", messageInput);
+        //await JSRuntime.InvokeVoidAsync("clearPrompt", "prompt");
+        //await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
+    }
+}
