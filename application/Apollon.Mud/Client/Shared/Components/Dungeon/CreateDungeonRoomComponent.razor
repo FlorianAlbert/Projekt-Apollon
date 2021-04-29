@@ -17,12 +17,12 @@
 
             <div class="form-group">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Raumauswahl</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" style="width:21rem">
+                            <select class="form-select" aria-label="Default select example">
                                 @if (!(dungeonRooms is null))
                                 {
                                     <option value="NoRoom" selected></option>
@@ -42,12 +42,12 @@
 
             <div class="form-group mt-2">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Name</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Name" id="Name" @bind-Value="dungeonRoomModel.Name" />
+                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonRoomModel.Name" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRoomModel.Name) />
@@ -58,12 +58,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Beschreibung</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputTextArea class="form-control" style="width:25rem" placeholder="Beschreibung" @bind-Value="dungeonRoomModel.Description" />
+                            <InputTextArea class="form-control" placeholder="Beschreibung" @bind-Value="dungeonRoomModel.Description" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRoomModel.Description) />
@@ -78,14 +78,14 @@
             {
                 <div class="form-group mt-5">
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-3">
                             <h5 class="mt-1">Untersuchbares Item</h5>
                         </div>
-                        <div class="col-md-auto">
+                        <div class="col">
                             <div class="d-flex justify-content-center">
                                 @if (i == inspectableCount - 1)
                                 {
-                                    <select class="form-select" style="width:20rem">
+                                    <select class="form-select">
                                         <option selected value="NoInspectable"></option>
                                         @foreach (InspectableDto inspectable in dungeonInspectables)
                                         {
@@ -97,7 +97,7 @@
                                 }
                                 else
                                 {
-                                    <select class="form-select" style="width:25rem">
+                                    <select class="form-select">
                                         <option selected value="NoItem"></option>
                                         @foreach (InspectableDto inspectable in dungeonInspectables)
                                         {
@@ -112,12 +112,12 @@
             }
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Untersuchbares Item</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" style="width:20rem">
+                            <select class="form-select">
                                 <option selected value="NoItem"></option>
                                 @foreach (InspectableDto inspectable in dungeonInspectables)
                                 {
@@ -145,14 +145,14 @@
             {
                 <div class="form-group mt-5">
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-3">
                             <h5 class="mt-1">Aufnehmbares Item</h5>
                         </div>
-                        <div class="col-md-auto">
+                        <div class="col">
                             <div class="d-flex justify-content-center">
                                 @if (i == takeableCount - 1)
                                 {
-                                    <select class="form-select" style="width:20rem">
+                                    <select class="form-select">
                                         <option selected value="NoInspectable"></option>
                                         @foreach (TakeableDto takeable in dungeonTakeables)
                                         {
@@ -164,7 +164,7 @@
                                 }
                                 else
                                 {
-                                    <select class="form-select" style="width:25rem">
+                                    <select class="form-select">
                                         <option selected value="NoItem"></option>
                                         @foreach (TakeableDto takeable in dungeonTakeables)
                                         {
@@ -179,12 +179,12 @@
             }
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Aufnehmbares Item</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" style="width:20rem">
+                            <select class="form-select">
                                 <option selected value="NoItem"></option>
                                 @foreach (TakeableDto takeable in dungeonTakeables)
                                 {
@@ -212,14 +212,14 @@
             {
                 <div class="form-group mt-5">
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-3">
                             <h5 class="mt-1">Konsum Item</h5>
                         </div>
-                        <div class="col-md-auto">
+                        <div class="col">
                             <div class="d-flex justify-content-center">
                                 @if (i == consumableCount - 1)
                                 {
-                                    <select class="form-select" style="width:20rem">
+                                    <select class="form-select">
                                         <option selected value="NoInspectable"></option>
                                         @foreach (ConsumableDto consumable in dungeonConsumables)
                                         {
@@ -231,7 +231,7 @@
                                 }
                                 else
                                 {
-                                    <select class="form-select" style="width:25rem">
+                                    <select class="form-select">
                                         <option selected value="NoItem"></option>
                                         @foreach (ConsumableDto consumable in dungeonConsumables)
                                         {
@@ -246,12 +246,12 @@
             }
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Konsum Item</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" style="width:20rem">
+                            <select class="form-select">
                                 <option selected value="NoItem"></option>
                                 @foreach (ConsumableDto consumable in dungeonConsumables)
                                 {
@@ -279,14 +279,14 @@
             {
                 <div class="form-group mt-5">
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-3">
                             <h5 class="mt-1">Kleidungsstück</h5>
                         </div>
-                        <div class="col-md-auto">
+                        <div class="col">
                             <div class="d-flex justify-content-center">
                                 @if (i == wearableCount - 1)
                                 {
-                                    <select class="form-select" style="width:20rem">
+                                    <select class="form-select">
                                         <option selected value="NoInspectable"></option>
                                         @foreach (WearableDto wearable in dungeonWearables)
                                         {
@@ -298,7 +298,7 @@
                                 }
                                 else
                                 {
-                                    <select class="form-select" style="width:25rem">
+                                    <select class="form-select">
                                         <option selected value="NoItem"></option>
                                         @foreach (WearableDto wearable in dungeonWearables)
                                         {
@@ -313,12 +313,12 @@
             }
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Kleidungsstück</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" style="width:20rem">
+                            <select class="form-select">
                                 <option selected value="NoItem"></option>
                                 @foreach (WearableDto wearable in dungeonWearables)
                                 {
@@ -346,14 +346,14 @@
             {
                 <div class="form-group mt-5">
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-3">
                             <h5 class="mt-1">Waffe</h5>
                         </div>
-                        <div class="col-md-auto">
+                        <div class="col">
                             <div class="d-flex justify-content-center">
                                 @if (i == usableCount - 1)
                                 {
-                                    <select class="form-select" style="width:20rem">
+                                    <select class="form-select">
                                         <option selected value="NoInspectable"></option>
                                         @foreach (UsableDto usable in dungeonUsables)
                                         {
@@ -365,7 +365,7 @@
                                 }
                                 else
                                 {
-                                    <select class="form-select" style="width:25rem">
+                                    <select class="form-select">
                                         <option selected value="NoItem"></option>
                                         @foreach (UsableDto usable in dungeonUsables)
                                         {
@@ -380,12 +380,12 @@
             }
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Waffe</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" style="width:20rem">
+                            <select class="form-select">
                                 <option selected value="NoItem"></option>
                                 @foreach (UsableDto usable in dungeonUsables)
                                 {
@@ -424,8 +424,8 @@
                 </div>
                 <div class="row">
                     <div class="col"></div>
-                    <div class="col-md-auto">
-                        <select class="form-select" aria-label="Default select example" style="width:15rem" @bind="dungeonRoomModel.RoomNorth">
+                    <div class="col">
+                        <select class="form-select" aria-label="Default select example" @bind="dungeonRoomModel.RoomNorth">
                             @if (!(dungeonRooms is null))
                             {
                                 <option value="NoRoom" selected></option>
@@ -440,10 +440,10 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-auto">
+                <div class="col">
                     <h5 class="mt-1">Westen</h5>
                     <div class="d-flex justify-content-center">
-                        <select class="form-select" aria-label="Default select example" style="width:15rem" @bind="dungeonRoomModel.RoomNorth">
+                        <select class="form-select" aria-label="Default select example" @bind="dungeonRoomModel.RoomNorth">
                             @if (!(dungeonRooms is null))
                             {
                                 <option value="NoRoom" selected></option>
@@ -458,10 +458,10 @@
                 <div class="col"></div>
                 <div class="col">
                     <div class="d-flex justify-content-end">
-                        <h5 class="mt-1">Wosten</h5>
+                        <h5 class="mt-1">Osten</h5>
                     </div>
                     <div class="d-flex justify-content-end">
-                        <select class="form-select" aria-label="Default select example" style="width:15rem" @bind="dungeonRoomModel.RoomNorth">
+                        <select class="form-select" aria-label="Default select example" @bind="dungeonRoomModel.RoomNorth">
                             @if (!(dungeonRooms is null))
                             {
                                 <option value="NoRoom" selected></option>
@@ -478,8 +478,8 @@
 
             <div class="row mt-3">
                 <div class="col"></div>
-                <div class="col-md-auto">
-                    <select class="form-select" aria-label="Default select example" style="width:15rem" @bind="dungeonRoomModel.RoomNorth">
+                <div class="col">
+                    <select class="form-select" aria-label="Default select example" @bind="dungeonRoomModel.RoomNorth">
                         @if (!(dungeonRooms is null))
                         {
                             <option value="NoRoom" selected></option>
@@ -489,20 +489,13 @@
                             }
                         }
                     </select>
+                    <h5 class="mt-1 text-center">Süden</h5>
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-success mt-4 text-center" type="submit">Speichern</button>
+                    </div>
+                    
                 </div>
                 <div class="col"></div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12 d-flex justify-content-center">
-                    <h5 class="mt-1">Süden</h5>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-auto">
-                    <button class="btn btn-success mt-5" style="width:25rem" type="submit">Speichern</button>
-                </div>
             </div>
         </EditForm>
 

@@ -12,12 +12,12 @@
 
             <div class="form-group">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Rassenauswahl</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" style="width:21rem">
+                            <select class="form-select" aria-label="Default select example">
                                 <option value="NoRace" selected></option>
                                 @if (!(dungeonRaces is null))
                                 {
@@ -39,12 +39,12 @@
 
             <div class="form-group mt-2">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Name</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Name" id="Name" @bind-Value="dungeonRaceModel.Name" />
+                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonRaceModel.Name" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRaceModel.Name) />
@@ -55,12 +55,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Beschreibung</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputTextArea class="form-control" style="width:25rem" placeholder="Beschreibung" @bind-Value="dungeonRaceModel.Description" />
+                            <InputTextArea class="form-control" placeholder="Beschreibung" @bind-Value="dungeonRaceModel.Description" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRaceModel.Description) />
@@ -71,12 +71,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Lebenspunkte</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Lebenspunkte" type="number<Int64>" @bind-Value="dungeonRaceModel.Health" />
+                            <InputText class="form-control" placeholder="Lebenspunkte" type="number<Int64>" @bind-Value="dungeonRaceModel.Health" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRaceModel.Health) />
@@ -87,12 +87,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Schaden</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Schaden" type="number" @bind-Value="dungeonRaceModel.Damage" />
+                            <InputText class="form-control" placeholder="Schaden" type="number" @bind-Value="dungeonRaceModel.Damage" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRaceModel.Damage) />
@@ -103,12 +103,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Verteidigung</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Verteidigung" type="number" @bind-Value="dungeonRaceModel.Protection" />
+                            <InputText class="form-control" placeholder="Verteidigung" type="number" @bind-Value="dungeonRaceModel.Protection" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRaceModel.Protection) />
@@ -118,9 +118,9 @@
             </div>
 
             <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-auto">
-                    <button class="btn btn-success mt-5" style="width:25rem" type="submit">Speichern</button>
+                <div class="col-3"></div>
+                <div class="col">
+                    <button class="btn btn-success mt-5" type="submit">Speichern</button>
                 </div>
             </div>
         </EditForm>

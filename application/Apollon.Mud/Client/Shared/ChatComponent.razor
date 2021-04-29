@@ -1,9 +1,15 @@
 ﻿
-<div class="card ms-2 me-2" >
-    <div class="panel panel-primary">
-        <div class="panel-body" id="chat"  style="overflow:auto; overflow-y:scroll; height:79vh;">
+<div class="card ms-2 me-2 bg-secondary">
+    <select class="form-select" aria-label="MessageSelect">
+        <option selected>Nachricht an:</option>
+        <option value="1">Alle Spieler</option>
+        <option value="2">Spieler 1</option>
+        <option value="3">Spieler 2</option>
+    </select>
+    <div class="panel panel-primary bg-white mt-2">
+        <div class="panel-body mt-2" id="chat" style="overflow:auto; overflow-y:scroll; height:73.35vh;">
             <ul class="chat">
-                @for (int i = 0; i < 15; i++) 
+                @for (int i = 0; i < 15; i++)
                 {
                     <li class="left clearfix">
                         <div class="chat-body clearfix">

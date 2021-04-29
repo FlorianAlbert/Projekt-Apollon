@@ -1,13 +1,16 @@
 ﻿@page "/MasterView/Configuration"
+@using Apollon.Mud.Client.Shared
+@using Apollon.Mud.Client.Shared.Components.Dungeon
 @layout MasterViewLayout
+
 
 <div class="row">
     <div class="col-4">
         <SideBarComponent />
     </div>
-    <div class="col-8">
-        <div class="d-flex justify-content-start float-start">
-            <div class="container justify-content-start" style="width: 65rem;">
+    <div class="col-8" style="overflow:auto; overflow-y:scroll; max-height:88vh">
+        <div class="d-flex justify-content-start float-start" >
+            <div class="container justify-content-start">
                 <h1 class="display-2">Dungeon konfigurieren</h1>
                 <h4>Hier kannst du den Dungeon konfigurieren!</h4>
                 <hr class="featurette-divider" />
