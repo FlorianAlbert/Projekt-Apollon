@@ -79,10 +79,25 @@
 
 
 @code {
+    /// <summary>
+    /// This Queue stores all commands entered by the player that haven't been send yet
+    /// </summary>
     private Queue<string> entries = new Queue<string>();
+
+    /// <summary>
+    /// The string to bind the user input to
+    /// </summary>
     private string messageInput;
+
+    /// <summary>
+    /// The Bool to (de)active the send button depending on a working connection to the server
+    /// </summary>
     bool isConnected = true;
 
+    /// <summary>
+    /// On Initialization a hubConnection is set up and is configured to expect messages
+    /// </summary>
+    /// <returns> Nothing </returns>
     protected override async Task OnInitializedAsync()
     {
         //hubConnection = new HubConnectionBuilder()
@@ -105,6 +120,10 @@
         //hubConnection.SendAsync("EnterMockDungeonRequest");
     }
 
+    /// <summary>
+    /// This Method enables the user to send commands by pressing enter
+    /// </summary>
+    /// <param name="e"></param>
     public void Check4Enter(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
@@ -113,6 +132,10 @@
         }
     }
 
+    /// <summary>
+    /// The Method to send the users commands
+    /// </summary>
+    /// <returns></returns>
     async Task Send()
     {
         //entries.Enqueue(messageInput + "\n");

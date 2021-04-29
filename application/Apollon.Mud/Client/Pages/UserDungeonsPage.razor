@@ -60,8 +60,14 @@
 
 @code {
 
+    /// <summary>
+    /// This list contains all dungeons belonging to the user
+    /// </summary>
     private List<DungeonDto> userDungeons = new List<DungeonDto>();
 
+    /// <summary>
+    /// When initialized the Method requests all Dungeons belonging to user from the Server and saves them locally
+    /// </summary>
     protected override void OnInitialized()
     {
         DungeonDto quciktest = new DungeonDto();
@@ -70,6 +76,10 @@
         userDungeons.Add(quciktest);
     }
 
+    /// <summary>
+    /// When the "view" Button of a Dungeon-Card is clicked, this Method opens the corresponding dungeon page
+    /// </summary>
+    /// <param name="dungeon"> The dungeon the user wants to view </param>
     private void ViewDungeonButtonClicked(DungeonDto dungeon)
     {
         //TODO Anhand des Dungeon die entsprechenden Daten aus Backend holen und korrekte Seite aufrufen (Frage an Flo)
