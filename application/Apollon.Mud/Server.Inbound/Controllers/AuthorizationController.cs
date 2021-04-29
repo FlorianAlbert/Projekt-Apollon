@@ -1,10 +1,12 @@
 ﻿using System;
-using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+using System.Threading.Tasks;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Shared.Dungeon.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Apollon.Mud.Shared.UserManagement.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using IAuthorizationService = Apollon.Mud.Server.Domain.Interfaces.UserManagement.IAuthorizationService;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -40,12 +42,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Login([FromBody] AuthorizationRequestDto authorizationRequestDto)
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] AuthorizationRequestDto authorizationRequestDto)
         {
-            var loginResult = _authorizationService.Login(authorizationRequestDto.UserEmail, authorizationRequestDto.Password);
+            var loginResult = await _authorizationService.Login(authorizationRequestDto.UserEmail, authorizationRequestDto.Password);
 
             if (loginResult.Status == LoginResultStatus.Unauthorized) return Unauthorized();
-            else if (loginResult.Status == LoginResultStatus.OK)
+            if (loginResult.Status == LoginResultStatus.OK)
             {
                 return Ok(new AuthorizationResponseDto
                 {
@@ -58,7 +61,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     }
                 });
             }
-            else return BadRequest();
+            return BadRequest();
         }
     }
 }

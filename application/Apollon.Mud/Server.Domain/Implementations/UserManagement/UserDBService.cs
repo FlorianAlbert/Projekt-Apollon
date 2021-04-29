@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.User;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
@@ -14,6 +16,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
     public class UserDBService: IUserDBService
     {
         //ToDo implement und Tests
+        //ToDo Sollte das asynchron sein bzw. passt es auf Result zu warten?!
 
         /// <summary>
         /// ToDo
@@ -25,30 +28,20 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             _userManager = userManager;
         }
 
-        public bool CreateUser(DungeonUser user, string password)
+        public async Task<bool> CreateUser(DungeonUser user, string password)
         {
-            //ToDo User wird ohne Passwort angelegt
-            if (_userManager.CreateAsync(user).Result.Succeeded)
-            {
-                if (_userManager.AddPasswordAsync(user, password).Result.Succeeded)
-                {
-                    return true;
-                }
-                _userManager.DeleteAsync(user);
-            }
-            return false;
+            var identityResult = await _userManager.CreateAsync(user, password);
+            return identityResult.Succeeded;
         }
 
-        public DungeonUser GetUser(Guid userId)
+        public async Task<DungeonUser> GetUser(Guid userId)
         {
-            //ToDo wie funktioniert es mit GetUserAsync?!
-            return _userManager.Users.FirstOrDefault(x => x.Id == userId.ToString());
+            return await _userManager.FindByIdAsync(userId.ToString());
         }
 
-        public ICollection<DungeonUser> GetUsers()
+        public async Task<ICollection<DungeonUser>> GetUsers()
         {
-            //ToDo passt das so?!
-            return _userManager.Users.AsEnumerable() as ICollection<DungeonUser>;
+            return await _userManager.Users.ToListAsync();
         }
 
         public bool UpdateUser(DungeonUser user, string oldPassword, string newPassword)
@@ -60,7 +53,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         public bool DeleteUser(Guid userId)
         {
             //ToDo wie funktioniert es mit GetUserAsync?!
-            //Sollte das asynchron sein bzw. passt es auf Result zu warten?!
             var user = _userManager.Users.FirstOrDefault(x => x.Id == userId.ToString());
             if (user == null) return false;
             return _userManager.DeleteAsync(user).Result.Succeeded;

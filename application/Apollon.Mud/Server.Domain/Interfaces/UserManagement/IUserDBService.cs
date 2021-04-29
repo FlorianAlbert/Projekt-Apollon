@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Apollon.Mud.Server.Model.Implementations.User;
 
 namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
@@ -14,20 +15,20 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        bool CreateUser(DungeonUser user, string password); //ToDo in UML anpassen und absprechen
+        Task<bool> CreateUser(DungeonUser user, string password); //ToDo in UML anpassen und absprechen
 
         /// <summary>
         /// ToDo
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        DungeonUser GetUser(Guid userId);
+        Task<DungeonUser> GetUser(Guid userId);
 
         /// <summary>
         /// ToDo
         /// </summary>
         /// <returns></returns>
-        ICollection<DungeonUser> GetUsers();
+        Task<ICollection<DungeonUser>> GetUsers();
 
         /// <summary>
         /// ToDo

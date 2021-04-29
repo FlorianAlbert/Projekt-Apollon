@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.User;
@@ -38,7 +39,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             _signInManager = signInManager;
         }
 
-        public LoginResult Login(string email, string secret)
+        public async Task<LoginResult> Login(string email, string secret)
         {
             var user = _userDbService.GetUserByEmail(email);
             if (user == null) return new LoginResult
@@ -46,8 +47,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
                 Status = LoginResultStatus.BadRequest
             };
 
-            var task = _signInManager.CheckPasswordSignInAsync(user, secret, false);
-            if (task.Result.Succeeded)
+            var task = await _signInManager.CheckPasswordSignInAsync(user, secret, false);
+            if (task.Succeeded)
             {
                 //ToDo generate Token
                 
