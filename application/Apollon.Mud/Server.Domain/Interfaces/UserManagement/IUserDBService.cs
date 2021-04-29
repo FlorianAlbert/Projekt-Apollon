@@ -15,20 +15,20 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<bool> CreateUser(DungeonUser user, string password); //ToDo in UML anpassen und absprechen
+        Task<bool> CreateUser(DungeonUser user, string password, bool asAdmin); //ToDo in UML anpassen und absprechen
 
         /// <summary>
         /// ToDo
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<DungeonUser> GetUser(Guid userId);
+        Task<DungeonUser> GetUser(Guid userId); //ToDo in UML anpassen und absprechen
 
         /// <summary>
         /// ToDo
         /// </summary>
         /// <returns></returns>
-        Task<ICollection<DungeonUser>> GetUsers();
+        Task<ICollection<DungeonUser>> GetUsers(); //ToDo in UML anpassen und absprechen
 
         /// <summary>
         /// ToDo
@@ -36,20 +36,20 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// <param name="user"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        bool UpdateUser(DungeonUser user, string oldPassword, string newPassword); //ToDo in UML anpassen und absprechen
+        Task<bool> UpdateUser(DungeonUser user, string oldPassword, string newPassword); //ToDo in UML anpassen und absprechen
 
         /// <summary>
         /// ToDo
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        bool DeleteUser(Guid userId);
+        Task<bool> DeleteUser(Guid userId); //ToDo in UML anpassen und absprechen
 
         /// <summary>
         /// ToDO
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        DungeonUser GetUserByEmail(string userEmail);
+        Task<DungeonUser> GetUserByEmail(string userEmail); //ToDo in UML anpassen und absprechen
     }
 }
