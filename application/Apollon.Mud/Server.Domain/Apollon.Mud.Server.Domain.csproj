@@ -7,7 +7,6 @@
   <ItemGroup>
     <Folder Include="Implementations\Game\" />
     <Folder Include="Implementations\Chat\" />
-    <Folder Include="Implementations\UserManagement\" />
     <Folder Include="Implementations\Shared\" />
     <Folder Include="Interfaces\Game\" />
     <Folder Include="Interfaces\Chat\" />
@@ -19,11 +18,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Apollon.Mud.Server.Outbound\Apollon.Mud.Server.Outbound.csproj" />
-    <ProjectReference Include="..\Server.Model\Apollon.Mud.Server.Model.csproj" />
+	  <ProjectReference Include="..\Server.Model\Apollon.Mud.Server.Model.csproj" />
     <ProjectReference Include="..\Server.Outbound\Apollon.Mud.Server.Outbound.csproj" />
   </ItemGroup>
 

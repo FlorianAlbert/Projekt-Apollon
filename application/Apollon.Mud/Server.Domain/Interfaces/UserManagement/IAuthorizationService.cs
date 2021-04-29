@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Implementations.UserManagement;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.User;
@@ -16,6 +17,6 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        LoginResult Login(string email, string secret);
+        Task<LoginResult> Login(string email, string secret);
     }
 }

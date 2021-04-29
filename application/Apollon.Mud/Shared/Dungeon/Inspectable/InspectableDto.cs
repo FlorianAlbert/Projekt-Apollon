@@ -13,25 +13,25 @@ namespace Apollon.Mud.Shared.Dungeon.Inspectable
     public class InspectableDto
     {
         /// <summary>
-        /// The id of the InspectableDto.
+        /// The id of the inspectable.
         /// </summary>
         [JsonProperty("Id")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// The status of the InspectableDto.
+        /// The status which represents, if the inspectable is currently available in the dungeon.
         /// </summary>
         [JsonProperty("Status")]
         public int Status { get; set; }
 
         /// <summary>
-        /// The description of the InspectableDto.
+        /// The description of the inspectable.
         /// </summary>
         [JsonProperty("Description")]
         public string Description { get; set; }
 
         /// <summary>
-        /// The name of the InspectableDto.
+        /// The name of the inspectable.
         /// </summary>
         [JsonProperty("Name")]
         public string Name { get; set; }

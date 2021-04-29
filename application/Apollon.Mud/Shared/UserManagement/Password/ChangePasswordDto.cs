@@ -3,18 +3,18 @@
 namespace Apollon.Mud.Shared.UserManagement.Password
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents a request to change the password of an user.
     /// </summary>
     public class ChangePasswordDto
     {
         /// <summary>
-        /// ToDo
+        /// The old password of the user.
         /// </summary>
         [JsonProperty("OldPassword")]
         public string OldPassword { get; set; }
 
         /// <summary>
-        /// ToDo Hash statt Password versenden?! was braucht das Identity?
+        /// The new password which should be used.
         /// </summary>
         [JsonProperty("NewPassword")]
         public string NewPassword { get; set; }
