@@ -1,0 +1,36 @@
+﻿
+<div class="card ms-2 me-2" >
+    <div class="panel panel-primary ">
+        <div class="panel-body" id="chat" >
+            <ul class="chat">
+                @for (int i = 0; i < 15; i++) 
+                {
+                    <li class="left clearfix">
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong class="primary-font">from</strong>
+                                <small class="pull-right text-muted">
+                                    <span class="glyphicon glyphicon-time"></span>to:
+                                </small>
+                            </div>
+                            <p>
+                                message
+                            </p>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="chat mt-2 mb-2">
+            <div class="prompt d-flex">
+                <input id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
+                <button id="send" class="btn btn-primary ms-2">Senden</button>
+            </div>
+            <span> </span>
+        </div>
+    </div>
+</div>
+
+@code {
+
+}
