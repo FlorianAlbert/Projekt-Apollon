@@ -1,13 +1,13 @@
 ﻿
 <div class="card ms-2 me-2 bg-secondary">
-    <select class="form-select" aria-label="MessageSelect">
+    <select class="form-select" aria-label="MessageSelect" style="height:4vh">
         <option selected>Nachricht an:</option>
         <option value="1">Alle Spieler</option>
         <option value="2">Spieler 1</option>
         <option value="3">Spieler 2</option>
     </select>
     <div class="panel panel-primary bg-white mt-2">
-        <div class="panel-body mt-2" id="chat" style="overflow:auto; overflow-y:scroll; height:72vh;">
+        <div class="panel-body mt-2" id="chat" style="overflow:auto; overflow-y:scroll; height:74vh;">
             <ul class="chat">
                 @for (int i = 0; i < 15; i++)
                 {
@@ -27,7 +27,7 @@
                 }
             </ul>
         </div>
-        <div class="chat mt-2 mb-2">
+        <div class="chat mt-2 mb-2" style="height:6vh">
             <div class="prompt d-flex">
                 <input id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
                 <button id="send" class="btn btn-primary ms-2">Senden</button>
