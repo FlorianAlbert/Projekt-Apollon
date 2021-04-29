@@ -5,7 +5,7 @@ using Apollon.Mud.Server.Domain.Interfaces.Chat;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
-using Apollon.Mud.Server.Outbound.Hubs.Implementations;
+using Apollon.Mud.Server.Outbound.Hubs;
 using Apollon.Mud.Shared.HubContract;
 using Microsoft.AspNetCore.SignalR;
 

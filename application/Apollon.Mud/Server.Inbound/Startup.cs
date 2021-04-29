@@ -9,7 +9,7 @@ using Apollon.Mud.Server.Domain.Implementations.Chat;
 using Apollon.Mud.Server.Domain.Implementations.Shared;
 using Apollon.Mud.Server.Domain.Interfaces.Chat;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
-using Apollon.Mud.Server.Outbound.Hubs.Implementations;
+using Apollon.Mud.Server.Outbound.Hubs;
 using Apollon.Mud.Server.Model.Implementations.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
