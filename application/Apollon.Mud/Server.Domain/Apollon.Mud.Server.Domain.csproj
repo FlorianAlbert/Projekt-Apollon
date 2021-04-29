@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Apollon.Mud.Server.Outbound\Apollon.Mud.Server.Outbound.csproj" />
     <ProjectReference Include="..\Server.Model\Apollon.Mud.Server.Model.csproj" />
+    <ProjectReference Include="..\Server.Outbound\Apollon.Mud.Server.Outbound.csproj" />
   </ItemGroup>
 
 </Project>
