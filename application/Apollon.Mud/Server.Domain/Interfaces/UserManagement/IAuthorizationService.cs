@@ -1,5 +1,4 @@
 ﻿using System;
-using Apollon.Mud.Server.Domain.Implementations.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.User;
 using Microsoft.AspNetCore.Identity;
 

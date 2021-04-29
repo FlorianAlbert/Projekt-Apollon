@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Apollon.Mud.Server.DbContext;
+using Apollon.Mud.Server.Domain.Implementations.Shared;
+using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Hubs.Implementations;
 using Apollon.Mud.Server.Model.Implementations.User;
 using Microsoft.AspNetCore.Identity;
@@ -37,6 +39,8 @@ namespace Apollon.Mud.Server
             services.AddIdentityCore<DungeonUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddSignInManager<SignInManager<DungeonUser>>()
                 .AddEntityFrameworkStores<DungeonDbContext>();
+
+            services.AddSingleton<IConnectionService, ConnectionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
