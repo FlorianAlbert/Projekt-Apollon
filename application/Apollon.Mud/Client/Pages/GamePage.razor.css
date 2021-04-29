@@ -1,0 +1,29 @@
+﻿.play .terminal {
+    flex: 0 1 auto;
+    position: relative;
+    max-height: 80vh;
+    min-height: 80vh;
+    flex-grow: 1;
+    overflow-y: scroll;
+    background-color: #000;
+    color: #c3cbd5;
+    white-space: pre-wrap;
+}
+
+.terminal span {
+    float: left;
+    margin-left: 20px;
+    width: 100%;
+}
+
+.play .prompt {
+    display: flex;
+    flex-shrink: 0;
+    padding: 16px;
+    z-index: 10;
+    background-color: #fff;
+}
+
+    .play .prompt #send {
+        margin-left: 8px;
+    }

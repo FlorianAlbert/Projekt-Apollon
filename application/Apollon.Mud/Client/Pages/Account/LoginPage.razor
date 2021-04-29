@@ -51,15 +51,28 @@
 
 @code {
 
+    /// <summary>
+    /// The Model to validate the "Login" Form
+    /// </summary>
     private LoginModel loginModel = new LoginModel();
 
+    /// <summary>
+    /// The Context for the "Login" Form
+    /// </summary>
     private EditContext loginContext;
 
+    /// <summary>
+    /// When the component is initialized this Method instantiates the EditContext
+    /// </summary>
     protected override void OnInitialized()
     {
         loginContext = new EditContext(loginModel);
     }
 
+    /// <summary>
+    /// This Method, called when the user wants to log in, validates the form and reacts accordingly
+    /// </summary>
+    /// <returns>The Task that authorizes the user credentials</returns>
     private async Task HandleLoginSubmit()
     {
         var validLogin = loginContext.Validate();
