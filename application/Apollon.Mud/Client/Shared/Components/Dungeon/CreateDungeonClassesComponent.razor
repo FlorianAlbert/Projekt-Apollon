@@ -1,6 +1,7 @@
 ﻿@using Apollon.Mud.Client.Data.Models
 @using Apollon.Mud.Shared.Dungeon.Class
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable
+@using System.ComponentModel.DataAnnotations;
 
 <div class="card">
     <div class="card-header">
@@ -18,17 +19,17 @@
                     </div>
                     <div class="col-md-auto">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" style="width:21rem">
+                            <select class="form-select" aria-label="Default select example" style="width:21rem" @bind="chosenClass" @onclick="ClassSelectionChanged">
+                                <option value="NoClass" selected></option>
                                 @if (!(dungeonClasses is null))
                                 {
-                                    <option value="NoClass" selected></option>
                                     @foreach (ClassDto dungeonClass in dungeonClasses)
                                     {
                                         <option value="@dungeonClass.Name">@dungeonClass.Name</option>
                                     }
                                 }
                             </select>
-                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button"><TooltipComponent Text="Neue Klasse erstellen"><strong>+</strong></TooltipComponent></button>
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="NewClassButtonClicked"><TooltipComponent Text="Neue Klasse erstellen"><strong>+</strong></TooltipComponent></button>
                         </div>
                     </div>
                 </div>
@@ -43,11 +44,15 @@
                     </div>
                     <div class="col-md-auto">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Name" id="Name" @bind-Value="dungeonClassModel.Name" />
+                            <InputText class="form-control" style="width:25rem" placeholder="Name" id="Name" @bind-Value="dungeonClassModel.Name" @onfocusout="NameFieldLostFocus" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Name) />
                         </div>
+                        @if (uniqueClassNameMessage)
+                        {
+                            <div class="text-danger">Dieser Klassenname existiert bereits</div>
+                        }
                     </div>
                 </div>
             </div>
@@ -186,6 +191,8 @@
 
 @code {
 
+    #region validation Attributes
+
     /// <summary>
     /// TODO
     /// </summary>
@@ -195,6 +202,10 @@
     /// TODO
     /// </summary>
     EditContext classContext;
+
+    #endregion
+
+    #region Content Lists
 
     /// <summary>
     /// TODO
@@ -206,11 +217,29 @@
     /// </summary>
     List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
 
+    #endregion
+
+    #region Help variables
+
     /// <summary>
     /// TODO
     /// </summary>
     int defaultItemCount = 1;
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    bool uniqueClassNameMessage = false;
+
+    #endregion
+
+    #region Bound variables
+
+    private string chosenClass = "NoClass";
+
+    #endregion
+
+    #region Methods
     /// <summary>
     /// TODO
     /// </summary>
@@ -225,7 +254,15 @@
         testClass.Description = "KLa";
         testClass.Name = "Leon";
 
+        ClassDto testClass2 = new ClassDto();
+        testClass2.DefaultDamage = 5;
+        testClass2.DefaultHealth = 5;
+        testClass2.DefaultProtection = 5;
+        testClass2.Description = "Kdwadaa";
+        testClass2.Name = "Leon2";
+
         dungeonClasses.Add(testClass);
+        dungeonClasses.Add(testClass2);
 
         for (int i = 0; i <= 3; i++)
         {
@@ -245,7 +282,16 @@
         var validClass = classContext.Validate();
         if (validClass)
         {
-            //TODO
+            ClassDto submitClass = new ClassDto();
+            submitClass.Name = dungeonClassModel.Name;
+            submitClass.Description = dungeonClassModel.Description;
+            submitClass.DefaultHealth = int.Parse(dungeonClassModel.Health);
+            submitClass.DefaultDamage = int.Parse(dungeonClassModel.Damage);
+            submitClass.DefaultProtection = int.Parse(dungeonClassModel.Protection);
+            dungeonClasses.Add(submitClass);
+            uniqueClassNameMessage = false;
+            chosenClass = dungeonClassModel.Name;
+            //TODO Klasse ans Backend senden
         }
         else
         {
@@ -270,4 +316,62 @@
         if (defaultItemCount > 1)
             defaultItemCount--;
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="args"></param>
+    private void ClassSelectionChanged(System.EventArgs args)
+    {
+        if (chosenClass.Equals("NoClass"))
+        {
+            dungeonClassModel.Name = string.Empty;
+            dungeonClassModel.Description = string.Empty;
+            dungeonClassModel.Health = string.Empty;
+            dungeonClassModel.Protection = string.Empty;
+            dungeonClassModel.Damage = string.Empty;
+        }
+        else
+        {
+            var newClass = dungeonClasses.Find(i => i.Name.Equals(chosenClass));
+            dungeonClassModel.Name = chosenClass;
+            dungeonClassModel.Description = newClass.Description;
+            dungeonClassModel.Health = newClass.DefaultHealth.ToString();
+            dungeonClassModel.Protection = newClass.DefaultProtection.ToString();
+            dungeonClassModel.Damage = newClass.DefaultDamage.ToString();
+        }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="args"></param>
+    private void NameFieldLostFocus(FocusEventArgs args)
+    {
+        ClassDto checkClass = dungeonClasses.Find(i => i.Name.Equals(dungeonClassModel.Name));
+        if (checkClass is null)
+        {
+            return;
+        }
+        else
+        {
+            chosenClass = checkClass.Name;
+            dungeonClassModel.Description = checkClass.Description;
+            dungeonClassModel.Health = checkClass.DefaultHealth.ToString();
+            dungeonClassModel.Protection = checkClass.DefaultProtection.ToString();
+            dungeonClassModel.Damage = checkClass.DefaultDamage.ToString();
+        }
+    }
+
+    private void NewClassButtonClicked(System.EventArgs args)
+    {
+        chosenClass = "NoClass";
+        dungeonClassModel.Name = string.Empty;
+        dungeonClassModel.Description = string.Empty;
+        dungeonClassModel.Health = string.Empty;
+        dungeonClassModel.Protection = string.Empty;
+        dungeonClassModel.Damage = string.Empty;
+    }
+
+    #endregion
 }
