@@ -5,7 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Apollon.Mud.Server.Domain.DbContext;
+using Apollon.Mud.Server.Domain.Implementations.Chat;
 using Apollon.Mud.Server.Domain.Implementations.Shared;
+using Apollon.Mud.Server.Domain.Interfaces.Chat;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Outbound.Hubs.Implementations;
 using Apollon.Mud.Server.Model.Implementations.User;
@@ -41,6 +43,7 @@ namespace Apollon.Mud.Server.Inbound
                 .AddEntityFrameworkStores<DungeonDbContext>();
 
             services.AddSingleton<IConnectionService, ConnectionService>();
+            services.AddScoped<IChatService, ChatService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
