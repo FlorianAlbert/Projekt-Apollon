@@ -16,12 +16,12 @@
 
             <div class="form-group">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Itemauswahl</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" style="width:21rem">
+                            <select class="form-select" aria-label="Default select example">
                                 <option value="Noitem" selected></option>
                                 @if (!(dungeonItems is null))
                                 {
@@ -60,12 +60,12 @@
 
             <div class="form-group mt-2">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Kategorie</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" style="width:25rem" @bind="chosenItemCategory">
+                            <select class="form-select" aria-label="Default select example" @bind="chosenItemCategory">
                                 <option selected value="Inspectable">Inspectable</option>
                                 <option selected value="Takeable">Takeable</option>
                                 <option selected value="Consumable">Consumable</option>
@@ -80,12 +80,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Name</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Name" id="Name" @bind-Value="dungeonItemModel.Name" />
+                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonItemModel.Name" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonItemModel.Name) />
@@ -96,12 +96,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Beschreibung</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputTextArea class="form-control" style="width:25rem" placeholder="Beschreibung" @bind-Value="dungeonItemModel.Description" />
+                            <InputTextArea class="form-control" placeholder="Beschreibung" @bind-Value="dungeonItemModel.Description" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonItemModel.Description) />
@@ -114,12 +114,12 @@
             {
                 <div class="form-group mt-5">
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-3">
                             <h5 class="mt-1">Gewicht</h5>
                         </div>
-                        <div class="col-md-auto">
+                        <div class="col">
                             <div class="d-flex justify-content-center">
-                                <InputText class="form-control" style="width:25rem" placeholder="Gewicht" @bind-Value="dungeonItemModel.Weight" />
+                                <InputText class="form-control" placeholder="Gewicht" @bind-Value="dungeonItemModel.Weight" />
                             </div>
                             <div class="text-danger">
                                 <ValidationMessage For=@(() => dungeonItemModel.Weight) />
@@ -132,12 +132,12 @@
                 {
                     <div class="form-group mt-5">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-3">
                                 <h5 class="mt-1">Effekt</h5>
                             </div>
-                            <div class="col-md-auto">
+                            <div class="col">
                                 <div class="d-flex justify-content-center">
-                                    <InputText class="form-control" style="width:25rem" placeholder="Effekt" @bind-Value="dungeonItemModel.EffectDescription" />
+                                    <InputText class="form-control" placeholder="Effekt" @bind-Value="dungeonItemModel.EffectDescription" />
                                 </div>
                                 <div class="text-danger">
                                     <ValidationMessage For=@(() => dungeonItemModel.EffectDescription) />
@@ -150,12 +150,12 @@
                 {
                     <div class="form-group mt-5">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-3">
                                 <h5 class="mt-1">Schadensboost</h5>
                             </div>
-                            <div class="col-md-auto">
+                            <div class="col">
                                 <div class="d-flex justify-content-center">
-                                    <InputText class="form-control" style="width:25rem" placeholder="Schadensboost" @bind-Value="dungeonItemModel.DamageBoost" />
+                                    <InputText class="form-control" placeholder="Schadensboost" @bind-Value="dungeonItemModel.DamageBoost" />
                                 </div>
                                 <div class="text-danger">
                                     <ValidationMessage For=@(() => dungeonItemModel.DamageBoost) />
@@ -168,12 +168,12 @@
                 {
                     <div class="form-group mt-5">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-3">
                                 <h5 class="mt-1">Verteidigungsboost</h5>
                             </div>
-                            <div class="col-md-auto">
+                            <div class="col">
                                 <div class="d-flex justify-content-center">
-                                    <InputText class="form-control" style="width:25rem" placeholder="Verteidigungsboost" @bind-Value="dungeonItemModel.ProtectionBoost" />
+                                    <InputText class="form-control" placeholder="Verteidigungsboost" @bind-Value="dungeonItemModel.ProtectionBoost" />
                                 </div>
                                 <div class="text-danger">
                                     <ValidationMessage For=@(() => dungeonItemModel.ProtectionBoost) />
@@ -186,9 +186,9 @@
 
 
             <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-auto">
-                    <button class="btn btn-success mt-5" style="width:25rem" type="submit">Speichern</button>
+                <div class="col-3"></div>
+                <div class="col">
+                    <button class="btn btn-success mt-5" type="submit">Speichern</button>
                 </div>
             </div>
         </EditForm>

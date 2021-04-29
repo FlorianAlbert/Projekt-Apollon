@@ -2,13 +2,16 @@
 @using Apollon.Mud.Client.Shared.Components.Dungeon
 
 <div class="container-fluid">
-    <div class="row min-vh-100">
+    <div class="row">
         <div class="col-3" style="padding:0">
-            <SideBarComponent />
+            <nav class="navbar navbar-light bg-secondary">
+                <a class="btn btn-primary ms-5" href="/YourDungeons">Zurück</a>
+            </nav>
+                <SideBarComponent />
         </div>
-        <div class="col-9 bg-white">
+        <div class="col-6 bg-white" style="overflow:auto; overflow-y:scroll; max-height:94.5vh">
             <div class="d-flex justify-content-start float-start">
-                <div class="container justify-content-start" style="width: 65rem;">
+                <div class="container justify-content-start">
                     <h1 class="display-2">Dungeon erstellen</h1>
                     <h4>Hier kannst du einen neuen Dungeon erstellen!</h4>
                     <h4>Benötigst du Hilfe? Alle Infos zum Erstellen eines Dungeon findest du <a href="/">hier</a></h4> @*TODO Link einfügen*@
@@ -31,6 +34,9 @@
 
                 </div>
             </div>
+        </div>
+        <div class="col">
+            
         </div>
     </div>
 </div>

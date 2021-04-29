@@ -13,10 +13,10 @@
 
             <div class="form-group">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Klassenauswahl</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" aria-label="Default select example" style="width:21rem" @bind="chosenClass" @onclick="ClassSelectionChanged">
                                 <option value="NoClass" selected></option>
@@ -38,12 +38,12 @@
 
             <div class="form-group mt-2">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Name</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Name" id="Name" @bind-Value="dungeonClassModel.Name" @onfocusout="NameFieldLostFocus" />
+                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonClassModel.Name" @onfocusout="NameFieldLostFocus" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Name) />
@@ -58,12 +58,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Beschreibung</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputTextArea class="form-control" style="width:25rem" placeholder="Beschreibung" @bind-Value="dungeonClassModel.Description" />
+                            <InputTextArea class="form-control"  placeholder="Beschreibung" @bind-Value="dungeonClassModel.Description" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Description) />
@@ -74,12 +74,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Lebenspunkte</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Lebenspunkte" @bind-Value="dungeonClassModel.Health" />
+                            <InputText class="form-control" placeholder="Lebenspunkte" @bind-Value="dungeonClassModel.Health" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Health) />
@@ -90,12 +90,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Schaden</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Schaden" @bind-Value="dungeonClassModel.Damage" />
+                            <InputText class="form-control" placeholder="Schaden" @bind-Value="dungeonClassModel.Damage" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Damage) />
@@ -106,12 +106,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Verteidigung</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Verteidigung" @bind-Value="dungeonClassModel.Protection" />
+                            <InputText class="form-control" placeholder="Verteidigung" @bind-Value="@dungeonClassModel.Protection" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Protection) />
@@ -124,14 +124,14 @@
             {
                 <div class="form-group mt-5">
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-3">
                             <h5 class="mt-1">Startausrüstung</h5>
                         </div>
-                        <div class="col-md-auto">
+                        <div class="col">
                             <div class="d-flex justify-content-center">
                                 @if (i == defaultItemCount - 1)
                                 {
-                                    <select class="form-select" style="width:20rem">
+                                    <select class="form-select">
                                         <option selected value="NoItem"></option>
                                         @foreach (TakeableDto takeable in dungeonTakeables)
                                         {
@@ -143,7 +143,7 @@
                                 }
                                 else
                                 {
-                                    <select class="form-select" style="width:25rem">
+                                    <select class="form-select">
                                         <option selected value="NoItem"></option>
                                         @foreach (TakeableDto takeable in dungeonTakeables)
                                         {
@@ -159,12 +159,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Startausrüstung</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" style="width:20rem">
+                            <select class="form-select">
                                 <option selected value="NoItem"></option>
                                 @foreach (TakeableDto takeable in dungeonTakeables)
                                 {
@@ -178,9 +178,9 @@
             </div>
 
             <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-auto">
-                    <button class="btn btn-success mt-5" style="width:25rem" type="submit">Speichern</button>
+                <div class="col-3"></div>
+                <div class="col">
+                    <button class="btn btn-success mt-5" type="submit">Speichern</button>
                 </div>
             </div>
         </EditForm>
