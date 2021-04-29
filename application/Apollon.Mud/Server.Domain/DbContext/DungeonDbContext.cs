@@ -14,7 +14,7 @@ using Apollon.Mud.Server.Model.Implementations.User;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Apollon.Mud.Server.DbContext
+namespace Apollon.Mud.Server.Domain.DbContext
 {
     public class DungeonDbContext : IdentityDbContext<DungeonUser>
     {

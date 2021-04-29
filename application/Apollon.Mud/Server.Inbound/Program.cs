@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Apollon.Mud.Server
+namespace Apollon.Mud.Server.Inbound
 {
     public class Program
     {
