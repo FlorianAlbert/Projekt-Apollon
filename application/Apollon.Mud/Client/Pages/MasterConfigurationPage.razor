@@ -1,7 +1,36 @@
 ﻿@page "/MasterView/Configuration"
 @layout MasterViewLayout
 
-<h3>MasterConfigurationPage</h3>
+<div class="row">
+    <div class="col-4">
+        <SideBarComponent />
+    </div>
+    <div class="col-8">
+        <div class="d-flex justify-content-start float-start">
+            <div class="container justify-content-start" style="width: 65rem;">
+                <h1 class="display-2">Dungeon konfigurieren</h1>
+                <h4>Hier kannst du den Dungeon konfigurieren!</h4>
+                <hr class="featurette-divider" />
+                <section class="Classes mt-3" id="Classes">
+                    <CreateDungeonClassesComponent />
+                </section>
+                <section class="Races mt-3" id="Races">
+                    <CreateDungeonRacesComponent />
+                </section>
+                <section class="Items mt-3" id="Items">
+                    <CreateDungeonItemComponent />
+                </section>
+                <section class="Npcs mt-3" id="Npcs">
+                    <CreateDungeonNpcsComponent />
+                </section>
+                <section class="Rooms mt-3" id="Rooms">
+                    <CreateDungeonRoomComponent />
+                </section>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
 
