@@ -1,6 +1,6 @@
 using System;
 
-namespace Apollon.Mud.Server
+namespace Apollon.Mud.Server.Inbound
 {
     public class WeatherForecast
     {

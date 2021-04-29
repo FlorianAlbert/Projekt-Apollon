@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Apollon.Mud.Server.Hubs.Interfaces
+namespace Apollon.Mud.Server.Outbound.Hubs.Interfaces
 {
     public interface IChatHub
     {

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Apollon.Mud.Server.Hubs.Interfaces;
+using Apollon.Mud.Server.Outbound.Hubs.Interfaces;
 using Apollon.Mud.Shared.HubContract;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Apollon.Mud.Server.Hubs.Implementations
+namespace Apollon.Mud.Server.Outbound.Hubs.Implementations
 {
     public class ChatHub : Hub<IClientChatHubContract>, IChatHub
     {
@@ -14,7 +14,7 @@ namespace Apollon.Mud.Server.Hubs.Implementations
 
         public void SendMultiChatMessage(string senderName, IEnumerable<string> connectionIds, string message)
         {
-            Clients.Clients(connectionIds).ReceiveChatMessage(senderName, message);
+            Clients.Clients(connectionIds as IReadOnlyList<string>).ReceiveChatMessage(senderName, message);
         }
     }
 }

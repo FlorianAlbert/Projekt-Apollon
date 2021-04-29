@@ -4,15 +4,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Apollon.Mud.Server.DbContext;
+using Apollon.Mud.Server.Domain.DbContext;
 using Apollon.Mud.Server.Domain.Implementations.Shared;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
-using Apollon.Mud.Server.Hubs.Implementations;
+using Apollon.Mud.Server.Outbound.Hubs.Implementations;
 using Apollon.Mud.Server.Model.Implementations.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Apollon.Mud.Server
+namespace Apollon.Mud.Server.Inbound
 {
     public class Startup
     {

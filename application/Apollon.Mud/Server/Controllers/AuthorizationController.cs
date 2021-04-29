@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Apollon.Mud.Shared.UserManagement.Authorization;
 
-namespace Apollon.Mud.Server.Controllers
+namespace Apollon.Mud.Server.Inbound.Controllers
 {
     /// <summary>
     /// ToDo Tests

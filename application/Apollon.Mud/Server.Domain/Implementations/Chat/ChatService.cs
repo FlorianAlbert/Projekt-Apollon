@@ -1,6 +1,7 @@
 ﻿using System;
 using Apollon.Mud.Server.Domain.Interfaces.Chat;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
+using Apollon.Mud.Server.Outbound.Hubs.Implementations;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Apollon.Mud.Server.Domain.Implementations.Chat
