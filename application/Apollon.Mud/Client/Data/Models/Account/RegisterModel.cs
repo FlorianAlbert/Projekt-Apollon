@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+
 namespace Apollon.Mud.Client.Data.Models
 {
     public class RegisterModel
