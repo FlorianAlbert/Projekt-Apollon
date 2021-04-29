@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Implementations\Game\" />
+    <Folder Include="Implementations\Chat\" />
+    <Folder Include="Implementations\UserManagement\" />
+    <Folder Include="Implementations\Shared\" />
+    <Folder Include="Interfaces\Game\" />
+    <Folder Include="Interfaces\Chat\" />
+    <Folder Include="Interfaces\Shared\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Apollon.Mud.Server.Outbound\Apollon.Mud.Server.Outbound.csproj" />
+    <ProjectReference Include="..\Server.Model\Apollon.Mud.Server.Model.csproj" />
+    <ProjectReference Include="..\Server.Outbound\Apollon.Mud.Server.Outbound.csproj" />
+  </ItemGroup>
+
+</Project>

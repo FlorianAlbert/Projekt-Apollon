@@ -1,0 +1,688 @@
+﻿@using Apollon.Mud.Client.Data.Models
+@using Apollon.Mud.Shared.Dungeon.Room
+@using Apollon.Mud.Shared.Dungeon.Inspectable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
+
+<div class="card">
+    <div class="card-header">
+        <h2>Räume</h2>
+    </div>
+    <div class="card-body">
+
+        <EditForm EditContext="@roomContext" OnSubmit="@HandleRoomSubmit" novalidate>
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Raumauswahl</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" aria-label="Default select example" style="width:21rem">
+                                @if (!(dungeonRooms is null))
+                                {
+                                    <option value="NoRoom" selected></option>
+                                    @foreach (RoomDto dungeonRoom in dungeonRooms)
+                                    {
+                                        <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                                    }
+                                }
+                            </select>
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button"><TooltipComponent Text="Neuen Raum erstellen"><strong>+</strong></TooltipComponent></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-2">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Name</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" style="width:25rem" placeholder="Name" id="Name" @bind-Value="dungeonRoomModel.Name" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRoomModel.Name) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Beschreibung</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <InputTextArea class="form-control" style="width:25rem" placeholder="Beschreibung" @bind-Value="dungeonRoomModel.Description" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRoomModel.Description) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="featurette-divider" />
+
+            @for (int i = 1; i < inspectableCount; i++)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h5 class="mt-1">Untersuchbares Item</h5>
+                        </div>
+                        <div class="col-md-auto">
+                            <div class="d-flex justify-content-center">
+                                @if (i == inspectableCount - 1)
+                                {
+                                    <select class="form-select" style="width:20rem">
+                                        <option selected value="NoInspectable"></option>
+                                        @foreach (InspectableDto inspectable in dungeonInspectables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    </select>
+
+                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => RemoveItemButtonClicked(1)"><TooltipComponent Text="Item entfernen"><strong>-</strong></TooltipComponent></button>
+                                }
+                                else
+                                {
+                                    <select class="form-select" style="width:25rem">
+                                        <option selected value="NoItem"></option>
+                                        @foreach (InspectableDto inspectable in dungeonInspectables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Untersuchbares Item</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" style="width:20rem">
+                                <option selected value="NoItem"></option>
+                                @foreach (InspectableDto inspectable in dungeonInspectables)
+                                {
+                                    <option value="@inspectable.Name">@inspectable.Name</option>
+                                }
+                            </select>
+                            @if (inspectableCount == 4)
+                            {
+                                <TooltipComponent Text="Maximum erreicht">
+                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" disabled @onclick="() => AddItemButtonClicked(1)">
+                                        <strong>+</strong>
+                                    </button>
+                                </TooltipComponent>
+                            }
+                            else
+                            {
+                                <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => AddItemButtonClicked(1)"><TooltipComponent Text="Item hinzufügen"><strong>+</strong></TooltipComponent></button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @for (int i = 1; i < takeableCount; i++)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h5 class="mt-1">Aufnehmbares Item</h5>
+                        </div>
+                        <div class="col-md-auto">
+                            <div class="d-flex justify-content-center">
+                                @if (i == takeableCount - 1)
+                                {
+                                    <select class="form-select" style="width:20rem">
+                                        <option selected value="NoInspectable"></option>
+                                        @foreach (TakeableDto takeable in dungeonTakeables)
+                                        {
+                                            <option value="@takeable.Name">@takeable.Name</option>
+                                        }
+                                    </select>
+
+                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => RemoveItemButtonClicked(2)"><TooltipComponent Text="Item entfernen"><strong>-</strong></TooltipComponent></button>
+                                }
+                                else
+                                {
+                                    <select class="form-select" style="width:25rem">
+                                        <option selected value="NoItem"></option>
+                                        @foreach (TakeableDto takeable in dungeonTakeables)
+                                        {
+                                            <option value="@takeable.Name">@takeable.Name</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Aufnehmbares Item</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" style="width:20rem">
+                                <option selected value="NoItem"></option>
+                                @foreach (TakeableDto takeable in dungeonTakeables)
+                                {
+                                    <option value="@takeable.Name">@takeable.Name</option>
+                                }
+                            </select>
+                            @if (takeableCount == 4)
+                            {
+                                <TooltipComponent Text="Maximum erreicht">
+                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" disabled @onclick="() => AddItemButtonClicked(2)">
+                                        <strong>+</strong>
+                                    </button>
+                                </TooltipComponent>
+                            }
+                            else
+                            {
+                                <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => AddItemButtonClicked(2)"><TooltipComponent Text="Item hinzufügen"><strong>+</strong></TooltipComponent></button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @for (int i = 1; i < consumableCount; i++)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h5 class="mt-1">Konsum Item</h5>
+                        </div>
+                        <div class="col-md-auto">
+                            <div class="d-flex justify-content-center">
+                                @if (i == consumableCount - 1)
+                                {
+                                    <select class="form-select" style="width:20rem">
+                                        <option selected value="NoInspectable"></option>
+                                        @foreach (ConsumableDto consumable in dungeonConsumables)
+                                        {
+                                            <option value="@consumable.Name">@consumable.Name</option>
+                                        }
+                                    </select>
+
+                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => RemoveItemButtonClicked(3)"><TooltipComponent Text="Item entfernen"><strong>-</strong></TooltipComponent></button>
+                                }
+                                else
+                                {
+                                    <select class="form-select" style="width:25rem">
+                                        <option selected value="NoItem"></option>
+                                        @foreach (ConsumableDto consumable in dungeonConsumables)
+                                        {
+                                            <option value="@consumable.Name">@consumable.Name</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Konsum Item</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" style="width:20rem">
+                                <option selected value="NoItem"></option>
+                                @foreach (ConsumableDto consumable in dungeonConsumables)
+                                {
+                                    <option value="@consumable.Name">@consumable.Name</option>
+                                }
+                            </select>
+                            @if (consumableCount == 4)
+                            {
+                                <TooltipComponent Text="Maximum erreicht">
+                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" disabled @onclick="() => AddItemButtonClicked(3)">
+                                        <strong>+</strong>
+                                    </button>
+                                </TooltipComponent>
+                            }
+                            else
+                            {
+                                <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => AddItemButtonClicked(3)"><TooltipComponent Text="Item hinzufügen"><strong>+</strong></TooltipComponent></button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @for (int i = 1; i < wearableCount; i++)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h5 class="mt-1">Kleidungsstück</h5>
+                        </div>
+                        <div class="col-md-auto">
+                            <div class="d-flex justify-content-center">
+                                @if (i == wearableCount - 1)
+                                {
+                                    <select class="form-select" style="width:20rem">
+                                        <option selected value="NoInspectable"></option>
+                                        @foreach (WearableDto wearable in dungeonWearables)
+                                        {
+                                            <option value="@wearable.Name">@wearable.Name</option>
+                                        }
+                                    </select>
+
+                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => RemoveItemButtonClicked(4)"><TooltipComponent Text="Item entfernen"><strong>-</strong></TooltipComponent></button>
+                                }
+                                else
+                                {
+                                    <select class="form-select" style="width:25rem">
+                                        <option selected value="NoItem"></option>
+                                        @foreach (WearableDto wearable in dungeonWearables)
+                                        {
+                                            <option value="@wearable.Name">@wearable.Name</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Kleidungsstück</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" style="width:20rem">
+                                <option selected value="NoItem"></option>
+                                @foreach (WearableDto wearable in dungeonWearables)
+                                {
+                                    <option value="@wearable.Name">@wearable.Name</option>
+                                }
+                            </select>
+                            @if (wearableCount == 4)
+                            {
+                                <TooltipComponent Text="Maximum erreicht">
+                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" disabled @onclick="() => AddItemButtonClicked(4)">
+                                        <strong>+</strong>
+                                    </button>
+                                </TooltipComponent>
+                            }
+                            else
+                            {
+                                <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => AddItemButtonClicked(4)"><TooltipComponent Text="Item hinzufügen"><strong>+</strong></TooltipComponent></button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @for (int i = 1; i < usableCount; i++)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h5 class="mt-1">Waffe</h5>
+                        </div>
+                        <div class="col-md-auto">
+                            <div class="d-flex justify-content-center">
+                                @if (i == usableCount - 1)
+                                {
+                                    <select class="form-select" style="width:20rem">
+                                        <option selected value="NoInspectable"></option>
+                                        @foreach (UsableDto usable in dungeonUsables)
+                                        {
+                                            <option value="@usable.Name">@usable.Name</option>
+                                        }
+                                    </select>
+
+                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => RemoveItemButtonClicked(5)"><TooltipComponent Text="Item entfernen"><strong>-</strong></TooltipComponent></button>
+                                }
+                                else
+                                {
+                                    <select class="form-select" style="width:25rem">
+                                        <option selected value="NoItem"></option>
+                                        @foreach (UsableDto usable in dungeonUsables)
+                                        {
+                                            <option value="@usable.Name">@usable.Name</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="mt-1">Waffe</h5>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" style="width:20rem">
+                                <option selected value="NoItem"></option>
+                                @foreach (UsableDto usable in dungeonUsables)
+                                {
+                                    <option value="@usable.Name">@usable.Name</option>
+                                }
+                            </select>
+                            @if (usableCount == 4)
+                            {
+                                <TooltipComponent Text="Maximum erreicht">
+                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" disabled @onclick="() => AddItemButtonClicked(5)">
+                                        <strong>+</strong>
+                                    </button>
+                                </TooltipComponent>
+                            }
+                            else
+                            {
+                                <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => AddItemButtonClicked(5)"><TooltipComponent Text="Item hinzufügen"><strong>+</strong></TooltipComponent></button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="featurette-divider" />
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-12 d-flex justify-content-center">
+                        <h4 class="mt-1">Nachbarräume</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 d-flex justify-content-center">
+                        <h5 class="mt-1">Norden</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col-md-auto">
+                        <select class="form-select" aria-label="Default select example" style="width:15rem" @bind="dungeonRoomModel.RoomNorth">
+                            @if (!(dungeonRooms is null))
+                            {
+                                <option value="NoRoom" selected></option>
+                                @foreach (RoomDto dungeonRoom in dungeonRooms)
+                                {
+                                    <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-auto">
+                    <h5 class="mt-1">Westen</h5>
+                    <div class="d-flex justify-content-center">
+                        <select class="form-select" aria-label="Default select example" style="width:15rem" @bind="dungeonRoomModel.RoomNorth">
+                            @if (!(dungeonRooms is null))
+                            {
+                                <option value="NoRoom" selected></option>
+                                @foreach (RoomDto dungeonRoom in dungeonRooms)
+                                {
+                                    <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col"></div>
+                <div class="col">
+                    <div class="d-flex justify-content-end">
+                        <h5 class="mt-1">Wosten</h5>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <select class="form-select" aria-label="Default select example" style="width:15rem" @bind="dungeonRoomModel.RoomNorth">
+                            @if (!(dungeonRooms is null))
+                            {
+                                <option value="NoRoom" selected></option>
+                                @foreach (RoomDto dungeonRoom in dungeonRooms)
+                                {
+                                    <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row mt-3">
+                <div class="col"></div>
+                <div class="col-md-auto">
+                    <select class="form-select" aria-label="Default select example" style="width:15rem" @bind="dungeonRoomModel.RoomNorth">
+                        @if (!(dungeonRooms is null))
+                        {
+                            <option value="NoRoom" selected></option>
+                            @foreach (RoomDto dungeonRoom in dungeonRooms)
+                            {
+                                <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col"></div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 d-flex justify-content-center">
+                    <h5 class="mt-1">Süden</h5>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-auto">
+                    <button class="btn btn-success mt-5" style="width:25rem" type="submit">Speichern</button>
+                </div>
+            </div>
+        </EditForm>
+
+    </div>
+</div>
+
+@code {
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    DungeonRoomModel dungeonRoomModel = new DungeonRoomModel();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    EditContext roomContext;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<RoomDto> dungeonRooms = new List<RoomDto>();
+
+    #region RoomInspectables
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<InspectableDto> dungeonInspectables = new List<InspectableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<WearableDto> dungeonWearables = new List<WearableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<UsableDto> dungeonUsables = new List<UsableDto>();
+
+    #endregion
+
+    #region Item Dropdown Counters
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    int inspectableCount = 1;
+    int takeableCount = 1;
+    int consumableCount = 1;
+    int wearableCount = 1;
+    int usableCount = 1;
+
+    #endregion
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        roomContext = new EditContext(dungeonRoomModel);
+
+        RoomDto testRoom = new RoomDto();
+        testRoom.Description = "KLa";
+        testRoom.Name = "Leon";
+
+        dungeonRooms.Add(testRoom);
+
+        for (int i = 0; i <= 3; i++)
+        {
+            TakeableDto exDto = new TakeableDto();
+            exDto.Name = "Dies ist ein test";
+            exDto.Description = "Diest ist nur ein Test!";
+            dungeonTakeables.Add(exDto);
+        }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleRoomSubmit()
+    {
+        var validRoom = roomContext.Validate();
+        if (validRoom)
+        {
+            //TODO
+        }
+        else
+        {
+            //TODO
+        }
+    }
+
+    #region Item Dropdown Buttons
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private void AddItemButtonClicked(int itemType)
+    {
+        switch (itemType)
+        {
+            case 1:
+                IncreaseCounter(ref inspectableCount);
+                break;
+            case 2:
+                IncreaseCounter(ref takeableCount);
+                break;
+            case 3:
+                IncreaseCounter(ref consumableCount);
+                break;
+            case 4:
+                IncreaseCounter(ref wearableCount);
+                break;
+            case 5:
+                IncreaseCounter(ref usableCount);
+                break;
+            default:
+                return;
+        }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="counter"></param>
+    void IncreaseCounter(ref int counter)
+    {
+        if (counter < 5)
+            counter++;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private void RemoveItemButtonClicked(int itemType)
+    {
+        switch (itemType)
+        {
+            case 1:
+                DecreaseCounter(ref inspectableCount);
+                break;
+            case 2:
+                DecreaseCounter(ref takeableCount);
+                break;
+            case 3:
+                DecreaseCounter(ref consumableCount);
+                break;
+            case 4:
+                DecreaseCounter(ref wearableCount);
+                break;
+            case 5:
+                DecreaseCounter(ref usableCount);
+                break;
+            default:
+                return;
+        }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="counter"></param>
+    void DecreaseCounter(ref int counter)
+    {
+        if (counter > 1)
+            counter--;
+    }
+
+    #endregion
+}
+
