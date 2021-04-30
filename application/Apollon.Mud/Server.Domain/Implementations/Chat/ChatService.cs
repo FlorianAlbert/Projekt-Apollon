@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Apollon.Mud.Server.Domain.Implementations.Chat
 {
+    /// <inheritdoc cref="IChatService"/>
     public class ChatService : IChatService
     {
         private IGameDBService GameDbService { get; }
@@ -19,6 +20,12 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
 
         private IHubContext<ChatHub, IClientChatHubContract> ChatHubContext { get; }
 
+        /// <summary>
+        /// Initializes a new instance of ChatService
+        /// </summary>
+        /// <param name="gameDbService"></param>
+        /// <param name="connectionService"></param>
+        /// <param name="chatHubContext"></param>
         public ChatService(IGameDBService gameDbService, IConnectionService connectionService, IHubContext<ChatHub, IClientChatHubContract> chatHubContext)
         {
             GameDbService = gameDbService;
@@ -26,6 +33,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
             ChatHubContext = chatHubContext;
         }
 
+        /// <inheritdoc cref="IChatService.PostRoomMessage"/>
         public void PostRoomMessage(Guid dungeonId, Guid avatarId, string message)      // TODO: In UML anpassen
         {
             IAvatar senderAvatar;
@@ -51,6 +59,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
             ChatHubContext.Clients.Clients(recipientChatConnectionIds).ReceiveChatMessage(senderAvatar.Name, message);
         }
 
+        /// <inheritdoc cref="IChatService.PostWhisperMessage"/>
         public void PostWhisperMessage(Guid dungeonId, Guid? senderAvatarId, string recipientName, string message)      // TODO: In UML anpassen
         {
             Connection recipientConnection;
@@ -87,6 +96,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
                 .ReceiveChatMessage(senderName, message);
         }
 
+        /// <inheritdoc cref="IChatService.PostGlobalMessage"/>
         public void PostGlobalMessage(Guid dungeonId, string message)
         {
             var recipientAvatars = GameDbService.GetAll<IAvatar>()
