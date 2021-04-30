@@ -8,6 +8,7 @@ using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.User;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
@@ -35,6 +36,11 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// <summary>
         /// ToDo
         /// </summary>
+        private IConfiguration _configuration;
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
         private string _tokenSecret; //ToDo über Config eintragen lassen
 
         /// <summary>
@@ -42,11 +48,13 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// </summary>
         /// <param name="userDbService"></param>
         /// <param name="signInManager"></param>
-        public AuthorizationService(IUserDBService userDbService, SignInManager<DungeonUser> signInManager, UserManager<DungeonUser> userManager)
+        public AuthorizationService(IUserDBService userDbService, SignInManager<DungeonUser> signInManager, UserManager<DungeonUser> userManager, IConfiguration configuration)
         {
             _userDbService = userDbService;
             _signInManager = signInManager;
             _userManager = userManager;
+            _configuration = configuration;
+            _tokenSecret = _configuration.GetSection("AuthorizationToken").Value;
         }
 
         public async Task<LoginResult> Login(string email, string secret)

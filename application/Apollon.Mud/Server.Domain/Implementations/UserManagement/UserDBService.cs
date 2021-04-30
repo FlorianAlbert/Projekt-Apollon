@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.User;
@@ -27,7 +25,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             _userManager = userManager;
         }
 
-        public async Task<bool> CreateUser(DungeonUser user, string password, bool asAdmin)
+        public async Task<bool> CreateUser(DungeonUser user, string password, bool asAdmin = false)
         {
             var result = await _userManager.CreateAsync(user, password);
 
@@ -85,7 +83,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null) return false;
-
             var result = await _userManager.DeleteAsync(user);
             return result.Succeeded;
         }
@@ -93,6 +90,30 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         public async Task<DungeonUser> GetUserByEmail(string userEmail)
         {
             return await _userManager.FindByEmailAsync(userEmail);
+        }
+
+        public async Task<bool> ResetPassword(DungeonUser user, string token, string password)
+        {
+            var result = await _userManager.ResetPasswordAsync(user, token, password);
+            return result.Succeeded;
+        }
+
+        public async  Task<string> GetResetToken(DungeonUser user)
+        {
+            //ToDo configure password reset token provider
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
+        }
+
+        public async Task<bool> ConfirmEmail(DungeonUser user, string token)
+        {
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            return result.Succeeded;
+        }
+
+        public async Task<string> GetEmailConfirmationToken(DungeonUser user)
+        {
+            //ToDo TokenProvider konfigurieren?!
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
     }
 }
