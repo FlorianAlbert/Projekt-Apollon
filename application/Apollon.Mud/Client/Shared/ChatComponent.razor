@@ -1,39 +1,39 @@
 ﻿
-<div class="card ms-2 me-2 bg-secondary">
-    <select class="form-select" aria-label="MessageSelect">
-        <option selected>Nachricht an:</option>
-        <option value="1">Alle Spieler</option>
-        <option value="2">Spieler 1</option>
-        <option value="3">Spieler 2</option>
-    </select>
-    <div class="panel panel-primary bg-white mt-2">
-        <div class="panel-body mt-2" id="chat" style="overflow:auto; overflow-y:scroll; height:72vh;">
-            <ul class="chat">
-                @for (int i = 0; i < 15; i++)
-                {
-                    <li class="left clearfix">
-                        <div class="chat-body clearfix">
-                            <div class="header">
-                                <strong class="primary-font">from</strong>
-                                <small class="pull-right text-muted">
-                                    <span class="glyphicon glyphicon-time"></span>to:
-                                </small>
-                            </div>
-                            <p>
-                                message
-                            </p>
+<div class="card ms-2 me-2 bg-secondary" style="display: flex; flex-direction: column; height: 87vh">
+    <div style="flex-shrink: 0;">
+        <select class="form-select" aria-label="MessageSelect" >
+            <option selected>Nachricht an:</option>
+            <option value="1">Alle Spieler</option>
+            <option value="2">Spieler 1</option>
+            <option value="3">Spieler 2</option>
+        </select>
+    </div>
+    <div class="panel panel-body bg-white mt-2" id="chat" style="overflow-y:auto; height: 100%">
+        <ul class="chat">
+            @for (int i = 0; i < 15; i++)
+            {
+                <li class="left clearfix">
+                    <div class="chat-body clearfix">
+                        <div class="header">
+                            <strong class="primary-font">from</strong>
+                            <small class="pull-right text-muted">
+                                <span class="glyphicon glyphicon-time"></span>to:
+                            </small>
                         </div>
-                    </li>
-                }
-            </ul>
+                        <p>
+                            message
+                        </p>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="chat mt-2 mb-2" style="flex-shrink: 0;">
+        <div class="prompt d-flex">
+            <input id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
+            <button id="send" class="btn btn-primary ms-2">Senden</button>
         </div>
-        <div class="chat mt-2 mb-2">
-            <div class="prompt d-flex">
-                <input id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
-                <button id="send" class="btn btn-primary ms-2">Senden</button>
-            </div>
-            <span> </span>
-        </div>
+        <span> </span>
     </div>
 </div>
 

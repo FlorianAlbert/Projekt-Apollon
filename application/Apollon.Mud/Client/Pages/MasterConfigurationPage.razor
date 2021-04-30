@@ -8,9 +8,9 @@
     <div class="col-4">
         <SideBarComponent />
     </div>
-    <div class="col-8" style="overflow:auto; overflow-y:scroll; max-height:87vh">
-        <div class="d-flex justify-content-start float-start" >
-            <div class="container justify-content-start">
+    <div class="col-8 bg-white">
+        <div style="display: flex; flex-direction: column; height: 87vh">
+            <div style="overflow-y:auto; overflow-x:hidden ;height:100%">
                 <h1 class="display-2">Dungeon konfigurieren</h1>
                 <h4>Hier kannst du den Dungeon konfigurieren!</h4>
                 <hr class="featurette-divider" />
@@ -29,7 +29,6 @@
                 <section class="Rooms mt-3" id="Rooms">
                     <CreateDungeonRoomComponent />
                 </section>
-
             </div>
         </div>
     </div>
