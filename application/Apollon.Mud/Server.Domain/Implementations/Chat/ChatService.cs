@@ -37,14 +37,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
         public void PostRoomMessage(Guid dungeonId, Guid avatarId, string message)      // TODO: In UML anpassen
         {
             IAvatar senderAvatar;
-            try
-            {
-                senderAvatar = GameDbService.Get<IAvatar>(avatarId);
-            }
-            catch (InvalidOperationException)
-            {
-                return;
-            }
+
+            senderAvatar = GameDbService.Get<IAvatar>(avatarId);
 
             if (senderAvatar is null) return;
 
@@ -85,7 +79,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
 
                 var senderAvatar = GameDbService.Get<IAvatar>(senderAvatarId.Value);
 
-                if (senderAvatar is null ||recipientAvatar is null ||
+                if (senderAvatar is null || recipientAvatar is null ||
                     (recipientConnection = ConnectionService.GetConnectionByAvatarId(recipientAvatar.Id)) is null)
                     return;
 
