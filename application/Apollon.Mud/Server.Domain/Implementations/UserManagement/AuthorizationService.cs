@@ -41,7 +41,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// <summary>
         /// ToDo
         /// </summary>
-        private string _tokenSecret; //ToDo über Config eintragen lassen
+        private string _tokenSecret;
 
         /// <summary>
         /// ToDo
@@ -54,7 +54,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             _signInManager = signInManager;
             _userManager = userManager;
             _configuration = configuration;
-            _tokenSecret = _configuration.GetSection("AuthorizationToken").Value;
+            _tokenSecret = _configuration.GetSection("AuthorizationToken").Value;  //ToDo passt es so?
         }
 
         public async Task<LoginResult> Login(string email, string secret)

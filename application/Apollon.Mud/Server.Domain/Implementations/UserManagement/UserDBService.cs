@@ -54,15 +54,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             return true;
         }
 
-        private async Task RollbackUserCreation(DungeonUser user) //ToDo in UML anpassen und absprechen
-        {
-            IdentityResult result;
-            do
-            {
-                result = await _userManager.DeleteAsync(user);
-            } while (!result.Succeeded);
-        }
-
         public async Task<DungeonUser> GetUser(Guid userId)
         {
             return await _userManager.FindByIdAsync(userId.ToString());
@@ -114,6 +105,15 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         {
             //ToDo TokenProvider konfigurieren?!
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        }
+
+        private async Task RollbackUserCreation(DungeonUser user) //ToDo in UML anpassen
+        {
+            IdentityResult result;
+            do
+            {
+                result = await _userManager.DeleteAsync(user);
+            } while (!result.Succeeded);
         }
     }
 }

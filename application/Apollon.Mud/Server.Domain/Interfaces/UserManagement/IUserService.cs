@@ -16,7 +16,7 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// <param name="userEmail"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        Task<string> RequestUserRegistration(string userEmail, string password);//ToDo in UML anpassen //ToDo checken ob Passwort selbst passt?!
+        Task<bool> RequestUserRegistration(string userEmail, string password);//ToDo in UML anpassen //ToDo checken ob Passwort selbst passt?!
 
         /// <summary>
         /// ToDo
