@@ -16,7 +16,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example">
+                            <select class="form-select" aria-label="Default select example" @bind="chosenNpc" @onclick="NpcSelectionChanged">
                                 <option value="NoNpc" selected></option>
                                 @if (!(dungeonNpcs is null))
                                 {
@@ -26,7 +26,7 @@
                                     }
                                 }
                             </select>
-                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button"><TooltipComponent Text="Neuen NPC erstellen"><strong>+</strong></TooltipComponent></button>
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="NewNpcButtonClicked"><TooltipComponent Text="Neuen NPC erstellen"><strong>+</strong></TooltipComponent></button>
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonNpcModel.Name" />
+                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonNpcModel.Name" @onfocusout="NameFieldLostFocus"/>
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonNpcModel.Name) />
@@ -93,25 +93,31 @@
 @code {
 
     /// <summary>
-    /// TODO
+    /// The string bound to the class selectio, NoClass means no class is selected
+    /// </summary>
+    string chosenNpc = "NoNpc";
+
+    /// <summary>
+    /// The attribute of the validation model when creating a new Race
     /// </summary>
     DungeonNpcModel dungeonNpcModel = new DungeonNpcModel();
 
     /// <summary>
-    /// TODO
+    /// The EditContext used by the form
     /// </summary>
     EditContext npcContext;
 
     /// <summary>
-    /// TODO
+    /// The List containing the Npcs of the Dungeon
     /// </summary>
     List<NpcDto> dungeonNpcs = new List<NpcDto>();
 
     /// <summary>
-    /// TODO
+    /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
     protected override void OnInitialized()
     {
+        #region to Delete
         npcContext = new EditContext(dungeonNpcModel);
 
         NpcDto testNpc = new NpcDto();
@@ -119,11 +125,13 @@
         testNpc.Name = "Leon";
         testNpc.Text = "Test Text????";
 
+        #endregion
+
         dungeonNpcs.Add(testNpc);
     }
 
     /// <summary>
-    /// TODO
+    /// Handles the submition of a created Npc, validates the data and saves them locally and on the server
     /// </summary>
     /// <returns></returns>
     private async Task HandleNpcSubmit()
@@ -131,11 +139,78 @@
         var validNpc = npcContext.Validate();
         if (validNpc)
         {
-            //TODO
+            bool newNpc = false;
+            NpcDto submitNpc = dungeonNpcs.Find(r => r.Name.Equals(dungeonNpcModel.Name));
+            if (submitNpc is null)
+            {
+                submitNpc = new NpcDto();
+                newNpc = true;
+            }
+            submitNpc.Name = dungeonNpcModel.Name;
+            submitNpc.Description = dungeonNpcModel.Description;
+            submitNpc.Text = dungeonNpcModel.Text;
+            if (newNpc)
+            {
+                dungeonNpcs.Add(submitNpc);
+            }
+            chosenNpc = dungeonNpcModel.Name;
+            //TODO Daten ans Backend senden
         }
         else
         {
-            //TODO
+            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
         }
+    }
+
+    /// <summary>
+    /// Called when the user selects a new npc, this method fills out the form according to the selected Npc
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private void NpcSelectionChanged(System.EventArgs args)
+    {
+        if (!chosenNpc.Equals(dungeonNpcModel.Name))
+        {
+            dungeonNpcModel.Name = string.Empty;
+            dungeonNpcModel.Description = string.Empty;
+            dungeonNpcModel.Text = string.Empty;
+            if (!chosenNpc.Equals("NoNpc"))
+            {
+                var newNpc = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
+                dungeonNpcModel.Name = chosenNpc;
+                dungeonNpcModel.Description = newNpc.Description;
+                dungeonNpcModel.Text = newNpc.Text;
+            }
+        }
+    }
+
+    /// <summary>
+    /// When the Name field loses its focus, this Method checks wether a Npc with this name already exists and if so fills out the form accordingly
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private void NameFieldLostFocus(System.EventArgs args)
+    {
+        NpcDto checkNpc = dungeonNpcs.Find(i => i.Name.Equals(dungeonNpcModel.Name));
+        if (checkNpc is null)
+        {
+            return;
+        }
+        else
+        {
+            chosenNpc = dungeonNpcModel.Name;
+            dungeonNpcModel.Description = checkNpc.Description;
+            dungeonNpcModel.Text = checkNpc.Text;
+        }
+    }
+
+    /// <summary>
+    /// To create a new Npc this Method clears all form input fields
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private void NewNpcButtonClicked(System.EventArgs args)
+    {
+        chosenNpc = "NoNpc";
+        dungeonNpcModel.Name = string.Empty;
+        dungeonNpcModel.Description = string.Empty;
+        dungeonNpcModel.Text = string.Empty;
     }
 }

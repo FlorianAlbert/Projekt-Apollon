@@ -210,57 +210,62 @@
 
 @code {
 
+    #region Bound variables
     /// <summary>
-    /// TODO
+    /// The string bound to the item category selection, default is Inspectable
     /// </summary>
     string chosenItemCategory = "Inspectable";
 
     /// <summary>
-    /// TODO
+    /// The string bound to the item selection, NoItem means no Item is selected
     /// </summary>
     string chosenItem = "NoItem";
+    #endregion
 
+    #region Validation model
     /// <summary>
-    /// TODO
+    /// The attribut of the validation model when creating a new Item
     /// </summary>
     DungeonItemModel dungeonItemModel = new DungeonItemModel();
 
     /// <summary>
-    /// TODO
+    /// The EditContext used by the form
     /// </summary>
     EditContext itemContext;
+    #endregion
 
     #region Item lists
 
     /// <summary>
-    /// TODO
+    /// The List containing the Inspectables of the Dungeon
     /// </summary>
     List<InspectableDto> dungeonInspectables = new List<InspectableDto>();
 
     /// <summary>
-    /// TODO
+    /// The List containing the Takeables of the Dungeon
     /// </summary>
     List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
 
     /// <summary>
-    /// TODO
+    /// The List containing the Usables of the Dungeon
     /// </summary>
     List<UsableDto> dungeonUsables = new List<UsableDto>();
 
     /// <summary>
-    /// TODO
+    /// The List containing the Wearables of the Dungeon
     /// </summary>
     List<WearableDto> dungeonWearables = new List<WearableDto>();
 
     /// <summary>
-    /// TODO
+    /// The List containing the Consumables of the Dungeon
     /// </summary>
     List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
 
     #endregion
 
+    #region methods
     /// <summary>
-    /// TODO
+    /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
     protected override void OnInitialized()
     {
@@ -279,7 +284,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Handles the submition of an created item, validates the data and saves them locally and on the server
     /// </summary>
     /// <returns></returns>
     private async Task HandleItemSubmit()
@@ -413,9 +418,9 @@
     }
 
     /// <summary>
-    /// TOOD
+    /// Called when the user selects a new item, this method fills out the form according to the selected race
     /// </summary>
-    /// <param name="args"></param>
+    /// <param name="args">Event Arguments</param>
     private void ItemSelectionChanged(System.EventArgs args)
     {
         if (!chosenItem.Equals(dungeonItemModel.Name))
@@ -555,4 +560,5 @@
         dungeonItemModel.ProtectionBoost = string.Empty;
         dungeonItemModel.EffectDescription = string.Empty;
     }
+    #endregion
 }
