@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Domain.Implementations.Shared;
 using AutoFixture;
 using AutoFixture.Xunit2;
@@ -9,7 +8,6 @@ using Xunit;
 
 namespace Apollon.Mud.Server.Domain.Test.Shared
 {
-    [ExcludeFromCodeCoverage]
     public class ConnectionServiceTests
     {
         private readonly Fixture _Fixture;
