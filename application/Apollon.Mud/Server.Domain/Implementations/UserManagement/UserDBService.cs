@@ -107,6 +107,12 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
 
+        public async Task<bool> IsAdminLoggedIn()
+        {
+            return await _userManager.Users.AnyAsync(x =>
+                _userManager.GetRolesAsync(x).Result.Contains(Roles.Admin.ToString()));
+        }
+
         private async Task RollbackUserCreation(DungeonUser user) //ToDo in UML anpassen
         {
             IdentityResult result;

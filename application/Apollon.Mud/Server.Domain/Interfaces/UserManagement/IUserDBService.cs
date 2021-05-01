@@ -82,5 +82,11 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// <param name="user"></param>
         /// <returns></returns>
         Task<string> GetEmailConfirmationToken(DungeonUser user); //ToDo in UML hinzufügen
+
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> IsAdminLoggedIn(); //ToDo in UML hinzufügen
     }
 }

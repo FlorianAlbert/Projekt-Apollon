@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.DbContext;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.User;
+using Microsoft.AspNetCore.Internal;
 using Microsoft.EntityFrameworkCore;
 
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
@@ -34,13 +35,12 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// </summary>
         private readonly bool _adminRegistered;
 
-        public UserService(IEmailService emailService, IUserDBService userDbService, DungeonDbContext dungeonDbContext,
-            bool adminRegistered = false)
+        public UserService(IEmailService emailService, IUserDBService userDbService, DungeonDbContext dungeonDbContext)
         {
             _emailService = emailService;
             _userDbService = userDbService;
             _dungeonDbContext = dungeonDbContext;
-            _adminRegistered = adminRegistered;
+            _adminRegistered = _userDbService.IsAdminLoggedIn().Result;
         }
 
         public async Task<bool> RequestUserRegistration(string userEmail, string password)
@@ -50,7 +50,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             {
                 Email = userEmail
             };
-            var creationResult = await _userDbService.CreateUser(user, password);
+            var creationResult = await _userDbService.CreateUser(user, password, _adminRegistered);
             if (!creationResult) return false;
             var confirmationToken = await _userDbService.GetEmailConfirmationToken(user);
             //ToDo Email senden mit confirmationLink
@@ -59,33 +59,31 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             return true;
         }
 
-        public async Task<bool> ConfirmUserRegistration(DungeonUser user, string token)
+        public async Task<bool> ConfirmUserRegistration(Guid userId, string token)
         {
+            var user = await _userDbService.GetUser(userId);
             return await _userDbService.ConfirmEmail(user, token);
         }
 
         public async Task<bool> DeleteUser(Guid userId)
         {
-            if (!_adminRegistered) return false;
             //ToDo werden auch alle abhängigen Daten beim Löschen eines Dungeons gelöscht?
             var usersAvatars = _dungeonDbContext.Avatars.Where(x => x.Id == userId);
             var usersDungeons = _dungeonDbContext.Dungeons.Where(x => x.DungeonOwner.Id == userId.ToString());
             //ToDo löschen von allen Black/White-Lists und DungeonMaster-Listen
             _dungeonDbContext.Avatars.RemoveRange(usersAvatars);
             _dungeonDbContext.Dungeons.RemoveRange(usersDungeons);
-            return await _userDbService.DeleteUser(userId); ;
+            return await _userDbService.DeleteUser(userId);
         }
 
         public async Task<ICollection<DungeonUser>> GetAllUsers()
         {
-            if (_adminRegistered) return await _userDbService.GetUsers();
-            return null;
+            return await _userDbService.GetUsers();
         }
 
         public async Task<DungeonUser> GetUser(Guid userId)
         {
-            if (_adminRegistered) return await _userDbService.GetUser(userId);
-            return null;
+            return await _userDbService.GetUser(userId);
         }
 
         public async Task<bool> RequestPasswordReset(string userEmail)

@@ -23,7 +23,7 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// </summary>
         /// <param name="userRegistrationRequestId"></param>
         /// <returns></returns>
-        Task<bool> ConfirmUserRegistration(DungeonUser user, string token);//ToDo in UML anpassen
+        Task<bool> ConfirmUserRegistration(Guid userId, string token);//ToDo in UML anpassen
 
         /// <summary>
         /// ToDo

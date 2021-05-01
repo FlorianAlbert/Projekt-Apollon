@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -70,6 +72,15 @@ namespace Apollon.Mud.Server.Inbound
                     ValidateAudience = false
                 };
             });
+
+            var email = Configuration.GetSection("FluentEmail").GetValue<string>("Email");
+            var host = Configuration.GetSection("FluentEmail").GetValue<string>("Host");
+            var port = Configuration.GetSection("FluentEmail").GetValue<int>("Port");
+
+            services
+                .AddFluentEmail(email)
+                .AddRazorRenderer()
+                .AddSmtpSender(host, port);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

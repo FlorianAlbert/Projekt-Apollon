@@ -22,10 +22,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// </summary>
         private readonly IAuthorizationService _authorizationService;
 
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        /// <param name="authorizationService"></param>
         public AuthorizationController(IAuthorizationService authorizationService)
         {
             _authorizationService = authorizationService;

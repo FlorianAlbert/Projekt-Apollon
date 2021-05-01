@@ -9,15 +9,15 @@ namespace Apollon.Mud.Shared.UserManagement.Password
     public class PasswortResetConfirmationDto
     {
         /// <summary>
-        /// The id of the password reset request. 
-        /// </summary>
-        [JsonProperty("PasswordResetRequestId")]
-        public Guid PasswordResetRequestId { get; set; }
-
-        /// <summary>
         /// The password which was sat as new.
         /// </summary>
         [JsonProperty("NewPassword")]
         public string NewPassword { get; set; }
+
+        /// <summary>
+        /// The token to reset the password.
+        /// </summary>
+        [JsonProperty("Token")]
+        public string Token { get; set; } //ToDo change in UML
     }
 }
