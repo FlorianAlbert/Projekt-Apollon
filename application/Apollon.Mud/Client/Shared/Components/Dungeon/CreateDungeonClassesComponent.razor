@@ -17,7 +17,7 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-3">
-                        <h5 class="mt-1">Klassenauswahl  @title</h5>
+                        <h5 class="mt-1">Klassenauswahl</h5>
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
@@ -51,10 +51,6 @@
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Name) />
                         </div>
-                        @if (uniqueClassNameMessage)
-                        {
-                            <div class="text-danger">Dieser Klassenname existiert bereits</div>
-                        }
                     </div>
                 </div>
             </div>
@@ -317,17 +313,15 @@
 
 @code {
 
-    string title = "test0";
-
     #region validation Attributes
 
     /// <summary>
-    /// TODO
+    /// The attribut of the validation model when creating a new class
     /// </summary>
     DungeonClassModel dungeonClassModel = new DungeonClassModel();
 
     /// <summary>
-    /// TODO
+    /// The EditContext used by the form
     /// </summary>
     EditContext classContext;
 
@@ -336,27 +330,27 @@
     #region Content Lists
 
     /// <summary>
-    /// TODO
+    /// The List containing the classes of the Dungeon
     /// </summary>
     List<ClassDto> dungeonClasses = new List<ClassDto>();
 
     /// <summary>
-    /// TODO
+    /// The List containing the takeable items of the Dungeon
     /// </summary>
     List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
 
     /// <summary>
-    /// TODO
+    /// The List containing the usable items of the Dungeon
     /// </summary>
     List<UsableDto> dungeonUsables = new List<UsableDto>();
 
     /// <summary>
-    /// TODO
+    /// The list containing the wearable items of the dungeon
     /// </summary>
     List<WearableDto> dungeonWearables = new List<WearableDto>();
 
     /// <summary>
-    /// TODO
+    /// The List containing the consumable items of the dungeon
     /// </summary>
     List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
 
@@ -365,26 +359,21 @@
     #region Help variables
 
     /// <summary>
-    /// TODO
+    /// The 1-based counter of default items per class
     /// </summary>
-    public int defaultItemCount { get; set; } = 1;
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    bool uniqueClassNameMessage = false;
+    int defaultItemCount = 1;
 
     #endregion
 
     #region Bound variables
 
     /// <summary>
-    /// TODO
+    /// The string bound to the class selection, NoClass means no class is selected
     /// </summary>
     private string chosenClass = "NoClass";
 
     /// <summary>
-    /// TODO
+    /// The string array bound to the maximum of default items per class
     /// </summary>
     string[] classItems = new string[5];
 
@@ -392,11 +381,10 @@
 
     #region Methods
     /// <summary>
-    /// TODO
+    /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
     protected override void OnInitialized()
     {
-
         #region toDelete
 
         ClassDto testClass = new ClassDto();
@@ -457,16 +445,17 @@
         dungeonWearables.Add(newWearable3);
 
         #endregion
-
+        ///TODO Daten aus dem Backend lokal ablegen
         classContext = new EditContext(dungeonClassModel);
     }
 
     /// <summary>
-    /// TODO
+    /// Handles the submition of a created class, validates the data and saves them locally and on the server
     /// </summary>
     /// <returns></returns>
     private async Task HandleClassSubmit()
     {
+        ///TODO Als Task erstellen, damit es parallel läuft
         var validClass = classContext.Validate();
         if (validClass)
         {
@@ -514,19 +503,17 @@
             {
                 dungeonClasses.Add(submitClass);
             }
-
-            uniqueClassNameMessage = false;
             chosenClass = dungeonClassModel.Name;
             //TODO Klasse ans Backend senden
         }
         else
         {
-            //TODO
+            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
         }
     }
 
     /// <summary>
-    /// TODO
+    /// Adds a default class item
     /// </summary>
     private void AddDefaultItemButtonClicked()
     {
@@ -535,7 +522,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Removes a default class item
     /// </summary>
     private void RemoveDefaultItemButtonClicked()
     {
@@ -544,12 +531,11 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Called when the user selects a new class, this method fills out the form according to the selected class
     /// </summary>
-    /// <param name="args"></param>
+    /// <param name="args">Event Arguments</param>
     private void ClassSelectionChanged(System.EventArgs args)
     {
-        title = "";
         if (!chosenClass.Equals(dungeonClassModel.Name))
         {
             dungeonClassModel.Name = string.Empty;
@@ -630,9 +616,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// When the Name field loses its focus, this Method checks wether a class with this name already exists and if so fills out the form accordingly
     /// </summary>
-    /// <param name="args"></param>
+    /// <param name="args">Event Arguments</param>
     private void NameFieldLostFocus(FocusEventArgs args)
     {
         ClassDto checkClass = dungeonClasses.Find(i => i.Name.Equals(dungeonClassModel.Name));
@@ -646,7 +632,7 @@
             {
                 classItems[i] = "NoItem";
             }
-            dungeonClassModel.Name = chosenClass;
+            chosenClass = dungeonClassModel.Name;
             dungeonClassModel.Description = checkClass.Description;
             dungeonClassModel.Health = checkClass.DefaultHealth.ToString();
             dungeonClassModel.Protection = checkClass.DefaultProtection.ToString();
@@ -711,9 +697,9 @@
 
 
     /// <summary>
-    /// TODO
+    /// To create a new class this Method clears all form input fields
     ///</summary>
-    ///<param name="args"></param>
+    ///<param name="args">Event Arguments</param>
     private void NewClassButtonClicked(System.EventArgs args)
     {
         chosenClass = "NoClass";
