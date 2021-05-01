@@ -10,32 +10,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
-    /// <summary>
-    /// ToDo
-    /// </summary>
     public class UserService: IUserService
     {
         /// <summary>
-        /// ToDo
+        /// Service to send mails.
         /// </summary>
         private readonly IEmailService _emailService;
 
         /// <summary>
-        /// ToDo
+        /// Service to modify the user-db content.
         /// </summary>
-        private readonly IUserDBService _userDbService;
+        private readonly IUserDbService _userDbService;
 
         /// <summary>
-        /// ToDo
+        /// Service to modify the dungeon-db content.
         /// </summary>
         private readonly DungeonDbContext _dungeonDbContext;
 
         /// <summary>
-        /// ToDo
+        /// Flag which indicates if one administrator is registered.
         /// </summary>
         private readonly bool _adminRegistered;
 
-        public UserService(IEmailService emailService, IUserDBService userDbService, DungeonDbContext dungeonDbContext)
+        public UserService(IEmailService emailService, IUserDbService userDbService, DungeonDbContext dungeonDbContext)
         {
             _emailService = emailService;
             _userDbService = userDbService;
@@ -53,7 +50,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             var creationResult = await _userDbService.CreateUser(user, password, _adminRegistered);
             if (!creationResult) return false;
             var confirmationToken = await _userDbService.GetEmailConfirmationToken(user);
-            //ToDo Email senden mit confirmationLink
+            //ToDo emailText und confirmationLink erstellen
             var emailText = "";
             await _emailService.SendEmail(userEmail, emailText, "Bestätigung Ihrer Email.");
             return true;
@@ -91,7 +88,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             var user = await _userDbService.GetUserByEmail(userEmail);
             if (user == null) return false;
             var resetToken = await _userDbService.GetResetToken(user);
-            //ToDo send email with resetLink
+            //ToDo emailText und resetLink erstellen
             var emailText = "";
             await _emailService.SendEmail(userEmail, emailText, "Rücksetzung Ihres Passworts.");
             return true;

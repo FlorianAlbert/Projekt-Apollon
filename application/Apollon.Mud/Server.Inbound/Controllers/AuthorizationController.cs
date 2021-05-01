@@ -11,14 +11,14 @@ using IAuthorizationService = Apollon.Mud.Server.Domain.Interfaces.UserManagemen
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
     /// <summary>
-    /// ToDo Tests
+    /// Controller which is responsable for the authorization.
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthorizationController : ControllerBase
     {
         /// <summary>
-        /// ToDo
+        /// The service to validate the credentials.
         /// </summary>
         private readonly IAuthorizationService _authorizationService;
 
@@ -28,7 +28,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         }
 
         /// <summary>
-        /// ToDo
+        /// Validates the credentials and if it is successfully returns a AuthorizationResponseDto in the IActionResult.
         /// </summary>
         /// <param name="authorizationRequestDto"></param>
         /// <returns></returns>

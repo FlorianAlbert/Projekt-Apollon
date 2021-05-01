@@ -8,12 +8,14 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
     /// <summary>
     /// ToDO
     /// </summary>
-    public interface IUserDBService
+    public interface IUserDbService
     {
         /// <summary>
-        /// ToDo
+        /// 
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <param name="asAdmin"></param>
         /// <returns></returns>
         Task<bool> CreateUser(DungeonUser user, string password, bool asAdmin = false); //ToDo in UML anpassen und absprechen
 
@@ -31,10 +33,11 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         Task<ICollection<DungeonUser>> GetUsers(); //ToDo in UML anpassen und absprechen
 
         /// <summary>
-        /// ToDo
+        /// 
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="password"></param>
+        /// <param name="oldPassword"></param>
+        /// <param name="newPassword"></param>
         /// <returns></returns>
         Task<bool> UpdateUser(DungeonUser user, string oldPassword, string newPassword); //ToDo in UML anpassen und absprechen
 
@@ -56,7 +59,7 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// 
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="resetToken"></param>
+        /// <param name="token"></param>
         /// <param name="password"></param>
         /// <returns></returns>
         Task<bool> ResetPassword(DungeonUser user, string token, string password); //ToDo in UML hinzufügen

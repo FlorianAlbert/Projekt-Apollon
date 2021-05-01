@@ -7,10 +7,8 @@
   <ItemGroup>
     <Folder Include="Implementations\Game\" />
     <Folder Include="Implementations\Chat\" />
-    <Folder Include="Implementations\Shared\" />
     <Folder Include="Interfaces\Game\" />
     <Folder Include="Interfaces\Chat\" />
-    <Folder Include="Interfaces\Shared\" />
   </ItemGroup>
 
   <ItemGroup>

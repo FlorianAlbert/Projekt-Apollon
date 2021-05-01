@@ -19,9 +19,10 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         Task<bool> RequestUserRegistration(string userEmail, string password);//ToDo in UML anpassen //ToDo checken ob Passwort selbst passt?!
 
         /// <summary>
-        /// ToDo
+        /// 
         /// </summary>
-        /// <param name="userRegistrationRequestId"></param>
+        /// <param name="userId"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
         Task<bool> ConfirmUserRegistration(Guid userId, string token);//ToDo in UML anpassen
 
@@ -53,17 +54,19 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         Task<bool> RequestPasswordReset(string userEmail);//ToDo in UML anpassen
 
         /// <summary>
-        /// ToDo
+        /// 
         /// </summary>
-        /// <param name="resetPasswordRequestId"></param>
+        /// <param name="userId"></param>
+        /// <param name="resetToken"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
         Task<bool> ConfirmPasswordReset(Guid userId, string resetToken, string newPassword);//ToDo in UML anpassen //ToDo checken ob Passwort selbst passt?!
 
         /// <summary>
-        /// ToDo
+        /// 
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="oldPassword"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
         Task<bool> ChangePassword(Guid userId, string oldPassword, string newPassword);//ToDo in UML anpassen //ToDo checken ob Passwort selbst passt?!

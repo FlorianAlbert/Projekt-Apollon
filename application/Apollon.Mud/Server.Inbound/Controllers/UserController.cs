@@ -14,6 +14,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
+    /// <summary>
+    /// ToDo
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -67,6 +70,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return BadRequest();
         }
 
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("/delete/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -80,6 +88,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return BadRequest();
         }
 
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("/users")]
         [ProducesResponseType(typeof(ICollection<DungeonUserDto>), StatusCodes.Status200OK)]
@@ -99,6 +111,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return Ok(usersDto);
         }
 
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("/user/{userId}")]
         [ProducesResponseType(typeof(DungeonUserDto), StatusCodes.Status200OK)]
@@ -118,6 +135,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return Ok(userDto);
         }
 
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        /// <param name="requestPasswordResetDto"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("/password/reset")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -131,6 +153,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return BadRequest();
         }
 
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        /// <param name="passwortResetConfirmationDto"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("/password/confirm/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -144,6 +172,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return BadRequest();
         }
 
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        /// <param name="changePasswordDto"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("/password/reset/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

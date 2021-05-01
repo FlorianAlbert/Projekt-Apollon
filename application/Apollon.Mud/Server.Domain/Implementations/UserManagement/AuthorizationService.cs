@@ -13,42 +13,34 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
-    /// <summary>
-    /// ToDo
-    /// </summary>
     public class AuthorizationService : IAuthorizationService
     {
         /// <summary>
-        /// ToDo
+        /// The service for user-db functionality.
         /// </summary>
-        private IUserDBService _userDbService;
+        private readonly IUserDbService _userDbService;
+
+        /// <summary>
+        /// Manager to validate the login.
+        /// </summary>
+        private readonly SignInManager<DungeonUser> _signInManager;
 
         /// <summary>
         /// ToDo
         /// </summary>
-        private SignInManager<DungeonUser> _signInManager;
+        private readonly UserManager<DungeonUser> _userManager;
 
         /// <summary>
-        /// ToDo
-        /// </summary>
-        private UserManager<DungeonUser> _userManager;
-
-        /// <summary>
-        /// ToDo
+        /// Configuration to load the settings.
         /// </summary>
         private IConfiguration _configuration;
 
         /// <summary>
-        /// ToDo
+        /// The secret to generate a JWT.
         /// </summary>
-        private string _tokenSecret;
+        private readonly string _tokenSecret;
 
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        /// <param name="userDbService"></param>
-        /// <param name="signInManager"></param>
-        public AuthorizationService(IUserDBService userDbService, SignInManager<DungeonUser> signInManager, UserManager<DungeonUser> userManager, IConfiguration configuration)
+        public AuthorizationService(IUserDbService userDbService, SignInManager<DungeonUser> signInManager, UserManager<DungeonUser> userManager, IConfiguration configuration)
         {
             _userDbService = userDbService;
             _signInManager = signInManager;
@@ -97,7 +89,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
             foreach (var role in Enum.GetNames<Roles>())
             {
-                if (await _userManager.IsInRoleAsync(user, role))
+                if (await _userManager.IsInRoleAsync(user, role)) //ToDo Aufruf in UserDbService kapseln für konsistente Logik
                 {
                     listClaims.Add(new Claim(ClaimTypes.Role, role));
                 }

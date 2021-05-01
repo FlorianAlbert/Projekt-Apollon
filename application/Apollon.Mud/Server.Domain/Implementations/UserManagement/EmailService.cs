@@ -9,13 +9,10 @@ using FluentEmail.Core.Defaults;
 
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
-    /// <summary>
-    /// ToDo
-    /// </summary>
     public class EmailService: IEmailService
     {
         /// <summary>
-        /// 
+        /// The factory to create the emails to send.
         /// </summary>
         private readonly IFluentEmailFactory _fluentEmailFactory;
 

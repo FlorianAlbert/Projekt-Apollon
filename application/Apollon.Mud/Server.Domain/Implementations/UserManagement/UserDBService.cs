@@ -9,18 +9,18 @@ using Microsoft.EntityFrameworkCore;
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
     /// <summary>
-    /// ToDo
+    /// Service which is used for database-changing methods.
     /// </summary>
-    public class UserDBService: IUserDBService
+    public class UserDbService: IUserDbService
     {
         //ToDo Tests
 
         /// <summary>
-        /// ToDo
+        /// Manager to access and modify the content of the database.
         /// </summary>
         private readonly UserManager<DungeonUser> _userManager;
 
-        public UserDBService(UserManager<DungeonUser> userManager)
+        public UserDbService(UserManager<DungeonUser> userManager)
         {
             _userManager = userManager;
         }
