@@ -49,10 +49,13 @@ namespace Apollon.Mud.Server.Inbound
                     options.Password.RequireDigit = true;
                     options.Password.RequireLowercase = true;
                     options.Password.RequireUppercase = true;
+                    options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultProvider;
+                    options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultProvider;
                 })
                 .AddRoles<IdentityRole>()
                 .AddSignInManager<SignInManager<DungeonUser>>()
-                .AddEntityFrameworkStores<DungeonDbContext>();
+                .AddEntityFrameworkStores<DungeonDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddSingleton<IConnectionService, ConnectionService>();
 
