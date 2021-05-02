@@ -1,5 +1,5 @@
 ﻿@page "/Identity/Account/ConfirmAccount/{id:guid}"
-
+@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
 @using Apollon.Mud.Client.Data.Models
 
 
@@ -93,11 +93,10 @@
     /// <summary>
     /// When initialized the component instantiates the EditContext
     /// </summary>
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
         resendEmailContext = new EditContext(resendEmailModel);
-        //TODO Abschicken der Id ans Backend und auswertung in Bool schreiben
-
+        var succesfullConfirmation = await authorizationService.ConfirmRegistration(Id);
     }
 
     /// <summary>
@@ -116,7 +115,5 @@
             //TODO User Benachrichtigen
         }
     }
-
-
 }
 

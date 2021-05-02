@@ -65,15 +65,36 @@ namespace Apollon.Mud.Client.Services.Implementiations
             return false;
         }
 
-        //public async Task<bool> Register(string userId, string secret)
-        //{
-        //    RegistrationRequestDto userCredentials = new RegistrationRequestDto();
-        //    userCredentials.UserEmail = userId;
-        //    userCredentials.Password = secret;
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="secret"></param>
+        /// <returns></returns>
+        public async Task<bool> Register(string userId, string secret)
+        {
+            RegistrationRequestDto userCredentials = new RegistrationRequestDto();
+            userCredentials.UserEmail = userId;
+            userCredentials.Password = secret;
 
-        //    CancellationToken cancellation = TokenSource.Token;
+            CancellationToken cancellationToken = TokenSource.Token;
 
-        //    var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "POST/api")
-        //}
+            var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "POST/api/user/registration/request", userCredentials, cancellationToken);
+            return response.StatusCode == HttpStatusCode.OK;
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<bool> ConfirmRegistration(Guid userId)
+        {
+            CancellationToken cancellationToken = TokenSource.Token;
+
+            var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "POST/api/registration/" + userId + "/" + CurrentUserContext.Token, cancellationToken);
+
+            return response.StatusCode == HttpStatusCode.OK;
+        }
     }
 }

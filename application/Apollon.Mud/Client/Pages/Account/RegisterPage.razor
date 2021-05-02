@@ -83,7 +83,15 @@
         var validLogin = registerContext.Validate();
         if (validLogin)
         {
-            //TODO Daten absenden
+            bool response = await authorizationService.Register(registerModel.Email, registerModel.Password);
+            if (response)
+            {
+                //TODO User darauf hinweisen, dass er E-Mail erhalten hat
+            }
+            else
+            {
+                //User darauf hinweisen, dass iwas nicht geklappt hat
+            }
         }
         else
         {
