@@ -18,10 +18,10 @@ jobs:
       run: dotnet publish -c Release -o /var/www/Application/Server
       working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon/application/Apollon.Mud/Server.Inbound
     - name: Stop Client
-      run: systemctl stop blazor.service
+      run: sudo systemctl stop blazor.service
     - name: Stop Server
-      run: systemctl stop server.service
+      run: sudo systemctl stop server.service
     - name: Start Server
-      run: systemctl start server.service
+      run: sudo systemctl start server.service
     - name: Start Client
-      run: systemctl start blazor.service
+      run: sudo systemctl start blazor.service
