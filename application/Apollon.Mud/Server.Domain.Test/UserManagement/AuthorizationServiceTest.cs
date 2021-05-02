@@ -8,45 +8,45 @@ using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.User;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
+    /// <summary>
+    /// ToDo
+    /// </summary>
     public class AuthorizationService : IAuthorizationService
     {
         /// <summary>
-        /// The service for user-db functionality.
+        /// ToDo
         /// </summary>
-        private readonly IUserDbService _userDbService;
-
-        /// <summary>
-        /// Manager to validate the login.
-        /// </summary>
-        private readonly SignInManager<DungeonUser> _signInManager;
+        private IUserDBService _userDbService;
 
         /// <summary>
         /// ToDo
         /// </summary>
-        private readonly UserManager<DungeonUser> _userManager;
+        private SignInManager<DungeonUser> _signInManager;
 
         /// <summary>
-        /// Configuration to load the settings.
+        /// ToDo
         /// </summary>
-        private IConfiguration _configuration;
+        private UserManager<DungeonUser> _userManager;
 
         /// <summary>
-        /// The secret to generate a JWT.
+        /// ToDo
         /// </summary>
-        private readonly string _tokenSecret;
+        private string _tokenSecret; //ToDo über Config eintragen lassen
 
-        public AuthorizationService(IUserDbService userDbService, SignInManager<DungeonUser> signInManager, UserManager<DungeonUser> userManager, IConfiguration configuration)
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        /// <param name="userDbService"></param>
+        /// <param name="signInManager"></param>
+        public AuthorizationService(IUserDBService userDbService, SignInManager<DungeonUser> signInManager, UserManager<DungeonUser> userManager)
         {
             _userDbService = userDbService;
             _signInManager = signInManager;
             _userManager = userManager;
-            _configuration = configuration;
-            _tokenSecret = _configuration.GetSection("AuthorizationToken").Value;  //ToDo passt es so?
         }
 
         public async Task<LoginResult> Login(string email, string secret)
@@ -89,7 +89,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
             foreach (var role in Enum.GetNames<Roles>())
             {
-                if (await _userManager.IsInRoleAsync(user, role)) //ToDo Aufruf in UserDbService kapseln für konsistente Logik
+                if (await _userManager.IsInRoleAsync(user, role))
                 {
                     listClaims.Add(new Claim(ClaimTypes.Role, role));
                 }

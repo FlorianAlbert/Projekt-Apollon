@@ -6,8 +6,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
     /// <summary>
     /// ToDo
     /// </summary>
-    public class GameDBService : IGameDBService
-
+    public class GameDbService: IGameDbService
     {
         //ToDo implement
         public bool ValidateUserIsDungeonMaster(Guid dungeonId, Guid userId)

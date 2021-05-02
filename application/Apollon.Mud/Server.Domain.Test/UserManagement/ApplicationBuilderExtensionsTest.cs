@@ -6,16 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
-    /// <summary>
-    /// ToDo
-    /// </summary>
     public static class ApplicationBuilderExtensions
     {
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        /// <param name="app"></param>
-        /// <returns></returns>
         public static IApplicationBuilder AddDefaultUserRoles(this IApplicationBuilder app)
         {
             var roleManager = app.ApplicationServices.GetRequiredService<RoleManager<IdentityRole>>();
