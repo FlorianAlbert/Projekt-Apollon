@@ -14,7 +14,7 @@ namespace Apollon.Mud.Server.Domain.Test.Shared
             _Fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
         }
 
-        [Fact]        
+        /*[Fact]        
         public void NotFound_GetConnection_Fails()
         {
 
@@ -89,7 +89,7 @@ namespace Apollon.Mud.Server.Domain.Test.Shared
         [Fact]
         public void Remove_RemoveConnection_Succeds()
         {
-
-        }
+        
+        }*/
     }
 }
