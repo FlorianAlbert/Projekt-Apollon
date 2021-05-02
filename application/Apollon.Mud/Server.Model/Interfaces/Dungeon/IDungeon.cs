@@ -66,18 +66,39 @@ namespace Apollon.Mud.Server.Model.Interfaces.Dungeon
         /// </summary>
         ICollection<IAvatar> RegisteredAvatars { get; }
 
+        /// <summary>
+        /// All possible Dungeon Masters of the dungeon
+        /// </summary>
         ICollection<DungeonUser> DungeonMasters { get; }
 
+        /// <summary>
+        /// List of all users who have access to this dungeon
+        /// </summary>
         ICollection<DungeonUser> WhiteList { get; }
 
+        /// <summary>
+        /// List of all users who are not allowed to have avatars in this dungeon
+        /// </summary>
         ICollection<DungeonUser> BlackList { get; }
 
+        /// <summary>
+        /// List of all users who want to have access to this dungeon, in case it is private
+        /// </summary>
         ICollection<DungeonUser> OpenRequests { get; }
 
+        /// <summary>
+        /// User who is currently the Dungeon Master
+        /// </summary>
         DungeonUser CurrentDungeonMaster { get; set; }
 
+        /// <summary>
+        /// User who owns this dungeon
+        /// </summary>
         DungeonUser DungeonOwner { get; set; }
 
+        /// <summary>
+        /// Defines wether this dungeon is public or private accessible
+        /// </summary>
         Visibility Visibility { get; set; }
 
         #endregion
