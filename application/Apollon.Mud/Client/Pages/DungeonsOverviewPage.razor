@@ -1,0 +1,56 @@
+﻿@page "/Dungeons"
+
+
+<div class="container shadow d-flex bg-white min-vh-100">
+    <div class="row container-fluid">
+        <div class="col-md-auto mt-3">
+            <h2>Filter</h2>
+            <div class="card shadow-sm" style="width: 18rem;">
+                <div class="card-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="SearchName">Name</label>
+                            <input type="search" class="form-control" id="searchName" placeholder="Search for a name">
+                        </div>
+                        <div class="form-check mt-2">
+                            <input type="checkbox" class="form-check-input" id="CheckOnline">
+                            <label class="form-check-label" for="exampleCheck1">Only show Online</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2 disabled">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9 mt-3">
+            <div class="container ">
+                <h1>Games</h1>
+                <div class="card mt-2 shadow">
+                    <h5 class="card-header">Dungeon One</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Alpha-Dungeon (Early Access)</h5>
+                        <p class="card-text">This is the very first demo of a dungeon. Keep in mind that this game is still in a pre-alpha state and only covers the very basics of a Multi-User-Dungeon<a href="/Game" class="btn btn-primary float-end">Play</a></p>
+                    </div>
+                </div>
+                <div class="card mt-2 shadow">
+                    <h5 class="card-header">Dungeon Two</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Example Dungeon Card</h5>
+                        <p class="card-text">This Card is only to show what it would look like if there was another dungeon available to play.<a href="#" class="btn btn-primary float-end disabled">Play</a></p>
+                    </div>
+                </div>
+                <div class="card mt-2 shadow">
+                    <h5 class="card-header">Game Three</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Dungeon Three</h5>
+                        <p class="card-text">This Card is only to show what it would look like if there was another dungeon available to play.<a href="#" class="btn btn-primary float-end disabled">Play</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+}

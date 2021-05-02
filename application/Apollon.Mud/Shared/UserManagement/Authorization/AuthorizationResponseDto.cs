@@ -4,18 +4,18 @@ using Newtonsoft.Json;
 namespace Apollon.Mud.Shared.UserManagement.Authorization
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents an authorization request response.
     /// </summary>
     public class AuthorizationResponseDto
     {
         /// <summary>
-        /// ToDo
+        /// The JSON-Web-Token which is generated, if the request was successfully.
         /// </summary>
         [JsonProperty("Token")]
         public string Token { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The user which was logged in with the credentials.
         /// </summary>
         [JsonProperty("DungeonUserDto")]
         public DungeonUserDto DungeonUserDto { get; set; }

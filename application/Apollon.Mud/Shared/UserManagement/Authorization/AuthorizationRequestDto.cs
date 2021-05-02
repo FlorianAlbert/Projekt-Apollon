@@ -3,18 +3,18 @@
 namespace Apollon.Mud.Shared.UserManagement.Authorization
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents an authorization request.
     /// </summary>
     public class AuthorizationRequestDto
     {
         /// <summary>
-        /// ToDo
+        /// The email with which an authorization is requested.
         /// </summary>
         [JsonProperty("UserEmail")]
         public string UserEmail { get; set; }
 
         /// <summary>
-        /// ToDo Hash statt Password versenden?! was braucht das Identity?
+        /// The password with which an authorization is requested. 
         /// </summary>
         [JsonProperty("Password")]
         public string Password { get; set; }

@@ -1,0 +1,224 @@
+﻿@using Apollon.Mud.Client.Data.Models
+@using Apollon.Mud.Shared.Dungeon
+@using Apollon.Mud.Shared.Dungeon.Room
+<div class="card">
+    <div class="card-header">
+        <h2>Allgemeines</h2>
+    </div>
+    <div class="card-body">
+
+        <EditForm EditContext="@dungeonContext" OnSubmit="@HandleDungeonSubmit" novalidate>
+            <DataAnnotationsValidator />
+
+            <div class="form-group mt-2">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Name</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonModel.Name" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonModel.Name) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Beschreibung</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <InputTextArea class="form-control" placeholder="Beschreibung" @bind-Value="dungeonModel.Description" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonModel.Description) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Epoche</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <InputTextArea class="form-control" placeholder="Text" @bind-Value="dungeonModel.Epoch" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonModel.Epoch) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Startraum</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" @bind="dungeonModel.DefaultRoom">
+                                <option selected hidden value=""></option>
+                                @foreach (RoomDto room in dungeonRooms)
+                                {
+                                    <option value="@room.Name">@room.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonModel.DefaultRoom) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Sichtbarkeit</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" @bind="dungeonModel.Visibility">
+                                <option selected hidden value=""></option>
+                                <option value="Public">Öffentlich</option>
+                                <option value="Private">Private</option>
+                            </select>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonModel.Visibility) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="featurette-divider" />
+
+            <div class="row">
+                <div class="col-lg-12 d-flex justify-content-center">
+                    <TooltipComponent Text="Erstelle Deine eigenen Befehle"><h4 class="mt-1">Eigene Befehle</h4></TooltipComponent>
+                </div>
+            </div>
+
+            <div class="form-group mt-3">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="d-flex justify-content-center">
+                            <TooltipComponent Text="Dieser Ausdruck wird dem Nutzer in der Hilfe angezeigt"><h5>Lesbarer Ausdruck</h5></TooltipComponent>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <TooltipComponent Text="Auf diese Reg. Ex. wird die Nutzereingabe überprüft"><h5>Regulärer Ausdruck</h5></TooltipComponent>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-1">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" placeholder="Lesbarer Ausdruck" id="Name" @bind-Value="dungeonModel.Name" />
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" placeholder="Regulärer Ausdruck" id="Name" @bind-Value="dungeonModel.Name" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="featurette-divder" />
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Status</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" @bind="dungeonModel.Status">
+                                <option selected hidden value=""></option>
+                                <option value="Approved">Aktiv</option>
+                                <option value="Pending">Inaktiv</option>
+                            </select>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonModel.Status) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="featurette-divder" />
+
+            <div class="row">
+                <button class="btn btn-success" style="width:30rem" type="submit">Speichern</button>
+            </div>
+        </EditForm>
+
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// The attribute of the validation model when creating a new Race
+    /// </summary>
+    DungeonModel dungeonModel = new DungeonModel();
+
+    /// <summary>
+    /// The EditContext used by the form
+    /// </summary>
+    EditContext dungeonContext;
+
+    /// <summary>
+    /// The List containing the Npcs of the Dungeon
+    /// </summary>
+    List<RoomDto> dungeonRooms = new List<RoomDto>();
+
+    /// <summary>
+    /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        #region to Delete
+
+        #endregion
+
+        dungeonContext = new EditContext(dungeonModel);
+    }
+
+    /// <summary>
+    /// Handles the submition of a created Npc, validates the data and saves them locally and on the server
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleDungeonSubmit()
+    {
+        var validDungeon = dungeonContext.Validate();
+        if (validDungeon)
+        {
+            DungeonDto submitDungeon = new DungeonDto();
+            submitDungeon.DungeonName = dungeonModel.Name;
+            submitDungeon.DungeonDescription = dungeonModel.Description;
+            submitDungeon.DungeonEpoch = dungeonModel.Epoch;
+            submitDungeon.DefaultRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonModel.DefaultRoom));
+            submitDungeon.Visibility = dungeonModel.Visibility.Equals("Private") ? 0 : 1;
+            submitDungeon.Status = dungeonModel.Status.Equals("Approved") ? 0 : 1;
+            //TODO Daten ans Backend senden
+        }
+        else
+        {
+            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
+        }
+    }
+
+}
+

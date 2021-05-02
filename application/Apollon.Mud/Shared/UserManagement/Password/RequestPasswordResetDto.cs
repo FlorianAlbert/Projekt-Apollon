@@ -3,12 +3,12 @@
 namespace Apollon.Mud.Shared.UserManagement.Password
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents a request to reset the password of a user.
     /// </summary>
     public class RequestPasswordResetDto
     {
         /// <summary>
-        /// ToDo
+        /// The email-address of the user who's password should be reset.
         /// </summary>
         [JsonProperty("UserEmail")]
         public string UserEmail { get; set; }

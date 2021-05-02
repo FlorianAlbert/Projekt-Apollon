@@ -1,0 +1,611 @@
+﻿@using Apollon.Mud.Client.Data.Models
+@using Apollon.Mud.Shared.Dungeon.Inspectable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
+
+<div class="card">
+    <div class="card-header">
+        <h2>Items</h2>
+    </div>
+    <div class="card-body">
+
+        <EditForm EditContext="@itemContext" OnSubmit="@HandleItemSubmit" novalidate>
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Itemauswahl</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" aria-label="Default select example" @bind="chosenItem" @onselect="@ItemSelectionChanged()" @onselect:stopPropagation="true">
+                                <option value="NoItem" selected hidden>Neues Item</option>
+                                @if (!(dungeonInspectables is null))
+                                {
+                                    @foreach (InspectableDto dungeonInspectable in dungeonInspectables)
+                                    {
+                                        <option value="@dungeonInspectable.Name 1">@dungeonInspectable.Name</option>
+                                    }
+                                }
+                                @if (!(dungeonTakeables is null))
+                                {
+                                    @foreach (TakeableDto dungeonTakeable in dungeonTakeables)
+                                    {
+                                        <option value="@dungeonTakeable.Name 2">@dungeonTakeable.Name</option>
+                                    }
+                                }
+                                @if (!(dungeonConsumables is null))
+                                {
+                                    @foreach (ConsumableDto dungeonConsumable in dungeonConsumables)
+                                    {
+                                        <option value="@dungeonConsumable.Name 3">@dungeonConsumable.Name</option>
+                                    }
+                                }
+                                @if (!(dungeonUsables is null))
+                                {
+                                    @foreach (UsableDto dungeonUsable in dungeonUsables)
+                                    {
+                                        <option value="@dungeonUsable.Name 4">@dungeonUsable.Name</option>
+                                    }
+                                }
+                                @if (!(dungeonWearables is null))
+                                {
+                                    @foreach (WearableDto dungeonWearable in dungeonWearables)
+                                    {
+                                        <option value="@dungeonWearable.Name 5">@dungeonWearable.Name</option>
+                                    }
+                                }
+                            </select>
+
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="NewItemButtonClicked"><TooltipComponent Text="Neues Item erstellen"><strong>+</strong></TooltipComponent></button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="featurette-divider" />
+
+
+            <div class="form-group mt-2">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Kategorie</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" aria-label="Default select example" @bind="chosenItemCategory">
+                                <option selected value="Inspectable">Inspectable</option>
+                                <option value="Takeable">Takeable</option>
+                                <option value="Consumable">Consumable</option>
+                                <option value="Usable">Usable</option>
+                                <option value="Wearable">Wearable</option>
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Name</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonItemModel.Name" @onfocusout="NameFieldLostFocus" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonItemModel.Name) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Beschreibung</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <InputTextArea class="form-control" placeholder="Beschreibung" @bind-Value="dungeonItemModel.Description" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonItemModel.Description) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (chosenItemCategory.Equals("Takeable") || chosenItemCategory.Equals("Usable") || chosenItemCategory.Equals("Wearable") || chosenItemCategory.Equals("Consumable"))
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-3">
+                            <h5 class="mt-1">Gewicht</h5>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <InputText class="form-control" placeholder="Gewicht" @bind-Value="dungeonItemModel.Weight" />
+                            </div>
+                            <div class="text-danger">
+                                <ValidationMessage For=@(() => dungeonItemModel.Weight) />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (chosenItemCategory.Equals("Consumable"))
+                {
+                    <div class="form-group mt-5">
+                        <div class="row">
+                            <div class="col-3">
+                                <h5 class="mt-1">Effekt</h5>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex justify-content-center">
+                                    <InputText class="form-control" placeholder="Effekt" @bind-Value="dungeonItemModel.EffectDescription" />
+                                </div>
+                                <div class="text-danger">
+                                    <ValidationMessage For=@(() => dungeonItemModel.EffectDescription) />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (chosenItemCategory.Equals("Usable"))
+                {
+                    <div class="form-group mt-5">
+                        <div class="row">
+                            <div class="col-3">
+                                <h5 class="mt-1">Schadensboost</h5>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex justify-content-center">
+                                    <InputText class="form-control" placeholder="Schadensboost" @bind-Value="dungeonItemModel.DamageBoost" />
+                                </div>
+                                <div class="text-danger">
+                                    <ValidationMessage For=@(() => dungeonItemModel.DamageBoost) />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (chosenItemCategory.Equals("Wearable"))
+                {
+                    <div class="form-group mt-5">
+                        <div class="row">
+                            <div class="col-3">
+                                <h5 class="mt-1">Verteidigungsboost</h5>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex justify-content-center">
+                                    <InputText class="form-control" placeholder="Verteidigungsboost" @bind-Value="dungeonItemModel.ProtectionBoost" />
+                                </div>
+                                <div class="text-danger">
+                                    <ValidationMessage For=@(() => dungeonItemModel.ProtectionBoost) />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Status</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" @bind="dungeonItemModel.Status">
+                                <option selected hidden value=""></option>
+                                <option value="Approved">Aktiv</option>
+                                <option value="Pending">Inaktiv</option>
+                            </select>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonItemModel.Status) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col">
+                    <button class="btn btn-success mt-5" type="submit">Speichern</button>
+                </div>
+            </div>
+        </EditForm>
+
+    </div>
+</div>
+
+@code {
+
+    #region Bound variables
+    /// <summary>
+    /// The string bound to the item category selection, default is Inspectable
+    /// </summary>
+    string chosenItemCategory = "Inspectable";
+
+    /// <summary>
+    /// The string bound to the item selection, NoItem means no Item is selected
+    /// </summary>
+    string chosenItem = "NoItem";
+    #endregion
+
+    #region Validation model
+    /// <summary>
+    /// The attribut of the validation model when creating a new Item
+    /// </summary>
+    DungeonItemModel dungeonItemModel = new DungeonItemModel();
+
+    /// <summary>
+    /// The EditContext used by the form
+    /// </summary>
+    EditContext itemContext;
+    #endregion
+
+    #region Item lists
+
+    /// <summary>
+    /// The List containing the Inspectables of the Dungeon
+    /// </summary>
+    List<InspectableDto> dungeonInspectables = new List<InspectableDto>();
+
+    /// <summary>
+    /// The List containing the Takeables of the Dungeon
+    /// </summary>
+    List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
+
+    /// <summary>
+    /// The List containing the Usables of the Dungeon
+    /// </summary>
+    List<UsableDto> dungeonUsables = new List<UsableDto>();
+
+    /// <summary>
+    /// The List containing the Wearables of the Dungeon
+    /// </summary>
+    List<WearableDto> dungeonWearables = new List<WearableDto>();
+
+    /// <summary>
+    /// The List containing the Consumables of the Dungeon
+    /// </summary>
+    List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
+
+    #endregion
+
+    #region Methods
+    /// <summary>
+    /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        #region toDelete
+
+
+        InspectableDto testItem = new InspectableDto();
+
+        testItem.Name = "TestItem";
+        testItem.Description = "Beschreibung";
+
+        dungeonInspectables.Add(testItem);
+        #endregion
+
+        itemContext = new EditContext(dungeonItemModel);
+    }
+
+    /// <summary>
+    /// Handles the submition of an created item, validates the data and saves them locally and on the server
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleItemSubmit()
+    {
+        switch (chosenItemCategory)
+        {
+            case "Inspectable":
+                dungeonItemModel.Weight = "0";
+                dungeonItemModel.EffectDescription = "None";
+                dungeonItemModel.DamageBoost = "0";
+                dungeonItemModel.ProtectionBoost = "0";
+                break;
+            case "Takeable":
+                dungeonItemModel.EffectDescription = " ";
+                dungeonItemModel.EffectDescription = "None";
+                dungeonItemModel.DamageBoost = "0";
+                dungeonItemModel.ProtectionBoost = "0";
+                break;
+            case "Consumable":
+                dungeonItemModel.DamageBoost = "0";
+                dungeonItemModel.ProtectionBoost = "0";
+                break;
+            case "Usable":
+                dungeonItemModel.EffectDescription = "None";
+                dungeonItemModel.ProtectionBoost = "0";
+                break;
+            case "Wearable":
+                dungeonItemModel.EffectDescription = "None";
+                dungeonItemModel.DamageBoost = "0";
+                break;
+        }
+        var validItem = itemContext.Validate();
+        if (validItem)
+        {
+            bool newItem = false;
+            switch (chosenItemCategory)
+            {
+                case "Inspectable":
+                    InspectableDto submitInspectable = dungeonInspectables.Find(i => i.Name.Equals(dungeonItemModel.Name));
+                    if (submitInspectable is null)
+                    {
+                        submitInspectable = new InspectableDto();
+                        newItem = true;
+                    }
+                    submitInspectable.Name = dungeonItemModel.Name;
+                    submitInspectable.Description = dungeonItemModel.Description;
+                    submitInspectable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
+                    if (newItem)
+                    {
+                        dungeonInspectables.Add(submitInspectable);
+                    }
+                    chosenItem = dungeonItemModel.Name + " 1";
+                    //TODO Klasse ans Backend senden
+                    break;
+                case "Takeable":
+                    TakeableDto submitTakeable = dungeonTakeables.Find(i => i.Name.Equals(dungeonItemModel.Name));
+                    if (submitTakeable is null)
+                    {
+                        submitTakeable = new TakeableDto();
+                        newItem = true;
+                    }
+                    submitTakeable.Name = dungeonItemModel.Name;
+                    submitTakeable.Description = dungeonItemModel.Description;
+                    submitTakeable.Weight = int.Parse(dungeonItemModel.Weight);
+                    submitTakeable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
+                    if (newItem)
+                    {
+                        dungeonTakeables.Add(submitTakeable);
+                    }
+                    chosenItem = dungeonItemModel.Name + " 2";
+                    //TODO Klasse ans Backend senden
+                    break;
+                case "Consumable":
+                    ConsumableDto submitConsumable = dungeonConsumables.Find(i => i.Name.Equals(dungeonItemModel.Name));
+                    if (submitConsumable is null)
+                    {
+                        submitConsumable = new ConsumableDto();
+                        newItem = true;
+                    }
+                    submitConsumable.Name = dungeonItemModel.Name;
+                    submitConsumable.Description = dungeonItemModel.Description;
+                    submitConsumable.Weight = int.Parse(dungeonItemModel.Weight);
+                    submitConsumable.EffectDescription = dungeonItemModel.EffectDescription;
+                    submitConsumable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
+                    if (newItem)
+                    {
+                        dungeonConsumables.Add(submitConsumable);
+                    }
+                    chosenItem = dungeonItemModel.Name + " 3";
+                    //TODO Klasse ans Backend senden
+                    break;
+                case "Usable":
+                    UsableDto submitUsable = dungeonUsables.Find(i => i.Name.Equals(dungeonItemModel.Name));
+                    if (submitUsable is null)
+                    {
+                        submitUsable = new UsableDto();
+                        newItem = true;
+                    }
+                    submitUsable.Name = dungeonItemModel.Name;
+                    submitUsable.Description = dungeonItemModel.Description;
+                    submitUsable.Weight = int.Parse(dungeonItemModel.Weight);
+                    submitUsable.DamageBoost = int.Parse(dungeonItemModel.DamageBoost);
+                    submitUsable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
+                    if (newItem)
+                    {
+                        dungeonUsables.Add(submitUsable);
+                    }
+                    chosenItem = dungeonItemModel.Name + " 4";
+                    //TODO Klasse ans Backend senden
+                    break;
+                case "Wearable":
+                    WearableDto submitWearable = dungeonWearables.Find(i => i.Name.Equals(dungeonItemModel.Name));
+                    if (submitWearable is null)
+                    {
+                        submitWearable = new WearableDto();
+                        newItem = true;
+                    }
+                    submitWearable.Name = dungeonItemModel.Name;
+                    submitWearable.Description = dungeonItemModel.Description;
+                    submitWearable.Weight = int.Parse(dungeonItemModel.Weight);
+                    submitWearable.ProtectionBoost = int.Parse(dungeonItemModel.ProtectionBoost);
+                    submitWearable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
+                    if (newItem)
+                    {
+                        dungeonWearables.Add(submitWearable);
+                    }
+                    chosenItem = dungeonItemModel.Name + " 5";
+                    //TODO Klasse ans Backend senden
+                    break;
+            }
+
+        }
+        else
+        {
+            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
+        }
+    }
+
+    /// <summary>
+    /// Called when the user selects a new item, this method fills out the form according to the selected race
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private EventCallback ItemSelectionChanged()
+    {
+        if (!chosenItem.Equals(dungeonItemModel.Name) && !chosenItem.Equals("NoItem"))
+        {
+            dungeonItemModel.Name = chosenItem.Substring(0, (chosenItem.Length - 2));
+            int itemType = int.Parse(chosenItem.Substring(chosenItem.Length - 1));
+            switch (itemType)
+            {
+                case 1:
+                    chosenItemCategory = "Inspectable";
+                    var newInspectable = dungeonInspectables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    if (!(newInspectable is null))
+                    {
+                        dungeonItemModel.Description = newInspectable.Description;
+                        dungeonItemModel.Status = newInspectable.Status == 0 ? "Approved" : "Pending";
+                    }
+
+                    break;
+                case 2:
+                    chosenItemCategory = "Takeable";
+                    var newTakeable = dungeonTakeables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    if (!(newTakeable is null))
+                    {
+                        dungeonItemModel.Description = newTakeable.Description;
+                        dungeonItemModel.Weight = newTakeable.Weight.ToString();
+                        dungeonItemModel.Status = newTakeable.Status == 0 ? "Approved" : "Pending";
+                    }
+                    break;
+                case 3:
+                    chosenItemCategory = "Consumable";
+                    var newConsumable = dungeonConsumables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    if (!(newConsumable is null))
+                    {
+                        dungeonItemModel.Description = newConsumable.Description;
+                        dungeonItemModel.Weight = newConsumable.Weight.ToString();
+                        dungeonItemModel.Status = newConsumable.Status == 0 ? "Approved" : "Pending";
+                        dungeonItemModel.EffectDescription = newConsumable.EffectDescription;
+                    }
+                    break;
+                case 4:
+                    chosenItemCategory = "Usable";
+                    var newUsable = dungeonUsables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    if (!(newUsable is null))
+                    {
+                        dungeonItemModel.Description = newUsable.Description;
+                        dungeonItemModel.Weight = newUsable.Weight.ToString();
+                        dungeonItemModel.DamageBoost = newUsable.DamageBoost.ToString();
+                        dungeonItemModel.Status = newUsable.Status == 0 ? "Approved" : "Pending";
+                    }
+                    break;
+                case 5:
+                    chosenItemCategory = "Wearable";
+                    var newWearable = dungeonWearables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    if (!(newWearable is null))
+                    {
+                        dungeonItemModel.Description = newWearable.Description;
+                        dungeonItemModel.Weight = newWearable.Weight.ToString();
+                        dungeonItemModel.ProtectionBoost = newWearable.ProtectionBoost.ToString();
+                        dungeonItemModel.Status = newWearable.Status == 0 ? "Approved" : "Pending";
+                    }
+                    break;
+            }
+        }
+        return EventCallback.Empty;
+    }
+
+    /// <summary>
+    /// When the Name field loses its focus, this Method checks wether an Item with this name already exists and if so fills out the form accordingly
+    /// </summary>
+    /// <param name="args"></param>
+    private void NameFieldLostFocus(System.EventArgs args)
+    {
+        var checkInspectable = dungeonInspectables.Find(i => i.Name.Equals(dungeonItemModel.Name));
+        if (checkInspectable is null)
+        {
+            var checkTakeable = dungeonTakeables.Find(i => i.Name.Equals(dungeonItemModel.Name));
+            if (checkTakeable is null)
+            {
+                var checkConsumable = dungeonConsumables.Find(i => i.Name.Equals(dungeonItemModel.Name));
+                if (checkConsumable is null)
+                {
+                    var checkUsable = dungeonUsables.Find(i => i.Name.Equals(dungeonItemModel.Name));
+                    if (checkUsable is null)
+                    {
+                        var checkWearable = dungeonWearables.Find(i => i.Name.Equals(dungeonItemModel.Name));
+                        if (checkWearable is null)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            chosenItem = dungeonItemModel.Name + " 5";
+                            chosenItemCategory = "Wearable";
+                            dungeonItemModel.Name = checkWearable.Name;
+                            dungeonItemModel.Description = checkWearable.Description;
+                            dungeonItemModel.Weight = checkWearable.Weight.ToString();
+                            dungeonItemModel.ProtectionBoost = checkWearable.ProtectionBoost.ToString();
+                            dungeonItemModel.Status = checkWearable.Status == 0 ? "Approved" : "Pending";
+                        }
+                    }
+                    else
+                    {
+                        chosenItem = dungeonItemModel.Name + " 4";
+                        chosenItemCategory = "Usable";
+                        dungeonItemModel.Name = checkUsable.Name;
+                        dungeonItemModel.Description = checkUsable.Description;
+                        dungeonItemModel.Weight = checkUsable.Weight.ToString();
+                        dungeonItemModel.DamageBoost = checkUsable.DamageBoost.ToString();
+                        dungeonItemModel.Status = checkUsable.Status == 0 ? "Approved" : "Pending";
+                    }
+                }
+                else
+                {
+                    chosenItem = dungeonItemModel.Name + " 3";
+                    chosenItemCategory = "Consumable";
+                    dungeonItemModel.Name = checkConsumable.Name;
+                    dungeonItemModel.Description = checkConsumable.Description;
+                    dungeonItemModel.Weight = checkConsumable.Weight.ToString();
+                    dungeonItemModel.EffectDescription = checkConsumable.EffectDescription;
+                    dungeonItemModel.Status = checkConsumable.Status == 0 ? "Approved" : "Pending";
+                }
+            }
+            else
+            {
+                chosenItem = dungeonItemModel.Name + " 2";
+                chosenItemCategory = "Takeable";
+                dungeonItemModel.Name = checkTakeable.Name;
+                dungeonItemModel.Description = checkTakeable.Description;
+                dungeonItemModel.Weight = checkTakeable.Weight.ToString();
+                dungeonItemModel.Status = checkTakeable.Status == 0 ? "Approved" : "Pending";
+            }
+        }
+        else
+        {
+            chosenItem = dungeonItemModel.Name + " 1";
+            chosenItemCategory = "Inspectable";
+            dungeonItemModel.Name = checkInspectable.Name;
+            dungeonItemModel.Description = checkInspectable.Description;
+            dungeonItemModel.Status = checkInspectable.Status == 0 ? "Approved" : "Pending";
+        }
+
+    }
+
+    /// <summary>
+    /// To create a new Item this Method clears all form input fields
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private void NewItemButtonClicked(System.EventArgs args)
+    {
+        chosenItem = "NoItem";
+        chosenItemCategory = string.Empty;
+        dungeonItemModel.Name = string.Empty;
+        dungeonItemModel.Description = string.Empty;
+        dungeonItemModel.Weight = string.Empty;
+        dungeonItemModel.DamageBoost = string.Empty;
+        dungeonItemModel.ProtectionBoost = string.Empty;
+        dungeonItemModel.EffectDescription = string.Empty;
+        dungeonItemModel.Status = string.Empty;
+    }
+    #endregion
+}

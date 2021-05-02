@@ -1,0 +1,114 @@
+﻿@page "/AvatarCreation"
+
+@using Apollon.Mud.Client.Data.Models
+@using Apollon.Mud.Shared.Dungeon.Class
+@using Apollon.Mud.Shared.Dungeon.Race
+
+
+<div class="container d-flex justify-content-center">
+    <div class="card mt-5" style="width:30rem">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-5">
+                    <h5>Avatar Auswahl</h5>
+                </div>
+                <div class="col">
+                    <a class="btn btn-danger btn-sm" href="/MasterView/Requests" role="button">Masteransicht</a>
+                </div>
+                <div class="col">
+                    <button class="btn btn-sm btn-primary">Neuer Avatar</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
+            <h4 class="ml-2">Hier kannst du einen neuen Avatar erstellen</h4>
+            <hr />
+            <EditForm EditContext="@avatarContext" OnSubmit="@HandleRegisterSubmit" novalidate>
+                <DataAnnotationsValidator />
+
+                <div class="form-group mt-5">
+                    <label for="Input_Name">Avatarname</label>
+                    <div class="d-flex justify-content-center">
+                        <InputText class="form-control" type="text" placeholder="Avatarname" id="Avatarname" @bind-Value="avatarModel.Name" />
+                    </div>
+                </div>
+                <div class="text-danger">
+                    <ValidationMessage For=@(() => avatarModel.Name) />
+                </div>
+
+                <label class="mt-5" for="Input_Name">Wähle eine Klasse:</label>
+                <select class="form-select" aria-label="Default select example" @bind="avatarModel.Class">
+                    <option value="NoClass" selected hidden></option>
+                    @if (!(dungeonClasses is null))
+                    {
+                        @foreach (ClassDto dungeonClass in dungeonClasses)
+                        {
+                            <option value="@dungeonClass.Name">@dungeonClass.Name</option>
+                        }
+                    }
+                </select>
+
+                <label class="mt-5" for="Input_Name">Wähle eine Rasse:</label>
+                <select class="form-select" aria-label="Default select example" @bind="avatarModel.Race">
+                    <option value="NoRace" selected hidden></option>
+                    @if (!(dungeonRaces is null))
+                    {
+                        @foreach (RaceDto dungeonRace in dungeonRaces)
+                        {
+                            <option value="@dungeonRace.Name">@dungeonRace.Name</option>
+                        }
+                    }
+                </select>
+
+                <button class="btn btn-primary mt-5" type="submit">Erstellen</button>
+            </EditForm>
+        </div>
+
+
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// The Model to validate the "Avatar" Form
+    /// </summary>
+    private AvatarCreationModel avatarModel = new AvatarCreationModel();
+
+    /// <summary>
+    /// The Context for the "Avatar" Form
+    /// </summary>
+    private EditContext avatarContext;
+
+    /// <summary>
+    /// The List containing the Classes of the Dungeon
+    /// </summary>
+    List<ClassDto> dungeonClasses = new List<ClassDto>();
+
+    /// <summary>
+    /// The List containing the Races of the Dungeon
+    /// </summary>
+    List<RaceDto> dungeonRaces = new List<RaceDto>();
+    /// <summary>
+    /// When the component is initialized this Method instantiates the EditContext
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        avatarContext = new EditContext(avatarModel);
+    }
+
+    /// <summary>
+    /// This Method gets called when the user wants to create the new avatar and validates the form and reacts accordingly
+    /// </summary>
+    private async Task HandleRegisterSubmit()
+    {
+        var validCreation = avatarContext.Validate();
+        if (validCreation)
+        {
+            //TODO Daten absenden
+        }
+        else
+        {
+            //TODO User Benachrichtigen
+        }
+    }
+}

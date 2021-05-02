@@ -8,36 +8,36 @@ using Newtonsoft.Json;
 namespace Apollon.Mud.Shared.Dungeon.Inspectable.Takeable
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents the data representation of ITakeable.
     /// </summary>
     public class TakeableDto
     {
         /// <summary>
-        /// ToDo
+        /// The unique id of the takeable.
         /// </summary>
         [JsonProperty("Id")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The status which represents, if the takeable is currently available in the dungeon.
         /// </summary>
         [JsonProperty("Status")]
         public int Status { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The description of the takeable.
         /// </summary>
         [JsonProperty("Description")]
         public string Description { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The name of the takeable.
         /// </summary>
         [JsonProperty("Name")]
         public string Name { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The weight of the takeable.
         /// </summary>
         [JsonProperty("Weight")]
         public int Weight { get; set; }
