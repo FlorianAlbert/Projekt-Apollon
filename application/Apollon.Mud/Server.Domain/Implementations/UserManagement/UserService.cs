@@ -30,7 +30,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// <summary>
         /// Flag which indicates if one administrator is registered.
         /// </summary>
-        private readonly bool _adminRegistered;
+        private bool _adminRegistered;
 
         public UserService(IEmailService emailService, IUserDbService userDbService, DungeonDbContext dungeonDbContext)
         {
@@ -42,11 +42,11 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
         public async Task<bool> RequestUserRegistration(string userEmail, string password)
         {
-            //ToDo wie wird ein ServiceUser angelegt?!
             var user = new DungeonUser()
             {
                 Email = userEmail
             };
+            _adminRegistered = await _userDbService.IsAdminLoggedIn();
             var creationResult = await _userDbService.CreateUser(user, password, !_adminRegistered);
             if (!creationResult) return false;
             var confirmationToken = await _userDbService.GetEmailConfirmationToken(user);
