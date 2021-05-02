@@ -7,7 +7,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h2>Items @title</h2>
+        <h2>Items</h2>
     </div>
     <div class="card-body">
 
@@ -230,7 +230,6 @@
 </div>
 
 @code {
-    string title = "0";
 
     #region Bound variables
     /// <summary>
@@ -454,7 +453,6 @@
         if (!chosenItem.Equals(dungeonItemModel.Name) && !chosenItem.Equals("NoItem"))
         {
             dungeonItemModel.Name = chosenItem.Substring(0, (chosenItem.Length - 2));
-            title = chosenItem.Substring(chosenItem.Length - 1);
             int itemType = int.Parse(chosenItem.Substring(chosenItem.Length - 1));
             switch (itemType)
             {

@@ -1,4 +1,4 @@
-﻿@page "/Identity/Account/ConfirmAccount/{id:guid}"
+﻿@page "/Identity/Account/ConfirmAccount/{id:guid}/{token}"
 @inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
 @using Apollon.Mud.Client.Data.Models
 
@@ -76,6 +76,12 @@
     public Guid Id { get; set; }
 
     /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public string Token { get; set; }
+
+    /// <summary>
     /// The nullable Bool to differentiate between: Confirmation pending / confirmation successfull / confirmation didnt succeed
     /// </summary>
     bool? succesfullConfirmation = false;
@@ -96,7 +102,7 @@
     protected async override void OnInitialized()
     {
         resendEmailContext = new EditContext(resendEmailModel);
-        var succesfullConfirmation = await authorizationService.ConfirmRegistration(Id);
+        var succesfullConfirmation = await authorizationService.ConfirmRegistration(Id, Token);
     }
 
     /// <summary>

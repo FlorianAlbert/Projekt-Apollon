@@ -3,6 +3,7 @@ using Apollon.Mud.Client.Services.Implementiations;
 using Apollon.Mud.Client.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
@@ -39,6 +40,8 @@ namespace Apollon.Mud.Client
             });
             services.AddTransient<IAuthorizationService, AuthorizationService>();
             services.AddScoped<UserContext>();
+            services.AddScoped<CustomAuthenticationStateProvider>();
+            services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomAuthenticationStateProvider>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

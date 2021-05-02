@@ -14,5 +14,10 @@ namespace Apollon.Mud.Client.Data
         /// </summary>
         public string Token { get; set; }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public bool IsAuthorized { get; set; } = false;
+
     }
 }

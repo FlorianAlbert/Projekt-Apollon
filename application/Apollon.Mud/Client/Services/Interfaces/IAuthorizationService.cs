@@ -14,6 +14,10 @@ namespace Apollon.Mud.Client.Services.Interfaces
 
         Task<bool> Register(string userId, string secret);
 
-        Task<bool> ConfirmRegistration(Guid userId);
+        Task<bool> ConfirmRegistration(Guid userId, string token);
+
+        Task<bool> RequestPasswordReset(string userEmail);
+
+        Task<bool> ResetPasswordRequest(Guid userId, string token, string secret);
     }
 }

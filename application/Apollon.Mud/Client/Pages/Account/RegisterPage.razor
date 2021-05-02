@@ -1,5 +1,6 @@
 ﻿@page "/Identity/Account/Register"
 @inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
+@inject NavigationManager NavManager
 
 @using Apollon.Mud.Client.Data.Models
 
@@ -86,7 +87,7 @@
             bool response = await authorizationService.Register(registerModel.Email, registerModel.Password);
             if (response)
             {
-                //TODO User darauf hinweisen, dass er E-Mail erhalten hat
+                NavManager.NavigateTo("/Identity/Account/Register/VerifyEmail");
             }
             else
             {
