@@ -30,7 +30,6 @@ namespace Apollon.Mud.Client
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddHttpClient("RestHttpClient", httpClient =>
             {
                 httpClient.BaseAddress = new Uri(string.Empty);

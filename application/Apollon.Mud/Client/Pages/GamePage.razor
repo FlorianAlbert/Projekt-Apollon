@@ -2,38 +2,37 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
+@using Apollon.Mud.Client.Shared.Components
 @*@implements IAsyncDisposable*@
 
 @*<AuthorizeView>
     <Authorized>*@
 <div class="container-fluid max-vh-100">
-    <div class="row text-end">
-        <div class="col-2" style="background:linear-gradient(90deg, rgba(33,37,41,0) 0%, rgba(255,255,255,1) 100%);" />
-        <div class="col-6 bg-white">
-            <div class="row mt-2">
-                <div class="col-8 text-end">
-                    <h5>Du möchtest mehr über MUDs und ihre Geshichte erfahren?</h5>
+    <div class="row text-end" style="height: 6vh">
+        <div class="col" style="background:linear-gradient(90deg, rgba(33,37,41,0) 0%, rgba(255,255,255,1) 100%);" />
+        <div class="col-8 bg-white">
+            <div class="row">
+                <div class="col text-end">
+                    <h5>Du möchtest mehr über MUDs erfahren?</h5>
                 </div>
-                <div class="col-4 text-start">
-                    <button class="btn btn-primary">Zum Wiki</button>
+                <div class="col text-start">
+                    <button class="btn btn-primary mt-2">Zum Wiki</button>
                 </div>
-            </div>
-            <div class="row mb-2 mt-2">
-                <div class="col-8 text-end">
+                <div class="col text-end">
                     <h5>Du suchst Tipps und Tricks fürs Spielen?</h5>
                 </div>
-                <div class="col-4 text-start">
-                    <button class="btn btn-primary">Zur Hilfe</button>
+                <div class="col text-start">
+                    <button class="btn btn-primary mt-2">Zur Hilfe</button>
                 </div>
             </div>
         </div>
-        <div class="col" style="background: linear-gradient(90deg, rgba(255,255,255,1), rgba(33,37,41,0));"/>
+        <div class="col" style="background: linear-gradient(90deg, rgba(255,255,255,1), rgba(33,37,41,0));" />
     </div>
     <div class="play">
         <div class="window">
             <div class="row">
-                <div class="col">
-                    <div id="terminal" class="terminal mt-3 rounded" style="font-family: Monaco, monospace;">
+                <div class="col-8" style="display: flex; flex-direction: column; height: 87vh; padding:0;">
+                    <div id="terminal" class="terminal">
                         <span> </span>
                         <span>Welcome to Apollon Dungeons</span>
                         <span>   _____                .__  .__                           </span>
@@ -62,8 +61,8 @@
                         <button type="submit" id="send" class="btn btn-primary" @onclick="Send" disabled="@(!isConnected)">Send</button>
                     </div>
                 </div>
-                <div class="col-3">
-                    @*<Chat />*@
+                <div class="col-4 bg-secondary" style="padding: 0;">
+                    <ChatComponent />
                 </div>
             </div>
         </div>

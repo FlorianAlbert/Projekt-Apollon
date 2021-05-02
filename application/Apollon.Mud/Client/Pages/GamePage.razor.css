@@ -1,13 +1,11 @@
 ﻿.play .terminal {
-    flex: 0 1 auto;
     position: relative;
-    max-height: 80vh;
-    min-height: 80vh;
-    flex-grow: 1;
-    overflow-y: scroll;
     background-color: #000;
     color: #c3cbd5;
     white-space: pre-wrap;
+    font-family: Monaco, monospace;
+    overflow-y: auto;
+    height: 100%;
 }
 
 .terminal span {
@@ -24,6 +22,6 @@
     background-color: #fff;
 }
 
-    .play .prompt #send {
-        margin-left: 8px;
-    }
+.play .prompt #send {
+    margin-left: 8px;
+}
