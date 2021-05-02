@@ -1,4 +1,6 @@
 ﻿@page "/Identity/Account/Register"
+@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
+@inject NavigationManager NavManager
 
 @using Apollon.Mud.Client.Data.Models
 
@@ -55,21 +57,42 @@
 
 @code {
 
+    /// <summary>
+    /// The Model to validate the "Register" Form
+    /// </summary>
     private RegisterModel registerModel = new RegisterModel();
 
+    /// <summary>
+    /// The Context for the "Register" Form
+    /// </summary>
     private EditContext registerContext;
 
+    /// <summary>
+    /// When the component is initialized this Method instantiates the EditContext
+    /// </summary>
     protected override void OnInitialized()
     {
         registerContext = new EditContext(registerModel);
     }
 
+    /// <summary>
+    /// This Method, called when the user wants to sign up, validates the form and reacts accordingly
+    /// </summary>
+    /// <returns>The Task that writes the user credentials into the DB</returns>
     private async Task HandleRegisterSubmit()
     {
         var validLogin = registerContext.Validate();
         if (validLogin)
         {
-            //TODO Daten absenden
+            bool response = await authorizationService.Register(registerModel.Email, registerModel.Password);
+            if (response)
+            {
+                NavManager.NavigateTo("/Identity/Account/Register/VerifyEmail");
+            }
+            else
+            {
+                //User darauf hinweisen, dass iwas nicht geklappt hat
+            }
         }
         else
         {

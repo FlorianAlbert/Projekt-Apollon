@@ -23,14 +23,6 @@
     color: #777777;
 }
 
-.panel-body
-{
-    min-height: 75vh;
-    max-height: 75vh;
-    overflow-y: scroll;
-}
-
-
 .chat .prompt {
     display: flex;
     flex-shrink: 0;
