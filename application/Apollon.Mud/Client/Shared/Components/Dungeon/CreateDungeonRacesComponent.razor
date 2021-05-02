@@ -17,8 +17,8 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" @bind="chosenRace" @onclick="RaceSelectionChanged">
-                                <option value="NoRace" selected>Neue Rasse</option>
+                            <select class="form-select" aria-label="Default select example" @bind="chosenRace" @onselect="@RaceSelectionChanged()" @onselect:stopPropagation="true">
+                                <option value="NoRace" selected hidden>Neue Rasse</option>
                                 @if (!(dungeonRaces is null))
                                 {
                                     @foreach (RaceDto dungeonRace in dungeonRaces)
@@ -44,7 +44,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonRaceModel.Name" @onfocusout="NameFieldLostFocus"/>
+                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonRaceModel.Name" @onfocusout="NameFieldLostFocus" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRaceModel.Name) />
@@ -210,18 +210,14 @@
     /// Called when the user selects a new race, this method fills out the form according to the selected race
     /// </summary>
     /// <param name="args">Event Arguments</param>
-    private void RaceSelectionChanged(System.EventArgs args)
+    private EventCallback RaceSelectionChanged()
     {
-        if (!chosenRace.Equals(dungeonRaceModel.Name))
+        if (!chosenRace.Equals(dungeonRaceModel.Name) && !chosenRace.Equals("NoRace"))
         {
-            dungeonRaceModel.Name = string.Empty;
-            dungeonRaceModel.Description = string.Empty;
-            dungeonRaceModel.Health = string.Empty;
-            dungeonRaceModel.Protection = string.Empty;
-            dungeonRaceModel.Damage = string.Empty;
-            if (!chosenRace.Equals("NoRace"))
+            var newRace = dungeonRaces.Find(i => i.Name.Equals(chosenRace));
+            if (!(newRace is null))
             {
-                var newRace = dungeonRaces.Find(i => i.Name.Equals(chosenRace));
+
                 dungeonRaceModel.Name = chosenRace;
                 dungeonRaceModel.Description = newRace.Description;
                 dungeonRaceModel.Health = newRace.DefaultHealth.ToString();
@@ -229,6 +225,7 @@
                 dungeonRaceModel.Damage = newRace.DefaultDamage.ToString();
             }
         }
+        return EventCallback.Empty;
     }
 
     /// <summary>

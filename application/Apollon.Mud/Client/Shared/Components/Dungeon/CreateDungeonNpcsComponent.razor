@@ -16,8 +16,8 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" @bind="chosenNpc" @onclick="NpcSelectionChanged">
-                                <option value="NoNpc" selected></option>
+                            <select class="form-select" aria-label="Default select example" @bind="chosenNpc" @onselect="@NpcSelectionChanged()" @onselect:stopPropagation="true">
+                                <option value="NoNpc" selected hidden></option>
                                 @if (!(dungeonNpcs is null))
                                 {
                                     @foreach (NpcDto dungeonNpc in dungeonNpcs)
@@ -41,7 +41,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonNpcModel.Name" @onfocusout="NameFieldLostFocus"/>
+                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonNpcModel.Name" @onfocusout="NameFieldLostFocus" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonNpcModel.Name) />
@@ -166,21 +166,19 @@
     /// Called when the user selects a new npc, this method fills out the form according to the selected Npc
     /// </summary>
     /// <param name="args">Event Arguments</param>
-    private void NpcSelectionChanged(System.EventArgs args)
+    private EventCallback NpcSelectionChanged()
     {
-        if (!chosenNpc.Equals(dungeonNpcModel.Name))
+        if (!chosenNpc.Equals(dungeonNpcModel.Name) && !chosenNpc.Equals("NoNpc"))
         {
-            dungeonNpcModel.Name = string.Empty;
-            dungeonNpcModel.Description = string.Empty;
-            dungeonNpcModel.Text = string.Empty;
-            if (!chosenNpc.Equals("NoNpc"))
+            var newNpc = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
+            if (!(newNpc is null))
             {
-                var newNpc = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
                 dungeonNpcModel.Name = chosenNpc;
                 dungeonNpcModel.Description = newNpc.Description;
                 dungeonNpcModel.Text = newNpc.Text;
             }
         }
+        return EventCallback.Empty;
     }
 
     /// <summary>

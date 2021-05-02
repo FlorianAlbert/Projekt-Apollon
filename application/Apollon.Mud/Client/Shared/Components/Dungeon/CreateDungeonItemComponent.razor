@@ -7,7 +7,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h2>Items</h2>
+        <h2>Items @title</h2>
     </div>
     <div class="card-body">
 
@@ -21,8 +21,8 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" @bind="chosenItem" @onclick="ItemSelectionChanged">
-                                <option value="NoItem" selected></option>
+                            <select class="form-select" aria-label="Default select example" @bind="chosenItem" @onselect="@ItemSelectionChanged()" @onselect:stopPropagation="true">
+                                <option value="NoItem" selected hidden></option>
                                 @if (!(dungeonInspectables is null))
                                 {
                                     @foreach (InspectableDto dungeonInspectable in dungeonInspectables)
@@ -209,6 +209,7 @@
 </div>
 
 @code {
+    string title = "0";
 
     #region Bound variables
     /// <summary>
@@ -263,7 +264,7 @@
 
     #endregion
 
-    #region methods
+    #region Methods
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
@@ -299,19 +300,20 @@
                 break;
             case "Takeable":
                 dungeonItemModel.EffectDescription = " ";
+                dungeonItemModel.EffectDescription = "None";
                 dungeonItemModel.DamageBoost = "0";
                 dungeonItemModel.ProtectionBoost = "0";
                 break;
-            case "Consumable" :
+            case "Consumable":
                 dungeonItemModel.DamageBoost = "0";
                 dungeonItemModel.ProtectionBoost = "0";
                 break;
-            case "Usable" :
-                dungeonItemModel.EffectDescription = " ";
+            case "Usable":
+                dungeonItemModel.EffectDescription = "None";
                 dungeonItemModel.ProtectionBoost = "0";
                 break;
             case "Wearable":
-                dungeonItemModel.EffectDescription = " ";
+                dungeonItemModel.EffectDescription = "None";
                 dungeonItemModel.DamageBoost = "0";
                 break;
         }
@@ -421,56 +423,63 @@
     /// Called when the user selects a new item, this method fills out the form according to the selected race
     /// </summary>
     /// <param name="args">Event Arguments</param>
-    private void ItemSelectionChanged(System.EventArgs args)
+    private EventCallback ItemSelectionChanged()
     {
-        if (!chosenItem.Equals(dungeonItemModel.Name))
+        if (!chosenItem.Equals(dungeonItemModel.Name) && !chosenItem.Equals("NoItem"))
         {
-            dungeonItemModel.Name = string.Empty;
-            dungeonItemModel.Description = string.Empty;
-            dungeonItemModel.ProtectionBoost = string.Empty;
-            dungeonItemModel.DamageBoost = string.Empty;
-            dungeonItemModel.EffectDescription = string.Empty;
-            if (!chosenItem.Equals("NoItem"))
+            dungeonItemModel.Name = chosenItem.Substring(0, (chosenItem.Length - 2));
+            title = chosenItem.Substring(chosenItem.Length - 1);
+            int itemType = int.Parse(chosenItem.Substring(chosenItem.Length - 1));
+            switch (itemType)
             {
-                dungeonItemModel.Name = chosenItem.Substring(0, (chosenItem.Length - 2));
-                int itemType = int.Parse(chosenItem.Substring(chosenItem.Length - 1));
-                switch (itemType)
-                {
-                    case 1:
-                        chosenItemCategory = "Inspectable";
-                        var newInspectable = dungeonInspectables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                case 1:
+                    chosenItemCategory = "Inspectable";
+                    var newInspectable = dungeonInspectables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    if (!(newInspectable is null))
                         dungeonItemModel.Description = newInspectable.Description;
-                        break;
-                    case 2:
-                        chosenItemCategory = "Takeable";
-                        var newTakeable = dungeonTakeables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    break;
+                case 2:
+                    chosenItemCategory = "Takeable";
+                    var newTakeable = dungeonTakeables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    if (!(newTakeable is null))
+                    {
                         dungeonItemModel.Description = newTakeable.Description;
                         dungeonItemModel.Weight = newTakeable.Weight.ToString();
-                        break;
-                    case 3:
-                        chosenItemCategory = "Consumable";
-                        var newConsumable = dungeonConsumables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    }
+                    break;
+                case 3:
+                    chosenItemCategory = "Consumable";
+                    var newConsumable = dungeonConsumables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    if (!(newConsumable is null))
+                    {
                         dungeonItemModel.Description = newConsumable.Description;
                         dungeonItemModel.Weight = newConsumable.Weight.ToString();
-                        dungeonItemModel.EffectDescription = newConsumable.EffectDescription;
-                        break;
-                    case 4:
-                        chosenItemCategory = "Usable";
-                        var newUsable = dungeonUsables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    }
+                    dungeonItemModel.EffectDescription = newConsumable.EffectDescription;
+                    break;
+                case 4:
+                    chosenItemCategory = "Usable";
+                    var newUsable = dungeonUsables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    if (!(newUsable is null))
+                    {
                         dungeonItemModel.Description = newUsable.Description;
                         dungeonItemModel.Weight = newUsable.Weight.ToString();
                         dungeonItemModel.DamageBoost = newUsable.DamageBoost.ToString();
-                        break;
-                    case 5:
-                        chosenItemCategory = "Wearable";
-                        var newWearable = dungeonWearables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    }
+                    break;
+                case 5:
+                    chosenItemCategory = "Wearable";
+                    var newWearable = dungeonWearables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+                    if (!(newWearable is null))
+                    {
                         dungeonItemModel.Description = newWearable.Description;
                         dungeonItemModel.Weight = newWearable.Weight.ToString();
                         dungeonItemModel.ProtectionBoost = newWearable.ProtectionBoost.ToString();
-                        break;
-                }
+                    }
+                    break;
             }
         }
+        return EventCallback.Empty;
     }
 
     /// <summary>
@@ -551,7 +560,7 @@
     /// <param name="args">Event Arguments</param>
     private void NewItemButtonClicked(System.EventArgs args)
     {
-        chosenItem = "Inspectable";
+        chosenItem = "NoItem";
         chosenItemCategory = string.Empty;
         dungeonItemModel.Name = string.Empty;
         dungeonItemModel.Description = string.Empty;

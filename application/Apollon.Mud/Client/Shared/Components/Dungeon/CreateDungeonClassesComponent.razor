@@ -21,8 +21,8 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" style="width:21rem" @bind="chosenClass" @onclick="ClassSelectionChanged">
-                                <option value="NoClass" selected></option>
+                            <select class="form-select" aria-label="Default select example" style="width:21rem" @bind="chosenClass" @onselect="@ClassSelectionChanged()" @onselect:stopPropagation="true">
+                                <option value="NoClass" selected hidden></option>
                                 @if (!(dungeonClasses is null))
                                 {
                                     @foreach (ClassDto dungeonClass in dungeonClasses)
@@ -264,7 +264,8 @@
                     <div class="col">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" @bind="classItems[0]">
-                                <option selected value="NoItem"></option>
+                                <option selected value="" hidden></option>
+                                <option value="NoItem">Kein Item</option>
                                 @foreach (TakeableDto takeable in dungeonTakeables)
                                 {
                                     <option value="@takeable.Name 1">@takeable.Name</option>
@@ -534,23 +535,18 @@
     /// Called when the user selects a new class, this method fills out the form according to the selected class
     /// </summary>
     /// <param name="args">Event Arguments</param>
-    private void ClassSelectionChanged(System.EventArgs args)
+    private EventCallback ClassSelectionChanged()
     {
-        if (!chosenClass.Equals(dungeonClassModel.Name))
+        if (!chosenClass.Equals(dungeonClassModel.Name) && !chosenClass.Equals("NoClass"))
         {
-            dungeonClassModel.Name = string.Empty;
-            dungeonClassModel.Description = string.Empty;
-            dungeonClassModel.Health = string.Empty;
-            dungeonClassModel.Protection = string.Empty;
-            dungeonClassModel.Damage = string.Empty;
-            for (int i = 0; i < 5; i++)
+            defaultItemCount = 1;
+            var newClass = dungeonClasses.Find(i => i.Name.Equals(chosenClass));
+            if (!(newClass is null))
             {
-                classItems[i] = "NoItem";
-            }
-
-            if (!chosenClass.Equals("NoClass"))
-            {
-                var newClass = dungeonClasses.Find(i => i.Name.Equals(chosenClass));
+                for (int i = 0; i < 5; i++)
+                {
+                    classItems[i] = "NoItem";
+                }
                 dungeonClassModel.Name = chosenClass;
                 dungeonClassModel.Description = newClass.Description;
                 dungeonClassModel.Health = newClass.DefaultHealth.ToString();
@@ -613,6 +609,7 @@
                 }
             }
         }
+        return EventCallback.Empty;
     }
 
     /// <summary>
