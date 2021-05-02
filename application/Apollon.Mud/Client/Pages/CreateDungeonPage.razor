@@ -1,0 +1,31 @@
+﻿@page "/CreateDungeon"
+
+<div class="container-fluid">
+    <div class="row min-vh-100">
+            <SideBarComponent />
+        <div class="col bg-white">
+            <div class="d-flex justify-content-start float-start">
+                <div class="container justify-content-start" style="width: 65rem;">
+                    <h1 class="display-2">Dungeon erstellen</h1>
+                    <h4>Hier kannst du einen neuen Dungeon erstellen!</h4>
+                    <h4>Benötigst du Hilfe? Alle Infos zum Erstellen eines Dungeon findest du <a href="/">hier</a></h4> @*TODO Link einfügen*@
+                    <hr class="featurette-divider" />
+                    <section class="Classes mt-3" id="Classes">
+                        <CreateDungeonClassesComponent />
+                    </section>
+                    <section class="Races mt-3" id="Races">
+                        <CreateDungeonRacesComponent />
+                    </section>
+                    <section class="Races mt-3" id="Races">
+                        <CreateDungeonItemComponent />
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+}
