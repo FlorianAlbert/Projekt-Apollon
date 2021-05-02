@@ -37,7 +37,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
-            var gameDbService = Substitute.For<IGameDBService>();
+            var gameDbService = Substitute.For<IGameDbService>();
             gameDbService.Get<IAvatar>(avatarId).Returns(null as IAvatar);
 
             var chatService = new ChatService(gameDbService, connectionService, hubContext);
@@ -88,7 +88,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
             var avatarName = _Fixture.Create<string>();
             avatar.Name.Returns(avatarName);
 
-            var gameDbService = Substitute.For<IGameDBService>();
+            var gameDbService = Substitute.For<IGameDbService>();
             gameDbService.Get<IAvatar>(avatarId).Returns(avatar);
 
             var chatService = new ChatService(gameDbService, connectionService, hubContext);
@@ -111,7 +111,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
-            var gameDbService = Substitute.For<IGameDBService>();
+            var gameDbService = Substitute.For<IGameDbService>();
 
             var chatService = new ChatService(gameDbService, connectionService, hubContext);
 
@@ -141,7 +141,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
-            var gameDbService = Substitute.For<IGameDBService>();
+            var gameDbService = Substitute.For<IGameDbService>();
 
             var chatService = new ChatService(gameDbService, connectionService, hubContext);
 
@@ -164,7 +164,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
-            var gameDbService = Substitute.For<IGameDBService>();
+            var gameDbService = Substitute.For<IGameDbService>();
             gameDbService.GetAll<IAvatar>().SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved)
                 .Throws<InvalidOperationException>();
 
@@ -195,7 +195,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var senderAvatar = Substitute.For<IAvatar>();
 
-            var gameDbService = Substitute.For<IGameDBService>();
+            var gameDbService = Substitute.For<IGameDbService>();
             gameDbService.GetAll<IAvatar>().Returns(returnArray);
             gameDbService.Get<IAvatar>(avatarId).Returns(senderAvatar);
 
@@ -221,7 +221,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
             var connectionService = Substitute.For<IConnectionService>();
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
-            var gameDbService = Substitute.For<IGameDBService>();
+            var gameDbService = Substitute.For<IGameDbService>();
             gameDbService.Get<IAvatar>(avatarId).Returns(null as IAvatar);
 
             var chatService = new ChatService(gameDbService, connectionService, hubContext);
@@ -258,7 +258,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
             var returnArray = new IAvatar[1];
             returnArray[0] = recipientAvatar;
 
-            var gameDbService = Substitute.For<IGameDBService>();
+            var gameDbService = Substitute.For<IGameDbService>();
             gameDbService.GetAll<IAvatar>().Returns(returnArray);
             gameDbService.Get<IAvatar>(avatarId).Returns(senderAvatar);
 
@@ -303,7 +303,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
             var returnArray = new IAvatar[1];
             returnArray[0] = recipientAvatar;
 
-            var gameDbService = Substitute.For<IGameDBService>();
+            var gameDbService = Substitute.For<IGameDbService>();
             gameDbService.GetAll<IAvatar>().Returns(returnArray);
             gameDbService.Get<IAvatar>(avatarId).Returns(senderAvatar);
 
@@ -348,7 +348,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
             returnArray[0] = avatar1;
             returnArray[1] = avatar2;
 
-            var gameDbService = Substitute.For<IGameDBService>();
+            var gameDbService = Substitute.For<IGameDbService>();
             gameDbService.GetAll<IAvatar>()
                 .Where(x => x.Dungeon.Id == dungeonId && x.Status == Status.Approved).ToArray().Returns(returnArray);
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
