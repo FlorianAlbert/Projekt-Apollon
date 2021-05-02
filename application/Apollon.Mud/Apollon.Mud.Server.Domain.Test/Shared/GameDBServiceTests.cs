@@ -1,13 +1,10 @@
-﻿using Apollon.Mud.Server.Domain.Interfaces.Shared;
+﻿using System;
+using Xunit;
 
 namespace Apollon.Mud.Server.Domain.Test.Shared
 {
-    /// <summary>
-    /// ToDo
-    /// </summary>
-    public class GameDbService: IGameDbService
-
+    public class GameDbServiceTests
     {
-        //ToDo implement
+        //ToDo Test
     }
 }

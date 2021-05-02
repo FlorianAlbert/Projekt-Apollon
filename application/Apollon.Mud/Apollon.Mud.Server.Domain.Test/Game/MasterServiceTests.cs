@@ -1,12 +1,10 @@
-﻿using Apollon.Mud.Server.Domain.Interfaces.Game;
+﻿using System;
+using Xunit;
 
 namespace Apollon.Mud.Server.Domain.Test.Game
 {
-    /// <summary>
-    /// ToDo
-    /// </summary>
-    public class MasterServiceTests: IMasterService
+    public class MasterServiceTests
     {
-        //ToDo implement
+        //ToDo Tests
     }
 }

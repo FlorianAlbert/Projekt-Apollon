@@ -1,10 +1,8 @@
-﻿using Xunit;
+﻿using System;
+using Xunit;
 
 namespace Apollon.Mud.Server.Domain.Test.Shared
 {
-    /// <summary>
-    /// ToDo
-    /// </summary>
     public class ConnectionServiceTests
     {
         [Fact]        
