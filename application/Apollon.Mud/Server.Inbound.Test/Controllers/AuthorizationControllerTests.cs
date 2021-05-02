@@ -13,7 +13,24 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
         }
 
         [Fact]
-        public void FirstTest()
+        public void UnauthorizedLogin_Fails()
+        {
+            var authorizationRequestDto = _Fixture.Create<AuthorizationRequestDto>();
+            authorizationRequestDto.UserEmail.Returns("");
+
+            var _authorizationService = Substitute.For<IAuthorizationService>();
+
+
+        }
+
+        [Fact]
+        public void BadRequestLogin_Fails()
+        {
+
+        }
+
+        [Fact]
+        public void Login_Succeds()
         {
 
         }
