@@ -23,9 +23,9 @@
                     <div class="col">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" aria-label="Default select example" @bind="chosenRoom" @onselect="@RoomSelectionChanged()" @onselect:stopPropagation="true">
+                                <option value="NoRoom" selected hidden>Neuer Raum</option>
                                 @if (!(dungeonRooms is null))
                                 {
-                                    <option value="NoRoom" selected hidden></option>
                                     @foreach (RoomDto dungeonRoom in dungeonRooms)
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
@@ -688,13 +688,37 @@
                         }
                     </select>
                     <h5 class="mt-1 text-center">Süden</h5>
-                    <div class="d-flex justify-content-center">
-                        <button class="btn btn-success mt-4 text-center" type="submit">Speichern</button>
-                    </div>
-
                 </div>
                 <div class="col"></div>
             </div>
+
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Status</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" @bind="dungeonRoomModel.Status">
+                                <option selected hidden value=""></option>
+                                <option value="Approved">Aktiv</option>
+                                <option value="Pending">Inaktiv</option>
+                            </select>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRoomModel.Status) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-success mt-4 text-center" type="submit">Speichern</button>
+            </div>
+
+
         </EditForm>
 
     </div>
@@ -835,6 +859,7 @@
             }
             submitRoom.Name = dungeonRoomModel.Name;
             submitRoom.Description = dungeonRoomModel.Description;
+            submitRoom.Status = dungeonRoomModel.Status.Equals("Approved") ? 0 : 1;
             submitRoom.Inspectables = new List<InspectableDto>();
             submitRoom.Takeables = new List<TakeableDto>();
             submitRoom.Usables = new List<UsableDto>();
@@ -914,6 +939,7 @@
             {
                 dungeonRoomModel.Name = newRoom.Name;
                 dungeonRoomModel.Description = newRoom.Description;
+                dungeonRoomModel.Status = newRoom.Status == 0 ? "Approved" : "Pending";
                 roomItemCount = 0;
                 int counter = 0;
                 if (!(newRoom.Inspectables is null))
@@ -1020,6 +1046,7 @@
             dungeonRoomModel.RoomEast = "NoRoom";
             dungeonRoomModel.RoomSouth = "NoRoom";
             dungeonRoomModel.RoomWest = "NoRoom";
+            dungeonRoomModel.Status = checkRoom.Status == 0 ? "Approved" : "Pending";
             chosenRoom = dungeonRoomModel.Name;
             dungeonRoomModel.Name = checkRoom.Name;
             dungeonRoomModel.Description = checkRoom.Description;
@@ -1105,7 +1132,6 @@
             {
                 dungeonRoomModel.RoomWest = dungeonRooms.Find(r => r.Id.Equals(checkRoom.NeighborWestId)).Name;
             }
-
         }
     }
 
@@ -1118,6 +1144,7 @@
         dungeonRoomModel.RoomEast = "NoRoom";
         dungeonRoomModel.RoomWest = "NoRoom";
         dungeonRoomModel.RoomSouth = "NoRoom";
+        dungeonRoomModel.Status = string.Empty;
         roomItemCount = 0;
         for (int i = 0; i < 8; i++)
         {
@@ -1145,7 +1172,6 @@
         if (roomItemCount > 0)
             roomItemCount--;
     }
-
     #endregion
 }
 

@@ -3,7 +3,7 @@
     /// <summary>
     /// ToDo
     /// </summary>
-    public interface IGameDBService
+    public interface IGameDbService
     {
         //ToDo implement
     }

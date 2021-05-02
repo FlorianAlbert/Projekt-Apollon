@@ -13,6 +13,7 @@ namespace Apollon.Mud.Client.Data.Models
         /// The class has to have a name
         /// </summary>
         [Required(ErrorMessage = "Du musst der Klasse einen Namen geben")]
+        [RegularExpression("(^(?![Nn]eue [Kk]lasse)|(^([Nn]eue [Kk]lasse).+))", ErrorMessage = "Dieser Name ist nicht zugelassen")]
         public string Name { get; set; }
 
         /// <summary>
@@ -46,5 +47,11 @@ namespace Apollon.Mud.Client.Data.Models
         /// A Class can have a StartInventory of up to 5 Items, but it isn't mandatory
         /// </summary>
         public List<string> StartInventory { get; set; }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
+        public string Status { get; set; }
     }
 }

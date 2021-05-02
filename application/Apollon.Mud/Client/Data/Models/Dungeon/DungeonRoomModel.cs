@@ -19,6 +19,8 @@ namespace Apollon.Mud.Client.Data.Models
         /// Every Room has to have a name
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Raum einen Namen geben")]
+        [RegularExpression("^(?!\b([Kk]ein [Nn]achbar|[Nn]euer [Rr]aum)\b)", ErrorMessage = "Dieser Name ist nicht zugelassen")]
+        //[RegularExpression("^(?!([Kk]ein [Nn]achbar|[Nn]euer [Rr]aum)$)", ErrorMessage = "Dieser Name ist nicht zugelassen")]
         public string Name { get; set; }
 
         /// <summary>
@@ -80,5 +82,11 @@ namespace Apollon.Mud.Client.Data.Models
         /// TODO
         /// </summary>
         public List<NpcDto> Npcs { get; set; }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
+        public string Status { get; set; }
     }
 }

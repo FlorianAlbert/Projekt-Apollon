@@ -1,5 +1,6 @@
 ﻿@page "/Identity/Account/Login"
-@inject IAuthorizationService authorizationService
+@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
+@inject NavigationManager NavManager
 
 @using Apollon.Mud.Client.Data.Models
 
@@ -13,6 +14,10 @@
             <section>
                 <h4 class="ml-2">Nutze deinen bereits erstellten Account um dich anzumelden</h4>
                 <hr />
+                @if (loginFailure)
+                {
+                    <label class="text-danger mt-1"><strong>Die eingegebenen Daten sind nicht korrekt!</strong></label>
+                }
                 <EditForm EditContext="@loginContext" OnSubmit="@HandleLoginSubmit" novalidate>
                     <DataAnnotationsValidator />
 
@@ -50,6 +55,10 @@
 </div>
 
 @code {
+    /// <summary>
+    /// TODO
+    /// </summary>
+    bool loginFailure = false;
 
     /// <summary>
     /// The Model to validate the "Login" Form
@@ -75,14 +84,19 @@
     /// <returns>The Task that authorizes the user credentials</returns>
     private async Task HandleLoginSubmit()
     {
+        loginFailure = false;
         var validLogin = loginContext.Validate();
         if (validLogin)
         {
-            //TODO Daten absenden
-        }
-        else
-        {
-            //TODO User Benachrichtigen
+            bool response = await authorizationService.Login(loginModel.Email, loginModel.Password);
+            if (response)
+            {
+                NavManager.NavigateTo("/");
+            }
+            else
+            {
+                loginFailure = true;
+            }
         }
     }
 

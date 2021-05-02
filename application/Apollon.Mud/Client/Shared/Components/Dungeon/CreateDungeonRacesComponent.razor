@@ -117,6 +117,28 @@
                 </div>
             </div>
 
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Status</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" @bind="dungeonRaceModel.Status">
+                                <option selected hidden value=""></option>
+                                <option value="Approved">Aktiv</option>
+                                <option value="Pending">Inaktiv</option>
+                            </select>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRaceModel.Status) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-3"></div>
                 <div class="col">
@@ -193,6 +215,7 @@
             submitRace.DefaultHealth = int.Parse(dungeonRaceModel.Health);
             submitRace.DefaultDamage = int.Parse(dungeonRaceModel.Damage);
             submitRace.DefaultProtection = int.Parse(dungeonRaceModel.Protection);
+            submitRace.Status = dungeonRaceModel.Status.Equals("Approved") ? 0 : 1;
             if (newRace)
             {
                 dungeonRaces.Add(submitRace);
@@ -223,6 +246,7 @@
                 dungeonRaceModel.Health = newRace.DefaultHealth.ToString();
                 dungeonRaceModel.Protection = newRace.DefaultProtection.ToString();
                 dungeonRaceModel.Damage = newRace.DefaultDamage.ToString();
+                dungeonRaceModel.Status = newRace.Status == 0 ? "Approved" : "Pending";
             }
         }
         return EventCallback.Empty;
@@ -246,6 +270,7 @@
             dungeonRaceModel.Health = checkRace.DefaultHealth.ToString();
             dungeonRaceModel.Protection = checkRace.DefaultProtection.ToString();
             dungeonRaceModel.Damage = checkRace.DefaultDamage.ToString();
+            dungeonRaceModel.Status = checkRace.Status == 0 ? "Approved" : "Pending";
         }
     }
 
@@ -261,6 +286,7 @@
         dungeonRaceModel.Health = string.Empty;
         dungeonRaceModel.Protection = string.Empty;
         dungeonRaceModel.Damage = string.Empty;
+        dungeonRaceModel.Status = string.Empty;
     }
 
     #endregion

@@ -21,8 +21,8 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example"  @bind="chosenClass" @onselect="@ClassSelectionChanged()" @onselect:stopPropagation="true">
-                                <option value="NoClass" selected hidden></option>
+                            <select class="form-select" aria-label="Default select example" style="width:21rem" @bind="chosenClass" @onselect="@ClassSelectionChanged()" @onselect:stopPropagation="true">
+                                <option value="NoClass" selected hidden>Neue Klasse</option>
                                 @if (!(dungeonClasses is null))
                                 {
                                     @foreach (ClassDto dungeonClass in dungeonClasses)
@@ -301,12 +301,35 @@
                 </div>
             </div>
 
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Status</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" @bind="dungeonClassModel.Status">
+                                <option selected hidden value=""></option>
+                                <option value="Approved">Aktiv</option>
+                                <option value="Pending">Inaktiv</option>
+                            </select>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonClassModel.Status) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-3"></div>
                 <div class="col">
                     <button class="btn btn-success mt-5" type="submit">Speichern</button>
                 </div>
             </div>
+
         </EditForm>
 
     </div>
@@ -476,7 +499,7 @@
             submitClass.InventoryConsumableDtos = new List<ConsumableDto>();
             submitClass.InventoryUsableDtos = new List<UsableDto>();
             submitClass.InventoryWearableDtos = new List<WearableDto>();
-
+            submitClass.Status = dungeonClassModel.Status.Equals("Approved") ? 0 : 1;
             for (int i = 0; i < defaultItemCount; i++)
             {
                 if (!(classItems[i].Equals("NoItem")))
@@ -552,6 +575,7 @@
                 dungeonClassModel.Health = newClass.DefaultHealth.ToString();
                 dungeonClassModel.Protection = newClass.DefaultProtection.ToString();
                 dungeonClassModel.Damage = newClass.DefaultDamage.ToString();
+                dungeonClassModel.Status = newClass.Status == 0 ? "Approved" : "Pending";
                 defaultItemCount = 0;
                 int counter = 0;
                 if (!(newClass.InventoryTakeableDtos is null))
@@ -634,6 +658,7 @@
             dungeonClassModel.Health = checkClass.DefaultHealth.ToString();
             dungeonClassModel.Protection = checkClass.DefaultProtection.ToString();
             dungeonClassModel.Damage = checkClass.DefaultDamage.ToString();
+            dungeonClassModel.Status = checkClass.Status == 0 ? "Approved" : "Pending";
             defaultItemCount = 0;
             int counter = 0;
             if (!(checkClass.InventoryTakeableDtos is null))
@@ -705,6 +730,7 @@
         dungeonClassModel.Health = string.Empty;
         dungeonClassModel.Protection = string.Empty;
         dungeonClassModel.Damage = string.Empty;
+        dungeonClassModel.Status = string.Empty;
         defaultItemCount = 1;
         for (int i = 0; i < 5; i++)
         {

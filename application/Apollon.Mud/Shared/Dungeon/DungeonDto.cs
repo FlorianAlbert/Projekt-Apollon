@@ -11,79 +11,79 @@ using Newtonsoft.Json;
 namespace Apollon.Mud.Shared.Dungeon
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents the data representation of IDungeon.
     /// </summary>
     public class DungeonDto
     {
 
         /// <summary>
-        /// ToDo
+        /// The name of the dungeon.
         /// </summary>
         [JsonProperty("DungeonName")]
         public string DungeonName { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The description of the dungeon.
         /// </summary>
         [JsonProperty("DungeonDescription")]
         public string DungeonDescription { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The epoch of the dungeon.
         /// </summary>
         [JsonProperty("DungeonEpoch")]
         public string DungeonEpoch { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The default rooms id of the dungeon.
         /// </summary>
         [JsonProperty("DefaultRoom")]
         public RoomDto DefaultRoom { get; set; }
 
         /// <summary>
-        /// ToDo 
+        /// The visibility of the dungeon. 
         /// </summary>
         [JsonProperty("Visibility")]
         public int Visibility { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The unique id of the dungeon.
         /// </summary>
         [JsonProperty("Id")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The status which represents, if the dungeon is currently playable.
         /// </summary>
         [JsonProperty("Status")]
         public int Status { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The possible dungeon masters of the dungeon.
         /// </summary>
         [JsonProperty("DungeonMasters")]
         public ICollection<DungeonUserDto> DungeonMasters { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The owner of the dungeon.
         /// </summary>
         [JsonProperty("DungeonOwner")]
         public DungeonUserDto DungeonOwner { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The users which are allowed to play the dungeon.
         /// </summary>
         [JsonProperty("WhiteList")]
         public ICollection<DungeonUserDto> WhiteList { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The users which are explicitly disallowed to play the dungeon.
         /// </summary>
         [JsonProperty("BlackList")]
         public ICollection<DungeonUserDto> BlackList { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The users which are currently requesting to play the dungeon.
         /// </summary>
         [JsonProperty("OpenRequests")]
         public ICollection<DungeonUserDto> OpenRequests { get; set; }

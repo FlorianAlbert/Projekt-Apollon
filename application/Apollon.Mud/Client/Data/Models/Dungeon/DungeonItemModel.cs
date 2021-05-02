@@ -10,10 +10,19 @@ namespace Apollon.Mud.Client.Data.Models
     class DungeonItemModel
     {
         #region Inspectable
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
+        public string Status { get; set; }
+
         /// <summary>
         /// Every Item hast to have a name
         ///</summary>
         [Required(ErrorMessage = "Du musst dem Item einen Namen geben")]
+        [RegularExpression("(^(?![Nn]eues [Ii]tem)|(^([Nn]eues [Ii]tem).+))", ErrorMessage = "Dieser Name ist nicht zugelassen")]
+
         public string Name { get; set; }
 
         /// <summary>
