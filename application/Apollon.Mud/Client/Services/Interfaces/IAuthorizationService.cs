@@ -10,6 +10,8 @@ namespace Apollon.Mud.Client.Services.Interfaces
     {
         HttpClient HttpClient { get; }
 
-        void Login(string userId, string secret);
+        Task<bool> Login(string userId, string secret);
+
+        Task<bool> Register(string userId, string secret);
     }
 }

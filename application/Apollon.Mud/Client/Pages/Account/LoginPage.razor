@@ -1,5 +1,5 @@
 ﻿@page "/Identity/Account/Login"
-@inject IAuthorizationService authorizationService
+@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
 
 @using Apollon.Mud.Client.Data.Models
 
@@ -78,7 +78,15 @@
         var validLogin = loginContext.Validate();
         if (validLogin)
         {
-            //TODO Daten absenden
+            bool response = await authorizationService.Login(loginModel.Email, loginModel.Password);
+            if (response)
+            {
+                //TODO An Startseite
+            }
+            else
+            {
+                //TODO Rückmeldung, dass Anmeldung nicht geklappt
+            }
         }
         else
         {

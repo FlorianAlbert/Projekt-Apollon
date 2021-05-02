@@ -222,7 +222,7 @@
             chosenNpc = dungeonNpcModel.Name;
             dungeonNpcModel.Description = checkNpc.Description;
             dungeonNpcModel.Text = checkNpc.Text;
-            dungeonNpcModel.Status = newNpc.Status == 0 ? "Approved" : "Pending";
+            dungeonNpcModel.Status = checkNpc.Status == 0 ? "Approved" : "Pending";
         }
     }
 

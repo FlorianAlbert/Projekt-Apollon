@@ -33,13 +33,12 @@ namespace Apollon.Mud.Client
             services.AddSingleton<WeatherForecastService>();
             services.AddHttpClient("RestHttpClient", httpClient =>
             {
-                httpClient.BaseAddress = new Uri(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + Configuration.GetSection("LoginConfiguration").GetSection("Port").Value);
+                httpClient.BaseAddress = new Uri(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + ":" + Configuration.GetSection("LoginConfiguration").GetSection("Port").Value);
                 // Appsettings.json Config Sachen festlegen und darüber Base URI und Port festlegen
 
             });
             services.AddTransient<IAuthorizationService, AuthorizationService>();
-            //services.AddScoped<UserContext>()
-            //TODO Klasse UserContext mit Bool isLoggedIn und String Token
+            services.AddScoped<UserContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
