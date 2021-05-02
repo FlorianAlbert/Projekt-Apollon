@@ -7,12 +7,6 @@ using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Usable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Wearable;
 using FluentAssertions;
 using AutoFixture.AutoNSubstitute;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Consumable;
-using System.Collections.Generic;
-using System.Linq;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
-using System;
 
 namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
 {
@@ -114,7 +108,8 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
 
             result.Should().Be(expectedSum);
         }
-        /**
+        
+        /*
         [Fact]
         public void AddItemToInventoryWithNotNull_Success()
         {
@@ -215,6 +210,6 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
             var throwResult = avatar.ThrowAway(itemName);
 
             throwResult.Should().BeNull();
-        } **/
+        } */
     }
 }
