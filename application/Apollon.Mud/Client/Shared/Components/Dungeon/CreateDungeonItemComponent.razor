@@ -22,7 +22,7 @@
                     <div class="col">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" aria-label="Default select example" @bind="chosenItem" @onselect="@ItemSelectionChanged()" @onselect:stopPropagation="true">
-                                <option value="NoItem" selected hidden></option>
+                                <option value="NoItem" selected hidden>Neues Item</option>
                                 @if (!(dungeonInspectables is null))
                                 {
                                     @foreach (InspectableDto dungeonInspectable in dungeonInspectables)
@@ -196,6 +196,27 @@
                 }
             }
 
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Status</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" @bind="dungeonItemModel.Status">
+                                <option selected hidden value=""></option>
+                                <option value="Approved">Aktiv</option>
+                                <option value="Pending">Inaktiv</option>
+                            </select>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonItemModel.Status) />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-3"></div>
@@ -332,6 +353,7 @@
                     }
                     submitInspectable.Name = dungeonItemModel.Name;
                     submitInspectable.Description = dungeonItemModel.Description;
+                    submitInspectable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
                         dungeonInspectables.Add(submitInspectable);
@@ -349,6 +371,7 @@
                     submitTakeable.Name = dungeonItemModel.Name;
                     submitTakeable.Description = dungeonItemModel.Description;
                     submitTakeable.Weight = int.Parse(dungeonItemModel.Weight);
+                    submitTakeable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
                         dungeonTakeables.Add(submitTakeable);
@@ -367,6 +390,7 @@
                     submitConsumable.Description = dungeonItemModel.Description;
                     submitConsumable.Weight = int.Parse(dungeonItemModel.Weight);
                     submitConsumable.EffectDescription = dungeonItemModel.EffectDescription;
+                    submitConsumable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
                         dungeonConsumables.Add(submitConsumable);
@@ -385,6 +409,7 @@
                     submitUsable.Description = dungeonItemModel.Description;
                     submitUsable.Weight = int.Parse(dungeonItemModel.Weight);
                     submitUsable.DamageBoost = int.Parse(dungeonItemModel.DamageBoost);
+                    submitUsable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
                         dungeonUsables.Add(submitUsable);
@@ -403,6 +428,7 @@
                     submitWearable.Description = dungeonItemModel.Description;
                     submitWearable.Weight = int.Parse(dungeonItemModel.Weight);
                     submitWearable.ProtectionBoost = int.Parse(dungeonItemModel.ProtectionBoost);
+                    submitWearable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
                         dungeonWearables.Add(submitWearable);
@@ -436,7 +462,11 @@
                     chosenItemCategory = "Inspectable";
                     var newInspectable = dungeonInspectables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
                     if (!(newInspectable is null))
+                    {
                         dungeonItemModel.Description = newInspectable.Description;
+                        dungeonItemModel.Status = newInspectable.Status == 0 ? "Approved" : "Pending";
+                    }
+
                     break;
                 case 2:
                     chosenItemCategory = "Takeable";
@@ -445,6 +475,7 @@
                     {
                         dungeonItemModel.Description = newTakeable.Description;
                         dungeonItemModel.Weight = newTakeable.Weight.ToString();
+                        dungeonItemModel.Status = newTakeable.Status == 0 ? "Approved" : "Pending";
                     }
                     break;
                 case 3:
@@ -454,8 +485,9 @@
                     {
                         dungeonItemModel.Description = newConsumable.Description;
                         dungeonItemModel.Weight = newConsumable.Weight.ToString();
+                        dungeonItemModel.Status = newConsumable.Status == 0 ? "Approved" : "Pending";
+                        dungeonItemModel.EffectDescription = newConsumable.EffectDescription;
                     }
-                    dungeonItemModel.EffectDescription = newConsumable.EffectDescription;
                     break;
                 case 4:
                     chosenItemCategory = "Usable";
@@ -465,6 +497,7 @@
                         dungeonItemModel.Description = newUsable.Description;
                         dungeonItemModel.Weight = newUsable.Weight.ToString();
                         dungeonItemModel.DamageBoost = newUsable.DamageBoost.ToString();
+                        dungeonItemModel.Status = newUsable.Status == 0 ? "Approved" : "Pending";
                     }
                     break;
                 case 5:
@@ -475,6 +508,7 @@
                         dungeonItemModel.Description = newWearable.Description;
                         dungeonItemModel.Weight = newWearable.Weight.ToString();
                         dungeonItemModel.ProtectionBoost = newWearable.ProtectionBoost.ToString();
+                        dungeonItemModel.Status = newWearable.Status == 0 ? "Approved" : "Pending";
                     }
                     break;
             }
@@ -513,6 +547,7 @@
                             dungeonItemModel.Description = checkWearable.Description;
                             dungeonItemModel.Weight = checkWearable.Weight.ToString();
                             dungeonItemModel.ProtectionBoost = checkWearable.ProtectionBoost.ToString();
+                            dungeonItemModel.Status = checkWearable.Status == 0 ? "Approved" : "Pending";
                         }
                     }
                     else
@@ -523,6 +558,7 @@
                         dungeonItemModel.Description = checkUsable.Description;
                         dungeonItemModel.Weight = checkUsable.Weight.ToString();
                         dungeonItemModel.DamageBoost = checkUsable.DamageBoost.ToString();
+                        dungeonItemModel.Status = checkUsable.Status == 0 ? "Approved" : "Pending";
                     }
                 }
                 else
@@ -533,6 +569,7 @@
                     dungeonItemModel.Description = checkConsumable.Description;
                     dungeonItemModel.Weight = checkConsumable.Weight.ToString();
                     dungeonItemModel.EffectDescription = checkConsumable.EffectDescription;
+                    dungeonItemModel.Status = checkConsumable.Status == 0 ? "Approved" : "Pending";
                 }
             }
             else
@@ -542,6 +579,7 @@
                 dungeonItemModel.Name = checkTakeable.Name;
                 dungeonItemModel.Description = checkTakeable.Description;
                 dungeonItemModel.Weight = checkTakeable.Weight.ToString();
+                dungeonItemModel.Status = checkTakeable.Status == 0 ? "Approved" : "Pending";
             }
         }
         else
@@ -550,6 +588,7 @@
             chosenItemCategory = "Inspectable";
             dungeonItemModel.Name = checkInspectable.Name;
             dungeonItemModel.Description = checkInspectable.Description;
+            dungeonItemModel.Status = checkInspectable.Status == 0 ? "Approved" : "Pending";
         }
 
     }
@@ -568,6 +607,7 @@
         dungeonItemModel.DamageBoost = string.Empty;
         dungeonItemModel.ProtectionBoost = string.Empty;
         dungeonItemModel.EffectDescription = string.Empty;
+        dungeonItemModel.Status = string.Empty;
     }
     #endregion
 }

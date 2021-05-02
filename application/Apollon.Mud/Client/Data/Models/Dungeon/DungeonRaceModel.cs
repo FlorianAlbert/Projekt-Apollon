@@ -13,6 +13,7 @@ namespace Apollon.Mud.Client.Data.Models
         /// Every Race has to have a name
         /// </summary>
         [Required(ErrorMessage = "Du musst der Rasse einen Namen geben")]
+        [RegularExpression("(^(?![Nn]eue [Rr]asse)|(^([[Nn]eue [Rr]asse).+))", ErrorMessage = "Dieser Name ist nicht zugelassen")]
         public string Name { get; set; }
 
         /// <summary>
@@ -41,6 +42,12 @@ namespace Apollon.Mud.Client.Data.Models
         [Required(ErrorMessage = "Du musst einen Standard Verteidigungswert angeben")]
         [RegularExpression("[0-9]*", ErrorMessage = "Die Verteidigung kann nur als Ganzzahl angegeben werden")]
         public string Protection { get; set; }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
+        public string Status { get; set; }
     }
 }
 

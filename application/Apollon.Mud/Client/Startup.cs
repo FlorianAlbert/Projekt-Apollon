@@ -33,7 +33,8 @@ namespace Apollon.Mud.Client
             services.AddSingleton<WeatherForecastService>();
             services.AddHttpClient("RestHttpClient", httpClient =>
             {
-                httpClient.BaseAddress = new Uri(string.Empty);
+                httpClient.BaseAddress = new Uri(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + Configuration.GetSection("LoginConfiguration").GetSection("Port").Value);
+                // Appsettings.json Config Sachen festlegen und darüber Base URI und Port festlegen
 
             });
             services.AddTransient<IAuthorizationService, AuthorizationService>();

@@ -17,7 +17,7 @@
                     <div class="col">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" aria-label="Default select example" @bind="chosenNpc" @onselect="@NpcSelectionChanged()" @onselect:stopPropagation="true">
-                                <option value="NoNpc" selected hidden></option>
+                                <option value="NoNpc" selected hidden>Neuer Npc</option>
                                 @if (!(dungeonNpcs is null))
                                 {
                                     @foreach (NpcDto dungeonNpc in dungeonNpcs)
@@ -79,6 +79,29 @@
                     </div>
                 </div>
             </div>
+
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Status</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" @bind="dungeonNpcModel.Status">
+                                <option selected hidden value=""></option>
+                                <option value="Approved">Aktiv</option>
+                                <option value="Pending">Inaktiv</option>
+                            </select>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonNpcModel.Status) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-3"></div>
                 <div class="col">
@@ -149,6 +172,7 @@
             submitNpc.Name = dungeonNpcModel.Name;
             submitNpc.Description = dungeonNpcModel.Description;
             submitNpc.Text = dungeonNpcModel.Text;
+            submitNpc.Status = dungeonNpcModel.Status.Equals("Approved") ? 0 : 1;
             if (newNpc)
             {
                 dungeonNpcs.Add(submitNpc);
@@ -176,6 +200,7 @@
                 dungeonNpcModel.Name = chosenNpc;
                 dungeonNpcModel.Description = newNpc.Description;
                 dungeonNpcModel.Text = newNpc.Text;
+                dungeonNpcModel.Status = newNpc.Status == 0 ? "Approved" : "Pending";
             }
         }
         return EventCallback.Empty;
@@ -197,6 +222,7 @@
             chosenNpc = dungeonNpcModel.Name;
             dungeonNpcModel.Description = checkNpc.Description;
             dungeonNpcModel.Text = checkNpc.Text;
+            dungeonNpcModel.Status = newNpc.Status == 0 ? "Approved" : "Pending";
         }
     }
 
@@ -210,5 +236,6 @@
         dungeonNpcModel.Name = string.Empty;
         dungeonNpcModel.Description = string.Empty;
         dungeonNpcModel.Text = string.Empty;
+        dungeonNpcModel.Status = string.Empty;
     }
 }
