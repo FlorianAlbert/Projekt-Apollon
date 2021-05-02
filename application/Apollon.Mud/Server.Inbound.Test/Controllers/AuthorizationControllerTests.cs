@@ -1,5 +1,8 @@
-﻿using AutoFixture;
+﻿using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+using Apollon.Mud.Shared.UserManagement.Authorization;
+using AutoFixture;
 using AutoFixture.AutoNSubstitute;
+using NSubstitute;
 using Xunit;
 
 namespace Apollon.Mud.Server.Inbound.Test.Controllers

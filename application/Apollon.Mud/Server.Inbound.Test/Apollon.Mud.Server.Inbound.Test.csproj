@@ -25,4 +25,9 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Server.Inbound\Apollon.Mud.Server.Inbound.csproj" />
+    <ProjectReference Include="..\Shared\Apollon.Mud.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
