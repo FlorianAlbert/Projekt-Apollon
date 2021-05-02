@@ -87,6 +87,8 @@ namespace Apollon.Mud.Server.Inbound
                 .AddFluentEmail(email)
                 .AddRazorRenderer()
                 .AddSmtpSender(host, port);
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
