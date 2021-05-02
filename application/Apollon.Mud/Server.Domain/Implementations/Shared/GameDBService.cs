@@ -14,22 +14,22 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
             throw new NotImplementedException();
         }
 
-        bool IGameDBService.Delete<T>(Guid id)
+        bool IGameDbService.Delete<T>(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        T IGameDBService.Get<T>(Guid id)
+        T IGameDbService.Get<T>(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        T[] IGameDBService.GetAll<T>()
+        T[] IGameDbService.GetAll<T>()
         {
             throw new NotImplementedException();
         }
 
-        bool IGameDBService.NewOrUpdate<T>(T item)
+        bool IGameDbService.NewOrUpdate<T>(T item)
         {
             throw new NotImplementedException();
         }

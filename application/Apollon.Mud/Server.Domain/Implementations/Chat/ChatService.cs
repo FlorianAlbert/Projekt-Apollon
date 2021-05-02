@@ -14,7 +14,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
     /// <inheritdoc cref="IChatService"/>
     public class ChatService : IChatService
     {
-        private IGameDBService GameDbService { get; }
+        private IGameDbService GameDbService { get; }
 
         private IConnectionService ConnectionService { get; }
 
@@ -26,7 +26,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
         /// <param name="gameDbService"></param>
         /// <param name="connectionService"></param>
         /// <param name="chatHubContext"></param>
-        public ChatService(IGameDBService gameDbService, IConnectionService connectionService, IHubContext<ChatHub, IClientChatHubContract> chatHubContext)
+        public ChatService(IGameDbService gameDbService, IConnectionService connectionService, IHubContext<ChatHub, IClientChatHubContract> chatHubContext)
         {
             GameDbService = gameDbService;
             ConnectionService = connectionService;
