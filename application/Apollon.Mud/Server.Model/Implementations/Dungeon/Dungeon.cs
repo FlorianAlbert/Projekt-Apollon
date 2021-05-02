@@ -16,8 +16,14 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeon
 {
+    /// <inheritdoc cref="IDungeon"/>
     public class Dungeon : IDungeon
     {
+        /// <summary>
+        /// Creates a new instance of Dungeon
+        /// </summary>
+        /// <param name="dungeonEpoch">The epoch of the new dungeon</param>
+        /// <param name="dungeonDescription">The description of the new dungeon</param>
         public Dungeon(string dungeonEpoch, string dungeonDescription)
         {
             Id = Guid.NewGuid();
@@ -27,10 +33,19 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon
 
             Status = Status.Pending;
         }
+
+        /// <inheritdoc cref="IDungeon.DungeonEpoch"/>
         public string DungeonEpoch { get; set; }
+
+        /// <inheritdoc cref="IDungeon.DungeonDescription"/>
         public string DungeonDescription { get; set; }
+
+        /// <inheritdoc cref="IDungeon.DefaultRoom"/>
         public IRoom DefaultRoom { get; set; }
+
         private ICollection<IRace> _ConfiguredRaces;
+
+        /// <inheritdoc cref="IDungeon.ConfiguredRaces"/>
         public ICollection<IRace> ConfiguredRaces
         {
             get
@@ -38,7 +53,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon
                 return _ConfiguredRaces ??= new List<IRace>();
             }
         }
+
         private ICollection<IClass> _ConfiguredClasses;
+
+        /// <inheritdoc cref="IDungeon.ConfiguredClasses"/>
         public ICollection<IClass> ConfiguredClasses
         {
             get
@@ -46,7 +64,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon
                 return _ConfiguredClasses ??= new List<IClass>();
             }
         }
+
         private ICollection<IRoom> _ConfiguredRooms;
+
+        /// <inheritdoc cref="IDungeon.ConfiguredRooms"/>
         public ICollection<IRoom> ConfiguredRooms
         {
             get
@@ -54,7 +75,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon
                 return _ConfiguredRooms ??= new List<IRoom>();
             }
         }
+
         private ICollection<IInspectable> _ConfiguredInspectables;
+
+        /// <inheritdoc cref="IDungeon.ConfiguredInspectables"/>
         public ICollection<IInspectable> ConfiguredInspectables
         {
             get
@@ -62,7 +86,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon
                 return _ConfiguredInspectables ??= new List<IInspectable>();
             }
         }
+
         private ICollection<IRequestable> _ConfiguredRequestable;
+
+        /// <inheritdoc cref="IDungeon.ConfiguredRequestables"/>
         public ICollection<IRequestable> ConfiguredRequestables
         {
             get
@@ -70,7 +97,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon
                 return _ConfiguredRequestable ??= new List<IRequestable>();
             }
         }
+
         private ICollection<IAvatar> _ConfiguredAvatars;
+
+        /// <inheritdoc cref="IDungeon.RegisteredAvatars"/>
         public ICollection<IAvatar> RegisteredAvatars
         {
             get
@@ -78,7 +108,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon
                 return _ConfiguredAvatars ??= new List<IAvatar>();
             }
         }
+
         private ICollection<DungeonUser> _DungeonMasters;
+
+        /// <inheritdoc cref="IDungeon.DungeonMasters"/>
         public ICollection<DungeonUser> DungeonMasters
         {
             get
@@ -86,7 +119,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon
                 return _DungeonMasters ??= new List<DungeonUser>();
             }
         }
+
         private ICollection<DungeonUser> _WhiteList;
+
+        /// <inheritdoc cref="IDungeon.WhiteList"/>
         public ICollection<DungeonUser> WhiteList
         {
             get
@@ -94,7 +130,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon
                 return _WhiteList ??= new List<DungeonUser>();
             }
         }
+
         private ICollection<DungeonUser> _BlackList;
+
+        /// <inheritdoc cref="IDungeon.BlackList"/>
         public ICollection<DungeonUser> BlackList
         {
             get
@@ -102,7 +141,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon
                 return _BlackList ??= new List<DungeonUser>();
             }
         }
+
         private ICollection<DungeonUser> _OpenRequests;
+
+        /// <inheritdoc cref="IDungeon.OpenRequests"/>
         public ICollection<DungeonUser> OpenRequests
         {
             get
@@ -110,13 +152,23 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon
                 return _OpenRequests ??= new List<DungeonUser>();
             }
         }
+
+        /// <inheritdoc cref="IDungeon.CurrentDungeonMaster"/>
         public DungeonUser CurrentDungeonMaster { get; set; }
+
+        /// <inheritdoc cref="IDungeon.DungeonOwner"/>
         public DungeonUser DungeonOwner { get; set; }
+
+        /// <inheritdoc cref="IDungeon.Visibility"/>
         public Visibility Visibility { get; set; }
 
+        /// <inheritdoc cref="IApprovable.Id"/>
         public Guid Id { get; }
 
+        /// <inheritdoc cref="IApprovable.Status"/>
         public Status Status { get; set; }
+
+        /// <inheritdoc cref="IDungeon.DungeonName"/>
         public string DungeonName { get; set; }
 
         /** TODO: In PlayerService zu verlagern

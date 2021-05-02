@@ -14,7 +14,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
     public class UserDbService: IUserDbService
     {
         //ToDo Tests
-
         /// <summary>
         /// Manager to access and modify the content of the database.
         /// </summary>
@@ -91,7 +90,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
         public async  Task<string> GetResetToken(DungeonUser user)
         {
-            //ToDo configure password reset token provider
             return await _userManager.GeneratePasswordResetTokenAsync(user);
         }
 
@@ -103,7 +101,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
         public async Task<string> GetEmailConfirmationToken(DungeonUser user)
         {
-            //ToDo TokenProvider konfigurieren?!
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
 

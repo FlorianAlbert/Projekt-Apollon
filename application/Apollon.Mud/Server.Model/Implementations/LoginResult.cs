@@ -3,22 +3,22 @@
 namespace Apollon.Mud.Server.Model.Implementations
 {
     /// <summary>
-    /// ToDo
+    /// Result of login at the AuthorizationController
     /// </summary>
     public class LoginResult
     {
         /// <summary>
-        /// ToDo
+        /// JwtToken for the user
         /// </summary>
         public string Token { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// User that logged in
         /// </summary>
         public DungeonUser User { get; set; }
 
         /// <summary>
-        /// ToDo in Modellierung eintragen
+        /// Status of the login
         /// </summary>
         public LoginResultStatus Status { get; set; }
 

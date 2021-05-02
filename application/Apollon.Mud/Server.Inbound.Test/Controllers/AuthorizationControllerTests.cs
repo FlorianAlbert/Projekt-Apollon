@@ -1,5 +1,8 @@
-﻿using AutoFixture;
+﻿using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+using Apollon.Mud.Shared.UserManagement.Authorization;
+using AutoFixture;
 using AutoFixture.AutoNSubstitute;
+using NSubstitute;
 using Xunit;
 
 namespace Apollon.Mud.Server.Inbound.Test.Controllers
@@ -13,8 +16,30 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
         }
 
         [Fact]
-        public void FirstTest()
+        public void UnauthorizedLogin_Fails()
         {
+            var authorizationRequestDto = _Fixture.Build<AuthorizationRequestDto>().With(x => x.UserEmail, "").Create();
+
+            var _authorizationService = Substitute.For<IAuthorizationService>();
+
+
+        }
+
+        [Fact]
+        public void BadRequestLogin_Fails()
+        {
+            var authorizationRequestDto = _Fixture.Build<AuthorizationRequestDto>().With(x => x.UserEmail, "").Create();
+
+            var _authorizationService = Substitute.For<IAuthorizationService>();
+
+        }
+
+        [Fact]
+        public void Login_Succeds()
+        {
+            var authorizationRequestDto = _Fixture.Build<AuthorizationRequestDto>().With(x => x.UserEmail, "").Create();
+
+            var _authorizationService = Substitute.For<IAuthorizationService>();
 
         }
 
