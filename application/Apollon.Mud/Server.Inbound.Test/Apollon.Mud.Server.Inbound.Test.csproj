@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Server.Domain\Apollon.Mud.Server.Domain.csproj" />
+    <ProjectReference Include="..\Server.Inbound\Apollon.Mud.Server.Inbound.csproj" />
     <ProjectReference Include="..\Shared\Apollon.Mud.Shared.csproj" />
   </ItemGroup>
 

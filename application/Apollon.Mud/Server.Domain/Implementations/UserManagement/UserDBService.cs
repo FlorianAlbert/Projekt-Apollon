@@ -14,7 +14,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
     public class UserDbService: IUserDbService
     {
         //ToDo Tests
-
         /// <summary>
         /// Manager to access and modify the content of the database.
         /// </summary>
