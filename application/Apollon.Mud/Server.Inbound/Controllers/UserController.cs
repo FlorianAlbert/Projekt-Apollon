@@ -156,7 +156,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// <summary>
         /// ToDo
         /// </summary>
-        /// <param name="passwortResetConfirmationDto"></param>
+        /// <param name="passwordResetConfirmationDto"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost]
@@ -165,9 +165,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         //[Authorize(Roles = "Admin, Player")]
-        public async Task<IActionResult> ConfirmPasswordReset([FromBody] PasswortResetConfirmationDto passwortResetConfirmationDto, [FromRoute] Guid userId)
+        public async Task<IActionResult> ConfirmPasswordReset([FromBody] PasswortResetConfirmationDto passwordResetConfirmationDto, [FromRoute] Guid userId)
         {
-            var succeeded = await _userService.ConfirmPasswordReset(userId, passwortResetConfirmationDto.Token, passwortResetConfirmationDto.NewPassword);
+            var succeeded = await _userService.ConfirmPasswordReset(userId, passwordResetConfirmationDto.Token, passwordResetConfirmationDto.NewPassword);
             if (succeeded) return Ok();
             return BadRequest();
         }
