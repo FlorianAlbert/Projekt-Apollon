@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
+using AutoFixture.Kernel;
 using FluentEmail.Core;
 using NSubstitute;
 using Xunit;
@@ -20,7 +21,13 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
         [Fact]
         public void SendMail_Succeed()
         {
+            var email = "noreply@apollon-dungeons.de";
+            var subject = _Fixture.Create<string>();
+            var message = _Fixture.Create<string>();
+
             var fluentMailFactory = Substitute.For<IFluentEmailFactory>();
+
+
         }
     }
 }
