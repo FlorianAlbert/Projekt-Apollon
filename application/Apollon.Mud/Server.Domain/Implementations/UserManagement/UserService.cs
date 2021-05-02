@@ -47,7 +47,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             {
                 Email = userEmail
             };
-            var creationResult = await _userDbService.CreateUser(user, password, _adminRegistered);
+            var creationResult = await _userDbService.CreateUser(user, password, !_adminRegistered);
             if (!creationResult) return false;
             var confirmationToken = await _userDbService.GetEmailConfirmationToken(user);
             //ToDo confirmationLink
@@ -65,12 +65,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
         public async Task<bool> DeleteUser(Guid userId)
         {
-            //ToDo werden auch alle abhängigen Daten beim Löschen eines Dungeons gelöscht?
-            var usersAvatars = _dungeonDbContext.Avatars.Where(x => x.Id == userId);
-            var usersDungeons = _dungeonDbContext.Dungeons.Where(x => x.DungeonOwner.Id == userId.ToString());
-            //ToDo löschen von allen Black/White-Lists und DungeonMaster-Listen
-            _dungeonDbContext.Avatars.RemoveRange(usersAvatars);
-            _dungeonDbContext.Dungeons.RemoveRange(usersDungeons);
+            //ToDo benutze DungeonDBService
+            //ToDo löschen von allen Black/White-Lists und DungeonMaster-Listen --> cascading
             return await _userDbService.DeleteUser(userId);
         }
 
