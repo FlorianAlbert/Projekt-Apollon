@@ -1,4 +1,10 @@
-﻿using System;
+﻿using Apollon.Mud.Shared.Dungeon.Inspectable;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
+using Apollon.Mud.Shared.Dungeon.Npc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -24,21 +30,55 @@ namespace Apollon.Mud.Client.Data.Models
         /// <summary>
         /// Every Room can have a neighbouring Room north of it
         /// </summary>
+        [Required(ErrorMessage = "Bitte gib einen Nachbarn an, oder wähle \"Kein Nachbar\" aus")]
         public string RoomNorth { get; set; }
 
         /// <summary>
         /// Every Room can have a neighbouring Room east of it
         /// </summary>
+        [Required(ErrorMessage = "Bitte gib einen Nachbarn an, oder wähle \"Kein Nachbar\" aus")]
         public string RoomEast { get; set; }
 
         /// <summary>
         /// Every Room can have a neighbouring Room south of it
         /// </summary>
+        [Required(ErrorMessage = "Bitte gib einen Nachbarn an, oder wähle \"Kein Nachbar\" aus")]
         public string RoomSouth { get; set; }
 
         /// <summary>
         /// Every Room can have a neighbouring Room west of it
         /// </summary>
+        [Required(ErrorMessage = "Bitte gib einen Nachbarn an, oder wähle \"Kein Nachbar\" aus")]
         public string RoomWest { get; set; }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public List<InspectableDto> Inspectables { get; set; }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public List<TakeableDto> Takeables { get; set; }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public List<ConsumableDto> Consumables { get; set; }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public List<WearableDto> Wearables { get; set; }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public List<UsableDto> Usables { get; set; }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public List<NpcDto> Npcs { get; set; }
     }
 }
