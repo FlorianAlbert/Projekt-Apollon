@@ -1,10 +1,19 @@
 ﻿using System;
+using AutoFixture;
+using AutoFixture.AutoNSubstitute;
 using Xunit;
 
 namespace Apollon.Mud.Server.Domain.Test.Shared
 {
     public class ConnectionServiceTests
     {
+        private IFixture _Fixture;
+
+        public ConnectionServiceTests()
+        {
+            _Fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
+        }
+
         [Fact]        
         public void NotFound_GetConnection_Fails()
         {
