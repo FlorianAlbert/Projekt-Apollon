@@ -21,7 +21,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" style="width:21rem" @bind="chosenClass" @onselect="@ClassSelectionChanged()" @onselect:stopPropagation="true">
+                            <select class="form-select" aria-label="Default select example" @bind="chosenClass" @onselect="@ClassSelectionChanged()" @onselect:stopPropagation="true">
                                 <option value="NoClass" selected hidden>Neue Klasse</option>
                                 @if (!(dungeonClasses is null))
                                 {
