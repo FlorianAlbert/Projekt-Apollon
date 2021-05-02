@@ -50,8 +50,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             var creationResult = await _userDbService.CreateUser(user, password, !_adminRegistered);
             if (!creationResult) return false;
             var confirmationToken = await _userDbService.GetEmailConfirmationToken(user);
-            //ToDo confirmationLink
-            var confirmationLink = "http://apollon-dungeons.de/";
+            var confirmationLink = $"http://mud.apollon-dungeons.de/Identity/Account/ConfirmAccount/{user.Id}/{confirmationToken}";
             var emailText = $"Hallo {user.UserName},\n\nbitte bestätige mit folgedem Link deine Email-Adresse:\n\n{confirmationLink}\n\n. Dein Apollon-Support-Team.";
             await _emailService.SendEmail(userEmail, emailText, "Bestätigung deiner Email.");
             return true;
@@ -85,8 +84,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             var user = await _userDbService.GetUserByEmail(userEmail);
             if (user == null) return false;
             var resetToken = await _userDbService.GetResetToken(user);
-            //ToDo resetLink
-            var resetLink = "http://apollon-dungeons.de/";
+            var resetLink = $"http://mud.apollon-dungeons.de/Identity/Account/ForgotPassword/{user.Id}/{resetToken}";
             var emailText = $"Hallo {user.UserName},\n\ndu hast das Zurücksetzen deines Passworts beantragt. Bitte folge dem nachstehenden " +
                             $"Link, um dein Passwort zurück zu setzen:\n\n{resetLink}\n\n. Dein Apollon-Support-Team.";
             await _emailService.SendEmail(userEmail, emailText, "Rücksetzung deines Passworts.");
