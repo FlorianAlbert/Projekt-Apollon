@@ -1,0 +1,27 @@
+name: Dotnet Continous Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Publish Client
+      run: dotnet publish -c Release -o /var/www/Application/Client
+      working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon/application/Apollon.Mud/Client
+    - name: Publish Server
+      run: dotnet publish -c Release -o /var/www/Application/Server
+      working-directory: /home/github/actions-runner/deploy/Projekt-Apollon/Projekt-Apollon/application/Apollon.Mud/Server.Inbound
+    - name: Stop Client
+      run: systemctl stop blazor.service
+    - name: Stop Server
+      run: systemctl stop server.service
+    - name: Start Server
+      run: systemctl start server.service
+    - name: Start Client
+      run: systemctl start blazor.service
