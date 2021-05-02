@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Apollon.Mud.Server.Domain.Interfaces.Shared;
-using Apollon.Mud.Server.Model.Implementations;
+﻿using Xunit;
 
 namespace Apollon.Mud.Server.Domain.Test.Shared
 {
     /// <summary>
     /// ToDo
     /// </summary>
-    public class ConnectionServiceTests: IConnectionService
+    public class ConnectionServiceTests
     {
         [Fact]        
         public void NotFound_GetConnection_Fails()
@@ -58,32 +54,35 @@ namespace Apollon.Mud.Server.Domain.Test.Shared
         {
 
         }
-        public void AddConnection(Guid userId, Guid sessionId, string chatConnectionId, string gameConnectionId, Guid dungeonId,
-            Guid? avatarId)
+        
+        [Fact]
+        public void DoesNotContainKey_AddConnection_Fails()
         {
-            if (!Connections.ContainsKey(userId.ToString())) Connections.Add(userId.ToString(), new Dictionary<string, Connection>());
 
-            if (Connections[userId.ToString()].ContainsKey(sessionId.ToString())) return;
-
-            var connection = new Connection
-            {
-                AvatarId = avatarId,
-                DungeonId = dungeonId,
-                ChatConnectionId = chatConnectionId,
-                GameConnectionId = gameConnectionId
-            };
-            Connections[userId.ToString()].Add(sessionId.ToString(), connection);
         }
 
-        public void RemoveConnection(Guid userId, Guid sessionId)
+        [Fact]
+        public void ContainKey_AddConnection_Succeds()
         {
-            if (!Connections.ContainsKey(userId.ToString())) return;
 
-            if (!Connections[userId.ToString()].ContainsKey(sessionId.ToString())) return;
+        }
+    
+        [Fact]
+        public void DoesNotContainKey_RemoveConnection_Fails()
+        {
 
-            Connections[userId.ToString()].Remove(sessionId.ToString());
+        }
 
-            if (Connections[userId.ToString()].Count == 0) Connections.Remove(userId.ToString());
+        [Fact]
+        public void WrongKey_RemoveConnection_Fails()
+        {
+
+        }
+
+        [Fact]
+        public void Remove_RemoveConnection_Succeds()
+        {
+
         }
     }
 }
