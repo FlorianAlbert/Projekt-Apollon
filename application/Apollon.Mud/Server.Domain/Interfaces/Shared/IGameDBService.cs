@@ -6,7 +6,7 @@ namespace Apollon.Mud.Server.Domain.Interfaces.Shared
     /// <summary>
     /// ToDo
     /// </summary>
-    public interface IGameDBService
+    public interface IGameDbService
     {
         bool ValidateUserIsDungeonMaster(Guid dungeonId, Guid userId);  // TODO: In UML dungeonId ergänzen!!!
 
