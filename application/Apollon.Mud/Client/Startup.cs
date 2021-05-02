@@ -3,6 +3,7 @@ using Apollon.Mud.Client.Services.Implementiations;
 using Apollon.Mud.Client.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
@@ -30,15 +31,16 @@ namespace Apollon.Mud.Client
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddHttpClient("RestHttpClient", httpClient =>
             {
-                httpClient.BaseAddress = new Uri(string.Empty);
+                httpClient.BaseAddress = new Uri(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + ":" + Configuration.GetSection("LoginConfiguration").GetSection("Port").Value);
+                // Appsettings.json Config Sachen festlegen und dar�ber Base URI und Port festlegen
 
             });
             services.AddTransient<IAuthorizationService, AuthorizationService>();
-            //services.AddScoped<UserContext>()
-            //TODO Klasse UserContext mit Bool isLoggedIn und String Token
+            services.AddScoped<UserContext>();
+            services.AddScoped<CustomAuthenticationStateProvider>();
+            services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomAuthenticationStateProvider>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +57,9 @@ namespace Apollon.Mud.Client
                 app.UseHsts();
             }
 
+
             //app.UseHttpsRedirection();
+          
             app.UseStaticFiles();
 
             app.UseRouting();

@@ -1,0 +1,27 @@
+﻿.play .terminal {
+    position: relative;
+    background-color: #000;
+    color: #c3cbd5;
+    white-space: pre-wrap;
+    font-family: Monaco, monospace;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.terminal span {
+    float: left;
+    margin-left: 20px;
+    width: 100%;
+}
+
+.play .prompt {
+    display: flex;
+    flex-shrink: 0;
+    padding: 16px;
+    z-index: 10;
+    background-color: #fff;
+}
+
+.play .prompt #send {
+    margin-left: 8px;
+}

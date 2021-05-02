@@ -12,72 +12,72 @@ using Newtonsoft.Json;
 namespace Apollon.Mud.Shared.Dungeon.Class
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents the data representation of IClass.
     /// </summary>
     public class ClassDto
     {
         /// <summary>
-        /// ToDo
+        /// The unique id of the class.
         /// </summary>
         [JsonProperty("Id")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The status which represents, if the class is currently playable.
         /// </summary>
         [JsonProperty("Status")]
         public int Status { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The part of the start-inventory, which includes the takeables.
         /// </summary>
         [JsonProperty("InventoryTakeableDtos")]
         public ICollection<TakeableDto> InventoryTakeableDtos { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The part of the start-inventory, which includes the usables.
         /// </summary>
         [JsonProperty("InventoryUsableDtos")]
         public ICollection<UsableDto> InventoryUsableDtos { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The part of the start-inventory, which includes the consumables.
         /// </summary>
         [JsonProperty("InventoryConsumableDtos")]
         public ICollection<ConsumableDto> InventoryConsumableDtos { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The part of the start-inventory, which includes the wearables.
         /// </summary>
         [JsonProperty("InventoryWearableDtos")]
         public ICollection<WearableDto> InventoryWearableDtos { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The name of the class.
         /// </summary>
         [JsonProperty("Name")]
         public string Name { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The description of the class.
         /// </summary>
         [JsonProperty("Description")]
         public string Description { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The default health of the class.
         /// </summary>
         [JsonProperty("DefaultHealth")]
         public int DefaultHealth { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The default protection of the class.
         /// </summary>
         [JsonProperty("DefaultProtection")]
         public int DefaultProtection { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The default damage of the class.
         /// </summary>
         [JsonProperty("DefaultDamage")]
         public int DefaultDamage { get; set; }

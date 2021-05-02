@@ -8,42 +8,42 @@ using Newtonsoft.Json;
 namespace Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents the data representation of IUsable.
     /// </summary>
     public class UsableDto
     {
         /// <summary>
-        /// ToDo
+        /// The unique id of the usable.
         /// </summary>
         [JsonProperty("Id")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The status which represents, if the usable is currently available in the dungeon.
         /// </summary>
         [JsonProperty("Status")]
         public int Status { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The description of the usable.
         /// </summary>
         [JsonProperty("Description")]
         public string Description { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The name of the usable.
         /// </summary>
         [JsonProperty("Name")]
         public string Name { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The weight of the usable.
         /// </summary>
         [JsonProperty("Weight")]
         public int Weight { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The damage boost of the usable.
         /// </summary>
         [JsonProperty("DamageBoost")]
         public int DamageBoost { get; set; }
