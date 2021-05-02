@@ -8,48 +8,48 @@ using Newtonsoft.Json;
 namespace Apollon.Mud.Shared.Dungeon.Race
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents the data representation of IRace.
     /// </summary>
     public class RaceDto
     {
         /// <summary>
-        /// ToDo
+        /// The unique id of the race.
         /// </summary>
         [JsonProperty("Id")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The status which represents, if the race is currently playable.
         /// </summary>
         [JsonProperty("Status")]
         public int Status { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The name of the race.
         /// </summary>
         [JsonProperty("Name")]
         public string Name { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The description of the race.
         /// </summary>
         [JsonProperty("Description")]
         public string Description { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The default health of the race.
         /// </summary>
         [JsonProperty("DefaultHealth")]
         public int DefaultHealth { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The default protection of the race.
         /// </summary>
         [JsonProperty("DefaultProtection")]
         public int DefaultProtection { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The default damage of the race.
         /// </summary>
         [JsonProperty("DefaultDamage")]
         public int DefaultDamage { get; set; }

@@ -3,18 +3,18 @@
 namespace Apollon.Mud.Shared.UserManagement.Registration
 {
     /// <summary>
-    /// ToDo gleiches Dto wie bei AuthorizationRequest. Könnte man nicht beides in ein Dto packen und für beide Anwensungsbereiche verwenden
+    ///  Class which represents a registration request.
     /// </summary>
     public class RegistrationRequestDto
     {
         /// <summary>
-        /// ToDo
+        /// The email with which an authorization is requested.
         /// </summary>
         [JsonProperty("UserEmail")]
         public string UserEmail { get; set; }
 
         /// <summary>
-        /// ToDo Hash statt Password versenden?! was braucht das Identity?
+        /// The password with which an authorization is requested.
         /// </summary>
         [JsonProperty("Password")]
         public string Password { get; set; }

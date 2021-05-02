@@ -1,4 +1,4 @@
-name: Website
+name: Website Continous Deployment
 
 on:
   push:

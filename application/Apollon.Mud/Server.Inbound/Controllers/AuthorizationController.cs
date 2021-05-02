@@ -1,36 +1,34 @@
 ﻿using System;
-using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+using System.Threading.Tasks;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Shared.Dungeon.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Apollon.Mud.Shared.UserManagement.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using IAuthorizationService = Apollon.Mud.Server.Domain.Interfaces.UserManagement.IAuthorizationService;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
     /// <summary>
-    /// ToDo Tests
+    /// Controller which is responsable for the authorization.
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthorizationController : ControllerBase
     {
         /// <summary>
-        /// ToDo
+        /// The service to validate the credentials.
         /// </summary>
         private readonly IAuthorizationService _authorizationService;
 
-        /// <summary>
-        /// ToDo
-        /// </summary>
-        /// <param name="authorizationService"></param>
         public AuthorizationController(IAuthorizationService authorizationService)
         {
             _authorizationService = authorizationService;
         }
 
         /// <summary>
-        /// ToDo
+        /// Validates the credentials and if it is successfully returns a AuthorizationResponseDto in the IActionResult.
         /// </summary>
         /// <param name="authorizationRequestDto"></param>
         /// <returns></returns>
@@ -40,12 +38,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Login([FromBody] AuthorizationRequestDto authorizationRequestDto)
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] AuthorizationRequestDto authorizationRequestDto)
         {
-            var loginResult = _authorizationService.Login(authorizationRequestDto.UserEmail, authorizationRequestDto.Password);
+            var loginResult = await _authorizationService.Login(authorizationRequestDto.UserEmail, authorizationRequestDto.Password);
 
             if (loginResult.Status == LoginResultStatus.Unauthorized) return Unauthorized();
-            else if (loginResult.Status == LoginResultStatus.OK)
+            if (loginResult.Status == LoginResultStatus.OK)
             {
                 return Ok(new AuthorizationResponseDto
                 {
@@ -58,7 +57,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     }
                 });
             }
-            else return BadRequest();
+            return BadRequest();
         }
     }
 }

@@ -15,96 +15,96 @@ using Newtonsoft.Json;
 namespace Apollon.Mud.Shared.Dungeon.Room
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents the data representation of IRoom.
     /// </summary>
     public class RoomDto
     {
         /// <summary>
-        /// ToDo
+        /// The id of the room.
         /// </summary>
         [JsonProperty("Id")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The status which represents, if the room is currently available in the dungeon.
         /// </summary>
         [JsonProperty("Status")]
         public int Status { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The description of the room.
         /// </summary>
         [JsonProperty("Description")]
         public string Description { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The name of the room.
         /// </summary>
         [JsonProperty("Name")]
         public string Name { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The inspectables which are placed in the room
         /// </summary>
         [JsonProperty("Inspectables")]
         public ICollection<InspectableDto> Inspectables { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The takeables which are placed in the room
         /// </summary>
         [JsonProperty("Takeables")]
         public ICollection<TakeableDto> Takeables { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The consumables which are placed in the room
         /// </summary>
         [JsonProperty("Consumables")]
         public ICollection<ConsumableDto> Consumables { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The wearables which are placed in the room
         /// </summary>
         [JsonProperty("Wearables")]
         public ICollection<WearableDto> Wearables { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The usables which are placed in the room
         /// </summary>
         [JsonProperty("Usables")]
         public ICollection<UsableDto> Usables { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The npcs which are placed in the room
         /// </summary>
         [JsonProperty("Npcs")]
         public ICollection<NpcDto> Npcs { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The north neighbors id of the room.
         /// </summary>
         [JsonProperty("NeighborNorthId")]
         public Guid NeighborNorthId { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The east neighbors id of the room.
         /// </summary>
         [JsonProperty("NeighborEastId")]
         public Guid NeighborEastId { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The south neighbors id of the room.
         /// </summary>
         [JsonProperty("NeighborSouthId")]
         public Guid NeighborSouthId { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The west neighbors id of the room.
         /// </summary>
         [JsonProperty("NeighborWestId")]
         public Guid NeighborWestId { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The special actions/requestables which are executable in the room.
         /// </summary>
         [JsonProperty("SpecialActions")]
         public ICollection<RequestableDto> SpecialActions { get; set; }

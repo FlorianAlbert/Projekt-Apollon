@@ -1,75 +1,125 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.User;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
     /// <summary>
-    /// ToDo
+    /// Service which is used for database-changing methods.
     /// </summary>
-    public class UserDBService: IUserDBService
+    public class UserDbService: IUserDbService
     {
-        //ToDo implement und Tests
+        //ToDo Tests
 
         /// <summary>
-        /// ToDo
+        /// Manager to access and modify the content of the database.
         /// </summary>
         private readonly UserManager<DungeonUser> _userManager;
 
-        public UserDBService(UserManager<DungeonUser> userManager)
+        public UserDbService(UserManager<DungeonUser> userManager)
         {
             _userManager = userManager;
         }
 
-        public bool CreateUser(DungeonUser user, string password)
+        public async Task<bool> CreateUser(DungeonUser user, string password, bool asAdmin = false)
         {
-            //ToDo User wird ohne Passwort angelegt
-            if (_userManager.CreateAsync(user).Result.Succeeded)
+            var result = await _userManager.CreateAsync(user, password);
+
+            if (!result.Succeeded)
             {
-                if (_userManager.AddPasswordAsync(user, password).Result.Succeeded)
-                {
-                    return true;
-                }
-                _userManager.DeleteAsync(user);
+                return false;
             }
-            return false;
+            result = await _userManager.AddToRoleAsync(user, Roles.Player.ToString());
+
+            if (!result.Succeeded)
+            {
+                await RollbackUserCreation(user);
+                return false;
+            }
+
+            if (asAdmin)
+            {
+                result = await _userManager.AddToRoleAsync(user, Roles.Admin.ToString());
+                if (!result.Succeeded)
+                {
+                    await RollbackUserCreation(user);
+                    return false;
+                }
+            }
+
+            return true;
         }
 
-        public DungeonUser GetUser(Guid userId)
+        public async Task<DungeonUser> GetUser(Guid userId)
         {
-            //ToDo wie funktioniert es mit GetUserAsync?!
-            return _userManager.Users.FirstOrDefault(x => x.Id == userId.ToString());
+            return await _userManager.FindByIdAsync(userId.ToString());
         }
 
-        public ICollection<DungeonUser> GetUsers()
+        public async Task<ICollection<DungeonUser>> GetUsers()
         {
-            //ToDo passt das so?!
-            return _userManager.Users.AsEnumerable() as ICollection<DungeonUser>;
+            return await _userManager.Users.ToListAsync();
         }
 
-        public bool UpdateUser(DungeonUser user, string oldPassword, string newPassword)
+        public async Task<bool> UpdateUser(DungeonUser user, string oldPassword, string newPassword)
         {
-            //ToDo passt das so?!
-            return _userManager.ChangePasswordAsync(user, oldPassword, newPassword).Result.Succeeded;
+            var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+            return result.Succeeded;
         }
 
-        public bool DeleteUser(Guid userId)
+        public async Task<bool> DeleteUser(Guid userId)
         {
-            //ToDo wie funktioniert es mit GetUserAsync?!
-            //Sollte das asynchron sein bzw. passt es auf Result zu warten?!
-            var user = _userManager.Users.FirstOrDefault(x => x.Id == userId.ToString());
+            var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null) return false;
-            return _userManager.DeleteAsync(user).Result.Succeeded;
+            var result = await _userManager.DeleteAsync(user);
+            return result.Succeeded;
         }
 
-        public DungeonUser GetUserByEmail(string userEmail)
+        public async Task<DungeonUser> GetUserByEmail(string userEmail)
         {
-            //ToDo wie funktioniert es mit GetUserAsync?!
-            return _userManager.Users.FirstOrDefault(x => x.Email == userEmail);
+            return await _userManager.FindByEmailAsync(userEmail);
+        }
+
+        public async Task<bool> ResetPassword(DungeonUser user, string token, string password)
+        {
+            var result = await _userManager.ResetPasswordAsync(user, token, password);
+            return result.Succeeded;
+        }
+
+        public async  Task<string> GetResetToken(DungeonUser user)
+        {
+            //ToDo configure password reset token provider
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
+        }
+
+        public async Task<bool> ConfirmEmail(DungeonUser user, string token)
+        {
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            return result.Succeeded;
+        }
+
+        public async Task<string> GetEmailConfirmationToken(DungeonUser user)
+        {
+            //ToDo TokenProvider konfigurieren?!
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        }
+
+        public async Task<bool> IsAdminLoggedIn()
+        {
+            return await _userManager.Users.AnyAsync(x =>
+                _userManager.GetRolesAsync(x).Result.Contains(Roles.Admin.ToString()));
+        }
+
+        private async Task RollbackUserCreation(DungeonUser user) //ToDo in UML anpassen
+        {
+            IdentityResult result;
+            do
+            {
+                result = await _userManager.DeleteAsync(user);
+            } while (!result.Succeeded);
         }
     }
 }

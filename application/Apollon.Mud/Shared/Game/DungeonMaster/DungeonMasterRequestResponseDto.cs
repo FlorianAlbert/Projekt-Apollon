@@ -4,18 +4,18 @@ using Newtonsoft.Json;
 namespace Apollon.Mud.Shared.Game.DungeonMaster
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents the answer of the requestable from the dungeon master.
     /// </summary>
     public class DungeonMasterRequestResponseDto
     {
         /// <summary>
-        /// ToDo
+        /// The answer of the requestable from the dungeon master.
         /// </summary>
         [JsonProperty("Message")]
         public string Message { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The avatar which executed the requestable.
         /// </summary>
         [JsonProperty("Avatar")]
         public AvatarDto Avatar { get; set; }
