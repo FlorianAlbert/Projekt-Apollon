@@ -3,10 +3,10 @@
 @page "/MasterView/Requests"
 @layout MasterViewLayout
 
-<div class="row">
+<div class="row bg-white" style="padding:0;">
     <div class="col-4">
-        <div class="card">
-            <div class="list-group" style="overflow:auto; overflow-y:scroll; max-height:88vh">
+        <div class="card" style="display: flex; flex-direction: column; height: 87vh">
+            <div class="list-group" style="overflow-y:auto; max-height:100%">
                 @for (int i = 0; i < 20; i++) {
 
                 <button type="button" class="list-group-item list-group-item-action">
@@ -19,25 +19,27 @@
         </div>
     </div>
     <div class="col-8">
-        <div class="container mt-3">
-            <h3>Avatarname möchte: </h3>
-            <h5>Befehl</h5>
-            <EditForm EditContext="@masterRequestContext" novalidate>
-                <DataAnnotationsValidator />
-                <InputTextArea class="form-control" placeholder="Raumbeschreibung" @bind-Value="roomDescription" />
-                <hr class="featurette-divider" />
-                <InputTextArea class="form-control  mb-5" placeholder="Reaktion" @bind-Value="textReaction" />
-                <p>Lebenspunkte</p>
-                <input type="range" class="form-range" min="0" max="100" step="1" @bind="@health" @bind:event="oninput" />
-                <InputText class="form-control mb-3" style="width:3.5rem" @bind-Value="health" />
-                <p>Schaden</p>
-                <input type="range" class="form-range" min="0" max="100" step="1" @bind="@damage" @bind:event="oninput" />
-                <InputText class="form-control mb-3" style="width:3.5rem" @bind-Value="damage" />
-                <p>Verteidigung</p>
-                <input type="range" class="form-range" min="0" max="100" step="1" @bind="@defense" @bind:event="oninput" />
-                <InputText class="form-control mb-3" style="width:3.5rem" @bind-Value="defense" />
-                <button class="btn btn-success mt-5" style="width:15rem" type="submit">Bestätigen</button>
-            </EditForm>
+        <div style="display: flex; flex-direction: column; height: 87vh">
+            <div class="container mt-3" style="height:100% ">
+                <h3>Avatarname möchte: </h3>
+                <h5>Befehl</h5>
+                <EditForm EditContext="@masterRequestContext" novalidate>
+                    <DataAnnotationsValidator />
+                    <InputTextArea class="form-control" placeholder="Raumbeschreibung" @bind-Value="roomDescription" />
+                    <hr class="featurette-divider" />
+                    <InputTextArea class="form-control  mb-5" placeholder="Reaktion" @bind-Value="textReaction" />
+                    <p>Lebenspunkte</p>
+                    <input type="range" class="form-range" min="0" max="100" step="1" @bind="@health" @bind:event="oninput" />
+                    <InputText class="form-control mb-3" style="width:3.5rem" @bind-Value="health" />
+                    <p>Schaden</p>
+                    <input type="range" class="form-range" min="0" max="100" step="1" @bind="@damage" @bind:event="oninput" />
+                    <InputText class="form-control mb-3" style="width:3.5rem" @bind-Value="damage" />
+                    <p>Verteidigung</p>
+                    <input type="range" class="form-range" min="0" max="100" step="1" @bind="@defense" @bind:event="oninput" />
+                    <InputText class="form-control mb-3" style="width:3.5rem" @bind-Value="defense" />
+                    <button class="btn btn-success mt-5" style="width:15rem" type="submit">Bestätigen</button>
+                </EditForm>
+            </div>
         </div>
     </div>
 </div>

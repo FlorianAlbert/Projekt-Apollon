@@ -5,7 +5,7 @@
     <div style="min-height: 100vh">
         <NavBar />
         <div class="row">
-            <nav class="navbar navbar-light bg-secondary">
+            <nav class="navbar navbar-light bg-secondary" style="height:6vh">
                 <div class="col-8">
 
                     <div class="container">
@@ -24,13 +24,13 @@
             </nav>
         </div>
         <div class="row">
-            <div class="col-8">
+            <div class="col-8" style="max-height:87vh">
                 <div class="content">
                     @Body
                 </div>
             </div>
-            <div class="col-4">
-                <div class="container bg-secondary">
+            <div class="col-4" style="max-height:87vh; padding-left:0">
+                <div class="bg-secondary">
                     <ChatComponent />
                 </div>
             </div>
