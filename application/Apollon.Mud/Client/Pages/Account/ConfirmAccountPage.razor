@@ -1,5 +1,5 @@
-﻿@page "/Identity/Account/ConfirmAccount/{id:guid}"
-
+﻿@page "/Identity/Account/ConfirmAccount/{id:guid}/{token}"
+@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
 @using Apollon.Mud.Client.Data.Models
 
 
@@ -29,39 +29,39 @@
             }
             else
             {
-        <section>
-            <h4 class="ml-2">Deine E-Mail Adresse konnte leider nicht bestätigt werden</h4>
-            <h4 class="ml-2">Versuche über den Button einen neuen Link zu erhalten</h4>
-            <hr />
+                <section>
+                    <h4 class="ml-2">Deine E-Mail Adresse konnte leider nicht bestätigt werden</h4>
+                    <h4 class="ml-2">Versuche über den Button einen neuen Link zu erhalten</h4>
+                    <hr />
 
-            <EditForm EditContext="@resendEmailContext" OnSubmit="@HandleResendSubmit" novalidate>
-                <DataAnnotationsValidator />
+                    <EditForm EditContext="@resendEmailContext" OnSubmit="@HandleResendSubmit" novalidate>
+                        <DataAnnotationsValidator />
 
-                <div class="form-group mt-2">
-                    <label for="Input_Email">E-Mail</label>
-                    <div class="d-flex justify-content-center">
-                        <InputText class="form-control" style="width:25rem" type="email" placeholder="E-Mail" id="Email" @bind-Value="resendEmailModel.Email" />
-                    </div>
-                </div>
-                <div class="text-danger">
-                    <ValidationMessage For=@(() => resendEmailModel.Email) />
-                </div>
-                <div class="form-group mt-4">
-                    <label for="Input_Password">E-Mail bestätigen</label>
-                    <div class="d-flex justify-content-center">
-                        <InputText class="form-control" style="width:25rem" placeholder="E-Mail bestätigen" id="Passwort" @bind-Value="resendEmailModel.EmailVerification" />
-                    </div>
-                </div>
-                <div class="text-danger">
-                    <ValidationMessage For=@(() => resendEmailModel.EmailVerification) />
-                </div>
-            <button class="btn btn-primary mt-5" type="submit">E-Mail erneut senden</button>
-            </EditForm>
+                        <div class="form-group mt-2">
+                            <label for="Input_Email">E-Mail</label>
+                            <div class="d-flex justify-content-center">
+                                <InputText class="form-control" style="width:25rem" type="email" placeholder="E-Mail" id="Email" @bind-Value="resendEmailModel.Email" />
+                            </div>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => resendEmailModel.Email) />
+                        </div>
+                        <div class="form-group mt-4">
+                            <label for="Input_Password">E-Mail bestätigen</label>
+                            <div class="d-flex justify-content-center">
+                                <InputText class="form-control" style="width:25rem" placeholder="E-Mail bestätigen" id="Passwort" @bind-Value="resendEmailModel.EmailVerification" />
+                            </div>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => resendEmailModel.EmailVerification) />
+                        </div>
+                        <button class="btn btn-primary mt-5" type="submit">E-Mail erneut senden</button>
+                    </EditForm>
 
 
-            <p></p>
-            <p class="mt-5"><strong class="text-muted">Sollte das Problem weiterhin bestehen, wende Dich bitte an den Support</strong></p>
-        </section>
+                    <p></p>
+                    <p class="mt-5"><strong class="text-muted">Sollte das Problem weiterhin bestehen, wende Dich bitte an den Support</strong></p>
+                </section>
             }
         </div>
     </div>
@@ -70,7 +70,7 @@
 @code {
 
     /// <summary>
-    /// TODO
+    /// This GUID represents the request to validate a certain E-Mail and will be delivered in the link
     /// </summary>
     [Parameter]
     public Guid Id { get; set; }
@@ -78,32 +78,37 @@
     /// <summary>
     /// TODO
     /// </summary>
+    [Parameter]
+    public string Token { get; set; }
+
+    /// <summary>
+    /// The nullable Bool to differentiate between: Confirmation pending / confirmation successfull / confirmation didnt succeed
+    /// </summary>
     bool? succesfullConfirmation = false;
 
     /// <summary>
-    /// TODO
+    /// The Model to validate the "Resend confirmation E-Mail" Form
     /// </summary>
     private ForgotPasswordModel resendEmailModel = new ForgotPasswordModel();
 
     /// <summary>
-    /// TODO
+    /// The Context for the "Resend confirmation E-Mail" Form
     /// </summary>
     private EditContext resendEmailContext;
 
     /// <summary>
-    /// TODO
+    /// When initialized the component instantiates the EditContext
     /// </summary>
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
         resendEmailContext = new EditContext(resendEmailModel);
-        //TODO Abschicken der Id ans Backend und auswertung in Bool schreiben
-
+        var succesfullConfirmation = await authorizationService.ConfirmRegistration(Id, Token);
     }
 
     /// <summary>
-    /// TODO
+    /// This Method, called when the user wants to submit sending the confimartion E-Mail again, validates the form and reacts accordingly
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The Task that resends the Confirmation Email</returns>
     private async Task HandleResendSubmit()
     {
         var validCredentials = resendEmailContext.Validate();
@@ -116,7 +121,5 @@
             //TODO User Benachrichtigen
         }
     }
-
-
 }
 

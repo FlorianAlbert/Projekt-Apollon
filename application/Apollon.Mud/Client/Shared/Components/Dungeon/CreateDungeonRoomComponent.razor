@@ -17,22 +17,26 @@
 
             <div class="form-group">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Raumauswahl</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" style="width:21rem">
+                            <select class="form-select" aria-label="Default select example" @bind="chosenRoom" @onselect="@RoomSelectionChanged()" @onselect:stopPropagation="true">
+                                <option value="NoRoom" selected hidden>Neuer Raum</option>
                                 @if (!(dungeonRooms is null))
                                 {
-                                    <option value="NoRoom" selected></option>
                                     @foreach (RoomDto dungeonRoom in dungeonRooms)
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
                                 }
                             </select>
-                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button"><TooltipComponent Text="Neuen Raum erstellen"><strong>+</strong></TooltipComponent></button>
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="NewRoomButtonClicked">
+                                <TooltipComponent Text="Neuen Raum erstellen">
+                                    <strong>+</strong>
+                                </TooltipComponent>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -42,12 +46,12 @@
 
             <div class="form-group mt-2">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Name</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" style="width:25rem" placeholder="Name" id="Name" @bind-Value="dungeonRoomModel.Name" />
+                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonRoomModel.Name" @onfocusout="NameFieldLostFocus" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRoomModel.Name) />
@@ -58,12 +62,12 @@
 
             <div class="form-group mt-5">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <h5 class="mt-1">Beschreibung</h5>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputTextArea class="form-control" style="width:25rem" placeholder="Beschreibung" @bind-Value="dungeonRoomModel.Description" />
+                            <InputTextArea class="form-control" placeholder="Beschreibung" @bind-Value="dungeonRoomModel.Description" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRoomModel.Description) />
@@ -74,342 +78,524 @@
 
             <hr class="featurette-divider" />
 
-            @for (int i = 1; i < inspectableCount; i++)
+            <div class="row">
+                <div class="col-lg-12 d-flex justify-content-center">
+                    <h4 class="mt-1">Item-Auswahl</h4>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-2" />
+                <div class="col-4">
+                    @if (roomItemCount < 8)
+                    {
+                        <button class="btn btn-outline-secondary ms-1" style="max-width:15rem" type="button" @onclick="AddItemButtonClicked">Raumitem hinzufügen</button>
+                    }
+                    else
+                    {
+                        <TooltipComponent Text="Maximum erreicht">
+                            <button class="btn btn-outline-secondary ms-1" style="max-width:15rem" type="button" disabled>Raumitem hinzufügen</button>
+                        </TooltipComponent>
+                    }
+                </div>
+                <div class="col-4">
+                    @if (roomItemCount >= 1)
+                    {
+                        <button class="btn btn-outline-secondary me-1" style="max-width:15rem" type="button" @onclick="RemoveItemButtonClicked">Raumitem entfernen</button>
+                    }
+                    else
+                    {
+                        <TooltipComponent Text="Minimum erreicht">
+                            <button class="btn btn-outline-secondary" style="max-width:15rem" type="button" disabled>Raumitem entfernen</button>
+                        </TooltipComponent>
+                    }
+                </div>
+            </div>
+
+            @if (roomItemCount >= 1)
             {
                 <div class="form-group mt-5">
                     <div class="row">
-                        <div class="col-md-3">
-                            <h5 class="mt-1">Untersuchbares Item</h5>
-                        </div>
-                        <div class="col-md-auto">
+                        <div class="col-4">
                             <div class="d-flex justify-content-center">
-                                @if (i == inspectableCount - 1)
-                                {
-                                    <select class="form-select" style="width:20rem">
-                                        <option selected value="NoInspectable"></option>
+                                <select class="form-select" @bind="itemCategory[0]">
+                                    <option value="NoCategory" selected disabled hidden>Kategorie</option>
+                                    <option value="Inspectable">Untersuchbar</option>
+                                    <option value="Takeable">Aufnehmbar</option>
+                                    <option value="Consumable">Konsumierbar</option>
+                                    <option value="Usable">Nutzbar</option>
+                                    <option value="Wearable">Kleidung</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="roomItems[0]">
+                                    <option value="NoItem" selected hidden></option>
+                                    @if (itemCategory[0].Equals("Inspectable"))
+                                    {
                                         @foreach (InspectableDto inspectable in dungeonInspectables)
                                         {
                                             <option value="@inspectable.Name">@inspectable.Name</option>
                                         }
-                                    </select>
+                                    }
+                                    @if (itemCategory[0].Equals("Takeable"))
+                                    {
+                                        @foreach (TakeableDto inspectable in dungeonTakeables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[0].Equals("Consumable"))
+                                    {
+                                        @foreach (ConsumableDto consumable in dungeonConsumables)
+                                        {
+                                            <option value="@consumable.Name">@consumable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[0].Equals("Usable"))
+                                    {
+                                        @foreach (UsableDto usable in dungeonUsables)
+                                        {
+                                            <option value="@usable.Name">@usable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[0].Equals("Wearable"))
+                                    {
+                                        @foreach (WearableDto wearable in dungeonWearables)
+                                        {
+                                            <option value="@wearable.Name">@wearable.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => RemoveItemButtonClicked(1)"><TooltipComponent Text="Item entfernen"><strong>-</strong></TooltipComponent></button>
-                                }
-                                else
-                                {
-                                    <select class="form-select" style="width:25rem">
-                                        <option selected value="NoItem"></option>
+            }
+            @if (roomItemCount >= 2)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="itemCategory[1]">
+                                    <option value="" selected disabled hidden>Kategorie</option>
+                                    <option value="Inspectable">Untersuchbar</option>
+                                    <option value="Takeable">Aufnehmbar</option>
+                                    <option value="Consumable">Konsumierbar</option>
+                                    <option value="Usable">Nutzbar</option>
+                                    <option value="Wearable">Kleidung</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="roomItems[1]">
+                                    @if (itemCategory[1].Equals("Inspectable"))
+                                    {
                                         @foreach (InspectableDto inspectable in dungeonInspectables)
                                         {
                                             <option value="@inspectable.Name">@inspectable.Name</option>
                                         }
-                                    </select>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-            <div class="form-group mt-5">
-                <div class="row">
-                    <div class="col-md-3">
-                        <h5 class="mt-1">Untersuchbares Item</h5>
-                    </div>
-                    <div class="col-md-auto">
-                        <div class="d-flex justify-content-center">
-                            <select class="form-select" style="width:20rem">
-                                <option selected value="NoItem"></option>
-                                @foreach (InspectableDto inspectable in dungeonInspectables)
-                                {
-                                    <option value="@inspectable.Name">@inspectable.Name</option>
-                                }
-                            </select>
-                            @if (inspectableCount == 4)
-                            {
-                                <TooltipComponent Text="Maximum erreicht">
-                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" disabled @onclick="() => AddItemButtonClicked(1)">
-                                        <strong>+</strong>
-                                    </button>
-                                </TooltipComponent>
-                            }
-                            else
-                            {
-                                <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => AddItemButtonClicked(1)"><TooltipComponent Text="Item hinzufügen"><strong>+</strong></TooltipComponent></button>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            @for (int i = 1; i < takeableCount; i++)
-            {
-                <div class="form-group mt-5">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <h5 class="mt-1">Aufnehmbares Item</h5>
-                        </div>
-                        <div class="col-md-auto">
-                            <div class="d-flex justify-content-center">
-                                @if (i == takeableCount - 1)
-                                {
-                                    <select class="form-select" style="width:20rem">
-                                        <option selected value="NoInspectable"></option>
-                                        @foreach (TakeableDto takeable in dungeonTakeables)
+                                    }
+                                    @if (itemCategory[1].Equals("Takeable"))
+                                    {
+                                        @foreach (TakeableDto inspectable in dungeonTakeables)
                                         {
-                                            <option value="@takeable.Name">@takeable.Name</option>
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
                                         }
-                                    </select>
-
-                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => RemoveItemButtonClicked(2)"><TooltipComponent Text="Item entfernen"><strong>-</strong></TooltipComponent></button>
-                                }
-                                else
-                                {
-                                    <select class="form-select" style="width:25rem">
-                                        <option selected value="NoItem"></option>
-                                        @foreach (TakeableDto takeable in dungeonTakeables)
-                                        {
-                                            <option value="@takeable.Name">@takeable.Name</option>
-                                        }
-                                    </select>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-            <div class="form-group mt-5">
-                <div class="row">
-                    <div class="col-md-3">
-                        <h5 class="mt-1">Aufnehmbares Item</h5>
-                    </div>
-                    <div class="col-md-auto">
-                        <div class="d-flex justify-content-center">
-                            <select class="form-select" style="width:20rem">
-                                <option selected value="NoItem"></option>
-                                @foreach (TakeableDto takeable in dungeonTakeables)
-                                {
-                                    <option value="@takeable.Name">@takeable.Name</option>
-                                }
-                            </select>
-                            @if (takeableCount == 4)
-                            {
-                                <TooltipComponent Text="Maximum erreicht">
-                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" disabled @onclick="() => AddItemButtonClicked(2)">
-                                        <strong>+</strong>
-                                    </button>
-                                </TooltipComponent>
-                            }
-                            else
-                            {
-                                <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => AddItemButtonClicked(2)"><TooltipComponent Text="Item hinzufügen"><strong>+</strong></TooltipComponent></button>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            @for (int i = 1; i < consumableCount; i++)
-            {
-                <div class="form-group mt-5">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <h5 class="mt-1">Konsum Item</h5>
-                        </div>
-                        <div class="col-md-auto">
-                            <div class="d-flex justify-content-center">
-                                @if (i == consumableCount - 1)
-                                {
-                                    <select class="form-select" style="width:20rem">
-                                        <option selected value="NoInspectable"></option>
+                                    }
+                                    @if (itemCategory[1].Equals("Consumable"))
+                                    {
                                         @foreach (ConsumableDto consumable in dungeonConsumables)
                                         {
                                             <option value="@consumable.Name">@consumable.Name</option>
                                         }
-                                    </select>
-
-                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => RemoveItemButtonClicked(3)"><TooltipComponent Text="Item entfernen"><strong>-</strong></TooltipComponent></button>
-                                }
-                                else
-                                {
-                                    <select class="form-select" style="width:25rem">
-                                        <option selected value="NoItem"></option>
+                                    }
+                                    @if (itemCategory[1].Equals("Usable"))
+                                    {
+                                        @foreach (UsableDto usable in dungeonUsables)
+                                        {
+                                            <option value="@usable.Name">@usable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[1].Equals("Wearable"))
+                                    {
+                                        @foreach (WearableDto wearable in dungeonWearables)
+                                        {
+                                            <option value="@wearable.Name">@wearable.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (roomItemCount >= 3)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="itemCategory[2]">
+                                    <option value="" selected disabled hidden>Kategorie</option>
+                                    <option value="Inspectable">Untersuchbar</option>
+                                    <option value="Takeable">Aufnehmbar</option>
+                                    <option value="Consumable">Konsumierbar</option>
+                                    <option value="Usable">Nutzbar</option>
+                                    <option value="Wearable">Kleidung</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="roomItems[2]">
+                                    @if (itemCategory[2].Equals("Inspectable"))
+                                    {
+                                        @foreach (InspectableDto inspectable in dungeonInspectables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[2].Equals("Takeable"))
+                                    {
+                                        @foreach (TakeableDto inspectable in dungeonTakeables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[2].Equals("Consumable"))
+                                    {
                                         @foreach (ConsumableDto consumable in dungeonConsumables)
                                         {
                                             <option value="@consumable.Name">@consumable.Name</option>
                                         }
-                                    </select>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-            <div class="form-group mt-5">
-                <div class="row">
-                    <div class="col-md-3">
-                        <h5 class="mt-1">Konsum Item</h5>
-                    </div>
-                    <div class="col-md-auto">
-                        <div class="d-flex justify-content-center">
-                            <select class="form-select" style="width:20rem">
-                                <option selected value="NoItem"></option>
-                                @foreach (ConsumableDto consumable in dungeonConsumables)
-                                {
-                                    <option value="@consumable.Name">@consumable.Name</option>
-                                }
-                            </select>
-                            @if (consumableCount == 4)
-                            {
-                                <TooltipComponent Text="Maximum erreicht">
-                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" disabled @onclick="() => AddItemButtonClicked(3)">
-                                        <strong>+</strong>
-                                    </button>
-                                </TooltipComponent>
-                            }
-                            else
-                            {
-                                <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => AddItemButtonClicked(3)"><TooltipComponent Text="Item hinzufügen"><strong>+</strong></TooltipComponent></button>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            @for (int i = 1; i < wearableCount; i++)
-            {
-                <div class="form-group mt-5">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <h5 class="mt-1">Kleidungsstück</h5>
-                        </div>
-                        <div class="col-md-auto">
-                            <div class="d-flex justify-content-center">
-                                @if (i == wearableCount - 1)
-                                {
-                                    <select class="form-select" style="width:20rem">
-                                        <option selected value="NoInspectable"></option>
-                                        @foreach (WearableDto wearable in dungeonWearables)
-                                        {
-                                            <option value="@wearable.Name">@wearable.Name</option>
-                                        }
-                                    </select>
-
-                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => RemoveItemButtonClicked(4)"><TooltipComponent Text="Item entfernen"><strong>-</strong></TooltipComponent></button>
-                                }
-                                else
-                                {
-                                    <select class="form-select" style="width:25rem">
-                                        <option selected value="NoItem"></option>
-                                        @foreach (WearableDto wearable in dungeonWearables)
-                                        {
-                                            <option value="@wearable.Name">@wearable.Name</option>
-                                        }
-                                    </select>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-            <div class="form-group mt-5">
-                <div class="row">
-                    <div class="col-md-3">
-                        <h5 class="mt-1">Kleidungsstück</h5>
-                    </div>
-                    <div class="col-md-auto">
-                        <div class="d-flex justify-content-center">
-                            <select class="form-select" style="width:20rem">
-                                <option selected value="NoItem"></option>
-                                @foreach (WearableDto wearable in dungeonWearables)
-                                {
-                                    <option value="@wearable.Name">@wearable.Name</option>
-                                }
-                            </select>
-                            @if (wearableCount == 4)
-                            {
-                                <TooltipComponent Text="Maximum erreicht">
-                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" disabled @onclick="() => AddItemButtonClicked(4)">
-                                        <strong>+</strong>
-                                    </button>
-                                </TooltipComponent>
-                            }
-                            else
-                            {
-                                <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => AddItemButtonClicked(4)"><TooltipComponent Text="Item hinzufügen"><strong>+</strong></TooltipComponent></button>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            @for (int i = 1; i < usableCount; i++)
-            {
-                <div class="form-group mt-5">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <h5 class="mt-1">Waffe</h5>
-                        </div>
-                        <div class="col-md-auto">
-                            <div class="d-flex justify-content-center">
-                                @if (i == usableCount - 1)
-                                {
-                                    <select class="form-select" style="width:20rem">
-                                        <option selected value="NoInspectable"></option>
+                                    }
+                                    @if (itemCategory[2].Equals("Usable"))
+                                    {
                                         @foreach (UsableDto usable in dungeonUsables)
                                         {
                                             <option value="@usable.Name">@usable.Name</option>
                                         }
-                                    </select>
-
-                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => RemoveItemButtonClicked(5)"><TooltipComponent Text="Item entfernen"><strong>-</strong></TooltipComponent></button>
-                                }
-                                else
-                                {
-                                    <select class="form-select" style="width:25rem">
-                                        <option selected value="NoItem"></option>
-                                        @foreach (UsableDto usable in dungeonUsables)
+                                    }
+                                    @if (itemCategory[2].Equals("Wearable"))
+                                    {
+                                        @foreach (WearableDto wearable in dungeonWearables)
                                         {
-                                            <option value="@usable.Name">@usable.Name</option>
+                                            <option value="@wearable.Name">@wearable.Name</option>
                                         }
-                                    </select>
-                                }
+                                    }
+                                </select>
                             </div>
                         </div>
                     </div>
                 </div>
             }
-            <div class="form-group mt-5">
-                <div class="row">
-                    <div class="col-md-3">
-                        <h5 class="mt-1">Waffe</h5>
-                    </div>
-                    <div class="col-md-auto">
-                        <div class="d-flex justify-content-center">
-                            <select class="form-select" style="width:20rem">
-                                <option selected value="NoItem"></option>
-                                @foreach (UsableDto usable in dungeonUsables)
-                                {
-                                    <option value="@usable.Name">@usable.Name</option>
-                                }
-                            </select>
-                            @if (usableCount == 4)
-                            {
-                                <TooltipComponent Text="Maximum erreicht">
-                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" disabled @onclick="() => AddItemButtonClicked(5)">
-                                        <strong>+</strong>
-                                    </button>
-                                </TooltipComponent>
-                            }
-                            else
-                            {
-                                <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="() => AddItemButtonClicked(5)"><TooltipComponent Text="Item hinzufügen"><strong>+</strong></TooltipComponent></button>
-                            }
+            @if (roomItemCount >= 4)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="itemCategory[3]">
+                                    <option value="" selected disabled hidden>Kategorie</option>
+                                    <option value="Inspectable">Untersuchbar</option>
+                                    <option value="Takeable">Aufnehmbar</option>
+                                    <option value="Consumable">Konsumierbar</option>
+                                    <option value="Usable">Nutzbar</option>
+                                    <option value="Wearable">Kleidung</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="roomItems[3]">
+                                    @if (itemCategory[3].Equals("Inspectable"))
+                                    {
+                                        @foreach (InspectableDto inspectable in dungeonInspectables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[3].Equals("Takeable"))
+                                    {
+                                        @foreach (TakeableDto inspectable in dungeonTakeables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[3].Equals("Consumable"))
+                                    {
+                                        @foreach (ConsumableDto consumable in dungeonConsumables)
+                                        {
+                                            <option value="@consumable.Name">@consumable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[3].Equals("Usable"))
+                                    {
+                                        @foreach (UsableDto usable in dungeonUsables)
+                                        {
+                                            <option value="@usable.Name">@usable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[3].Equals("Wearable"))
+                                    {
+                                        @foreach (WearableDto wearable in dungeonWearables)
+                                        {
+                                            <option value="@wearable.Name">@wearable.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
+            @if (roomItemCount >= 5)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="itemCategory[4]">
+                                    <option value="" selected disabled hidden>Kategorie</option>
+                                    <option value="Inspectable">Untersuchbar</option>
+                                    <option value="Takeable">Aufnehmbar</option>
+                                    <option value="Consumable">Konsumierbar</option>
+                                    <option value="Usable">Nutzbar</option>
+                                    <option value="Wearable">Kleidung</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="roomItems[4]">
+                                    @if (itemCategory[4].Equals("Inspectable"))
+                                    {
+                                        @foreach (InspectableDto inspectable in dungeonInspectables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[4].Equals("Takeable"))
+                                    {
+                                        @foreach (TakeableDto inspectable in dungeonTakeables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[4].Equals("Consumable"))
+                                    {
+                                        @foreach (ConsumableDto consumable in dungeonConsumables)
+                                        {
+                                            <option value="@consumable.Name">@consumable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[4].Equals("Usable"))
+                                    {
+                                        @foreach (UsableDto usable in dungeonUsables)
+                                        {
+                                            <option value="@usable.Name">@usable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[4].Equals("Wearable"))
+                                    {
+                                        @foreach (WearableDto wearable in dungeonWearables)
+                                        {
+                                            <option value="@wearable.Name">@wearable.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (roomItemCount >= 6)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="itemCategory[5]">
+                                    <option value="" selected disabled hidden>Kategorie</option>
+                                    <option value="Inspectable">Untersuchbar</option>
+                                    <option value="Takeable">Aufnehmbar</option>
+                                    <option value="Consumable">Konsumierbar</option>
+                                    <option value="Usable">Nutzbar</option>
+                                    <option value="Wearable">Kleidung</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="roomItems[5]">
+                                    @if (itemCategory[5].Equals("Inspectable"))
+                                    {
+                                        @foreach (InspectableDto inspectable in dungeonInspectables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[5].Equals("Takeable"))
+                                    {
+                                        @foreach (TakeableDto inspectable in dungeonTakeables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[5].Equals("Consumable"))
+                                    {
+                                        @foreach (ConsumableDto consumable in dungeonConsumables)
+                                        {
+                                            <option value="@consumable.Name">@consumable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[5].Equals("Usable"))
+                                    {
+                                        @foreach (UsableDto usable in dungeonUsables)
+                                        {
+                                            <option value="@usable.Name">@usable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[5].Equals("Wearable"))
+                                    {
+                                        @foreach (WearableDto wearable in dungeonWearables)
+                                        {
+                                            <option value="@wearable.Name">@wearable.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (roomItemCount >= 7)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="itemCategory[6]">
+                                    <option value="" selected disabled hidden>Kategorie</option>
+                                    <option value="Inspectable">Untersuchbar</option>
+                                    <option value="Takeable">Aufnehmbar</option>
+                                    <option value="Consumable">Konsumierbar</option>
+                                    <option value="Usable">Nutzbar</option>
+                                    <option value="Wearable">Kleidung</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="roomItems[6]">
+                                    @if (itemCategory[6].Equals("Inspectable"))
+                                    {
+                                        @foreach (InspectableDto inspectable in dungeonInspectables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[6].Equals("Takeable"))
+                                    {
+                                        @foreach (TakeableDto inspectable in dungeonTakeables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[6].Equals("Consumable"))
+                                    {
+                                        @foreach (ConsumableDto consumable in dungeonConsumables)
+                                        {
+                                            <option value="@consumable.Name">@consumable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[6].Equals("Usable"))
+                                    {
+                                        @foreach (UsableDto usable in dungeonUsables)
+                                        {
+                                            <option value="@usable.Name">@usable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[6].Equals("Wearable"))
+                                    {
+                                        @foreach (WearableDto wearable in dungeonWearables)
+                                        {
+                                            <option value="@wearable.Name">@wearable.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (roomItemCount >= 8)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="itemCategory[7]">
+                                    <option value="" selected disabled hidden>Kategorie</option>
+                                    <option value="Inspectable">Untersuchbar</option>
+                                    <option value="Takeable">Aufnehmbar</option>
+                                    <option value="Consumable">Konsumierbar</option>
+                                    <option value="Usable">Nutzbar</option>
+                                    <option value="Wearable">Kleidung</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="roomItems[7]">
+                                    @if (itemCategory[7].Equals("Inspectable"))
+                                    {
+                                        @foreach (InspectableDto inspectable in dungeonInspectables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[7].Equals("Takeable"))
+                                    {
+                                        @foreach (TakeableDto inspectable in dungeonTakeables)
+                                        {
+                                            <option value="@inspectable.Name">@inspectable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[7].Equals("Consumable"))
+                                    {
+                                        @foreach (ConsumableDto consumable in dungeonConsumables)
+                                        {
+                                            <option value="@consumable.Name">@consumable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[7].Equals("Usable"))
+                                    {
+                                        @foreach (UsableDto usable in dungeonUsables)
+                                        {
+                                            <option value="@usable.Name">@usable.Name</option>
+                                        }
+                                    }
+                                    @if (itemCategory[7].Equals("Wearable"))
+                                    {
+                                        @foreach (WearableDto wearable in dungeonWearables)
+                                        {
+                                            <option value="@wearable.Name">@wearable.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
 
-            <hr class="featurette-divider" />
+            <hr class="featurette-divider mt-3" />
 
             <div class="form-group">
                 <div class="row">
@@ -424,14 +610,17 @@
                 </div>
                 <div class="row">
                     <div class="col"></div>
-                    <div class="col-md-auto">
-                        <select class="form-select" aria-label="Default select example" style="width:15rem" @bind="dungeonRoomModel.RoomNorth">
+                    <div class="col">
+                        <select class="form-select" aria-label="Default select example" @bind="dungeonRoomModel.RoomNorth">
                             @if (!(dungeonRooms is null))
                             {
-                                <option value="NoRoom" selected></option>
+                                <option value="NoRoom" selected>Kein Nachbar</option>
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
-                                    <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth))
+                                    {
+                                        <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                                    }
                                 }
                             }
                         </select>
@@ -440,16 +629,19 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-auto">
+                <div class="col">
                     <h5 class="mt-1">Westen</h5>
                     <div class="d-flex justify-content-center">
-                        <select class="form-select" aria-label="Default select example" style="width:15rem" @bind="dungeonRoomModel.RoomNorth">
+                        <select class="form-select" aria-label="Default select example" @bind="dungeonRoomModel.RoomWest">
                             @if (!(dungeonRooms is null))
                             {
-                                <option value="NoRoom" selected></option>
+                                <option value="NoRoom" selected>Kein Nachbar</option>
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
-                                    <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth))
+                                    {
+                                        <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                                    }
                                 }
                             }
                         </select>
@@ -458,16 +650,19 @@
                 <div class="col"></div>
                 <div class="col">
                     <div class="d-flex justify-content-end">
-                        <h5 class="mt-1">Wosten</h5>
+                        <h5 class="mt-1">Osten</h5>
                     </div>
                     <div class="d-flex justify-content-end">
-                        <select class="form-select" aria-label="Default select example" style="width:15rem" @bind="dungeonRoomModel.RoomNorth">
+                        <select class="form-select" aria-label="Default select example" @bind="dungeonRoomModel.RoomEast">
                             @if (!(dungeonRooms is null))
                             {
-                                <option value="NoRoom" selected></option>
+                                <option value="NoRoom" selected>Kein Nachbar</option>
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
-                                    <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth))
+                                    {
+                                        <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                                    }
                                 }
                             }
                         </select>
@@ -478,38 +673,73 @@
 
             <div class="row mt-3">
                 <div class="col"></div>
-                <div class="col-md-auto">
-                    <select class="form-select" aria-label="Default select example" style="width:15rem" @bind="dungeonRoomModel.RoomNorth">
+                <div class="col">
+                    <select class="form-select" aria-label="Default select example" @bind="dungeonRoomModel.RoomSouth">
                         @if (!(dungeonRooms is null))
                         {
-                            <option value="NoRoom" selected></option>
+                            <option value="NoRoom" selected>Kein Nachbar</option>
                             @foreach (RoomDto dungeonRoom in dungeonRooms)
                             {
-                                <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                                @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth))
+                                {
+                                    <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
+                                }
                             }
                         }
                     </select>
+                    <h5 class="mt-1 text-center">Süden</h5>
                 </div>
                 <div class="col"></div>
             </div>
-            <div class="row">
-                <div class="col-lg-12 d-flex justify-content-center">
-                    <h5 class="mt-1">Süden</h5>
+
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Status</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" @bind="dungeonRoomModel.Status">
+                                <option selected hidden value=""></option>
+                                <option value="Approved">Aktiv</option>
+                                <option value="Pending">Inaktiv</option>
+                            </select>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRoomModel.Status) />
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-auto">
-                    <button class="btn btn-success mt-5" style="width:25rem" type="submit">Speichern</button>
-                </div>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-success mt-4 text-center" type="submit">Speichern</button>
             </div>
+
+
         </EditForm>
 
     </div>
 </div>
 
 @code {
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    string[] itemCategory = new string[8];
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    string[] roomItems = new string[8];
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    string chosenRoom = "NoRoom";
 
     /// <summary>
     /// TODO
@@ -526,7 +756,7 @@
     /// </summary>
     List<RoomDto> dungeonRooms = new List<RoomDto>();
 
-    #region RoomInspectables
+    #region Item Lists
 
     /// <summary>
     /// TODO
@@ -560,11 +790,7 @@
     /// <summary>
     /// TODO
     /// </summary>
-    int inspectableCount = 1;
-    int takeableCount = 1;
-    int consumableCount = 1;
-    int wearableCount = 1;
-    int usableCount = 1;
+    int roomItemCount = 1;
 
     #endregion
 
@@ -573,20 +799,45 @@
     /// </summary>
     protected override void OnInitialized()
     {
-        roomContext = new EditContext(dungeonRoomModel);
+        #region toDelete
 
         RoomDto testRoom = new RoomDto();
         testRoom.Description = "KLa";
         testRoom.Name = "Leon";
 
-        dungeonRooms.Add(testRoom);
+        RoomDto testRoom2 = new RoomDto();
+        testRoom2.Description = "Raum2";
+        testRoom2.Name = "Raum2";
 
-        for (int i = 0; i <= 3; i++)
+        TakeableDto exDto1 = new TakeableDto();
+        exDto1.Name = "Dies ist ein test1";
+        exDto1.Description = "Diest ist nur ein Test!1";
+        dungeonTakeables.Add(exDto1);
+
+        TakeableDto exDto2 = new TakeableDto();
+        exDto2.Name = "Dies ist ein test2";
+        exDto2.Description = "Diest ist nur ein Test!2";
+        dungeonTakeables.Add(exDto2);
+
+        TakeableDto exDto3 = new TakeableDto();
+        exDto3.Name = "Dies ist ein test3";
+        exDto3.Description = "Diest ist nur ein Test!3";
+        dungeonTakeables.Add(exDto3);
+
+        testRoom.Takeables = new List<TakeableDto>();
+        testRoom.Takeables.Add(exDto1);
+        Guid myGuid = Guid.NewGuid();
+        testRoom2.Id = myGuid;
+        testRoom.NeighborNorthId = myGuid;
+
+        dungeonRooms.Add(testRoom);
+        dungeonRooms.Add(testRoom2);
+        #endregion
+
+        roomContext = new EditContext(dungeonRoomModel);
+        for (int i = 0; i < 8; i++)
         {
-            TakeableDto exDto = new TakeableDto();
-            exDto.Name = "Dies ist ein test";
-            exDto.Description = "Diest ist nur ein Test!";
-            dungeonTakeables.Add(exDto);
+            itemCategory[i] = string.Empty;
         }
     }
 
@@ -599,7 +850,79 @@
         var validRoom = roomContext.Validate();
         if (validRoom)
         {
-            //TODO
+            bool newRoom = false;
+            RoomDto submitRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.Name));
+            if (submitRoom is null)
+            {
+                submitRoom = new RoomDto();
+                newRoom = true;
+            }
+            submitRoom.Name = dungeonRoomModel.Name;
+            submitRoom.Description = dungeonRoomModel.Description;
+            submitRoom.Status = dungeonRoomModel.Status.Equals("Approved") ? 0 : 1;
+            submitRoom.Inspectables = new List<InspectableDto>();
+            submitRoom.Takeables = new List<TakeableDto>();
+            submitRoom.Usables = new List<UsableDto>();
+            submitRoom.Consumables = new List<ConsumableDto>();
+            submitRoom.Wearables = new List<WearableDto>();
+            for (int i = 0; i < roomItemCount; i++)
+            {
+                switch (itemCategory[i])
+                {
+                    case "Inspectable":
+                        submitRoom.Inspectables.Add(dungeonInspectables.Find(r => r.Name.Equals(roomItems[i])));
+                        break;
+                    case "Takeable":
+                        submitRoom.Takeables.Add(dungeonTakeables.Find(r => r.Name.Equals(roomItems[i])));
+                        break;
+                    case "Consumable":
+                        submitRoom.Consumables.Add(dungeonConsumables.Find(r => r.Name.Equals(roomItems[i])));
+                        break;
+                    case "Wearable":
+                        submitRoom.Wearables.Add(dungeonWearables.Find(r => r.Name.Equals(roomItems[i])));
+                        break;
+                    case "Usable":
+                        submitRoom.Usables.Add(dungeonUsables.Find(r => r.Name.Equals(roomItems[i])));
+                        break;
+                }
+            }
+            if (!dungeonRoomModel.RoomNorth.Equals("NoRoom"))
+            {
+                submitRoom.NeighborNorthId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomNorth)).Id;
+            }
+            else
+            {
+                submitRoom.NeighborNorthId = Guid.Empty;
+            }
+            if (!dungeonRoomModel.RoomEast.Equals("NoRoom"))
+            {
+                submitRoom.NeighborEastId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomNorth)).Id;
+            }
+            else
+            {
+                submitRoom.NeighborEastId = Guid.Empty;
+            }
+            if (!dungeonRoomModel.RoomSouth.Equals("NoRoom"))
+            {
+                submitRoom.NeighborSouthId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomNorth)).Id;
+            }
+            else
+            {
+                submitRoom.NeighborSouthId = Guid.Empty;
+            }
+            if (!dungeonRoomModel.RoomWest.Equals("NoRoom"))
+            {
+                submitRoom.NeighborWestId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomNorth)).Id;
+            }
+            else
+            {
+                submitRoom.NeighborWestId = Guid.Empty;
+            }
+            if (newRoom)
+            {
+                dungeonRooms.Add(submitRoom);
+            }
+            chosenRoom = dungeonRoomModel.Name;
         }
         else
         {
@@ -607,82 +930,248 @@
         }
     }
 
+    private EventCallback RoomSelectionChanged()
+    {
+        if (!chosenRoom.Equals(dungeonRoomModel.Name) && !chosenRoom.Equals("NoRoom"))
+        {
+            var newRoom = dungeonRooms.Find(r => r.Name.Equals(chosenRoom));
+            if (!(newRoom is null))
+            {
+                dungeonRoomModel.Name = newRoom.Name;
+                dungeonRoomModel.Description = newRoom.Description;
+                dungeonRoomModel.Status = newRoom.Status == 0 ? "Approved" : "Pending";
+                roomItemCount = 0;
+                int counter = 0;
+                if (!(newRoom.Inspectables is null))
+                {
+                    newRoom.Inspectables.ToList().ForEach(i =>
+                    {
+                        if (!(i is null) && (!i.Name.Equals(string.Empty)))
+                        {
+                            itemCategory[counter] = "Inspectable";
+                            roomItems[counter] = i.Name;
+                            counter++;
+                            roomItemCount++;
+                        }
+                    });
+                }
+                if (!(newRoom.Takeables is null))
+                {
+                    newRoom.Takeables.ToList().ForEach(i =>
+                    {
+                        if (!(i is null) && (!i.Name.Equals(string.Empty)))
+                        {
+                            itemCategory[counter] = "Takeable";
+                            roomItems[counter] = i.Name;
+                            counter++;
+                            roomItemCount++;
+                        }
+                    });
+                }
+                if (!(newRoom.Consumables is null))
+                {
+                    newRoom.Consumables.ToList().ForEach(i =>
+                    {
+                        if (!(i is null) && (!i.Name.Equals(string.Empty)))
+                        {
+                            itemCategory[counter] = "Consumable";
+                            roomItems[counter] = i.Name;
+                            counter++;
+                            roomItemCount++;
+                        }
+                    });
+                }
+                if (!(newRoom.Usables is null))
+                {
+                    newRoom.Usables.ToList().ForEach(i =>
+                    {
+                        if (!(i is null) && (!i.Name.Equals(string.Empty)))
+                        {
+                            itemCategory[counter] = "Usable";
+                            roomItems[counter] = i.Name;
+                            counter++;
+                            roomItemCount++;
+                        }
+                    });
+                }
+                if (!(newRoom.Wearables is null))
+                {
+                    newRoom.Wearables.ToList().ForEach(i =>
+                    {
+                        if (!(i is null) && (!i.Name.Equals(string.Empty)))
+                        {
+                            itemCategory[counter] = "Wearable";
+                            roomItems[counter] = i.Name;
+                            counter++;
+                            roomItemCount++;
+                        }
+                    });
+                }
+                if (!(newRoom.NeighborNorthId.Equals(Guid.Empty)))
+                {
+                    dungeonRoomModel.RoomNorth = dungeonRooms.Find(r => r.Id.Equals(newRoom.NeighborNorthId)).Name;
+                }
+                if (!(newRoom.NeighborEastId.Equals(Guid.Empty)))
+                {
+                    dungeonRoomModel.RoomEast = dungeonRooms.Find(r => r.Id.Equals(newRoom.NeighborEastId)).Name;
+                }
+                if (!(newRoom.NeighborSouthId.Equals(Guid.Empty)))
+                {
+                    dungeonRoomModel.RoomSouth = dungeonRooms.Find(r => r.Id.Equals(newRoom.NeighborSouthId)).Name;
+                }
+                if (!(newRoom.NeighborWestId.Equals(Guid.Empty)))
+                {
+                    dungeonRoomModel.RoomWest = dungeonRooms.Find(r => r.Id.Equals(newRoom.NeighborWestId)).Name;
+                }
+            }
+        }
+        return EventCallback.Empty;
+    }
+
+    private void NameFieldLostFocus(System.EventArgs args)
+    {
+        RoomDto checkRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.Name));
+        if (checkRoom is null)
+        {
+            return;
+        }
+        else
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                roomItems[i] = "NoItem";
+                itemCategory[i] = "NoCategory";
+            }
+            dungeonRoomModel.RoomNorth = "NoRoom";
+            dungeonRoomModel.RoomEast = "NoRoom";
+            dungeonRoomModel.RoomSouth = "NoRoom";
+            dungeonRoomModel.RoomWest = "NoRoom";
+            dungeonRoomModel.Status = checkRoom.Status == 0 ? "Approved" : "Pending";
+            chosenRoom = dungeonRoomModel.Name;
+            dungeonRoomModel.Name = checkRoom.Name;
+            dungeonRoomModel.Description = checkRoom.Description;
+            int counter = 0;
+            if (!(checkRoom.Inspectables is null))
+            {
+                checkRoom.Inspectables.ToList().ForEach(i =>
+                {
+                    if (!(i is null) && (!i.Name.Equals(string.Empty)))
+                    {
+                        itemCategory[counter] = "Inspectable";
+                        roomItems[counter] = i.Name;
+                        counter++;
+                        roomItemCount++;
+                    }
+                });
+            }
+            if (!(checkRoom.Takeables is null))
+            {
+                checkRoom.Takeables.ToList().ForEach(i =>
+                {
+                    if (!(i is null) && (!i.Name.Equals(string.Empty)))
+                    {
+                        itemCategory[counter] = "Takeable";
+                        roomItems[counter] = i.Name;
+                        counter++;
+                        roomItemCount++;
+                    }
+                });
+            }
+            if (!(checkRoom.Consumables is null))
+            {
+                checkRoom.Consumables.ToList().ForEach(i =>
+                {
+                    if (!(i is null) && (!i.Name.Equals(string.Empty)))
+                    {
+                        itemCategory[counter] = "Consumable";
+                        roomItems[counter] = i.Name;
+                        counter++;
+                        roomItemCount++;
+                    }
+                });
+            }
+            if (!(checkRoom.Usables is null))
+            {
+                checkRoom.Usables.ToList().ForEach(i =>
+                {
+                    if (!(i is null) && (!i.Name.Equals(string.Empty)))
+                    {
+                        itemCategory[counter] = "Usable";
+                        roomItems[counter] = i.Name;
+                        counter++;
+                        roomItemCount++;
+                    }
+                });
+            }
+            if (!(checkRoom.Wearables is null))
+            {
+                checkRoom.Wearables.ToList().ForEach(i =>
+                {
+                    if (!(i is null) && (!i.Name.Equals(string.Empty)))
+                    {
+                        itemCategory[counter] = "Wearable";
+                        roomItems[counter] = i.Name;
+                        counter++;
+                        roomItemCount++;
+                    }
+                });
+            }
+            if (!(checkRoom.NeighborNorthId.Equals(Guid.Empty)))
+            {
+                dungeonRoomModel.RoomNorth = dungeonRooms.Find(r => r.Id.Equals(checkRoom.NeighborNorthId)).Name;
+            }
+            if (!(checkRoom.NeighborEastId.Equals(Guid.Empty)))
+            {
+                dungeonRoomModel.RoomEast = dungeonRooms.Find(r => r.Id.Equals(checkRoom.NeighborEastId)).Name;
+            }
+            if (!(checkRoom.NeighborSouthId.Equals(Guid.Empty)))
+            {
+                dungeonRoomModel.RoomSouth = dungeonRooms.Find(r => r.Id.Equals(checkRoom.NeighborSouthId)).Name;
+            }
+            if (!(checkRoom.NeighborWestId.Equals(Guid.Empty)))
+            {
+                dungeonRoomModel.RoomWest = dungeonRooms.Find(r => r.Id.Equals(checkRoom.NeighborWestId)).Name;
+            }
+        }
+    }
+
+    private void NewRoomButtonClicked(System.EventArgs args)
+    {
+        chosenRoom = "NoRoom";
+        dungeonRoomModel.Name = string.Empty;
+        dungeonRoomModel.Description = string.Empty;
+        dungeonRoomModel.RoomNorth = "NoRoom";
+        dungeonRoomModel.RoomEast = "NoRoom";
+        dungeonRoomModel.RoomWest = "NoRoom";
+        dungeonRoomModel.RoomSouth = "NoRoom";
+        dungeonRoomModel.Status = string.Empty;
+        roomItemCount = 0;
+        for (int i = 0; i < 8; i++)
+        {
+            roomItems[i] = "NoItem";
+        }
+
+    }
     #region Item Dropdown Buttons
 
     /// <summary>
     /// TODO
     /// </summary>
-    private void AddItemButtonClicked(int itemType)
+    private void AddItemButtonClicked()
     {
-        switch (itemType)
-        {
-            case 1:
-                IncreaseCounter(ref inspectableCount);
-                break;
-            case 2:
-                IncreaseCounter(ref takeableCount);
-                break;
-            case 3:
-                IncreaseCounter(ref consumableCount);
-                break;
-            case 4:
-                IncreaseCounter(ref wearableCount);
-                break;
-            case 5:
-                IncreaseCounter(ref usableCount);
-                break;
-            default:
-                return;
-        }
+        if (roomItemCount < 8)
+            roomItemCount++;
     }
+
 
     /// <summary>
     /// TODO
     /// </summary>
-    /// <param name="counter"></param>
-    void IncreaseCounter(ref int counter)
+    private void RemoveItemButtonClicked()
     {
-        if (counter < 5)
-            counter++;
+        if (roomItemCount > 0)
+            roomItemCount--;
     }
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    private void RemoveItemButtonClicked(int itemType)
-    {
-        switch (itemType)
-        {
-            case 1:
-                DecreaseCounter(ref inspectableCount);
-                break;
-            case 2:
-                DecreaseCounter(ref takeableCount);
-                break;
-            case 3:
-                DecreaseCounter(ref consumableCount);
-                break;
-            case 4:
-                DecreaseCounter(ref wearableCount);
-                break;
-            case 5:
-                DecreaseCounter(ref usableCount);
-                break;
-            default:
-                return;
-        }
-    }
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    /// <param name="counter"></param>
-    void DecreaseCounter(ref int counter)
-    {
-        if (counter > 1)
-            counter--;
-    }
-
     #endregion
 }
 

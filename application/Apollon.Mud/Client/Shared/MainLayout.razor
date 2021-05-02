@@ -1,9 +1,16 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="MainLayout min-vh-100" id="MainLayout" style="height: 100vh; width: 100%; top: 0px; left: 0px; overflow-x:hidden">
-    <NavBar />
+<div class="MainLayout" id="MainLayout" style="overflow-x:hidden">
+    <div class="mb-0" style="min-height: 100vh">
+        <NavBar />
 
-    <div class="content">
-        @Body
+        <div id="content" style="height:93vh">
+            @Body
+        </div>
     </div>
+    <div id="footer">
+        <Footer />
+    </div>
+    
 </div>
+
