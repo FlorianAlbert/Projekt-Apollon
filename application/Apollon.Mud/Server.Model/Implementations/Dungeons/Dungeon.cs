@@ -1,23 +1,20 @@
 ﻿using Apollon.Mud.Server.Model.Implementations.User;
 using Apollon.Mud.Server.Model.Interfaces;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Class;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Race;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Requestable;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Room;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons
 {
-    /// <inheritdoc cref="IDungeon"/>
-    public class Dungeon : IDungeon
+    /// <summary>
+    /// Describes a dungeon
+    /// </summary>
+    public class Dungeon : IApprovable
     {
         /// <summary>
         /// Creates a new instance of Dungeon
@@ -28,90 +25,110 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         {
             Id = Guid.NewGuid();
 
-            dungeonEpoch = DungeonEpoch;
-            dungeonDescription = DungeonDescription;
+            DungeonEpoch = dungeonEpoch;
+            DungeonDescription = dungeonDescription;
 
             Status = Status.Pending;
         }
 
-        /// <inheritdoc cref="IDungeon.DungeonEpoch"/>
+        /// <summary>
+        /// Epoch of the dungeon
+        /// </summary>
         public string DungeonEpoch { get; set; }
 
-        /// <inheritdoc cref="IDungeon.DungeonDescription"/>
+        /// <summary>
+        /// Description of the dungeon
+        /// </summary>
         public string DungeonDescription { get; set; }
 
-        /// <inheritdoc cref="IDungeon.DefaultRoom"/>
-        public IRoom DefaultRoom { get; set; }
+        /// <summary>
+        /// Start room of the dungeon
+        /// </summary>
+        public Room DefaultRoom { get; set; }
 
-        private ICollection<IRace> _ConfiguredRaces;
+        private ICollection<Race> _ConfiguredRaces;
 
-        /// <inheritdoc cref="IDungeon.ConfiguredRaces"/>
-        public ICollection<IRace> ConfiguredRaces
+        /// <summary>
+        /// All races an avatar can choose between
+        /// </summary>
+        public ICollection<Race> ConfiguredRaces
         {
             get
             {
-                return _ConfiguredRaces ??= new List<IRace>();
+                return _ConfiguredRaces ??= new List<Race>();
             }
         }
 
-        private ICollection<IClass> _ConfiguredClasses;
+        private ICollection<Class> _ConfiguredClasses;
 
-        /// <inheritdoc cref="IDungeon.ConfiguredClasses"/>
-        public ICollection<IClass> ConfiguredClasses
+        /// <summary>
+        /// All classes an avatar can choose between
+        /// </summary>
+        public ICollection<Class> ConfiguredClasses
         {
             get
             {
-                return _ConfiguredClasses ??= new List<IClass>();
+                return _ConfiguredClasses ??= new List<Class>();
             }
         }
 
-        private ICollection<IRoom> _ConfiguredRooms;
+        private ICollection<Room> _ConfiguredRooms;
 
-        /// <inheritdoc cref="IDungeon.ConfiguredRooms"/>
-        public ICollection<IRoom> ConfiguredRooms
+        /// <summary>
+        /// All rooms of the dungeon
+        /// </summary>
+        public ICollection<Room> ConfiguredRooms
         {
             get
             {
-                return _ConfiguredRooms ??= new List<IRoom>();
+                return _ConfiguredRooms ??= new List<Room>();
             }
         }
 
-        private ICollection<IInspectable> _ConfiguredInspectables;
+        private ICollection<Inspectable> _ConfiguredInspectables;
 
-        /// <inheritdoc cref="IDungeon.ConfiguredInspectables"/>
-        public ICollection<IInspectable> ConfiguredInspectables
+        /// <summary>
+        /// All inspectables that can be placed in the rooms
+        /// </summary>
+        public ICollection<Inspectable> ConfiguredInspectables
         {
             get
             {
-                return _ConfiguredInspectables ??= new List<IInspectable>();
+                return _ConfiguredInspectables ??= new List<Inspectable>();
             }
         }
 
-        private ICollection<IRequestable> _ConfiguredRequestable;
+        private ICollection<Requestable> _ConfiguredRequestable;
 
-        /// <inheritdoc cref="IDungeon.ConfiguredRequestables"/>
-        public ICollection<IRequestable> ConfiguredRequestables
+        /// <summary>
+        /// All requestables that can be attached to a room
+        /// </summary>
+        public ICollection<Requestable> ConfiguredRequestables
         {
             get
             {
-                return _ConfiguredRequestable ??= new List<IRequestable>();
+                return _ConfiguredRequestable ??= new List<Requestable>();
             }
         }
 
-        private ICollection<IAvatar> _ConfiguredAvatars;
+        private ICollection<Avatar> _ConfiguredAvatars;
 
-        /// <inheritdoc cref="IDungeon.RegisteredAvatars"/>
-        public ICollection<IAvatar> RegisteredAvatars
+        /// <summary>
+        /// All registered avatar
+        /// </summary>
+        public ICollection<Avatar> RegisteredAvatars
         {
             get
             {
-                return _ConfiguredAvatars ??= new List<IAvatar>();
+                return _ConfiguredAvatars ??= new List<Avatar>();
             }
         }
 
         private ICollection<DungeonUser> _DungeonMasters;
 
-        /// <inheritdoc cref="IDungeon.DungeonMasters"/>
+        /// <summary>
+        /// All possible Dungeon Masters of the dungeon
+        /// </summary>
         public ICollection<DungeonUser> DungeonMasters
         {
             get
@@ -122,7 +139,9 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
 
         private ICollection<DungeonUser> _WhiteList;
 
-        /// <inheritdoc cref="IDungeon.WhiteList"/>
+        /// <summary>
+        /// List of all users who have access to this dungeon
+        /// </summary>
         public ICollection<DungeonUser> WhiteList
         {
             get
@@ -133,7 +152,9 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
 
         private ICollection<DungeonUser> _BlackList;
 
-        /// <inheritdoc cref="IDungeon.BlackList"/>
+        /// <summary>
+        /// List of all users who are not allowed to have avatars in this dungeon
+        /// </summary>
         public ICollection<DungeonUser> BlackList
         {
             get
@@ -144,7 +165,9 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
 
         private ICollection<DungeonUser> _OpenRequests;
 
-        /// <inheritdoc cref="IDungeon.OpenRequests"/>
+        /// <summary>
+        /// List of all users who want to have access to this dungeon, in case it is private
+        /// </summary>
         public ICollection<DungeonUser> OpenRequests
         {
             get
@@ -153,13 +176,19 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             }
         }
 
-        /// <inheritdoc cref="IDungeon.CurrentDungeonMaster"/>
+        /// <summary>
+        /// User who is currently the Dungeon Master
+        /// </summary>
         public DungeonUser CurrentDungeonMaster { get; set; }
 
-        /// <inheritdoc cref="IDungeon.DungeonOwner"/>
+        /// <summary>
+        /// User who owns this dungeon
+        /// </summary>
         public DungeonUser DungeonOwner { get; set; }
 
-        /// <inheritdoc cref="IDungeon.Visibility"/>
+        /// <summary>
+        /// Defines wether this dungeon is public or private accessible
+        /// </summary>
         public Visibility Visibility { get; set; }
 
         /// <inheritdoc cref="IApprovable.Id"/>
@@ -168,7 +197,9 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <inheritdoc cref="IApprovable.Status"/>
         public Status Status { get; set; }
 
-        /// <inheritdoc cref="IDungeon.DungeonName"/>
+        /// <summary>
+        /// Name of the dungeon
+        /// </summary>
         public string DungeonName { get; set; }
 
         /** TODO: In PlayerService zu verlagern

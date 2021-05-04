@@ -1,11 +1,12 @@
-﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Requestable;
-using System;
+﻿using System;
 using Apollon.Mud.Server.Model.Interfaces;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables
 {
-    /// <inheritdoc cref="IRequestable"/>
-    public class Requestable : IRequestable
+    /// <summary>
+    /// Describes a special action that can be defined by the Dungeon Master and which will be forwarded to him
+    /// </summary>
+    public class Requestable : IApprovable
     {
         /// <summary>
         /// Creates a new instance of Requestable
@@ -28,10 +29,14 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables
         /// <inheritdoc cref="IApprovable.Status"/>
         public Status Status { get; set; }
 
-        /// <inheritdoc cref="IRequestable.MessageRegex"/>
+        /// <summary>
+        /// The regular expression to check the avatar input on
+        /// </summary>
         public string MessageRegex { get; set; }
 
-        /// <inheritdoc cref="IRequestable.PatternForPlayer"/>
+        /// <summary>
+        /// A readable command pattern for the player help
+        /// </summary>
         public string PatternForPlayer { get; set; }
     }
 }

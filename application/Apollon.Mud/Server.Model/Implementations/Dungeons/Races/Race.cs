@@ -1,11 +1,12 @@
 ﻿using Apollon.Mud.Server.Model.Interfaces;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Race;
 using System;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Races
 {
-    /// <inheritdoc cref="IRace"/>
-    public class Race : IRace
+    /// <summary>
+    /// Describes a race an avatar can have
+    /// </summary>
+    public class Race : IChoosable
     {
         /// <summary>
         /// Creates new instance of Race
@@ -19,11 +20,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Races
         {
             Id = Guid.NewGuid();
 
-            name = Name;
-            description = Description;
-            defaultHealth = DefaultHealth;
-            defaultProtection = DefaultProtection;
-            defaultDamage = DefaultDamage;
+            Name = name;
+            Description = description;
+            DefaultHealth = defaultHealth;
+            DefaultProtection = defaultProtection;
+            DefaultDamage = defaultDamage;
 
             Status = Status.Pending;
         }

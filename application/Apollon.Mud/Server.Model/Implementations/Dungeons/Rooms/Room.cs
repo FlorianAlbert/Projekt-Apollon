@@ -1,14 +1,15 @@
 ﻿using Apollon.Mud.Server.Model.Interfaces;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Requestable;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Room;
 using System;
 using System.Collections.Generic;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Room
+namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
 {
-    /// <inheritdoc cref="IRoom"/>
-    public class Room : IRoom
+    /// <summary>
+    /// Describes a room in a dungeon
+    /// </summary>
+    public class Room : IApprovable
     {
         /// <summary>
         /// Creates a new instance Room
@@ -25,43 +26,59 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Room
             Status = Status.Pending;
         }
 
-        /// <inheritdoc cref="IRoom.Description"/>
+        /// <summary>
+        /// The description of the whole room
+        /// </summary>
         public string Description { get; set; }
 
-        /// <inheritdoc cref="IRoom.Name"/>
+        /// <summary>
+        /// The name of the room
+        /// </summary>
         public string Name { get; set; }
 
-        private ICollection<IInspectable> _Inspectables;
+        private ICollection<Inspectable> _Inspectables;
 
-        /// <inheritdoc cref="IRoom.Inspectables"/>
-        public ICollection<IInspectable> Inspectables
+        /// <summary>
+        /// All inspectables that are currently in this room
+        /// </summary>
+        public ICollection<Inspectable> Inspectables
         {
             get
             {
-                return _Inspectables ??= new List<IInspectable>();
+                return _Inspectables ??= new List<Inspectable>();
             }
         }
 
-        /// <inheritdoc cref="IRoom.NeighborNorth"/>
-        public IRoom NeighborNorth { get; set; }
+        /// <summary>
+        /// The room that is in the north
+        /// </summary>
+        public Room NeighborNorth { get; set; }
 
-        /// <inheritdoc cref="IRoom.NeighborEast"/>
-        public IRoom NeighborEast { get; set; }
+        /// <summary>
+        /// The room that is in the east
+        /// </summary>
+        public Room NeighborEast { get; set; }
 
-        /// <inheritdoc cref="IRoom.NeighborSouth"/>
-        public IRoom NeighborSouth { get; set; }
+        /// <summary>
+        /// The room that is in the south
+        /// </summary>
+        public Room NeighborSouth { get; set; }
 
-        /// <inheritdoc cref="IRoom.NeighborWest"/>
-        public IRoom NeighborWest { get; set; }
+        /// <summary>
+        /// The room that is in the west
+        /// </summary>
+        public Room NeighborWest { get; set; }
 
-        private ICollection<IRequestable> _SpecialActions;
+        private ICollection<Requestable> _SpecialActions;
 
-        /// <inheritdoc cref="IRoom.SpecialActions"/>
-        public ICollection<IRequestable> SpecialActions
+        /// <summary>
+        /// All special actions an avatar can do in this room
+        /// </summary>
+        public ICollection<Requestable> SpecialActions
         {
             get
             {
-                return _SpecialActions ??= new List<IRequestable>();
+                return _SpecialActions ??= new List<Requestable>();
             }
         }
 
