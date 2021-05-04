@@ -1,22 +1,13 @@
 ﻿using Apollon.Mud.Server.Model.Implementations.User;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Class;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Usable;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Wearable;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Race;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Room;
 using Apollon.Mud.Server.Model.ModelExtensions;
 using System;
 using Apollon.Mud.Server.Model.Implementations.Dungeon.Room;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
-using Apollon.Mud.Server.Model.Interfaces;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
 {
@@ -39,9 +30,8 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <param name="dungeon">Dungeon the new avatar is part of</param>
         /// <param name="owner">Owner of the new avatar</param>
         public Avatar(string name, Race chosenRace, Class chosenClass, Gender chosenGender, Dungeon dungeon, DungeonUser owner)
+            : base("",name)
         {
-            Id = Guid.NewGuid();
-            Name = name;
             Race = chosenRace;
             Class = chosenClass;
             Gender = chosenGender;
@@ -49,7 +39,6 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
             Owner = owner;
 
             CurrentRoom = Dungeon.DefaultRoom;
-            Status = Status.Pending;
 
             // CHECK: überprüfen ob Referenz oder Kopie genommen wird
             Inventory = chosenClass.StartInventory;
@@ -106,7 +95,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
             {
                 var result = Class.DefaultDamage + Race.DefaultDamage;
 
-                if (HoldingItem != null && HoldingItem is IUsable weapon) result += weapon.DamageBoost;
+                if (HoldingItem != null && HoldingItem is Usable weapon) result += weapon.DamageBoost;
 
                 return result;
             }
@@ -157,7 +146,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         public DungeonUser Owner { get; set; }
 
         /// <inheritdoc cref="Inspectable.Description"/>
-        public string Description 
+        public override string Description 
         {
             get => $"{ Name } ist von der Rasse { Race.Name } vom Geschlecht { Gender.GetGermanGender() }.\n" +
                 "Diese Rasse zeichnet sich durch folgende Beschreibung aus: \n" +
@@ -168,15 +157,6 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
             { 
             }
         }
-
-        /// <inheritdoc cref="Inspectable.Name"/>
-        public string Name { get; set; }
-
-        /// <inheritdoc cref="Approvable.Id"/>
-        public Guid Id { get; }
-
-        /// <inheritdoc cref="Approvable.Status"/>
-        public Status Status { get; set; }
 
         /**
         public bool AddItemToInventory(ITakeable item)

@@ -1,13 +1,12 @@
-﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable.Usable;
-using System;
+﻿using System;
 using Apollon.Mud.Server.Model.Interfaces;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables
 {
-    /// <inheritdoc cref="IUsable"/>
-    public class Usable : IUsable
+    /// <summary>
+    /// Describes an item that can be used as a weapon
+    /// </summary>
+    public class Usable : Takeable
     {
         /// <summary>
         /// Creates a new instance of Usable
@@ -17,33 +16,16 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeabl
         /// <param name="weight">Weight of the new usable</param>
         /// <param name="damageBoost">Damage Boost of the new usable</param>
         public Usable(string name, string description, int weight, int damageBoost)
+            : base(weight,description,name)
         {
-            Id = Guid.NewGuid();
 
-            Name = name;
-            Description = description;
-            Weight = weight;
             DamageBoost = damageBoost;
 
-            Status = Status.Pending;
         }
 
-        /// <inheritdoc cref="IUsable.DamageBoost"/>
+        /// <summary>
+        /// The damage boost the item gives
+        /// </summary>
         public int DamageBoost { get; set; }
-
-        /// <inheritdoc cref="ITakeable.Weight"/>
-        public int Weight { get; set; }
-
-        /// <inheritdoc cref="IInspectable.Description"/>
-        public string Description { get; set; }
-
-        /// <inheritdoc cref="IInspectable.Name"/>
-        public string Name { get; set; }
-
-        /// <inheritdoc cref="IApprovable.Id"/>
-        public Guid Id { get; }
-
-        /// <inheritdoc cref="IApprovable.Status"/>
-        public Status Status { get; set; }
     }
 }

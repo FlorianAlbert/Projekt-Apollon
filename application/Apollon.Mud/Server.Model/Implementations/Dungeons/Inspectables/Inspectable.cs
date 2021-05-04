@@ -1,5 +1,4 @@
-﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
-using System;
+﻿using System;
 using Apollon.Mud.Server.Model.Interfaces;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables
@@ -27,7 +26,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables
         /// <summary>
         /// The description of the item
         /// </summary>
-        public string Description { get; set; }
+        public virtual string Description { get; set; }
 
         /// <summary>
         /// The name of the item

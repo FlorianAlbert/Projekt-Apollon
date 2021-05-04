@@ -1,12 +1,12 @@
-﻿using Apollon.Mud.Server.Model.Interfaces;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Npc;
-using System;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
+﻿using System;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs
 {
-    /// <inheritdoc cref="INpc"/>
-    public class Npc : INpc
+    /// <summary>
+    /// Describes a NPC an avatar can interact with
+    /// </summary>
+    public class Npc : Inspectable
     {
         /// <summary>
         /// Creates new instance of Npc
@@ -15,29 +15,16 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs
         /// <param name="description">Description of the new NPC</param>
         /// <param name="name">Name of the new NPC</param>
         public Npc(string text, string description, string name)
+            : base(description,name)
         {
-            Id = Guid.NewGuid();
 
             Text = text;
-            Description = description;
-            Name = name;
 
-            Status = Status.Pending;
         }
 
-        /// <inheritdoc cref="INpc.Text"/>
+        /// <summary>
+        /// The intial text the NPC answers
+        /// </summary>
         public string Text { get; set; }
-
-        /// <inheritdoc cref="IInspectable.Description"/>
-        public string Description { get; set; }
-
-        /// <inheritdoc cref="IInspectable.Name"/>
-        public string Name { get; set; }
-
-        /// <inheritdoc cref="IApprovable.Id"/>
-        public Guid Id { get; }
-
-        /// <inheritdoc cref="IApprovable.Status"/>
-        public Status Status { get; set; }
     }
 }

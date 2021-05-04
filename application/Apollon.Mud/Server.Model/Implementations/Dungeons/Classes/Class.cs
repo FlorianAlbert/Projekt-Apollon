@@ -2,7 +2,6 @@
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Interfaces;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
-using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
 {
