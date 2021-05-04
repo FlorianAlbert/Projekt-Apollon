@@ -88,7 +88,7 @@
                             <select class="form-select" @bind="dungeonModel.Visibility">
                                 <option selected hidden value=""></option>
                                 <option value="Public">Öffentlich</option>
-                                <option value="Private">Private</option>
+                                <option value="Private">Privat</option>
                             </select>
                         </div>
                         <div class="text-danger">
@@ -98,47 +98,9 @@
                 </div>
             </div>
 
-            <hr class="featurette-divider" />
-
-            <div class="row">
-                <div class="col-lg-12 d-flex justify-content-center">
-                    <TooltipComponent Text="Erstelle Deine eigenen Befehle"><h4 class="mt-1">Eigene Befehle</h4></TooltipComponent>
-                </div>
-            </div>
-
-            <div class="form-group mt-3">
-                <div class="row">
-                    <div class="col-5">
-                        <div class="d-flex justify-content-center">
-                            <TooltipComponent Text="Dieser Ausdruck wird dem Nutzer in der Hilfe angezeigt"><h5>Lesbarer Ausdruck</h5></TooltipComponent>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="d-flex justify-content-center">
-                            <TooltipComponent Text="Auf diese Reg. Ex. wird die Nutzereingabe überprüft"><h5>Regulärer Ausdruck</h5></TooltipComponent>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group mt-1">
-                <div class="row">
-                    <div class="col-5">
-                        <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Lesbarer Ausdruck" id="Name" @bind-Value="dungeonModel.Name" />
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Regulärer Ausdruck" id="Name" @bind-Value="dungeonModel.Name" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <hr class="featurette-divder" />
 
-            <div class="form-group mt-5">
+            <div class="form-group mt-3">
                 <div class="row">
                     <div class="col-3">
                         <h5 class="mt-1">Status</h5>
@@ -160,8 +122,8 @@
 
             <hr class="featurette-divder" />
 
-            <div class="row">
-                <button class="btn btn-success" style="width:30rem" type="submit">Speichern</button>
+            <div class="row  d-flex justify-content-center">
+                <button class="btn btn-success" style="max-width:20rem" type="submit">Speichern</button>
             </div>
         </EditForm>
 

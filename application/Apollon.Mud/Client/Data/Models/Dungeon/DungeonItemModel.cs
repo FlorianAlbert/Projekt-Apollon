@@ -21,7 +21,7 @@ namespace Apollon.Mud.Client.Data.Models
         /// Every Item hast to have a name
         ///</summary>
         [Required(ErrorMessage = "Du musst dem Item einen Namen geben")]
-        [RegularExpression("(^(?![Nn]eues [Ii]tem)|(^([Nn]eues [Ii]tem).+))", ErrorMessage = "Dieser Name ist nicht zugelassen")]
+        [RegularExpression("^(?!([Nn]eues [Ii]tem)).*$", ErrorMessage = "Dieser Name ist nicht zugelassen")]
 
         public string Name { get; set; }
 
