@@ -43,7 +43,8 @@ namespace Apollon.Mud.Server.Inbound
 
             services.AddDbContext<DungeonDbContext>(options =>
                 options.UseSqlite(
-                    Configuration.GetConnectionString("DungeonDbConnection")));
+                    Configuration.GetConnectionString("DungeonDbConnection"),
+                    optionsBuilder => optionsBuilder.MigrationsAssembly("Apollon.Mud.Server.Domain")));
 
             services.AddIdentityCore<DungeonUser>(options =>
                 {
@@ -119,6 +120,9 @@ namespace Apollon.Mud.Server.Inbound
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/hubs/chat");
             });
+
+            using var dbContext = serviceProvider.GetService<DungeonDbContext>();
+            dbContext.Database.EnsureCreated();
 
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
