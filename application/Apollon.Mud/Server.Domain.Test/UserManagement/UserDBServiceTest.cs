@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.User;
@@ -9,22 +11,23 @@ using Microsoft.EntityFrameworkCore;
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
     /// <summary>
-    /// Service which is used for database-changing methods.
+    /// ToDo
     /// </summary>
-    public class UserDbService: IUserDbService
+    public class UserDBService: IUserDBService
     {
         //ToDo Tests
+
         /// <summary>
-        /// Manager to access and modify the content of the database.
+        /// ToDo
         /// </summary>
         private readonly UserManager<DungeonUser> _userManager;
 
-        public UserDbService(UserManager<DungeonUser> userManager)
+        public UserDBService(UserManager<DungeonUser> userManager)
         {
             _userManager = userManager;
         }
 
-        public async Task<bool> CreateUser(DungeonUser user, string password, bool asAdmin = false)
+        public async Task<bool> CreateUser(DungeonUser user, string password, bool asAdmin)
         {
             var result = await _userManager.CreateAsync(user, password);
 
@@ -53,6 +56,15 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             return true;
         }
 
+        private async Task RollbackUserCreation(DungeonUser user) //ToDo in UML anpassen und absprechen
+        {
+            IdentityResult result;
+            do
+            {
+                result = await _userManager.DeleteAsync(user);
+            } while (!result.Succeeded);
+        }
+
         public async Task<DungeonUser> GetUser(Guid userId)
         {
             return await _userManager.FindByIdAsync(userId.ToString());
@@ -73,6 +85,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null) return false;
+
             var result = await _userManager.DeleteAsync(user);
             return result.Succeeded;
         }
@@ -80,43 +93,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         public async Task<DungeonUser> GetUserByEmail(string userEmail)
         {
             return await _userManager.FindByEmailAsync(userEmail);
-        }
-
-        public async Task<bool> ResetPassword(DungeonUser user, string token, string password)
-        {
-            var result = await _userManager.ResetPasswordAsync(user, token, password);
-            return result.Succeeded;
-        }
-
-        public async  Task<string> GetResetToken(DungeonUser user)
-        {
-            return await _userManager.GeneratePasswordResetTokenAsync(user);
-        }
-
-        public async Task<bool> ConfirmEmail(DungeonUser user, string token)
-        {
-            var result = await _userManager.ConfirmEmailAsync(user, token);
-            return result.Succeeded;
-        }
-
-        public async Task<string> GetEmailConfirmationToken(DungeonUser user)
-        {
-            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        }
-
-        public async Task<bool> IsAdminLoggedIn()
-        {
-            return await _userManager.Users.AnyAsync(x =>
-                _userManager.GetRolesAsync(x).Result.Contains(Roles.Admin.ToString()));
-        }
-
-        private async Task RollbackUserCreation(DungeonUser user) //ToDo in UML anpassen
-        {
-            IdentityResult result;
-            do
-            {
-                result = await _userManager.DeleteAsync(user);
-            } while (!result.Succeeded);
         }
     }
 }

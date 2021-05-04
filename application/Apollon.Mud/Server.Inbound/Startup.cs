@@ -8,9 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Apollon.Mud.Server.Domain.DbContext;
+using Apollon.Mud.Server.Domain.Implementations.Chat;
 using Apollon.Mud.Server.Domain.Implementations.Shared;
+using Apollon.Mud.Server.Domain.Interfaces.Chat;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
-using Apollon.Mud.Server.Outbound.Hubs.Implementations;
+using Apollon.Mud.Server.Outbound.Hubs;
 using Apollon.Mud.Server.Model.Implementations.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -49,12 +51,16 @@ namespace Apollon.Mud.Server.Inbound
                     options.Password.RequireDigit = true;
                     options.Password.RequireLowercase = true;
                     options.Password.RequireUppercase = true;
+                    options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultProvider;
+                    options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultProvider;
                 })
                 .AddRoles<IdentityRole>()
                 .AddSignInManager<SignInManager<DungeonUser>>()
-                .AddEntityFrameworkStores<DungeonDbContext>();
+                .AddEntityFrameworkStores<DungeonDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddSingleton<IConnectionService, ConnectionService>();
+            services.AddScoped<IChatService, ChatService>();
 
             services.AddAuthentication(auth =>
             {

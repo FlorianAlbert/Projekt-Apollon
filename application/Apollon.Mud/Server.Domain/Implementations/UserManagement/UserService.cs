@@ -30,7 +30,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// <summary>
         /// Flag which indicates if one administrator is registered.
         /// </summary>
-        private readonly bool _adminRegistered;
+        private bool _adminRegistered;
 
         public UserService(IEmailService emailService, IUserDbService userDbService, DungeonDbContext dungeonDbContext)
         {
@@ -42,16 +42,15 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
         public async Task<bool> RequestUserRegistration(string userEmail, string password)
         {
-            //ToDo wie wird ein ServiceUser angelegt?!
             var user = new DungeonUser()
             {
                 Email = userEmail
             };
-            var creationResult = await _userDbService.CreateUser(user, password, _adminRegistered);
+            _adminRegistered = await _userDbService.IsAdminLoggedIn();
+            var creationResult = await _userDbService.CreateUser(user, password, !_adminRegistered);
             if (!creationResult) return false;
             var confirmationToken = await _userDbService.GetEmailConfirmationToken(user);
-            //ToDo confirmationLink
-            var confirmationLink = "http://apollon-dungeons.de/";
+            var confirmationLink = $"http://mud.apollon-dungeons.de/Identity/Account/ConfirmAccount/{user.Id}/{confirmationToken}";
             var emailText = $"Hallo {user.UserName},\n\nbitte bestätige mit folgedem Link deine Email-Adresse:\n\n{confirmationLink}\n\n. Dein Apollon-Support-Team.";
             await _emailService.SendEmail(userEmail, emailText, "Bestätigung deiner Email.");
             return true;
@@ -65,12 +64,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
         public async Task<bool> DeleteUser(Guid userId)
         {
-            //ToDo werden auch alle abhängigen Daten beim Löschen eines Dungeons gelöscht?
-            var usersAvatars = _dungeonDbContext.Avatars.Where(x => x.Id == userId);
-            var usersDungeons = _dungeonDbContext.Dungeons.Where(x => x.DungeonOwner.Id == userId.ToString());
-            //ToDo löschen von allen Black/White-Lists und DungeonMaster-Listen
-            _dungeonDbContext.Avatars.RemoveRange(usersAvatars);
-            _dungeonDbContext.Dungeons.RemoveRange(usersDungeons);
+            //ToDo benutze DungeonDBService
+            //ToDo löschen von allen Black/White-Lists und DungeonMaster-Listen --> cascading
             return await _userDbService.DeleteUser(userId);
         }
 
@@ -89,8 +84,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             var user = await _userDbService.GetUserByEmail(userEmail);
             if (user == null) return false;
             var resetToken = await _userDbService.GetResetToken(user);
-            //ToDo resetLink
-            var resetLink = "http://apollon-dungeons.de/";
+            var resetLink = $"http://mud.apollon-dungeons.de/Identity/Account/ForgotPassword/{user.Id}/{resetToken}";
             var emailText = $"Hallo {user.UserName},\n\ndu hast das Zurücksetzen deines Passworts beantragt. Bitte folge dem nachstehenden " +
                             $"Link, um dein Passwort zurück zu setzen:\n\n{resetLink}\n\n. Dein Apollon-Support-Team.";
             await _emailService.SendEmail(userEmail, emailText, "Rücksetzung deines Passworts.");

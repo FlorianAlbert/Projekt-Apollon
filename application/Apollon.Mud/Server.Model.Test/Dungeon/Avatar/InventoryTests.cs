@@ -45,7 +45,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
 
             inventory.Add(takeableMock);
 
-            inventory.Should().BeEmpty(); ;
+            inventory.Should().BeEmpty();
         }
 
         [Fact]

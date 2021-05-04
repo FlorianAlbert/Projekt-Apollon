@@ -34,7 +34,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
             Connection connection;
             try
             {
-                connection = Connections.Values.SelectMany(x => x.Values.Where(x => x.AvatarId != null))
+                connection = Connections.Values.SelectMany(x => x.Values.Where(c => c.AvatarId != null))
                     .SingleOrDefault(x => x.AvatarId == avatarId);
             }
             catch (InvalidOperationException)
@@ -50,7 +50,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
             Connection dungeonMaster;
             try
             {
-                dungeonMaster = Connections.Values.SelectMany(x => x.Values.Where(x => x.AvatarId == null))
+                dungeonMaster = Connections.Values.SelectMany(x => x.Values.Where(c => c.AvatarId == null))
                     .SingleOrDefault(x => x.DungeonId == dungeonId);
             }
             catch (InvalidOperationException)
