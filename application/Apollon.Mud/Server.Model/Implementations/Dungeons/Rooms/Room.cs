@@ -94,7 +94,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
             return SpecialActions.Any(x => x.Message.NormalizeString() == action.NormalizeString());
         }
 
-        public void EnterRoom(IAvatar avatar)
+        public void EnterRoom(Avatar avatar)
         {
             avatar.CurrentRoom = this;
             if (!Inspectables.Contains(avatar)) Inspectables.Add(avatar);
@@ -111,7 +111,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
             return Description;
         }
 
-        public void Leave(IAvatar avatar)
+        public void Leave(Avatar avatar)
         {
             Inspectables.Remove(avatar);
         }

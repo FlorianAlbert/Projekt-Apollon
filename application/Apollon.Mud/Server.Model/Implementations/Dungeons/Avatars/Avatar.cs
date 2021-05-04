@@ -46,22 +46,22 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <summary>
         /// The race of the avatar
         /// </summary>
-        Race Race { get; set; }
+        public Race Race { get; set; }
 
         /// <summary>
         /// The class of the avatar
         /// </summary>
-        Class Class { get; set; }
+        public Class Class { get; set; }
 
         /// <summary>
         /// The gender of the avatar
         /// </summary>
-        Gender Gender { get; set; }
+        public Gender Gender { get; set; }
 
         /// <summary>
         /// The dungeon the avatar is part of
         /// </summary>
-        Dungeon Dungeon { get; set; }
+        public Dungeon Dungeon { get; set; }
 
         /// <summary>
         /// The maximum health value of the avatar

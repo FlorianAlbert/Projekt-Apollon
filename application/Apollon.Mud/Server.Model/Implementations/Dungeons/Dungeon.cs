@@ -213,12 +213,12 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             throw new NotImplementedException();
         }
 
-        public void ChangeRoom(IAvatar avatar, Direction direction)
+        public void ChangeRoom(Avatar avatar, Direction direction)
         {
             throw new NotImplementedException();
         }
 
-        public void EnterDungeon(IAvatar avatar)
+        public void EnterDungeon(Avatar avatar)
         {
             throw new NotImplementedException();
         }
