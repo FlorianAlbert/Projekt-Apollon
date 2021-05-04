@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Apollon.Mud.Server.Domain.Implementations.UserManagement;
+using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 
 namespace Apollon.Mud.Server.Inbound
 {
@@ -60,6 +62,10 @@ namespace Apollon.Mud.Server.Inbound
 
             services.AddSingleton<IConnectionService, ConnectionService>();
             services.AddScoped<IChatService, ChatService>();
+            services.AddScoped<IAuthorizationService, AuthorizationService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IUserDbService, UserDbService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IGameDbService, GameDbService>();
 
             services.AddAuthentication(auth =>
