@@ -4,8 +4,10 @@ using Apollon.Mud.Server.Model.Interfaces;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables
 {
-    /// <inheritdoc cref="IInspectable"/>
-    public class Inspectable : IInspectable
+    /// <summary>
+    /// Describes an item that can be inspected by an avatar
+    /// </summary>
+    public class Inspectable : IApprovable
     {
         /// <summary>
         /// Creates a new instance of Insprectable
@@ -22,10 +24,14 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables
             Status = Status.Pending;
         }
 
-        /// <inheritdoc cref="IInspectable.Description"/>
+        /// <summary>
+        /// The description of the item
+        /// </summary>
         public string Description { get; set; }
 
-        /// <inheritdoc cref="IInspectable.Name"/>
+        /// <summary>
+        /// The name of the item
+        /// </summary>
         public string Name { get; set; }
 
         /// <inheritdoc cref="IApprovable.Id"/>

@@ -1,4 +1,4 @@
-﻿using Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar;
+﻿using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 
 namespace Apollon.Mud.Server.Model.ModelExtensions
 {

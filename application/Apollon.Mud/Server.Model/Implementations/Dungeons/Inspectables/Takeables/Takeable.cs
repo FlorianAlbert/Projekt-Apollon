@@ -5,8 +5,10 @@ using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables
 {
-    /// <inheritdoc cref="ITakeable"/>
-    public class Takeable : ITakeable
+    /// <summary>
+    /// Describes an item that can be taken by an avatar
+    /// </summary>
+    public class Takeable : Inspectable
     {
         /// <summary>
         /// Creates a new instance of Takeable
@@ -15,23 +17,24 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeabl
         /// <param name="description">Description of the new takeable</param>
         /// <param name="name">Name of the new takeable</param>
         public Takeable(int weight, string description, string name)
+            : base(description,name)
         {
             Id = Guid.NewGuid();
-
-            Name = name;
-            Description = description;
+            
             Weight = weight;
 
             Status = Status.Pending;
         }
 
-        /// <inheritdoc cref="ITakeable.Weight"/>
+        /// <summary>
+        /// The weight of the item
+        /// </summary>
         public int Weight { get; set; }
 
-        /// <inheritdoc cref="IInspectable.Description"/>
+        /// <inheritdoc cref="Inspectable.Description"/>
         public string Description { get; set; }
 
-        /// <inheritdoc cref="IInspectable.Name"/>
+        /// <inheritdoc cref="Inspectable.Name"/>
         public string Name { get; set; }
 
         /// <inheritdoc cref="IApprovable.Id"/>

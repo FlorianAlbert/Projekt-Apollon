@@ -1,14 +1,15 @@
-﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Class;
-using System;
+﻿using System;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Interfaces;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
 {
-    /// <inheritdoc cref="IClass"/>
-    public class Class : IClass
+    /// <summary>
+    /// Describes a class an avatar can be part of
+    /// </summary>
+    public class Class : IChoosable
     {
         /// <summary>
         /// Creates a new instance of Class
@@ -31,15 +32,17 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
             Status = Status.Pending;
         }
 
-        private IInventory _StartInventory;
+        private Inventory _StartInventory;
 
-        /// <inheritdoc cref="IClass.StartInventory"/>
-        public IInventory StartInventory => _StartInventory ??= new Inventory();
+        /// <summary>
+        /// The start inventory every avatar with this class has right after creation
+        /// </summary>
+        public Inventory StartInventory => _StartInventory ??= new Inventory();
 
-        /// <inheritdoc cref="IInspectable.Name"/>
+        /// <inheritdoc cref="Inspectable.Name"/>
         public string Name { get; set; }
 
-        /// <inheritdoc cref="IInspectable.Description"/>
+        /// <inheritdoc cref="Inspectable.Description"/>
         public string Description { get; set; }
 
         /// <inheritdoc cref="IChoosable.DefaultHealth"/>

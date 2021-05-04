@@ -9,6 +9,12 @@ using Apollon.Mud.Server.Model.Interfaces.Dungeon.Race;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Room;
 using Apollon.Mud.Server.Model.ModelExtensions;
 using System;
+using Apollon.Mud.Server.Model.Implementations.Dungeon.Room;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
 using Apollon.Mud.Server.Model.Interfaces;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 
@@ -17,9 +23,9 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
     /// <summary>
     /// An avatar in a dungeon
     /// </summary>
-    public class Avatar : IAvatar
+    public class Avatar : Inspectable
     {
-        private IInventory _Inventory;
+        private Inventory _Inventory;
 
         private int _HealthDifference = 0;
 
@@ -32,7 +38,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <param name="chosenGender">Gender of the new avatar</param>
         /// <param name="dungeon">Dungeon the new avatar is part of</param>
         /// <param name="owner">Owner of the new avatar</param>
-        public Avatar(string name, IRace chosenRace, IClass chosenClass, Gender chosenGender, IDungeon dungeon, DungeonUser owner)
+        public Avatar(string name, Race chosenRace, Class chosenClass, Gender chosenGender, Dungeon dungeon, DungeonUser owner)
         {
             Id = Guid.NewGuid();
             Name = name;
@@ -49,25 +55,37 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
             Inventory = chosenClass.StartInventory;
         }
 
-        /// <inheritdoc cref="IAvatar.Race"/>
-        public IRace Race { get; set; }
+        /// <summary>
+        /// The race of the avatar
+        /// </summary>
+        Race Race { get; set; }
 
-        /// <inheritdoc cref="IAvatar.Class"/>
-        public IClass Class { get; set; }
+        /// <summary>
+        /// The class of the avatar
+        /// </summary>
+        Class Class { get; set; }
 
-        /// <inheritdoc cref="IAvatar.Gender"/>
-        public Gender Gender { get; set; }
+        /// <summary>
+        /// The gender of the avatar
+        /// </summary>
+        Gender Gender { get; set; }
 
-        /// <inheritdoc cref="IAvatar.Dungeon"/>
-        public IDungeon Dungeon { get; set; }
+        /// <summary>
+        /// The dungeon the avatar is part of
+        /// </summary>
+        Dungeon Dungeon { get; set; }
 
-        /// <inheritdoc cref="IAvatar.MaxHealth"/>
+        /// <summary>
+        /// The maximum health value of the avatar
+        /// </summary>
         public int MaxHealth 
         {
             get => Race.DefaultHealth + Class.DefaultHealth;
         }
 
-        /// <inheritdoc cref="IAvatar.CurrentHealth"/>
+        /// <summary>
+        /// The actual health value of the avatar
+        /// </summary>
         public int CurrentHealth 
         {
             get => MaxHealth - _HealthDifference;
@@ -79,7 +97,9 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
             }
         }
 
-        /// <inheritdoc cref="IAvatar.Damage"/>
+        /// <summary>
+        /// The damage value of the avatar
+        /// </summary>
         public int Damage 
         {
             get 
@@ -92,7 +112,9 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
             }
         }
 
-        /// <inheritdoc cref="IAvatar.Protection"/>
+        /// <summary>
+        /// The protection value of the avatar
+        /// </summary>
         public int Protection 
         { 
             get
@@ -105,26 +127,36 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
             }
         }
 
-        /// <inheritdoc cref="IAvatar.Inventory"/>
-        public IInventory Inventory 
+        /// <summary>
+        /// The inventory with everything the avatar is carrying
+        /// </summary>
+        public Inventory Inventory 
         { 
             get => _Inventory ??= new Inventory();
             init => _Inventory = value;
         }
 
-        /// <inheritdoc cref="IAvatar.HoldingItem"/>
-        public ITakeable HoldingItem { get; set; }
+        /// <summary>
+        /// The item the avatar is holding in his hand
+        /// </summary>
+        public Takeable HoldingItem { get; set; }
 
-        /// <inheritdoc cref="IAvatar.Armor"/>
-        public IWearable Armor { get; set; }
+        /// <summary>
+        /// The armor the avatar is wearing
+        /// </summary>
+        public Wearable Armor { get; set; }
 
-        /// <inheritdoc cref="IAvatar.CurrentRoom"/>
-        public IRoom CurrentRoom { get; set; }
+        /// <summary>
+        /// The room the avatar is in
+        /// </summary>
+        public Room CurrentRoom { get; set; }
 
-        /// <inheritdoc cref="IAvatar.Owner"/>
+        /// <summary>
+        /// The user the avatar belongs to
+        /// </summary>
         public DungeonUser Owner { get; set; }
 
-        /// <inheritdoc cref="IInspectable.Description"/>
+        /// <inheritdoc cref="Inspectable.Description"/>
         public string Description 
         {
             get => $"{ Name } ist von der Rasse { Race.Name } vom Geschlecht { Gender.GetGermanGender() }.\n" +
@@ -137,13 +169,13 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
             }
         }
 
-        /// <inheritdoc cref="IInspectable.Name"/>
+        /// <inheritdoc cref="Inspectable.Name"/>
         public string Name { get; set; }
 
-        /// <inheritdoc cref="IApprovable.Id"/>
+        /// <inheritdoc cref="Approvable.Id"/>
         public Guid Id { get; }
 
-        /// <inheritdoc cref="IApprovable.Status"/>
+        /// <inheritdoc cref="Approvable.Status"/>
         public Status Status { get; set; }
 
         /**
