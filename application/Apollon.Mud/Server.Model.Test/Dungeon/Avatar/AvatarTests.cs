@@ -28,7 +28,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
             raceMock.DefaultHealth.Returns(raceHealth);
             var classMock = Substitute.For<Class>();
             classMock.DefaultHealth.Returns(classHealth);
-            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).Create();
+            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.ChosenRace, raceMock).With(x => x.ChosenClass, classMock).Create();
 
             var result = avatar.MaxHealth;
 
@@ -48,7 +48,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
             classMock.DefaultDamage.Returns(classDamage);
             var weaponMock = Substitute.For<Usable>();
             weaponMock.DamageBoost.Returns(weaponBoost);
-            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.HoldingItem, weaponMock).Create();
+            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.ChosenRace, raceMock).With(x => x.ChosenClass, classMock).With(x => x.HoldingItem, weaponMock).Create();
 
             var result = avatar.Damage;
 
@@ -65,7 +65,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
             raceMock.DefaultDamage.Returns(raceDamage);
             var classMock = Substitute.For<Class>();
             classMock.DefaultDamage.Returns(classDamage);
-            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.HoldingItem, null as Usable).Create();
+            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.ChosenRace, raceMock).With(x => x.ChosenClass, classMock).With(x => x.HoldingItem, null as Usable).Create();
 
             var result = avatar.Damage;
 
@@ -85,7 +85,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
             classMock.DefaultProtection.Returns(classProtection);
             var protectionMock = Substitute.For<Wearable>();
             protectionMock.ProtectionBoost.Returns(protectionBoost);
-            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.Armor, protectionMock).Create();
+            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.ChosenRace, raceMock).With(x => x.ChosenClass, classMock).With(x => x.Armor, protectionMock).Create();
 
             var result = avatar.Protection;
 
@@ -102,7 +102,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
             raceMock.DefaultProtection.Returns(raceProtection);
             var classMock = Substitute.For<Class>();
             classMock.DefaultProtection.Returns(classProtection);
-            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.Race, raceMock).With(x => x.Class, classMock).With(x => x.Armor, null as Wearable).Create();
+            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.ChosenRace, raceMock).With(x => x.ChosenClass, classMock).With(x => x.Armor, null as Wearable).Create();
 
             var result = avatar.Protection;
 

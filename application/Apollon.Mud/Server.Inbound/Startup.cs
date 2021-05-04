@@ -1,5 +1,4 @@
-using System.Net;
-using System.Net.Mail;
+using System;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,7 +17,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Apollon.Mud.Server.Domain.Implementations.UserManagement;
 
 namespace Apollon.Mud.Server.Inbound
 {
@@ -44,6 +42,7 @@ namespace Apollon.Mud.Server.Inbound
             services.AddDbContext<DungeonDbContext>(options =>
                 options.UseSqlite(
                     Configuration.GetConnectionString("DungeonDbConnection")));
+
             services.AddIdentityCore<DungeonUser>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = true;
@@ -61,6 +60,7 @@ namespace Apollon.Mud.Server.Inbound
 
             services.AddSingleton<IConnectionService, ConnectionService>();
             services.AddScoped<IChatService, ChatService>();
+            services.AddScoped<IGameDbService, GameDbService>();
 
             services.AddAuthentication(auth =>
             {
@@ -92,7 +92,7 @@ namespace Apollon.Mud.Server.Inbound
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -114,7 +114,12 @@ namespace Apollon.Mud.Server.Inbound
                 endpoints.MapHub<ChatHub>("/hubs/chat");
             });
 
-            app.AddDefaultUserRoles();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            foreach (var role in Enum.GetNames<Roles>())
+            {
+                if (!roleManager.RoleExistsAsync(role).Result) roleManager.CreateAsync(new IdentityRole(role)).Wait();
+            }
         }
     }
 }

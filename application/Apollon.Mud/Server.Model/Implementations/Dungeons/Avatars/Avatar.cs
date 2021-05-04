@@ -17,7 +17,12 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
     {
         private Inventory _Inventory;
 
-        private int _HealthDifference = 0;
+        private int _HealthDifference;
+
+        public Avatar() : base(string.Empty, string.Empty)
+        {
+            
+        }
 
         /// <summary>
         /// Creates a new instance of Avatar
@@ -31,9 +36,9 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         public Avatar(string name, Race chosenRace, Class chosenClass, Gender chosenGender, Dungeon dungeon, DungeonUser owner)
             : base("",name)
         {
-            Race = chosenRace;
-            Class = chosenClass;
-            Gender = chosenGender;
+            ChosenRace = chosenRace;
+            ChosenClass = chosenClass;
+            ChosenGender = chosenGender;
             Dungeon = dungeon;
             Owner = owner;
 
@@ -46,17 +51,17 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <summary>
         /// The race of the avatar
         /// </summary>
-        public Race Race { get; set; }
+        public Race ChosenRace { get; set; }
 
         /// <summary>
         /// The class of the avatar
         /// </summary>
-        public Class Class { get; set; }
+        public Class ChosenClass { get; set; }
 
         /// <summary>
         /// The gender of the avatar
         /// </summary>
-        public Gender Gender { get; set; }
+        public Gender ChosenGender { get; set; }
 
         /// <summary>
         /// The dungeon the avatar is part of
@@ -68,7 +73,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// </summary>
         public int MaxHealth 
         {
-            get => Race.DefaultHealth + Class.DefaultHealth;
+            get => ChosenRace.DefaultHealth + ChosenClass.DefaultHealth;
         }
 
         /// <summary>
@@ -92,7 +97,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         {
             get 
             {
-                var result = Class.DefaultDamage + Race.DefaultDamage;
+                var result = ChosenClass.DefaultDamage + ChosenRace.DefaultDamage;
 
                 if (HoldingItem != null && HoldingItem is Usable weapon) result += weapon.DamageBoost;
 
@@ -107,7 +112,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         { 
             get
             {
-                var result = Race.DefaultProtection + Class.DefaultProtection;
+                var result = ChosenRace.DefaultProtection + ChosenClass.DefaultProtection;
 
                 if (Armor != null) result += Armor.ProtectionBoost;
 
@@ -147,11 +152,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <inheritdoc cref="Inspectable.Description"/>
         public override string Description 
         {
-            get => $"{ Name } ist von der Rasse { Race.Name } vom Geschlecht { Gender.GetGermanGender() }.\n" +
+            get => $"{ Name } ist von der Rasse { ChosenRace.Name } vom Geschlecht { ChosenGender.GetGermanGender() }.\n" +
                 "Diese Rasse zeichnet sich durch folgende Beschreibung aus: \n" +
-                $"{ Race.Description } \n\n" +
-                $"Außerdem hat { Name } die Klasse { Class.Name }, welche sich durch folgende Beschreibung auszeichnet: \n" +
-                $"{ Class.Description }";
+                $"{ ChosenRace.Description } \n\n" +
+                $"Außerdem hat { Name } die Klasse { ChosenClass.Name }, welche sich durch folgende Beschreibung auszeichnet: \n" +
+                $"{ ChosenClass.Description }";
             set 
             { 
             }
