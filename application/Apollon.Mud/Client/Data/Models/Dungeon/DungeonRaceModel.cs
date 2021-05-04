@@ -13,7 +13,7 @@ namespace Apollon.Mud.Client.Data.Models
         /// Every Race has to have a name
         /// </summary>
         [Required(ErrorMessage = "Du musst der Rasse einen Namen geben")]
-        [RegularExpression("(^(?![Nn]eue [Rr]asse)|(^([[Nn]eue [Rr]asse).+))", ErrorMessage = "Dieser Name ist nicht zugelassen")]
+        [RegularExpression("^(?!([Nn]eue [Rr]asse)).*$", ErrorMessage = "Dieser Name ist nicht zugelassen")]
         public string Name { get; set; }
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace Apollon.Mud.Client.Data.Models
 {
@@ -13,6 +14,7 @@ namespace Apollon.Mud.Client.Data.Models
         /// Every Dungeon has to have a Name
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Namen geben")]
+        [RegularExpression("^(?!([Nn]euer [Dd]ungeon)).*$", ErrorMessage = "Dieser Name ist nicht zugelassen")]
         public string Name { get; set; }
 
         /// <summary>
@@ -44,7 +46,5 @@ namespace Apollon.Mud.Client.Data.Models
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }
-
-
     }
 }
