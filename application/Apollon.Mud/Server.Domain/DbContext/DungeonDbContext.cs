@@ -103,8 +103,9 @@ namespace Apollon.Mud.Server.Domain.DbContext
             builder.Entity<Race>()
                 .HasKey(e => e.Id);
 
-            builder.Entity<Avatar>()
+            builder.Entity<Inspectable>()
                 .HasKey(e => e.Id);
+
             builder.Entity<Avatar>()
                 .HasMany(e => e.Inventory);
             builder.Entity<Avatar>()
@@ -126,21 +127,6 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasKey(e => e.Id);
 
             builder.Entity<Requestable>()
-                .HasKey(e => e.Id);
-
-            builder.Entity<Consumable>()
-                .HasKey(e => e.Id);
-
-            builder.Entity<Usable>()
-                .HasKey(e => e.Id);
-
-            builder.Entity<Wearable>()
-                .HasKey(e => e.Id);
-
-            builder.Entity<Takeable>()
-                .HasKey(e => e.Id);
-
-            builder.Entity<Inspectable>()
                 .HasKey(e => e.Id);
 
 
