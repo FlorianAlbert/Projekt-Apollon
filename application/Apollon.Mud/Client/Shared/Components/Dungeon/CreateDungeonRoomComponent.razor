@@ -697,12 +697,26 @@
 
             <div class="row">
                 <div class="col-lg-12 d-flex justify-content-center">
-                    <TooltipComponent Text="Füge deine Befehle einem Raum hinzu"><h4 class="mt-1">Eigene Befehle @title</h4></TooltipComponent>
+                    <TooltipComponent Text="Füge deine Befehle einem Raum hinzu"><h4 class="mt-1">Eigene Befehle</h4></TooltipComponent>
                 </div>
             </div>
 
-            <div class="row mt-2">
-                <div class="col-2" />
+            <div class="row">
+                <div class="col-8">
+                    <select class="form-select" @bind="selectedRequestable">
+                        <option value="NoAction" selected hidden></option>
+                        @if (!(dungeonRequestables is null))
+                        {
+                            @foreach (RequestableDto requestable in dungeonRequestables)
+                            {
+                                @if (roomRequestables.Find(r => r.PatternForPlayer == requestable.PatternForPlayer) is null)
+                                {
+                                    <option value="@requestable.PatternForPlayer">@requestable.PatternForPlayer</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
                 <div class="col-4">
                     @if (specialActionCount <= dungeonRequestables.Count())
                     {
@@ -715,22 +729,9 @@
                         </TooltipComponent>
                     }
                 </div>
-                <div class="col-4">
-                    @if (roomItemCount >= 0)
-                    {
-                        <button class="btn btn-outline-secondary me-1" style="max-width:15rem" type="button" @onclick="RemoveActionButtonClicked">Befehl entfernen</button>
-                    }
-                    else
-                    {
-                        <TooltipComponent Text="Minimum erreicht">
-                            <button class="btn btn-outline-secondary" style="max-width:15rem" type="button" disabled>Befehl entfernen</button>
-                        </TooltipComponent>
-                    }
-                </div>
             </div>
 
-            @{int index = 0;}
-            @for (int i = 0; i < specialActionCount; i++)
+            @foreach (RequestableDto requestable in roomRequestables)
             {
                 <div class="form-group mt-5">
                     <div class="row">
@@ -740,24 +741,17 @@
                             </div>
                         </div>
                         <div class="col">
-                            <div class="d-flex justify-content-center">
-                                <select class="form-select" @bind="selectedRequestables.ElementAt(index)" @onselectionchange="@DoNothing(index)" @onselectionchange:stopPropagation="true">
-                                    <option value="NoItem" hidden></option>
-                                    @if (!(dungeonRequestables is null))
-                                    {
-                                        @foreach (RequestableDto requestable in dungeonRequestables)
-                                        {
-                                            <option value="@requestable.PatternForPlayer">@requestable.PatternForPlayer</option>
-                                        }
-                                    }
-                                </select>
-                            </div>
+                            <span>@requestable.PatternForPlayer</span>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="(() => RemoveActionButtonClicked(requestable))">
+                                <TooltipComponent Text="Befehl entfernen">
+                                    <strong>-</strong>
+                                </TooltipComponent>
+                            </button>
                         </div>
                     </div>
                 </div>
-                index++;
-                title += index.ToString();
-
             }
 
             <hr class="featurette-divider" />
@@ -796,105 +790,106 @@
 
 @code {
 
-    private EventCallback DoNothing(int item)
-    {
-        //title += item.ToString() + "fa";
-        return EventCallback.Empty;
-    }
+        private EventCallback DoNothing(int item)
+        {
+            //title += item.ToString() + "fa";
+            return EventCallback.Empty;
+        }
 
-    string title = "0";
+        string title = "0";
 
-    #region Dungeon Room Model
-    /// <summary>
-    /// TODO
-    /// </summary>
-    DungeonRoomModel dungeonRoomModel = new DungeonRoomModel();
+        #region Dungeon Room Model
+        /// <summary>
+        /// TODO
+        /// </summary>
+        DungeonRoomModel dungeonRoomModel = new DungeonRoomModel();
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    EditContext roomContext;
+        /// <summary>
+        /// TODO
+        /// </summary>
+        EditContext roomContext;
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    List<RoomDto> dungeonRooms = new List<RoomDto>();
+        /// <summary>
+        /// TODO
+        /// </summary>
+        List<RoomDto> dungeonRooms = new List<RoomDto>();
+        #endregion
+
+        #region Bound Variables
+        /// <summary>
+        /// TODO
+        /// </summary>
+        string[] itemCategory = new string[8];
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        string[] roomItems = new string[8];
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        string chosenRoom = "NoRoom";
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        List<RequestableDto> roomRequestables = new List<RequestableDto>();
+
+        string selectedRequestable = string.Empty;
+        #endregion
+
+        #region Item Lists
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        List<InspectableDto> dungeonInspectables = new List<InspectableDto>();
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        List<WearableDto> dungeonWearables = new List<WearableDto>();
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        List<UsableDto> dungeonUsables = new List<UsableDto>();
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        List<RequestableDto> dungeonRequestables = new List<RequestableDto>();
+
+        #endregion
+
+        #region Item Dropdown Counters
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        int roomItemCount = 1;
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        int specialActionCount = 0;
+
     #endregion
 
-    #region Bound Variables
-    /// <summary>
-    /// TODO
-    /// </summary>
-    string[] itemCategory = new string[8];
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    string[] roomItems = new string[8];
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    string chosenRoom = "NoRoom";
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    List<string> selectedRequestables = new List<string>();
-    //string[] selectedRequestables = new string[200];
-    #endregion
-
-    #region Item Lists
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    List<InspectableDto> dungeonInspectables = new List<InspectableDto>();
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    List<WearableDto> dungeonWearables = new List<WearableDto>();
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    List<UsableDto> dungeonUsables = new List<UsableDto>();
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    List<RequestableDto> dungeonRequestables = new List<RequestableDto>();
-
-    #endregion
-
-    #region Item Dropdown Counters
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    int roomItemCount = 1;
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    int specialActionCount = 0;
-
-    #endregion
-
-    /// <summary>
-    /// TODO
-    /// </summary>
+        /// <summary>
+        /// TODO
+        /// </summary>
     protected override void OnInitialized()
     {
         #region toDelete
@@ -1300,18 +1295,25 @@
     /// </summary>
     private void AddActionButtonClicked()
     {
-        if (specialActionCount < dungeonRequestables.Count())
-            specialActionCount++;
+        if (selectedRequestable != "NoAction")
+        {
+            RequestableDto request = dungeonRequestables.Find(r => r.PatternForPlayer == selectedRequestable);
+            if (!(request is null))
+            {
+                roomRequestables.Add(request);
+            }
+        }
+        selectedRequestable = "NoAction";
     }
 
 
     /// <summary>
     /// TODO
     /// </summary>
-    private void RemoveActionButtonClicked()
+    private EventCallback RemoveActionButtonClicked(RequestableDto request)
     {
-        if (specialActionCount > 0)
-            specialActionCount--;
+        roomRequestables.Remove(request);
+        return EventCallback.Empty;
     }
     #endregion
 }
