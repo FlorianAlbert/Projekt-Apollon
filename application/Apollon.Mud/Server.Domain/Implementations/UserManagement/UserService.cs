@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.DbContext;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.User;
-using Microsoft.AspNetCore.Internal;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
@@ -23,6 +22,11 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         private readonly IUserDbService _userDbService;
 
         /// <summary>
+        /// ToDo
+        /// </summary>
+        private readonly TokenService _tokenService;
+
+        /// <summary>
         /// Service to modify the dungeon-db content.
         /// </summary>
         private readonly DungeonDbContext _dungeonDbContext;
@@ -32,11 +36,12 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// </summary>
         private bool _adminRegistered;
 
-        public UserService(IEmailService emailService, IUserDbService userDbService, DungeonDbContext dungeonDbContext)
+        public UserService(IEmailService emailService, IUserDbService userDbService, DungeonDbContext dungeonDbContext, TokenService tokenService)
         {
             _emailService = emailService;
             _userDbService = userDbService;
             _dungeonDbContext = dungeonDbContext;
+            _tokenService = tokenService;
             _adminRegistered = _userDbService.IsAdminLoggedIn().Result;
         }
 
@@ -44,22 +49,29 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         {
             var user = new DungeonUser()
             {
+                UserName = userEmail,
                 Email = userEmail
             };
-            _adminRegistered = await _userDbService.IsAdminLoggedIn();
             var creationResult = await _userDbService.CreateUser(user, password, !_adminRegistered);
             if (!creationResult) return false;
-            var confirmationToken = await _userDbService.GetEmailConfirmationToken(user);
-            var confirmationLink = $"http://mud.apollon-dungeons.de/Identity/Account/ConfirmAccount/{user.Id}/{confirmationToken}";
-            var emailText = $"Hallo {user.UserName},\n\nbitte bestätige mit folgedem Link deine Email-Adresse:\n\n{confirmationLink}\n\n. Dein Apollon-Support-Team.";
+            var token = _tokenService.GenerateNewConfirmationToken();
+            var confirmationLink = $"http://mud.apollon-dungeons.de/Identity/Account/ConfirmAccount/{user.Id}/{token}";
+            var emailText = $"Hallo {user.UserName},\n\nbitte bestätige mit folgendem Link deine Email-Adresse:\n\n{confirmationLink}\n\nDein Apollon-Support-Team.";
             await _emailService.SendEmail(userEmail, emailText, "Bestätigung deiner Email.");
             return true;
         }
 
         public async Task<bool> ConfirmUserRegistration(Guid userId, string token)
         {
+            var confirmationToken = string.Empty;
             var user = await _userDbService.GetUser(userId);
-            return await _userDbService.ConfirmEmail(user, token);
+            if (user == null) return false;
+            if (!Guid.TryParse(token, out var guid)) return false;
+            if (_tokenService.CheckConfirmationToken(guid))
+            {
+                confirmationToken = await _userDbService.GetEmailConfirmationToken(user);
+            }
+            return  await _userDbService.ConfirmEmail(user, confirmationToken);
         }
 
         public async Task<bool> DeleteUser(Guid userId)
@@ -83,7 +95,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         {
             var user = await _userDbService.GetUserByEmail(userEmail);
             if (user == null) return false;
-            var resetToken = await _userDbService.GetResetToken(user);
+            var resetToken = _tokenService.GenerateNewResetToken();
             var resetLink = $"http://mud.apollon-dungeons.de/Identity/Account/ForgotPassword/{user.Id}/{resetToken}";
             var emailText = $"Hallo {user.UserName},\n\ndu hast das Zurücksetzen deines Passworts beantragt. Bitte folge dem nachstehenden " +
                             $"Link, um dein Passwort zurück zu setzen:\n\n{resetLink}\n\n. Dein Apollon-Support-Team.";
@@ -93,9 +105,15 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
         public async Task<bool> ConfirmPasswordReset(Guid userId, string token, string newPassword)
         {
+            var resetToken = string.Empty;
             var user = await _userDbService.GetUser(userId);
             if (user == null) return false;
-            return await _userDbService.ResetPassword(user, token, newPassword);
+            if (!Guid.TryParse(token, out var guid)) return false;
+            if (_tokenService.CheckResetToken(guid))
+            {
+                resetToken = await _userDbService.GetResetToken(user);
+            }
+            return await _userDbService.ResetPassword(user, resetToken, newPassword);
         }
 
         public async Task<bool> ChangePassword(Guid userId, string oldPassword, string newPassword)

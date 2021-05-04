@@ -54,7 +54,7 @@ namespace Apollon.Mud.Server.Inbound
                     options.Password.RequireLowercase = true;
                     options.Password.RequireUppercase = true;
                     options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultProvider;
-                    options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultProvider;
+                    options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
                 })
                 .AddRoles<IdentityRole>()
                 .AddSignInManager<SignInManager<DungeonUser>>()
@@ -68,6 +68,7 @@ namespace Apollon.Mud.Server.Inbound
             services.AddScoped<IUserDbService, UserDbService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IGameDbService, GameDbService>();
+            services.AddSingleton<TokenService>();
 
             services.AddAuthentication(auth =>
             {
@@ -109,7 +110,7 @@ namespace Apollon.Mud.Server.Inbound
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Apollon.Mud API"));
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

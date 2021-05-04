@@ -106,8 +106,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
         public async Task<bool> IsAdminLoggedIn()
         {
-            return await _userManager.Users.AnyAsync(x =>
-                _userManager.GetRolesAsync(x).Result.Contains(Roles.Admin.ToString()));
+            var admins = await _userManager.GetUsersInRoleAsync(Roles.Admin.ToString());
+            return admins.Count > 0;
         }
 
         private async Task RollbackUserCreation(DungeonUser user) //ToDo in UML anpassen
