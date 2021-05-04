@@ -6,6 +6,7 @@
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
 @using Apollon.Mud.Shared.Dungeon.Requestable
+@using Apollon.Mud.Shared.Dungeon.Npc
 
 <div class="card">
     <div class="card-header">
@@ -697,6 +698,76 @@
 
             <div class="row">
                 <div class="col-lg-12 d-flex justify-content-center">
+                    <h4 class="mt-1">NPCs</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-8">
+                    <select class="form-select" @bind="selectedNpc">
+                        <option value="NoNpc" selected hidden></option>
+                        @if (!(dungeonNpcs is null))
+                        {
+                            @foreach (NpcDto npc in dungeonNpcs)
+                            {
+                                @if (roomNpcs.Find(r => r.Name == npc.Name) is null)
+                                {
+                                    <option value="@npc.Name">@npc.Name</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-4">
+                    @if (specialActionCount <= dungeonNpcs.Count() && selectedNpc != "NoNpc")
+                    {
+                        <button class="btn btn-outline-secondary ms-1" style="max-width:15rem" type="button" @onclick="AddNpcButtonClicked">NPC hinzufügen</button>
+                    }
+                    else
+                    {
+                        if (selectedNpc == "NoNpc")
+                        {
+                            <TooltipComponent Text="Wähle einen NPC">
+                                <button class="btn btn-outline-secondary ms-1" style="max-width:15rem" type="button" disabled>NPC hinzufügen</button>
+                            </TooltipComponent>
+                        }
+                        else
+                        {
+                            <TooltipComponent Text="Maximum erreicht">
+                                <button class="btn btn-outline-secondary ms-1" style="max-width:15rem" type="button" disabled>NPC hinzufügen</button>
+                            </TooltipComponent>
+                        }
+                    }
+                </div>
+            </div>
+
+            @foreach (NpcDto npc in dungeonNpcs)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="d-flex justify-content-center">
+                                <h5>Eigener Befehl</h5>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <span>@npc.Name</span>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="(() => RemoveNpcButtonClicked(npc))">
+                                <TooltipComponent Text="Befehl entfernen">
+                                    <strong>-</strong>
+                                </TooltipComponent>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <hr class="featurette-divider" />
+
+            <div class="row">
+                <div class="col-lg-12 d-flex justify-content-center">
                     <TooltipComponent Text="Füge deine Befehle einem Raum hinzu"><h4 class="mt-1">Eigene Befehle</h4></TooltipComponent>
                 </div>
             </div>
@@ -799,14 +870,6 @@
 
 @code {
 
-    private EventCallback DoNothing(int item)
-    {
-        //title += item.ToString() + "fa";
-        return EventCallback.Empty;
-    }
-
-    string title = "0";
-
     #region Dungeon Room Model
     /// <summary>
     /// TODO
@@ -846,9 +909,19 @@
     List<RequestableDto> roomRequestables = new List<RequestableDto>();
 
     /// <summary>
-    ///
+    /// TODO
     /// </summary>
     string selectedRequestable = "NoAction";
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<NpcDto> roomNpcs = new List<NpcDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    string selectedNpc = "NoNpc";
     #endregion
 
     #region Item Lists
@@ -883,6 +956,10 @@
     /// </summary>
     List<RequestableDto> dungeonRequestables = new List<RequestableDto>();
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<NpcDto> dungeonNpcs = new List<NpcDto>();
     #endregion
 
     #region Item Dropdown Counters
@@ -1067,6 +1144,7 @@
                 dungeonRoomModel.RoomSouth = "NoRoom";
                 dungeonRoomModel.RoomWest = "NoRoom";
                 roomRequestables = newRoom.SpecialActions is null ? new List<RequestableDto>() : newRoom.SpecialActions.ToList();
+                roomNpcs = newRoom.Npcs is null ? new List<NpcDto>() : newRoom.Npcs.ToList();
                 roomItemCount = 0;
                 int counter = 0;
                 if (!(newRoom.Inspectables is null))
@@ -1178,6 +1256,7 @@
             dungeonRoomModel.Name = checkRoom.Name;
             dungeonRoomModel.Description = checkRoom.Description;
             roomRequestables = checkRoom.SpecialActions is null ? new List<RequestableDto>() : checkRoom.SpecialActions.ToList();
+            roomNpcs = checkRoom.Npcs is null ? new List<NpcDto>() : checkRoom.Npcs.ToList();
             int counter = 0;
             if (!(checkRoom.Inspectables is null))
             {
@@ -1274,6 +1353,7 @@
         dungeonRoomModel.RoomSouth = "NoRoom";
         dungeonRoomModel.Status = string.Empty;
         roomRequestables.Clear();
+        roomNpcs.Clear();
         roomItemCount = 0;
         for (int i = 0; i < 8; i++)
         {
@@ -1291,7 +1371,6 @@
         if (roomItemCount < 8)
             roomItemCount++;
     }
-
 
     /// <summary>
     /// TODO
@@ -1318,7 +1397,6 @@
         selectedRequestable = "NoAction";
     }
 
-
     /// <summary>
     /// TODO
     /// </summary>
@@ -1326,6 +1404,33 @@
     {
         roomRequestables.Remove(request);
         return EventCallback.Empty;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="npc"></param>
+    /// <returns></returns>
+    private EventCallback RemoveNpcButtonClicked(NpcDto npc)
+    {
+        roomNpcs.Remove(npc);
+        return EventCallback.Empty;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private void AddNpcButtonClicked()
+    {
+        if (selectedRequestable != "NoNpc")
+        {
+            NpcDto npc = dungeonNpcs.Find(n => n.Name == selectedNpc);
+            if (!(npc is null))
+            {
+                roomNpcs.Add(npc);
+            }
+        }
+        selectedRequestable = "NoNpc";
     }
     #endregion
 }
