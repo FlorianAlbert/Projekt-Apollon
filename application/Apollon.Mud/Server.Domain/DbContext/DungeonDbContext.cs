@@ -122,10 +122,7 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasOne(e => e.Owner);
             builder.Entity<Avatar>()
                 .HasOne(e => e.Race);
-
-            builder.Entity<Npc>()
-                .HasKey(e => e.Id);
-
+            
             builder.Entity<Requestable>()
                 .HasKey(e => e.Id);
 
