@@ -741,28 +741,34 @@
                 </div>
             </div>
 
-            @foreach (NpcDto npc in dungeonNpcs)
-            {
-                <div class="form-group mt-5">
-                    <div class="row">
-                        <div class="col-4">
-                            <div class="d-flex justify-content-center">
-                                <h5>Eigener Befehl</h5>
+            <div class="table table-bordered mt-3">
+                @{int npcIndex = 1;}
+                @foreach (NpcDto npc in roomNpcs)
+                {
+                    <div class="card p-0">
+                        <div class="row">
+                            <div class="col-4">
+                                <div style="vertical-align:middle; text-align:center">
+                                    <span><strong>Npc @npcIndex</strong></span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div style="vertical-align:middle">
+                                    <span>@npc.Name</span>
+                                </div>
+                            </div>
+                            <div class="col-1">
+                                <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveNpcButtonClicked(npc))">
+                                    <TooltipComponent Text="Npc entfernen">
+                                        <span style="vertical-align:middle"><strong>-</strong></span>
+                                    </TooltipComponent>
+                                </button>
                             </div>
                         </div>
-                        <div class="col">
-                            <span>@npc.Name</span>
-                        </div>
-                        <div class="col">
-                            <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="(() => RemoveNpcButtonClicked(npc))">
-                                <TooltipComponent Text="Befehl entfernen">
-                                    <strong>-</strong>
-                                </TooltipComponent>
-                            </button>
-                        </div>
                     </div>
-                </div>
-            }
+                    npcIndex++;
+                }
+            </div>
 
             <hr class="featurette-divider" />
 
@@ -788,52 +794,56 @@
                         }
                     </select>
                 </div>
-                <div class="col-4">
+                <div class="col">
                     @if (specialActionCount <= dungeonRequestables.Count() && selectedRequestable != "NoAction")
                     {
-                        <button class="btn btn-outline-secondary ms-1" style="max-width:15rem" type="button" @onclick="AddActionButtonClicked">Befehl hinzufügen</button>
+                        <button class="btn btn-outline-secondary ms-1" type="button" @onclick="AddActionButtonClicked">Befehl hinzufügen</button>
                     }
                     else
                     {
                         if (selectedRequestable == "NoAction")
                         {
                             <TooltipComponent Text="Wähle einen Befehl">
-                                <button class="btn btn-outline-secondary ms-1" style="max-width:15rem" type="button" disabled>Befehl hinzufügen</button>
+                                <button class="btn btn-outline-secondary ms-1" type="button" disabled>Befehl hinzufügen</button>
                             </TooltipComponent>
                         }
                         else
                         {
                             <TooltipComponent Text="Maximum erreicht">
-                                <button class="btn btn-outline-secondary ms-1" style="max-width:15rem" type="button" disabled>Befehl hinzufügen</button>
+                                <button class="btn btn-outline-secondary ms-1" type="button" disabled>Befehl hinzufügen</button>
                             </TooltipComponent>
                         }
                     }
                 </div>
             </div>
-
-            @foreach (RequestableDto requestable in roomRequestables)
-            {
-                <div class="form-group mt-5">
-                    <div class="row">
-                        <div class="col-4">
-                            <div class="d-flex justify-content-center">
-                                <h5>Eigener Befehl</h5>
+            <div class="table table-bordered mt-3">
+                @{int requestIndex = 1;}
+                @foreach (RequestableDto requestable in roomRequestables)
+                {
+                    <div class="card p-0">
+                        <div class="row">
+                            <div class="col-4">
+                                <div style="vertical-align:middle; text-align:center">
+                                    <span><strong>Befehl @requestIndex</strong></span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div style="vertical-align:middle">
+                                    <span>@requestable.PatternForPlayer</span>
+                                </div>
+                            </div>
+                            <div class="col-1">
+                                <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveActionButtonClicked(requestable))">
+                                    <TooltipComponent Text="Befehl entfernen">
+                                        <span style="vertical-align:middle"><strong>-</strong></span>
+                                    </TooltipComponent>
+                                </button>
                             </div>
                         </div>
-                        <div class="col">
-                            <span>@requestable.PatternForPlayer</span>
-                        </div>
-                        <div class="col">
-                            <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="(() => RemoveActionButtonClicked(requestable))">
-                                <TooltipComponent Text="Befehl entfernen">
-                                    <strong>-</strong>
-                                </TooltipComponent>
-                            </button>
-                        </div>
                     </div>
-                </div>
-            }
-
+                    requestIndex++;
+                }
+            </div>
             <hr class="featurette-divider" />
 
             <div class="form-group mt-3">
@@ -1021,6 +1031,18 @@
 
         dungeonRooms.Add(testRoom);
         dungeonRooms.Add(testRoom2);
+
+        NpcDto testNpc1 = new NpcDto();
+        testNpc1.Description = "Cooler Dude";
+        testNpc1.Name = "Kevin";
+        testNpc1.Text = "Moin Leude";
+        dungeonNpcs.Add(testNpc1);
+
+        NpcDto testNpc2 = new NpcDto();
+        testNpc2.Description = "Naja";
+        testNpc2.Name = "Paul";
+        testNpc2.Text = "Seid mir gegrüßt";
+        dungeonNpcs.Add(testNpc2);
 
         RequestableDto req1 = new RequestableDto();
         req1.PatternForPlayer = "Test1";
@@ -1422,7 +1444,7 @@
     /// </summary>
     private void AddNpcButtonClicked()
     {
-        if (selectedRequestable != "NoNpc")
+        if (selectedNpc != "NoNpc")
         {
             NpcDto npc = dungeonNpcs.Find(n => n.Name == selectedNpc);
             if (!(npc is null))
@@ -1430,7 +1452,7 @@
                 roomNpcs.Add(npc);
             }
         }
-        selectedRequestable = "NoNpc";
+        selectedNpc = "NoNpc";
     }
     #endregion
 }
