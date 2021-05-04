@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
+namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
 {
     /// <inheritdoc cref="IInventory"/>
     public class Inventory : IInventory

@@ -3,7 +3,7 @@ using Apollon.Mud.Server.Model.Interfaces.Dungeon.Npc;
 using System;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Npc
+namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs
 {
     /// <inheritdoc cref="INpc"/>
     public class Npc : INpc

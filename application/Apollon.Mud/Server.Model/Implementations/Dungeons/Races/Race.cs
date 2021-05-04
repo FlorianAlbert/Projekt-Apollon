@@ -2,7 +2,7 @@
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Race;
 using System;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Race
+namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Races
 {
     /// <inheritdoc cref="IRace"/>
     public class Race : IRace

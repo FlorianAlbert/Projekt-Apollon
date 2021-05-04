@@ -1,4 +1,4 @@
-﻿namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
+﻿namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
 {
     /// <summary>
     /// Possible genders of avatars

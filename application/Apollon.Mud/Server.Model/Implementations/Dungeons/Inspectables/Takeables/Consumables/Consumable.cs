@@ -4,7 +4,7 @@ using Apollon.Mud.Server.Model.Interfaces;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable.Takeable.Consumable
+namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables
 {
     /// <inheritdoc cref="IConsumable"/>
     public class Consumable : IConsumable

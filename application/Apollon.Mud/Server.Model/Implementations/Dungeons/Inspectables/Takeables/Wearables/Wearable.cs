@@ -4,7 +4,7 @@ using System;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable.Takeable.Wearable
+namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables
 {
     /// <inheritdoc cref="IWearable"/>
     public class Wearable : IWearable

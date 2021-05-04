@@ -2,7 +2,7 @@
 using System;
 using Apollon.Mud.Server.Model.Interfaces;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable
+namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables
 {
     /// <inheritdoc cref="IInspectable"/>
     public class Inspectable : IInspectable

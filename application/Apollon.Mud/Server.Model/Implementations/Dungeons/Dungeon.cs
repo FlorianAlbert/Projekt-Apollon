@@ -14,7 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon
+namespace Apollon.Mud.Server.Model.Implementations.Dungeons
 {
     /// <inheritdoc cref="IDungeon"/>
     public class Dungeon : IDungeon

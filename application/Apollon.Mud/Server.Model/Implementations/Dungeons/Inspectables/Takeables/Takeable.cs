@@ -3,7 +3,7 @@ using System;
 using Apollon.Mud.Server.Model.Interfaces;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable.Takeable
+namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables
 {
     /// <inheritdoc cref="ITakeable"/>
     public class Takeable : ITakeable

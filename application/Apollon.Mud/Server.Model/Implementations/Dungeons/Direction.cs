@@ -1,4 +1,4 @@
-﻿namespace Apollon.Mud.Server.Model.Implementations.Dungeon
+﻿namespace Apollon.Mud.Server.Model.Implementations.Dungeons
 {
     /// <summary>
     /// Possible directions an avatar can walk in

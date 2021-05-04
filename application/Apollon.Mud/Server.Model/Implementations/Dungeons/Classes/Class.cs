@@ -1,11 +1,11 @@
-﻿using Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
+﻿using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Class;
 using System;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Interfaces;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Class
+namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
 {
     /// <inheritdoc cref="IClass"/>
     public class Class : IClass

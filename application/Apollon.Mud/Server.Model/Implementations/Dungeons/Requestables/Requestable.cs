@@ -2,7 +2,7 @@
 using System;
 using Apollon.Mud.Server.Model.Interfaces;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Requestable
+namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables
 {
     /// <inheritdoc cref="IRequestable"/>
     public class Requestable : IRequestable
