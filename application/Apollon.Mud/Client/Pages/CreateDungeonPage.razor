@@ -14,10 +14,10 @@
                     <h4>Benötigst du Hilfe? Alle Infos zum Erstellen eines Dungeon findest du <a href="/">hier</a></h4> @*TODO Link einfügen*@
                     <hr class="featurette-divider" />
                     <section class="Classes mt-3" id="Classes">
-                        <CreateDungeonComponent />
+                        <CreateDungeonComponent OnDungeonSaved="DungeonSaved"/>
                     </section>
                     <section class="Classes mt-3" id="Classes">
-                        <CreateDungeonClassesComponent />
+                        <CreateDungeonClassesComponent DungeonId="DungeonId"/>
                     </section>
                     <section class="Races mt-3" id="Races">
                         <CreateDungeonRacesComponent />
@@ -41,5 +41,19 @@
 </div>
 
 @code {
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="guid"></param>
+    public void DungeonSaved(Guid guid)
+    {
+        DungeonId = guid;
+    }
+
 
 }

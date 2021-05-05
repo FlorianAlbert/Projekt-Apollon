@@ -32,7 +32,6 @@ namespace Apollon.Mud.Client.Data.Models
         /// <summary>
         /// TODO
         /// </summary>
-        [Required(ErrorMessage = "Du musst dem Dungeon einen Startraum geben")]
         public string DefaultRoom { get; set; }
 
         /// <summary>
