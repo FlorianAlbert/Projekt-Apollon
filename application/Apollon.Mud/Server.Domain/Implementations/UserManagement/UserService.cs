@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.DbContext;
+using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.User;
 
@@ -29,18 +30,18 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// <summary>
         /// Service to modify the dungeon-db content.
         /// </summary>
-        private readonly DungeonDbContext _dungeonDbContext;
+        private readonly IGameDbService _gameDbService;
 
         /// <summary>
         /// Flag which indicates if one administrator is registered.
         /// </summary>
         private bool _adminRegistered;
 
-        public UserService(IEmailService emailService, IUserDbService userDbService, DungeonDbContext dungeonDbContext, TokenService tokenService)
+        public UserService(IEmailService emailService, IUserDbService userDbService, IGameDbService gameDbService, TokenService tokenService)
         {
             _emailService = emailService;
             _userDbService = userDbService;
-            _dungeonDbContext = dungeonDbContext;
+            _gameDbService = gameDbService;
             _tokenService = tokenService;
             _adminRegistered = _userDbService.IsAdminLoggedIn().Result;
         }
@@ -76,9 +77,9 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
         public async Task<bool> DeleteUser(Guid userId)
         {
-            //ToDo benutze DungeonDBService
-            //ToDo löschen von allen Black/White-Lists und DungeonMaster-Listen --> cascading
-            return await _userDbService.DeleteUser(userId);
+            var deletedData= await _gameDbService.DeleteAllFromUser(userId);
+            if(deletedData) return await _userDbService.DeleteUser(userId);
+            return false;
         }
 
         public async Task<ICollection<DungeonUser>> GetAllUsers()
