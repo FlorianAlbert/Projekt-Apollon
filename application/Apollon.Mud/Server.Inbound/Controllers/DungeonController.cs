@@ -222,7 +222,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 }
             };
 
-            return Ok(dungeon);
+            return Ok(dungeonDto);
         }
     }
 }
