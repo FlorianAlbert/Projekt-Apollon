@@ -58,7 +58,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
 
             CancellationToken cancellationToken = TokenSource.Token;
 
-            var response = await HttpClient.PostAsJsonAsync("api/user/authorization/login", userCredentials, cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("api/authorization/login", userCredentials, cancellationToken);
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 AuthorizationResponseDto responseDto = await response.Content.ReadFromJsonAsync<AuthorizationResponseDto>();
