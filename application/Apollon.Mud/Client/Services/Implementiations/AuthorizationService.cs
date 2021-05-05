@@ -100,7 +100,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = TokenSource.Token;
 
-            var response = await HttpClient.PostAsync("api/user/registration/confirmation/" + userId.ToString() + "/" + token, null, cancellationToken);
+            var response = await HttpClient.PostAsync("api/user/registration/confirmation/" + userId + "/" + token, null, cancellationToken);
 
             return response.StatusCode == HttpStatusCode.OK;
         }
