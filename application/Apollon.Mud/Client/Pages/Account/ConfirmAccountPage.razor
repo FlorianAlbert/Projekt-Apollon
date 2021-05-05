@@ -1,7 +1,6 @@
-﻿@page "/Identity/Account/ConfirmAccount"
+﻿@page "/Identity/Account/ConfirmAccount/{id:guid}/{token}"
 @inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
 @using Apollon.Mud.Client.Data.Models
-@using System.Threading
 
 
 <div class="container d-flex justify-content-center">
@@ -103,7 +102,6 @@
     {
         resendEmailContext = new EditContext(resendEmailModel);
         successfullConfirmation = await authorizationService.ConfirmRegistration(Id, Token);
-        StateHasChanged();
     }
 
     /// <summary>
