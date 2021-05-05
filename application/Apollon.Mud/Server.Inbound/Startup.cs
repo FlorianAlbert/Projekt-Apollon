@@ -81,7 +81,7 @@ namespace Apollon.Mud.Server.Inbound
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("JwtBearer").GetValue<string>("TokenSecret"))),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JwtBearer:TokenSecret"])),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };

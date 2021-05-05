@@ -46,7 +46,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             _signInManager = signInManager;
             _userManager = userManager;
             _configuration = configuration;
-            _tokenSecret = _configuration.GetSection("AuthorizationToken").Value;  //ToDo passt es so?
+            _tokenSecret = _configuration["JwtBearer:TokenSecret"];  //ToDo passt es so?
         }
 
         public async Task<LoginResult> Login(string email, string secret)
