@@ -13,7 +13,7 @@ namespace Apollon.Mud.Client.Data.Models
         /// Every NPC has to have a Name
         /// </summary>
         [Required(ErrorMessage = "Du musst dem NPC einen Namen geben")]
-        [RegularExpression("(^(?![Nn]euer [(Npc)(NPC)])|(^([Nn]euer [(Npc)(NPC)]).+))", ErrorMessage = "Dieser Name ist nicht zugelassen")]
+        [RegularExpression("^(?!([Nn]euer [(NPC)(npc)(Npc)])).*$", ErrorMessage = "Dieser Name ist nicht zugelassen")]
         public string Name { get; set; }
 
         /// <summary>

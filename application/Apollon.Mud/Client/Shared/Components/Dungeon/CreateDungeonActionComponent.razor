@@ -1,0 +1,226 @@
+﻿@using Apollon.Mud.Client.Data.Models.Dungeon
+@using Apollon.Mud.Shared.Dungeon.Requestable
+<div class="card">
+    <div class="card-header">
+        <TooltipComponent Text="Erstelle Deine eigenen Befehle"><h2>Eigene Befehle</h2></TooltipComponent>
+</div>
+    <div class="card-body">
+
+        <EditForm EditContext="@dungeonActionContext" OnSubmit="@AddAction" novalidate>
+            <DataAnnotationsValidator />
+
+            <div class="form-group mt-2">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Befehl Auswahl</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" aria-label="Default select example" @bind="chosenAction" @onselect="@ActionSelectionChanged()" @onselect:stopPropagation="true">
+                                <option value="NoAction" selected hidden>Neuer Befehl</option>
+                                @if (!(dungeonActionModel.RequestableList is null))
+                                {
+                                    @foreach (RequestableDto dungeonNpc in dungeonActionModel.RequestableList)
+                                    {
+                                        <option value="@dungeonNpc.PatternForPlayer">@dungeonNpc.PatternForPlayer</option>
+                                    }
+                                }
+                            </select>
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="NewActionButtonClicked"><TooltipComponent Text="Neuen Befehl erstellen"><strong>+</strong></TooltipComponent></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="featurette-divder" />
+
+            <div class="form-group mt-3">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="d-flex justify-content-center">
+                            <TooltipComponent Text="Dieser Ausdruck wird dem Nutzer in der Hilfe angezeigt"><h5>Lesbarer Ausdruck</h5></TooltipComponent>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <TooltipComponent Text="Auf diesen Reg. Ex. wird die Nutzereingabe überprüft"><h5>Regulärer Ausdruck</h5></TooltipComponent>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-1">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" placeholder="Lesbarer Ausdruck" id="Name" @bind-Value="dungeonActionModel.PatternForPlayer" @onfocusout="NameFieldLostFocus" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonActionModel.PatternForPlayer) />
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" placeholder="Regulärer Ausdruck" id="Name" @bind-Value="dungeonActionModel.MessageRegex" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonActionModel.MessageRegex) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-4">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Status</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" @bind="dungeonActionModel.Status">
+                                <option selected hidden value=""></option>
+                                <option value="Approved">Aktiv</option>
+                                <option value="Pending">Inaktiv</option>
+                            </select>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonActionModel.Status) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row d-flex justify-content-center mt-4">
+                <button class="btn btn-outline-primary" style="max-width:20rem" type="submit">
+                    <TooltipComponent Text="Anschließend kannst du weitere Befehle hinzufügen">Befehl hinzufügen</TooltipComponent>
+                </button>
+            </div>
+
+            <hr class="featurette-divder" />
+
+            <div class="row  d-flex justify-content-center">
+                <button class="btn btn-success" style="max-width:20rem" type="button" @onclick="HandleActionSubmit">Speichern</button>
+            </div>
+        </EditForm>
+
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// The attribute of the validation model when creating a new Action
+    /// </summary>
+    DungeonActionModel dungeonActionModel = new DungeonActionModel();
+
+    /// <summary>
+    /// The EditContext used by the form
+    /// </summary>
+    EditContext dungeonActionContext;
+
+    /// <summary>
+    /// The chosen Action in the Dropdown Menu
+    /// </summary>
+    private string chosenAction = "NoAction";
+
+    /// <summary>
+    /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        #region to Delete
+
+        #endregion
+
+        dungeonActionContext = new EditContext(dungeonActionModel);
+    }
+
+    private void AddAction()
+    {
+        var validDungeon = dungeonActionContext.Validate();
+        if (validDungeon)
+        {
+            bool newRequestable = false;
+            var requestableDto = dungeonActionModel.RequestableList.Find(r => r.PatternForPlayer.Equals(dungeonActionModel.PatternForPlayer));
+            if (requestableDto is null)
+            {
+                requestableDto = new RequestableDto();
+                newRequestable = true;
+            }
+            requestableDto.PatternForPlayer = dungeonActionModel.PatternForPlayer;
+            requestableDto.MessageRegex = dungeonActionModel.MessageRegex;
+            requestableDto.Status = dungeonActionModel.Status == "Approved" ? 0 : 1;
+            chosenAction = dungeonActionModel.PatternForPlayer;
+            if (newRequestable)
+            {
+                dungeonActionModel.RequestableList.Add(requestableDto);
+            }
+            //TODO Daten ans Backend senden
+        }
+    }
+
+    /// <summary>
+    /// Handles the submition of a created Action, validates the data and saves them locally and on the server
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleActionSubmit()
+    {
+        foreach (RequestableDto requestable in dungeonActionModel.RequestableList)
+        {
+            //TODO Asynchron Daten absenden
+        }
+    }
+
+    /// <summary>
+    /// Called when the user selects a new Action, this method fills out the form according to the selected Npc
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private EventCallback ActionSelectionChanged()
+    {
+        if (!chosenAction.Equals(dungeonActionModel.PatternForPlayer) && !chosenAction.Equals("NoAction"))
+        {
+            var newRequestable = dungeonActionModel.RequestableList.Find(i => i.PatternForPlayer.Equals(chosenAction));
+            if (!(newRequestable is null))
+            {
+                chosenAction = dungeonActionModel.PatternForPlayer;
+                dungeonActionModel.PatternForPlayer = newRequestable.PatternForPlayer;
+                dungeonActionModel.MessageRegex = newRequestable.MessageRegex;
+                dungeonActionModel.Status = newRequestable.Status == 0 ? "Approved" : "Pending";
+            }
+        }
+        return EventCallback.Empty;
+    }
+
+    /// <summary>
+    /// When the Name field loses its focus, this Method checks wether an Action with this name already exists and if so fills out the form accordingly
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private void NameFieldLostFocus(System.EventArgs args)
+    {
+        RequestableDto checkRequestable = dungeonActionModel.RequestableList.Find(i => i.PatternForPlayer.Equals(dungeonActionModel.PatternForPlayer));
+        if (checkRequestable is null)
+        {
+            return;
+        }
+        else
+        {
+            chosenAction = dungeonActionModel.PatternForPlayer;
+            dungeonActionModel.PatternForPlayer = checkRequestable.PatternForPlayer;
+            dungeonActionModel.MessageRegex = checkRequestable.MessageRegex;
+            dungeonActionModel.Status = checkRequestable.Status == 0 ? "Approved" : "Pending";
+        }
+    }
+
+    /// <summary>
+    /// To create a new Action this Method clears all form input fields
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private void NewActionButtonClicked(System.EventArgs args)
+    {
+        chosenAction = "NoAction";
+        dungeonActionModel.MessageRegex = string.Empty;
+        dungeonActionModel.PatternForPlayer = string.Empty;
+        dungeonActionModel.Status = string.Empty;
+    }
+
+}
+

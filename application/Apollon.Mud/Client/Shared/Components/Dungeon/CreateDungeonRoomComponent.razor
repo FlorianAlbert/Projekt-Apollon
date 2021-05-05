@@ -5,6 +5,8 @@
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
+@using Apollon.Mud.Shared.Dungeon.Requestable
+@using Apollon.Mud.Shared.Dungeon.Npc
 
 <div class="card">
     <div class="card-header">
@@ -617,7 +619,7 @@
                                 <option value="NoRoom" selected>Kein Nachbar</option>
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
-                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth))
+                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) && (dungeonRoom.NeighborSouthId == Guid.Empty))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -638,7 +640,7 @@
                                 <option value="NoRoom" selected>Kein Nachbar</option>
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
-                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth))
+                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) && (dungeonRoom.NeighborEastId == Guid.Empty))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -659,7 +661,7 @@
                                 <option value="NoRoom" selected>Kein Nachbar</option>
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
-                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth))
+                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) && (dungeonRoom.NeighborWestId == Guid.Empty))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -680,7 +682,7 @@
                             <option value="NoRoom" selected>Kein Nachbar</option>
                             @foreach (RoomDto dungeonRoom in dungeonRooms)
                             {
-                                @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth))
+                                @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) && (dungeonRoom.NeighborNorthId == Guid.Empty))
                                 {
                                     <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                 }
@@ -694,7 +696,157 @@
 
             <hr class="featurette-divider" />
 
-            <div class="form-group mt-5">
+            <div class="row">
+                <div class="col-lg-12 d-flex justify-content-center">
+                    <h4 class="mt-1">NPCs</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-8">
+                    <select class="form-select" @bind="selectedNpc">
+                        <option value="NoNpc" selected hidden></option>
+                        @if (!(dungeonNpcs is null))
+                        {
+                            @foreach (NpcDto npc in dungeonNpcs)
+                            {
+                                @if (roomNpcs.Find(r => r.Name == npc.Name) is null)
+                                {
+                                    <option value="@npc.Name">@npc.Name</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-4">
+                    @if (specialActionCount <= dungeonNpcs.Count() && selectedNpc != "NoNpc")
+                    {
+                        <button class="btn btn-outline-secondary ms-1" style="max-width:15rem" type="button" @onclick="AddNpcButtonClicked">NPC hinzufügen</button>
+                    }
+                    else
+                    {
+                        if (selectedNpc == "NoNpc")
+                        {
+                            <TooltipComponent Text="Wähle einen NPC">
+                                <button class="btn btn-outline-secondary ms-1" style="max-width:15rem" type="button" disabled>NPC hinzufügen</button>
+                            </TooltipComponent>
+                        }
+                        else
+                        {
+                            <TooltipComponent Text="Maximum erreicht">
+                                <button class="btn btn-outline-secondary ms-1" style="max-width:15rem" type="button" disabled>NPC hinzufügen</button>
+                            </TooltipComponent>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="table table-bordered mt-3">
+                @{int npcIndex = 1;}
+                @foreach (NpcDto npc in roomNpcs)
+                {
+                    <div class="card p-0">
+                        <div class="row">
+                            <div class="col-4">
+                                <div style="vertical-align:middle; text-align:center">
+                                    <span><strong>Npc @npcIndex</strong></span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div style="vertical-align:middle">
+                                    <span>@npc.Name</span>
+                                </div>
+                            </div>
+                            <div class="col-1">
+                                <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveNpcButtonClicked(npc))">
+                                    <TooltipComponent Text="Npc entfernen">
+                                        <span style="vertical-align:middle"><strong>-</strong></span>
+                                    </TooltipComponent>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    npcIndex++;
+                }
+            </div>
+
+            <hr class="featurette-divider" />
+
+            <div class="row">
+                <div class="col-lg-12 d-flex justify-content-center">
+                    <TooltipComponent Text="Füge deine Befehle einem Raum hinzu"><h4 class="mt-1">Eigene Befehle</h4></TooltipComponent>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-8">
+                    <select class="form-select" @bind="selectedRequestable">
+                        <option value="NoAction" selected hidden></option>
+                        @if (!(dungeonRequestables is null))
+                        {
+                            @foreach (RequestableDto requestable in dungeonRequestables)
+                            {
+                                @if (roomRequestables.Find(r => r.PatternForPlayer == requestable.PatternForPlayer) is null)
+                                {
+                                    <option value="@requestable.PatternForPlayer">@requestable.PatternForPlayer</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col">
+                    @if (specialActionCount <= dungeonRequestables.Count() && selectedRequestable != "NoAction")
+                    {
+                        <button class="btn btn-outline-secondary ms-1" type="button" @onclick="AddActionButtonClicked">Befehl hinzufügen</button>
+                    }
+                    else
+                    {
+                        if (selectedRequestable == "NoAction")
+                        {
+                            <TooltipComponent Text="Wähle einen Befehl">
+                                <button class="btn btn-outline-secondary ms-1" type="button" disabled>Befehl hinzufügen</button>
+                            </TooltipComponent>
+                        }
+                        else
+                        {
+                            <TooltipComponent Text="Maximum erreicht">
+                                <button class="btn btn-outline-secondary ms-1" type="button" disabled>Befehl hinzufügen</button>
+                            </TooltipComponent>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="table table-bordered mt-3">
+                @{int requestIndex = 1;}
+                @foreach (RequestableDto requestable in roomRequestables)
+                {
+                    <div class="card p-0">
+                        <div class="row">
+                            <div class="col-4">
+                                <div style="vertical-align:middle; text-align:center">
+                                    <span><strong>Befehl @requestIndex</strong></span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div style="vertical-align:middle">
+                                    <span>@requestable.PatternForPlayer</span>
+                                </div>
+                            </div>
+                            <div class="col-1">
+                                <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveActionButtonClicked(requestable))">
+                                    <TooltipComponent Text="Befehl entfernen">
+                                        <span style="vertical-align:middle"><strong>-</strong></span>
+                                    </TooltipComponent>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    requestIndex++;
+                }
+            </div>
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-3">
                 <div class="row">
                     <div class="col-3">
                         <h5 class="mt-1">Status</h5>
@@ -714,8 +866,10 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-center">
-                <button class="btn btn-success mt-4 text-center" type="submit">Speichern</button>
+            <hr class="featurette-divder" />
+
+            <div class="row  d-flex justify-content-center">
+                <button class="btn btn-success" style="max-width:20rem" type="submit">Speichern</button>
             </div>
 
 
@@ -726,6 +880,24 @@
 
 @code {
 
+    #region Dungeon Room Model
+    /// <summary>
+    /// TODO
+    /// </summary>
+    DungeonRoomModel dungeonRoomModel = new DungeonRoomModel();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    EditContext roomContext;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<RoomDto> dungeonRooms = new List<RoomDto>();
+    #endregion
+
+    #region Bound Variables
     /// <summary>
     /// TODO
     /// </summary>
@@ -744,17 +916,23 @@
     /// <summary>
     /// TODO
     /// </summary>
-    DungeonRoomModel dungeonRoomModel = new DungeonRoomModel();
+    List<RequestableDto> roomRequestables = new List<RequestableDto>();
 
     /// <summary>
     /// TODO
     /// </summary>
-    EditContext roomContext;
+    string selectedRequestable = "NoAction";
 
     /// <summary>
     /// TODO
     /// </summary>
-    List<RoomDto> dungeonRooms = new List<RoomDto>();
+    List<NpcDto> roomNpcs = new List<NpcDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    string selectedNpc = "NoNpc";
+    #endregion
 
     #region Item Lists
 
@@ -783,6 +961,15 @@
     /// </summary>
     List<UsableDto> dungeonUsables = new List<UsableDto>();
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<RequestableDto> dungeonRequestables = new List<RequestableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<NpcDto> dungeonNpcs = new List<NpcDto>();
     #endregion
 
     #region Item Dropdown Counters
@@ -791,6 +978,11 @@
     /// TODO
     /// </summary>
     int roomItemCount = 1;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    int specialActionCount = 0;
 
     #endregion
 
@@ -829,9 +1021,41 @@
         Guid myGuid = Guid.NewGuid();
         testRoom2.Id = myGuid;
         testRoom.NeighborNorthId = myGuid;
+        testRoom.NeighborEastId = Guid.Empty;
+        testRoom.NeighborSouthId = Guid.Empty;
+        testRoom.NeighborWestId = Guid.Empty;
+        testRoom2.NeighborNorthId = Guid.Empty;
+        testRoom2.NeighborEastId = Guid.Empty;
+        testRoom2.NeighborSouthId = Guid.Empty;
+        testRoom2.NeighborWestId = Guid.Empty;
 
         dungeonRooms.Add(testRoom);
         dungeonRooms.Add(testRoom2);
+
+        NpcDto testNpc1 = new NpcDto();
+        testNpc1.Description = "Cooler Dude";
+        testNpc1.Name = "Kevin";
+        testNpc1.Text = "Moin Leude";
+        dungeonNpcs.Add(testNpc1);
+
+        NpcDto testNpc2 = new NpcDto();
+        testNpc2.Description = "Naja";
+        testNpc2.Name = "Paul";
+        testNpc2.Text = "Seid mir gegrüßt";
+        dungeonNpcs.Add(testNpc2);
+
+        RequestableDto req1 = new RequestableDto();
+        req1.PatternForPlayer = "Test1";
+        req1.MessageRegex = "Test1";
+        dungeonRequestables.Add(req1);
+        RequestableDto req2 = new RequestableDto();
+        req2.PatternForPlayer = "Test2";
+        req2.MessageRegex = "Test2";
+        dungeonRequestables.Add(req2);
+        RequestableDto req3 = new RequestableDto();
+        req3.PatternForPlayer = "Test3";
+        req3.MessageRegex = "Test3";
+        dungeonRequestables.Add(req3);
         #endregion
 
         roomContext = new EditContext(dungeonRoomModel);
@@ -865,6 +1089,7 @@
             submitRoom.Usables = new List<UsableDto>();
             submitRoom.Consumables = new List<ConsumableDto>();
             submitRoom.Wearables = new List<WearableDto>();
+            submitRoom.SpecialActions = roomRequestables;
             for (int i = 0; i < roomItemCount; i++)
             {
                 switch (itemCategory[i])
@@ -896,7 +1121,7 @@
             }
             if (!dungeonRoomModel.RoomEast.Equals("NoRoom"))
             {
-                submitRoom.NeighborEastId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomNorth)).Id;
+                submitRoom.NeighborEastId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomEast)).Id;
             }
             else
             {
@@ -904,7 +1129,7 @@
             }
             if (!dungeonRoomModel.RoomSouth.Equals("NoRoom"))
             {
-                submitRoom.NeighborSouthId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomNorth)).Id;
+                submitRoom.NeighborSouthId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomSouth)).Id;
             }
             else
             {
@@ -912,7 +1137,7 @@
             }
             if (!dungeonRoomModel.RoomWest.Equals("NoRoom"))
             {
-                submitRoom.NeighborWestId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomNorth)).Id;
+                submitRoom.NeighborWestId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomWest)).Id;
             }
             else
             {
@@ -923,10 +1148,6 @@
                 dungeonRooms.Add(submitRoom);
             }
             chosenRoom = dungeonRoomModel.Name;
-        }
-        else
-        {
-            //TODO
         }
     }
 
@@ -940,6 +1161,12 @@
                 dungeonRoomModel.Name = newRoom.Name;
                 dungeonRoomModel.Description = newRoom.Description;
                 dungeonRoomModel.Status = newRoom.Status == 0 ? "Approved" : "Pending";
+                dungeonRoomModel.RoomNorth = "NoRoom";
+                dungeonRoomModel.RoomEast = "NoRoom";
+                dungeonRoomModel.RoomSouth = "NoRoom";
+                dungeonRoomModel.RoomWest = "NoRoom";
+                roomRequestables = newRoom.SpecialActions is null ? new List<RequestableDto>() : newRoom.SpecialActions.ToList();
+                roomNpcs = newRoom.Npcs is null ? new List<NpcDto>() : newRoom.Npcs.ToList();
                 roomItemCount = 0;
                 int counter = 0;
                 if (!(newRoom.Inspectables is null))
@@ -1050,6 +1277,8 @@
             chosenRoom = dungeonRoomModel.Name;
             dungeonRoomModel.Name = checkRoom.Name;
             dungeonRoomModel.Description = checkRoom.Description;
+            roomRequestables = checkRoom.SpecialActions is null ? new List<RequestableDto>() : checkRoom.SpecialActions.ToList();
+            roomNpcs = checkRoom.Npcs is null ? new List<NpcDto>() : checkRoom.Npcs.ToList();
             int counter = 0;
             if (!(checkRoom.Inspectables is null))
             {
@@ -1145,6 +1374,8 @@
         dungeonRoomModel.RoomWest = "NoRoom";
         dungeonRoomModel.RoomSouth = "NoRoom";
         dungeonRoomModel.Status = string.Empty;
+        roomRequestables.Clear();
+        roomNpcs.Clear();
         roomItemCount = 0;
         for (int i = 0; i < 8; i++)
         {
@@ -1152,8 +1383,8 @@
         }
 
     }
-    #region Item Dropdown Buttons
 
+    #region Add/Remove Buttons
     /// <summary>
     /// TODO
     /// </summary>
@@ -1163,7 +1394,6 @@
             roomItemCount++;
     }
 
-
     /// <summary>
     /// TODO
     /// </summary>
@@ -1171,6 +1401,58 @@
     {
         if (roomItemCount > 0)
             roomItemCount--;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private void AddActionButtonClicked()
+    {
+        if (selectedRequestable != "NoAction")
+        {
+            RequestableDto request = dungeonRequestables.Find(r => r.PatternForPlayer == selectedRequestable);
+            if (!(request is null))
+            {
+                roomRequestables.Add(request);
+            }
+        }
+        selectedRequestable = "NoAction";
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private EventCallback RemoveActionButtonClicked(RequestableDto request)
+    {
+        roomRequestables.Remove(request);
+        return EventCallback.Empty;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="npc"></param>
+    /// <returns></returns>
+    private EventCallback RemoveNpcButtonClicked(NpcDto npc)
+    {
+        roomNpcs.Remove(npc);
+        return EventCallback.Empty;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private void AddNpcButtonClicked()
+    {
+        if (selectedNpc != "NoNpc")
+        {
+            NpcDto npc = dungeonNpcs.Find(n => n.Name == selectedNpc);
+            if (!(npc is null))
+            {
+                roomNpcs.Add(npc);
+            }
+        }
+        selectedNpc = "NoNpc";
     }
     #endregion
 }
