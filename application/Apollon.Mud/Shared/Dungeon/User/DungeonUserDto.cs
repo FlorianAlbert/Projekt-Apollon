@@ -13,6 +13,11 @@ namespace Apollon.Mud.Shared.Dungeon.User
     public class DungeonUserDto
     {
         /// <summary>
+        /// The userId of the user
+        /// </summary>
+        public Guid Id { get; set; }        // TODO: Add to design
+
+        /// <summary>
         /// The time when the user was last seen.
         /// </summary>
         [JsonProperty("LastActive")]

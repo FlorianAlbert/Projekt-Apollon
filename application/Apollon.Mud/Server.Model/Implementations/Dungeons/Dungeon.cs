@@ -21,12 +21,13 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// </summary>
         /// <param name="dungeonEpoch">The epoch of the new dungeon</param>
         /// <param name="dungeonDescription">The description of the new dungeon</param>
-        public Dungeon(string dungeonEpoch, string dungeonDescription)
+        public Dungeon(string dungeonEpoch, string dungeonDescription, string dungeonName)
         {
             Id = Guid.NewGuid();
 
             DungeonEpoch = dungeonEpoch;
             DungeonDescription = dungeonDescription;
+            DungeonName = dungeonName;
 
             Status = Status.Pending;
         }
@@ -57,6 +58,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             {
                 return _ConfiguredRaces ??= new List<Race>();
             }
+            set => _ConfiguredRaces = value;
         }
 
         private ICollection<Class> _ConfiguredClasses;
@@ -70,6 +72,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             {
                 return _ConfiguredClasses ??= new List<Class>();
             }
+            set => _ConfiguredClasses = value;
         }
 
         private ICollection<Room> _ConfiguredRooms;
@@ -83,6 +86,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             {
                 return _ConfiguredRooms ??= new List<Room>();
             }
+            set => _ConfiguredRooms = value;
         }
 
         private ICollection<Inspectable> _ConfiguredInspectables;
@@ -96,6 +100,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             {
                 return _ConfiguredInspectables ??= new List<Inspectable>();
             }
+            set => ConfiguredInspectables = value;
         }
 
         private ICollection<Requestable> _ConfiguredRequestable;
@@ -109,6 +114,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             {
                 return _ConfiguredRequestable ??= new List<Requestable>();
             }
+            set => _ConfiguredRequestable = value;
         }
 
         private ICollection<Avatar> _ConfiguredAvatars;
@@ -122,6 +128,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             {
                 return _ConfiguredAvatars ??= new List<Avatar>();
             }
+            set => _ConfiguredAvatars = value;
         }
 
         private ICollection<DungeonUser> _DungeonMasters;
@@ -135,6 +142,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             {
                 return _DungeonMasters ??= new List<DungeonUser>();
             }
+            set => _DungeonMasters = value;
         }
 
         private ICollection<DungeonUser> _WhiteList;
@@ -148,6 +156,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             {
                 return _WhiteList ??= new List<DungeonUser>();
             }
+            set => _WhiteList = value;
         }
 
         private ICollection<DungeonUser> _BlackList;
@@ -161,6 +170,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             {
                 return _BlackList ??= new List<DungeonUser>();
             }
+            set => _BlackList = value;
         }
 
         private ICollection<DungeonUser> _OpenRequests;
@@ -174,6 +184,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             {
                 return _OpenRequests ??= new List<DungeonUser>();
             }
+            set => _OpenRequests = value;
         }
 
         /// <summary>
