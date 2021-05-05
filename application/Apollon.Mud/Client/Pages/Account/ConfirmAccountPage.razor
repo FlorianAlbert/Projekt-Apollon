@@ -1,7 +1,6 @@
-﻿@page "/Identity/Account/ConfirmAccount"
+﻿@page "/Identity/Account/ConfirmAccount/{id:guid}/{token}"
 @inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
 @using Apollon.Mud.Client.Data.Models
-@using System.Threading
 
 
 <div class="container d-flex justify-content-center">
@@ -9,7 +8,7 @@
         <div class="card-body text-center">
             <h1 class="display-2">E-Mail Bestätigen</h1>
 
-            @if (succesfullConfirmation is null)
+            @if (successfullConfirmation is null)
             {
                 <section>
                     <h4 class="ml-2">Wir arbeiten daran Deine E-Mail zu verifizieren</h4>
@@ -18,7 +17,7 @@
                     <button class="btn btn-primary mt-2">Jetzt Anmelden</button>
                 </section>
             }
-            else if (succesfullConfirmation == true)
+            else if (successfullConfirmation == true)
             {
                 <section>
                     <h4 class="ml-2">Deine E-Mail wurde erfolgreich bestätigt</h4>
@@ -84,7 +83,7 @@
     /// <summary>
     /// The nullable Bool to differentiate between: Confirmation pending / confirmation successfull / confirmation didnt succeed
     /// </summary>
-    bool? succesfullConfirmation = null;
+    bool? successfullConfirmation = null;
 
     /// <summary>
     /// The Model to validate the "Resend confirmation E-Mail" Form
@@ -102,7 +101,7 @@
     protected override async Task OnInitializedAsync()
     {
         resendEmailContext = new EditContext(resendEmailModel);
-        succesfullConfirmation = await authorizationService.ConfirmRegistration(Id, Token);
+        successfullConfirmation = await authorizationService.ConfirmRegistration(Id, Token);
     }
 
     /// <summary>
