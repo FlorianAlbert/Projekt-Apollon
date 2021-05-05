@@ -1,7 +1,7 @@
-﻿@page "/Identity/Account/ConfirmAccount/{id:guid}/{token}"
+﻿@page "/Identity/Account/ConfirmAccount"
 @inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
 @using Apollon.Mud.Client.Data.Models
-
+@using System.Threading
 
 
 <div class="container d-flex justify-content-center">
@@ -15,7 +15,7 @@
                     <h4 class="ml-2">Wir arbeiten daran Deine E-Mail zu verifizieren</h4>
                     <h4 class="ml-2">Bitte gedulde Dich noch kurz</h4>
                     <hr />
-                    <button class="btn btn-primary mt-2" disabled>Jetzt Anmelden</button>
+                    <button class="btn btn-primary mt-2">Jetzt Anmelden</button>
                 </section>
             }
             else if (successfullConfirmation == true)
@@ -99,7 +99,7 @@
     /// <summary>
     /// When initialized the component instantiates the EditContext
     /// </summary>
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         resendEmailContext = new EditContext(resendEmailModel);
         successfullConfirmation = await authorizationService.ConfirmRegistration(Id, Token);
