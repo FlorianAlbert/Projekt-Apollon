@@ -84,7 +84,7 @@
     /// <summary>
     /// The nullable Bool to differentiate between: Confirmation pending / confirmation successfull / confirmation didnt succeed
     /// </summary>
-    bool? succesfullConfirmation = false;
+    bool? succesfullConfirmation = null;
 
     /// <summary>
     /// The Model to validate the "Resend confirmation E-Mail" Form
@@ -99,10 +99,10 @@
     /// <summary>
     /// When initialized the component instantiates the EditContext
     /// </summary>
-    protected async override void OnInitialized()
+    protected override async void OnInitialized()
     {
         resendEmailContext = new EditContext(resendEmailModel);
-        var succesfullConfirmation = await authorizationService.ConfirmRegistration(Id, Token);
+        succesfullConfirmation = await authorizationService.ConfirmRegistration(Id, Token);
     }
 
     /// <summary>

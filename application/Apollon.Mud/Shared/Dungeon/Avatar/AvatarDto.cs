@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 namespace Apollon.Mud.Shared.Dungeon.Avatar
 {
     /// <summary>
-    /// Class which represents the data representation of IAvatar.
+    /// Class which represents the data representation of Avatar.
     /// </summary>
     public class AvatarDto
     {

@@ -1,12 +1,18 @@
-﻿using Apollon.Mud.Server.Domain.Interfaces.Game;
+﻿using System;
+using AutoFixture;
+using AutoFixture.AutoNSubstitute;
+using Xunit;
 
 namespace Apollon.Mud.Server.Domain.Test.Game
 {
-    /// <summary>
-    /// ToDo
-    /// </summary>
-    public class PlayerServiceTests: IPlayerService
+    public class PlayerServiceTests
     {
-        //ToDo implement
+        //ToDo Test
+        private IFixture _Fixture;
+
+        public PlayerServiceTests()
+        {
+            _Fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
+        }
     }
 }

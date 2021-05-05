@@ -4,7 +4,7 @@ using System.Linq;
 using Apollon.Mud.Server.Domain.Interfaces.Chat;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Model.Implementations;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Outbound.Hubs;
 using Apollon.Mud.Shared.HubContract;
 using Microsoft.AspNetCore.SignalR;
@@ -14,7 +14,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
     /// <inheritdoc cref="IChatService"/>
     public class ChatService : IChatService
     {
-        private IGameDBService GameDbService { get; }
+        private IGameDbService GameDbService { get; }
 
         private IConnectionService ConnectionService { get; }
 
@@ -26,7 +26,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
         /// <param name="gameDbService"></param>
         /// <param name="connectionService"></param>
         /// <param name="chatHubContext"></param>
-        public ChatService(IGameDBService gameDbService, IConnectionService connectionService, IHubContext<ChatHub, IClientChatHubContract> chatHubContext)
+        public ChatService(IGameDbService gameDbService, IConnectionService connectionService, IHubContext<ChatHub, IClientChatHubContract> chatHubContext)
         {
             GameDbService = gameDbService;
             ConnectionService = connectionService;
@@ -36,9 +36,9 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
         /// <inheritdoc cref="IChatService.PostRoomMessage"/>
         public void PostRoomMessage(Guid dungeonId, Guid avatarId, string message)      // TODO: In UML anpassen
         {
-            IAvatar senderAvatar;
+            Avatar senderAvatar;
 
-            senderAvatar = GameDbService.Get<IAvatar>(avatarId);
+            senderAvatar = GameDbService.Get<Avatar>(avatarId);
 
             if (senderAvatar is null) return;
 
@@ -46,7 +46,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
             foreach (var inspectable in senderAvatar.CurrentRoom.Inspectables)
             {
                 Connection recipientConnection;
-                if (inspectable is IAvatar avatar && avatar.Status == Status.Approved && (recipientConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id)) is not null)
+                if (inspectable is Avatar avatar && avatar.Status == Status.Approved && (recipientConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id)) is not null)
                     recipientChatConnectionIds.Add(recipientConnection.ChatConnectionId);
             }
 
@@ -66,10 +66,10 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
             }
             else
             {
-                IAvatar recipientAvatar;
+                Avatar recipientAvatar;
                 try
                 {
-                    recipientAvatar = GameDbService.GetAll<IAvatar>()
+                    recipientAvatar = GameDbService.GetAll<Avatar>()
                         .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
                 }
                 catch (InvalidOperationException)
@@ -77,7 +77,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
                     return;
                 }
 
-                var senderAvatar = GameDbService.Get<IAvatar>(senderAvatarId.Value);
+                var senderAvatar = GameDbService.Get<Avatar>(senderAvatarId.Value);
 
                 if (senderAvatar is null || recipientAvatar is null ||
                     (recipientConnection = ConnectionService.GetConnectionByAvatarId(recipientAvatar.Id)) is null)
@@ -93,7 +93,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
         /// <inheritdoc cref="IChatService.PostGlobalMessage"/>
         public void PostGlobalMessage(Guid dungeonId, string message)
         {
-            var recipientAvatars = GameDbService.GetAll<IAvatar>()
+            var recipientAvatars = GameDbService.GetAll<Avatar>()
                 .Where(x => x.Dungeon.Id == dungeonId && x.Status == Status.Approved).ToArray();
 
             var recipientChatConnectionIds = new List<string>();

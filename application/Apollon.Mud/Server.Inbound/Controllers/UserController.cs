@@ -17,7 +17,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
     /// <summary>
     /// ToDo
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -37,12 +37,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// <param name="registrationRequestDto"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/registration/request")]
+        [Route("registration/request")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Player, Admin")]
         public async Task<IActionResult> RegistrateUser([FromBody] RegistrationRequestDto registrationRequestDto)
         {
             var succeeded = await _userService.RequestUserRegistration(registrationRequestDto.UserEmail,
@@ -58,11 +57,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/registration/confirmation/{userId}/{token}")]
+        [Route("registration/confirmation/{userId}/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Admin, Player")]
         public async Task<IActionResult> ConfirmUserRegistration([FromRoute] Guid userId, [FromRoute] string token)
         {
             var succeeded = await _userService.ConfirmUserRegistration(userId, token);
@@ -76,7 +74,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/delete/{userId}")]
+        [Route("delete/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -93,7 +91,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("/users")]
+        [Route("users")]
         [ProducesResponseType(typeof(ICollection<DungeonUserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -117,7 +115,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/user/{userId}")]
+        [Route("user/{userId}")]
         [ProducesResponseType(typeof(DungeonUserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -141,11 +139,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// <param name="requestPasswordResetDto"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/password/reset")]
+        [Route("password/reset")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[Authorize(Roles = "Admin, Player")]
         public async Task<IActionResult> RequestPasswordResetDto([FromBody] RequestPasswordResetDto requestPasswordResetDto)
         {
             var succeeded = await _userService.RequestPasswordReset(requestPasswordResetDto.UserEmail);
@@ -160,11 +157,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/password/confirm/{userId}")]
+        [Route("password/confirm/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[Authorize(Roles = "Admin, Player")]
         public async Task<IActionResult> ConfirmPasswordReset([FromBody] PasswortResetConfirmationDto passwordResetConfirmationDto, [FromRoute] Guid userId)
         {
             var succeeded = await _userService.ConfirmPasswordReset(userId, passwordResetConfirmationDto.Token, passwordResetConfirmationDto.NewPassword);
@@ -179,11 +175,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/password/reset/{userId}")]
+        [Route("password/reset/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Admin, Player")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto, [FromRoute] Guid userId)
         {
             var succeeded = await _userService.ChangePassword(userId, changePasswordDto.OldPassword, changePasswordDto.NewPassword);

@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
+    /// <summary>
+    /// REST-Controller to post new ChatMessages in the game chat
+    /// </summary>
     [ApiController]
     [Route("api/chat")]
     public class ChatController : Controller
@@ -17,12 +20,22 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         private IChatService _ChatService;
         private IConnectionService _ConnectionService;
 
+        /// <summary>
+        /// Creates a new instance of ChatController
+        /// </summary>
+        /// <param name="chatService">The <see cref="IChatService"/> that handles the incoming messages</param>
+        /// <param name="connectionService">The <see cref="IConnectionService"/> that keeps the existing connections</param>
         public ChatController(IChatService chatService, IConnectionService connectionService)
         {
             _ChatService = chatService;
             _ConnectionService = connectionService;
         }
 
+        /// <summary>
+        /// Endpoint to post a message for the room the sender is in
+        /// </summary>
+        /// <param name="chatMessageDto"><see cref="ChatMessageDto"/> with the containing message informations</param>
+        /// <returns>The HttpStatusCode Result</returns>
         [HttpPost]
         [Authorize(Roles = "Player")]
         [Route("roomMessage")]
@@ -47,6 +60,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Endpoint to post a message for the a specific avatar in the room the sender is in or the dungeon the Dungeon Master is part of
+        /// </summary>
+        /// <param name="chatMessageDto"><see cref="ChatMessageDto"/> with the containing message informations</param>
+        /// <returns>The HttpStatusCode Result</returns>
         [HttpPost]
         [Authorize(Roles = "Player")]
         [Route("whisper")]
@@ -68,6 +86,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Endpoint to post a message for all the avatars in the dungeon the Dungeon Master is in
+        /// </summary>
+        /// <param name="chatMessageDto"><see cref="ChatMessageDto"/> with the containing message informations</param>
+        /// <returns>The HttpStatusCode Result</returns>
         [HttpPost]
         [Authorize(Roles = "Player")]
         [Route("global")]
