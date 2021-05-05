@@ -12,7 +12,6 @@ using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Dungeon.User;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -31,7 +30,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         }
          
         [HttpPost]
-        [Authorize(Roles = "Player, Admin")]
+        [Authorize(Roles = "Player")]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateNew([FromBody]DungeonDto dungeonDto)
@@ -73,6 +72,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (user is null) return BadRequest();
 
             var dungeonToUpdate = GameConfigService.Get<Dungeon>(dungeonDto.Id);
+
+            if (dungeonToUpdate is null) return BadRequest();
 
             if (!dungeonToUpdate.DungeonMasters.Contains(user)) return Unauthorized();
 
@@ -199,6 +200,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Player")]
+        [Route("{dungeonId}")]
         [ProducesResponseType(typeof(DungeonDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId)
@@ -223,6 +225,30 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             };
 
             return Ok(dungeonDto);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Player")]
+        [Route("{dungeonId}/request")]
+        public async Task<IActionResult> OpenDungeonEnterRequest([FromRoute] Guid dungeonId)
+        {
+            var dungeon = GameConfigService.Get<Dungeon>(dungeonId);
+
+            if (dungeon is null) return BadRequest();
+
+            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
+
+            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
+
+            var user = await UserService.GetUser(userId);
+
+            if (user is null) return BadRequest();
+
+            if (dungeon.BlackList.Any(x => x.Id == user.Id)) return Forbid();
+
+            if (dungeon.WhiteList.Any(x => x.Id == user.Id)) return Ok();
+
+            return Ok();
         }
     }
 }
