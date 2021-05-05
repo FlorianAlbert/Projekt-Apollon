@@ -96,7 +96,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             dungeonToUpdate.WhiteList = await Task.WhenAll(whiteListTasks);
 
             var blackListTasks = dungeonDto.BlackList.Select(async x => await UserService.GetUser(x.Id));
-            dungeonToUpdate.WhiteList = await Task.WhenAll(blackListTasks);
+            dungeonToUpdate.BlackList = await Task.WhenAll(blackListTasks);
 
             if (GameConfigService.NewOrUpdate(dungeonToUpdate)) return Ok();
 
