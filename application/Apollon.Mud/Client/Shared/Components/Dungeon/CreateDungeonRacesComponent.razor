@@ -141,8 +141,19 @@
 
             <hr class="featurette-divder" />
 
-            <div class="row  d-flex justify-content-center">
-                <button class="btn btn-success" style="max-width:20rem" type="submit">Speichern</button>
+            <div class="row">
+                <div class="col-3">
+
+                </div>
+                <div class="col">
+                    <button class="btn btn-success" style="max-width:20rem" type="submit">Speichern</button>
+                </div>
+                <div class="col">
+                    @if (!(chosenRace == "NoRace"))
+                    {
+                        <button class="btn btn-danger float-end" type="button" @onclick="RemoveRaceButtonClicked">Entfernen</button>
+                    }
+                </div>
             </div>
         </EditForm>
 
@@ -288,5 +299,16 @@
         dungeonRaceModel.Status = string.Empty;
     }
 
+    private void RemoveRaceButtonClicked(System.EventArgs args)
+    {
+        dungeonRaces.Remove(dungeonRaces.Find(i => i.Name.Equals(chosenRace)));
+        chosenRace = "NoRace";
+        dungeonRaceModel.Name = string.Empty;
+        dungeonRaceModel.Description = string.Empty;
+        dungeonRaceModel.Health = string.Empty;
+        dungeonRaceModel.Protection = string.Empty;
+        dungeonRaceModel.Damage = string.Empty;
+        dungeonRaceModel.Status = string.Empty;
+    }
     #endregion
 }
