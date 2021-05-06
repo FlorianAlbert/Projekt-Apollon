@@ -1,15 +1,19 @@
-﻿using Apollon.Mud.Server.Model.Implementations.Dungeon;
-using Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar;
-using Apollon.Mud.Server.Model.Implementations.Dungeon.Class;
-using Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable;
-using Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable.Takeable;
-using Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable.Takeable.Consumable;
-using Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable.Takeable.Usable;
-using Apollon.Mud.Server.Model.Implementations.Dungeon.Inspectable.Takeable.Wearable;
-using Apollon.Mud.Server.Model.Implementations.Dungeon.Npc;
-using Apollon.Mud.Server.Model.Implementations.Dungeon.Race;
-using Apollon.Mud.Server.Model.Implementations.Dungeon.Requestable;
-using Apollon.Mud.Server.Model.Implementations.Dungeon.Room;
+﻿
+using System;
+using System.Collections.Generic;
+using Apollon.Mud.Server.Model.Implementations;
+using Apollon.Mud.Server.Model.Implementations.Dungeons;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Server.Model.Implementations.User;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -69,7 +73,8 @@ namespace Apollon.Mud.Server.Domain.DbContext
             builder.Entity<Dungeon>()
                 .HasMany(e => e.ConfiguredRequestables);
             builder.Entity<Dungeon>()
-                .HasMany(e => e.RegisteredAvatars);
+                .HasMany(e => e.RegisteredAvatars)
+                .WithOne(x => x.Dungeon);
             builder.Entity<Dungeon>()
                 .HasMany(e => e.ConfiguredRooms);
             builder.Entity<Dungeon>()
@@ -78,6 +83,11 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasOne(e => e.DefaultRoom);
             builder.Entity<Dungeon>()
                 .HasOne(e => e.DungeonOwner);
+            builder.Entity<Dungeon>()
+                .Property(x => x.Id)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Guid.Parse(x));
 
             builder.Entity<Room>()
                 .HasKey(e => e.Id);
@@ -86,61 +96,120 @@ namespace Apollon.Mud.Server.Domain.DbContext
             builder.Entity<Room>()
                 .HasMany(e => e.SpecialActions);
             builder.Entity<Room>()
-                .HasOne(e => e.NeighborEast);
+                .HasOne(e => e.NeighborEast)
+                .WithOne(x => x.NeighborWest);
             builder.Entity<Room>()
-                .HasOne(e => e.NeighborSouth);
+                .HasOne(e => e.NeighborSouth)
+                .WithOne(x => x.NeighborNorth);
             builder.Entity<Room>()
-                .HasOne(e => e.NeighborWest);
+                .HasOne(e => e.NeighborWest)
+                .WithOne(x => x.NeighborEast);
             builder.Entity<Room>()
-                .HasOne(e => e.NeighborNorth);
+                .HasOne(e => e.NeighborNorth)
+                .WithOne(x => x.NeighborSouth);
+            builder.Entity<Room>()
+                .Property(x => x.Id)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Guid.Parse(x));
 
             builder.Entity<Class>()
                 .HasKey(e => e.Id);
             builder.Entity<Class>()
                 .HasMany(e => e.StartInventory);
+            builder.Entity<Class>()
+                .Property(x => x.Id)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Guid.Parse(x));
 
             builder.Entity<Race>()
                 .HasKey(e => e.Id);
+            builder.Entity<Race>()
+                .Property(x => x.Id)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Guid.Parse(x));
 
-            builder.Entity<Avatar>()
-                .HasKey(e => e.Id);
+            builder.Entity<Inspectable>()
+                .HasKey(e => e.Id); 
+            builder.Entity<Inspectable>()
+                .Property(x => x.Id)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Guid.Parse(x));
+
             builder.Entity<Avatar>()
                 .HasMany(e => e.Inventory);
             builder.Entity<Avatar>()
                 .HasOne(e => e.Armor);
             builder.Entity<Avatar>()
-                .HasOne(e => e.Class);
+                .HasOne(e => e.ChosenClass);
             builder.Entity<Avatar>()
-                .HasOne(e => e.CurrentRoom);
+                .HasOne(e => e.CurrentRoom)
+                .WithMany(x => x.Inspectables as ICollection<Avatar>);  // CHECK: könnte schief gehen
             builder.Entity<Avatar>()
-                .HasOne(e => e.Dungeon);
+                .HasOne(e => e.Dungeon)
+                .WithMany(x => x.RegisteredAvatars);
             builder.Entity<Avatar>()
                 .HasOne(e => e.HoldingItem);
             builder.Entity<Avatar>()
                 .HasOne(e => e.Owner);
             builder.Entity<Avatar>()
-                .HasOne(e => e.Race);
-
-            builder.Entity<Npc>()
-                .HasKey(e => e.Id);
+                .HasOne(e => e.ChosenRace);
+            builder.Entity<Avatar>()
+                .Property(x => x.ChosenGender)
+                .HasConversion(
+                    x => (int) x,
+                    x => (Gender) x);
+            builder.Entity<Avatar>()
+                .Property(x => x.Status)
+                .HasConversion(
+                    x => (int) x,
+                    x => (Status) x);
+            builder.Entity<Avatar>()
+                .Property(x => x.Id)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Guid.Parse(x));
 
             builder.Entity<Requestable>()
                 .HasKey(e => e.Id);
-
-            builder.Entity<Consumable>()
-                .HasKey(e => e.Id);
-
-            builder.Entity<Usable>()
-                .HasKey(e => e.Id);
-
-            builder.Entity<Wearable>()
-                .HasKey(e => e.Id);
+            builder.Entity<Requestable>()
+                .Property(x => x.Id)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Guid.Parse(x));
 
             builder.Entity<Takeable>()
-                .HasKey(e => e.Id);
+                .Property(x => x.Id)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Guid.Parse(x));
 
-            builder.Entity<Inspectable>()
-                .HasKey(e => e.Id);
+            builder.Entity<Usable>()
+                .Property(x => x.Id)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Guid.Parse(x));
+
+            builder.Entity<Wearable>()
+                .Property(x => x.Id)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Guid.Parse(x));
+
+            builder.Entity<Consumable>()
+                .Property(x => x.Id)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Guid.Parse(x));
+
+            builder.Entity<Npc>()
+                .Property(x => x.Id)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Guid.Parse(x));
 
 
             base.OnModelCreating(builder);

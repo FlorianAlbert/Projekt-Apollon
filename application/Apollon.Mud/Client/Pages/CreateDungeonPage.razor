@@ -14,26 +14,29 @@
                     <h4>Benötigst du Hilfe? Alle Infos zum Erstellen eines Dungeon findest du <a href="/">hier</a></h4> @*TODO Link einfügen*@
                     <hr class="featurette-divider" />
                     <section class="Classes mt-3" id="Classes">
-                        <CreateDungeonComponent />
+                        <CreateDungeonComponent OnDungeonSaved="DungeonSaved"/>
                     </section>
-                    <section class="Classes mt-3" id="Classes">
-                        <CreateDungeonClassesComponent />
-                    </section>
-                    <section class="Races mt-3" id="Races">
-                        <CreateDungeonRacesComponent />
-                    </section>
-                    <section class="Items mt-3" id="Items">
-                        <CreateDungeonItemComponent />
-                    </section>
-                    <section class="Npcs mt-3" id="Npcs">
-                        <CreateDungeonNpcsComponent />
-                    </section>
-                    <section class="Npcs mt-3" id="Actions">
-                        <CreateDungeonActionComponent />
-                    </section>
-                    <section class="Rooms mt-3" id="Rooms">
-                        <CreateDungeonRoomComponent />
-                    </section>
+                    @if (dungeonCreated)
+                    { 
+                        <section class="Classes mt-3" id="Classes">
+                            <CreateDungeonClassesComponent DungeonId="DungeonId"/>
+                        </section>
+                        <section class="Races mt-3" id="Races">
+                            <CreateDungeonRacesComponent />
+                        </section>
+                        <section class="Items mt-3" id="Items">
+                            <CreateDungeonItemComponent />
+                        </section>
+                        <section class="Npcs mt-3" id="Npcs">
+                            <CreateDungeonNpcsComponent />
+                        </section>
+                        <section class="Npcs mt-3" id="Actions">
+                            <CreateDungeonActionComponent />
+                        </section>
+                        <section class="Rooms mt-3" id="Rooms">
+                            <CreateDungeonRoomComponent />
+                        </section>
+                    }
                 </div>
             </div>
         </div>
@@ -41,5 +44,21 @@
 </div>
 
 @code {
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public Guid DungeonId { get; set; }
+
+    bool dungeonCreated = false;
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="guid"></param>
+    public void DungeonSaved(Guid guid)
+    {
+        dungeonCreated = true;
+        DungeonId = guid;
+    }
+
 
 }

@@ -1,6 +1,6 @@
-﻿using Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
+﻿
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using AutoFixture;
 using FluentAssertions;
 using NSubstitute;
@@ -23,7 +23,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         [InlineData(0)]
         public void Add_WeightSumUnderMaximum_Success(int newWeight)
         {
-            var takeableMock = Substitute.For<ITakeable>();
+            var takeableMock = Substitute.For<Takeable>();
             takeableMock.Weight.Returns(newWeight);
             var inventory = _Fixture.Create<Inventory>();
 
@@ -38,14 +38,14 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         [InlineData(100, 4)]
         public void Add_WeightSumOverMaximum_Fail(int alreadyContainingWeight, int newWeight)
         {
-            var takeableMock = Substitute.For<ITakeable>();
+            var takeableMock = Substitute.For<Takeable>();
             takeableMock.Weight.Returns(newWeight);
-            var inventory = Substitute.For<IInventory>();
+            var inventory = Substitute.For<Inventory>();
             inventory.WeightSum.Returns(alreadyContainingWeight);
 
             inventory.Add(takeableMock);
 
-            inventory.Should().BeEmpty(); ;
+            inventory.Should().BeEmpty();
         }
 
         [Fact]

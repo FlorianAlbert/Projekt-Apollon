@@ -3,22 +3,21 @@
 @using Apollon.Mud.Client.Data.Models
 
 
-
 <div class="container d-flex justify-content-center">
     <div class="card mt-5" style="width:45rem">
         <div class="card-body text-center">
             <h1 class="display-2">E-Mail Bestätigen</h1>
 
-            @if (succesfullConfirmation is null)
+            @if (successfullConfirmation is null)
             {
                 <section>
                     <h4 class="ml-2">Wir arbeiten daran Deine E-Mail zu verifizieren</h4>
                     <h4 class="ml-2">Bitte gedulde Dich noch kurz</h4>
                     <hr />
-                    <button class="btn btn-primary mt-2" disabled>Jetzt Anmelden</button>
+                    <button class="btn btn-primary mt-2">Jetzt Anmelden</button>
                 </section>
             }
-            else if (succesfullConfirmation == true)
+            else if (successfullConfirmation == true)
             {
                 <section>
                     <h4 class="ml-2">Deine E-Mail wurde erfolgreich bestätigt</h4>
@@ -84,7 +83,7 @@
     /// <summary>
     /// The nullable Bool to differentiate between: Confirmation pending / confirmation successfull / confirmation didnt succeed
     /// </summary>
-    bool? succesfullConfirmation = false;
+    bool? successfullConfirmation = null;
 
     /// <summary>
     /// The Model to validate the "Resend confirmation E-Mail" Form
@@ -99,10 +98,10 @@
     /// <summary>
     /// When initialized the component instantiates the EditContext
     /// </summary>
-    protected async override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         resendEmailContext = new EditContext(resendEmailModel);
-        var succesfullConfirmation = await authorizationService.ConfirmRegistration(Id, Token);
+        successfullConfirmation = await authorizationService.ConfirmRegistration(Id, Token);
     }
 
     /// <summary>

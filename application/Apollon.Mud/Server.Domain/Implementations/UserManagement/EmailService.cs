@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Net.Mail;
 using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using FluentEmail.Core;
 using FluentEmail.Core.Defaults;
+using Microsoft.Extensions.Logging;
 
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
@@ -16,33 +18,49 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// </summary>
         private readonly IFluentEmailFactory _fluentEmailFactory;
 
-        public EmailService(IFluentEmailFactory fluentEmailFactory)
+        private readonly ILogger<EmailService> _logger;
+
+        public EmailService(ILogger<EmailService> logger, IFluentEmailFactory fluentEmailFactory)
         {
             _fluentEmailFactory = fluentEmailFactory;
+            _logger = logger;
         }
 
         public async Task BroadcastEmail(ICollection<string> userEmails, string message, string subject)
         {
-            foreach (var mail in userEmails)
+            try
             {
-                await _fluentEmailFactory
-                    .Create()
-                    .To(mail)
-                    .Subject(subject)
-                    .Body(message)
-                    .SendAsync();
+                foreach (var mail in userEmails)
+                {
+                    await _fluentEmailFactory
+                        .Create()
+                        .To(mail)
+                        .Subject(subject)
+                        .Body(message)
+                        .SendAsync();
+                }
             }
-           
+            catch (SmtpException ex)
+            {
+                _logger.LogInformation(ex, "Could not send Email.");
+            }
         }
 
         public async Task SendEmail(string userEmail, string message, string subject)
         {
-            await _fluentEmailFactory
-                .Create()
-                .To(userEmail)
-                .Subject(subject)
-                .Body(message)
-                .SendAsync();
+            try
+            {
+                await _fluentEmailFactory
+                    .Create()
+                    .To(userEmail)
+                    .Subject(subject)
+                    .Body(message)
+                    .SendAsync();
+            }
+            catch (SmtpException ex)
+            {
+                _logger.LogInformation(ex, "Could not send Email.");
+            }
         }
     }
 }

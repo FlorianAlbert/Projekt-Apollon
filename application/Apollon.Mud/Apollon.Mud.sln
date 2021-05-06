@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Server.Inbound.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Server.Outbound", "Server.Outbound\Apollon.Mud.Server.Outbound.csproj", "{DBC73261-C2D8-424A-9876-0C2B316BF54D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollon.Mud.Client.Test", "Apollon.Mud.Client.Test\Apollon.Mud.Client.Test.csproj", "{23F5641B-142A-4DF4-A226-501708062FBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apollon.Mud.Server.Domain.Test", "Server.Domain.Test\Apollon.Mud.Server.Domain.Test.csproj", "{D9C4F243-1C9C-441A-A67F-DC108E88FDAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,10 +59,10 @@ Global
 		{DBC73261-C2D8-424A-9876-0C2B316BF54D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBC73261-C2D8-424A-9876-0C2B316BF54D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBC73261-C2D8-424A-9876-0C2B316BF54D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{23F5641B-142A-4DF4-A226-501708062FBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{23F5641B-142A-4DF4-A226-501708062FBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{23F5641B-142A-4DF4-A226-501708062FBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{23F5641B-142A-4DF4-A226-501708062FBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9C4F243-1C9C-441A-A67F-DC108E88FDAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9C4F243-1C9C-441A-A67F-DC108E88FDAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9C4F243-1C9C-441A-A67F-DC108E88FDAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9C4F243-1C9C-441A-A67F-DC108E88FDAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

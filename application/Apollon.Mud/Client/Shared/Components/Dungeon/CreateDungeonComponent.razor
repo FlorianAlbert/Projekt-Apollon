@@ -131,6 +131,13 @@
 </div>
 
 @code {
+
+    ///<summary>
+    /// TODO
+    ///</summary>
+    [Parameter]
+    public EventCallback<Guid> OnDungeonSaved { get; set; }
+
     /// <summary>
     /// The attribute of the validation model when creating a new Race
     /// </summary>
@@ -174,6 +181,8 @@
             submitDungeon.DefaultRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonModel.DefaultRoom));
             submitDungeon.Visibility = dungeonModel.Visibility.Equals("Private") ? 0 : 1;
             submitDungeon.Status = dungeonModel.Status.Equals("Approved") ? 0 : 1;
+            await OnDungeonSaved.InvokeAsync(Guid.NewGuid());
+            // Aufrufen: await OnDungeonSaved.InvokeAsync(Guid) <- Rückgabe = Antwort vom Server
             //TODO Daten ans Backend senden
         }
         else

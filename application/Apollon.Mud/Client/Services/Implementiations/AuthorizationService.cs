@@ -58,7 +58,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
 
             CancellationToken cancellationToken = TokenSource.Token;
 
-            var response = await HttpClient.PostAsJsonAsync("api/user/authorization/login", userCredentials, cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("api/authorization/login", userCredentials, cancellationToken);
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 AuthorizationResponseDto responseDto = await response.Content.ReadFromJsonAsync<AuthorizationResponseDto>();
@@ -101,7 +101,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = TokenSource.Token;
 
-            var response = await HttpClient.PostAsync("api/user/registration/" + userId.ToString() + "/" + token, null, cancellationToken);
+            var response = await HttpClient.PostAsync("api/user/registration/confirmation/" + userId + "/" + token, null, cancellationToken);
 
             return response.StatusCode == HttpStatusCode.OK;
         }
@@ -128,7 +128,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
             RequestPasswordResetDto resetDto =new RequestPasswordResetDto();
             resetDto.UserEmail = userEmail;
 
-            var response = await HttpClient.PostAsJsonAsync("/api/user/registration", resetDto, cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("/api/password/reset", resetDto, cancellationToken);
             return response.StatusCode == HttpStatusCode.OK;
         }
 
