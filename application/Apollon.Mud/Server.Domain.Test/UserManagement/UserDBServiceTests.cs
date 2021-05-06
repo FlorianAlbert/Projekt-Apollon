@@ -55,7 +55,6 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
         [Theory]
         [InlineData(1)]
         [InlineData(42)]
-        [InlineData(101)]
         public async Task IsAdminRegistered_AdminRegistered(int adminsCount)
         {
             var dungeonUserListMock = Substitute.For<IList<DungeonUser>>();
