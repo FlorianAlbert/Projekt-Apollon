@@ -18,6 +18,6 @@ namespace Apollon.Mud.Shared.UserManagement.Password
         /// The token to reset the password.
         /// </summary>
         [JsonProperty("Token")]
-        public string Token { get; set; } //ToDo change in UML
+        public string Token { get; set; }
     }
 }

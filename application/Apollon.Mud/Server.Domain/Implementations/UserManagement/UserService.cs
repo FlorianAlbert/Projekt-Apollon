@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.DbContext;
@@ -25,7 +26,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         private readonly IUserDbService _userDbService;
 
         /// <summary>
-        /// ToDo
+        /// Service to check if the current request is valid.
         /// </summary>
         private readonly TokenService _tokenService;
 
@@ -93,14 +94,16 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             if (deletedData) return await _userDbService.DeleteUser(userId);
             return false;
         }
-
+        
         /// <inheritdoc cref="IUserService.GetAllUsers"/>
+        [ExcludeFromCodeCoverage]
         public async Task<ICollection<DungeonUser>> GetAllUsers()
         {
             return await _userDbService.GetUsers();
         }
 
         /// <inheritdoc cref="IUserService.GetUser"/>
+        [ExcludeFromCodeCoverage]
         public async Task<DungeonUser> GetUser(Guid userId)
         {
             return await _userDbService.GetUser(userId);

@@ -29,8 +29,10 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// <inheritdoc cref="IEmailService.BroadcastEmail"/>
         public async Task BroadcastEmail(ICollection<string> userEmails, string message, string subject)
         {
+            if (userEmails is null || message is null || subject is null) return;
             foreach (var mail in userEmails)
             {
+                if(mail is null) continue;
                 await _fluentEmailFactory
                     .Create()
                     .To(mail)
@@ -44,6 +46,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// <inheritdoc cref="IEmailService.SendEmail"/>
         public async Task SendEmail(string userEmail, string message, string subject)
         {
+            if (userEmail is null || message is null || subject is null) return;
             await _fluentEmailFactory
                 .Create()
                 .To(userEmail)

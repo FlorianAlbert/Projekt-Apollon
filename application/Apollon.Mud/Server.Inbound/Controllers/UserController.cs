@@ -15,24 +15,28 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
     /// <summary>
-    /// ToDo
+    /// Controller which offers routes for all changes which are connected to an user, like registration, password-resets and so on.
     /// </summary>
     [Route("api/user")]
     [ApiController]
     public class UserController : ControllerBase
     {
+        #region member
         /// <summary>
-        /// ToDo
+        /// The service to execute the requested changes.
         /// </summary>
         private readonly IUserService _userService;
+        #endregion
+
 
         public UserController(IUserService userService)
         {
             _userService = userService;
         }
 
+        #region methods
         /// <summary>
-        /// ToDo
+        /// Tries to register a use with the email and password from the RegistrationRequestDto.
         /// </summary>
         /// <param name="registrationRequestDto"></param>
         /// <returns></returns>
@@ -51,7 +55,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         }
 
         /// <summary>
-        /// ToDo
+        /// Tries to confirm the user with the given userId and token.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="token"></param>
@@ -69,7 +73,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         }
 
         /// <summary>
-        /// ToDo
+        /// Deletes the user with the given userId. Can only be called from Admins.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
@@ -87,7 +91,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         }
 
         /// <summary>
-        /// ToDo
+        /// Returns all registered users. Can only be called from Admins.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -110,7 +114,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         }
 
         /// <summary>
-        /// ToDo
+        /// Returns the user with the given userId. Can only be called from Admins.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
@@ -134,7 +138,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         }
 
         /// <summary>
-        /// ToDo
+        /// Requests a password-reset for the user with the given email in the RequestPasswordResetDto.
         /// </summary>
         /// <param name="requestPasswordResetDto"></param>
         /// <returns></returns>
@@ -151,7 +155,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         }
 
         /// <summary>
-        /// ToDo
+        /// Confirms the password-reset from the user with the given userId.
         /// </summary>
         /// <param name="passwordResetConfirmationDto"></param>
         /// <param name="userId"></param>
@@ -169,7 +173,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         }
 
         /// <summary>
-        /// ToDo
+        /// Changes the password from the user with the given userId.
         /// </summary>
         /// <param name="changePasswordDto"></param>
         /// <param name="userId"></param>
@@ -185,5 +189,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (succeeded) return Ok();
             return BadRequest();
         }
+        #endregion
     }
 }

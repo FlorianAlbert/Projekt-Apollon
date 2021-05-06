@@ -17,29 +17,20 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
     /// <inheritdoc cref="IGameDbService"/>
     public class GameDbService: IGameDbService
     {
-        /// <summary>
-        /// The connection service to get the connection of an user.
-        /// </summary>
-        private readonly IConnectionService _connectionService;
-
-        /// <summary>
-        /// The hub to send an user a message.
-        /// </summary>
-        private readonly IHubContext<GameHub, IClientGameHubContract> _hubContext;
-
+        #region member
         /// <summary>
         /// The dbContext to work with the db.
         /// </summary>
         private readonly DungeonDbContext _dungeonDbContext;
+        #endregion
 
-        public GameDbService(IConnectionService connectionService, IHubContext<GameHub, IClientGameHubContract> hubContext,
-            DungeonDbContext dungeonDbContext)
+
+        public GameDbService(DungeonDbContext dungeonDbContext)
         {
-            _connectionService = connectionService;
-            _hubContext = hubContext;
             _dungeonDbContext = dungeonDbContext;
         }
 
+        #region methods
         /// <inheritdoc cref="IGameDbService.ValidateUserIsDungeonMaster"/>
         public async Task<bool> ValidateUserIsDungeonMaster(Guid dungeonId, Guid userId)
         {
@@ -57,6 +48,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
             return isDungeonMaster;
         }
 
+        /// <inheritdoc cref="IGameDbService.Delete{T}"/>
         async Task<bool> IGameDbService.Delete<T>(Guid id)
         {
             await using var transaction = await _dungeonDbContext.Database.BeginTransactionAsync();
@@ -80,6 +72,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
             return true;
         }
 
+        /// <inheritdoc cref="IGameDbService.Get{T}"/>
         async Task<T> IGameDbService.Get<T>(Guid id)
         {
             await using var transaction = await _dungeonDbContext.Database.BeginTransactionAsync();
@@ -96,6 +89,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
             return resultItem;
         }
 
+        /// <inheritdoc cref="IGameDbService.GetAll{T}"/>
         async Task<ICollection<T>> IGameDbService.GetAll<T>()
         {
             await using var transaction = await _dungeonDbContext.Database.BeginTransactionAsync();
@@ -104,7 +98,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
             if (dbSet is null)
             {
                 await transaction.RollbackAsync();
-                return new List<T>();//ToDo passt die leere Liste oder muss unterschieden werden, ob die List wirklich leer ist oder es sie nicht gibt?!
+                return new List<T>();
             }
 
             var resultList = await dbSet.ToListAsync();
@@ -112,7 +106,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
             return resultList;
         }
 
-        async Task<bool> IGameDbService.NewOrUpdate<T>(T item, Guid dungeonId)
+        /// <inheritdoc cref="IGameDbService.NewOrUpdate{T}"/>
+        async Task<bool> IGameDbService.NewOrUpdate<T>(T item)
         {
             if (item is null) return false;
             await using var transaction = await _dungeonDbContext.Database.BeginTransactionAsync();
@@ -126,12 +121,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
 
             dbSet.Update(item);
             await transaction.CommitAsync();
-
-            var dungeonMasterConnection = _connectionService.GetDungeonMasterConnectionByDungeonId(dungeonId);
-            if (dungeonMasterConnection is not null) //A Dungeon Master is currently logged in.
-            {
-                _hubContext.Clients.Client(dungeonMasterConnection.ChatConnectionId).ReceiveGameMessage("The dungeon was updated.");
-            }
             return true;
         }
 
@@ -163,7 +152,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
         /// </summary>
         /// <typeparam name="E"></typeparam>
         /// <returns></returns>
-        private DbSet<E> GetDbSet<E>() where E: class, IApprovable
+        internal DbSet<E> GetDbSet<E>() where E : class, IApprovable
         {
             if (_dungeonDbContext.Dungeons is DbSet<E> dungeons) return dungeons;
             if (_dungeonDbContext.Avatars is DbSet<E> avatars) return avatars;
@@ -179,5 +168,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
             if (_dungeonDbContext.Inspectables is DbSet<E> inspectables) return inspectables;
             return null;
         }
+        #endregion
+
     }
 }

@@ -127,7 +127,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        private async Task RollbackUserCreation(DungeonUser user) //ToDo in UML anpassen
+        private async Task RollbackUserCreation(DungeonUser user)
         {
             IdentityResult result;
             do

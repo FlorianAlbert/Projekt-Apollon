@@ -7,12 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
     /// <summary>
-    /// ToDo
+    /// Extenstion method which registers the roles an user can have.
     /// </summary>
     public static class ApplicationBuilderExtensions
     {
         /// <summary>
-        /// ToDo
+        /// Registers the roles an user can have.
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>

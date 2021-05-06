@@ -28,14 +28,9 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         private readonly SignInManager<DungeonUser> _signInManager;
 
         /// <summary>
-        /// ToDo
+        /// Manager to check which roles one user is assigned to.
         /// </summary>
         private readonly UserManager<DungeonUser> _userManager;
-
-        /// <summary>
-        /// Configuration to load the settings.
-        /// </summary>
-        private IConfiguration _configuration;
 
         /// <summary>
         /// The secret to generate a JWT.
@@ -48,8 +43,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             _userDbService = userDbService;
             _signInManager = signInManager;
             _userManager = userManager;
-            _configuration = configuration;
-            _tokenSecret = _configuration.GetSection("AuthorizationToken").Value;
+            _tokenSecret = configuration.GetSection("AuthorizationToken").Value;
         }
 
         #region methods

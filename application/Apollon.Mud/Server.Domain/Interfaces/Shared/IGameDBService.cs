@@ -6,27 +6,27 @@ using Apollon.Mud.Server.Model.Interfaces;
 namespace Apollon.Mud.Server.Domain.Interfaces.Shared
 {
     /// <summary>
-    /// ToDo
+    /// Service which offer the CRUD-functionality
     /// </summary>
     public interface IGameDbService
     {
         /// <summary>
-        /// ToDo
+        /// Returns if the user with the userId is allowed to play as dungeon master.
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<bool> ValidateUserIsDungeonMaster(Guid dungeonId, Guid userId);  // TODO: In UML dungeonId ergänzen!!!
+        Task<bool> ValidateUserIsDungeonMaster(Guid dungeonId, Guid userId);
 
         /// <summary>
-        /// ToDo
+        /// Gets all entities from the type T.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         Task<ICollection<T>> GetAll<T>() where T : class, IApprovable;
 
         /// <summary>
-        /// ToDo
+        /// Gets the entity from the type T with the given id.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
@@ -34,7 +34,7 @@ namespace Apollon.Mud.Server.Domain.Interfaces.Shared
         Task<T> Get<T>(Guid id) where T : class, IApprovable;
 
         /// <summary>
-        /// ToDo
+        /// Deletes the entity of type T with the given id.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
@@ -42,16 +42,15 @@ namespace Apollon.Mud.Server.Domain.Interfaces.Shared
         Task<bool> Delete<T>(Guid id) where T : class, IApprovable;
 
         /// <summary>
-        /// ToDo
+        /// Updated the entity of type T or creates a new entry if there is no entity with the exact primary key.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="item"></param>
-        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<bool> NewOrUpdate<T>(T item, Guid dungeonId) where T : class, IApprovable;
+        Task<bool> NewOrUpdate<T>(T item) where T : class, IApprovable;
 
         /// <summary>
-        /// ToDo
+        /// Deletes all avatars and dungeons of the user with the given userId.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
