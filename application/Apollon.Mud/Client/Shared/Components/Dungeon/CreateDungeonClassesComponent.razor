@@ -126,33 +126,22 @@
                 <div class="col">
                     <select class="form-select" @bind="chosenItem">
                         <option value="null" selected hidden></option>
+
                         @foreach (TakeableDto takeable in dungeonTakeables)
                         {
-                            @if (classTakeables.Find(i => i.Name == takeable.Name) is null)
-                            {
                                 <option value="@takeable.Name">@takeable.Name</option>
-                            }
                         }
                         @foreach (ConsumableDto consumable in dungeonConsumables)
                         {
-                            @if (classConsumables.Find(i => i.Name == consumable.Name) is null)
-                            {
                                 <option value="@consumable.Name">@consumable.Name</option>
-                            }
                         }
                         @foreach (UsableDto usable in dungeonUsables)
                         {
-                            @if (classUsables.Find(i => i.Name == usable.Name) is null)
-                            {
                                 <option value="@usable.Name">@usable.Name</option>
-                            }
                         }
                         @foreach (WearableDto wearable in dungeonWearables)
                         {
-                            @if (classWearables.Find(i => i.Name == wearable.Name) is null)
-                            {
                                 <option value="@wearable.Name">@wearable.Name</option>
-                            }
                         }
                     </select>
                 </div>
@@ -180,105 +169,117 @@
             </div>
             <div class="table table-bordered mt-3">
                 @{int itemIndex = 1;}
-                @foreach (TakeableDto takeable in classTakeables)
+                @if (!(dungeonClassModel.InventoryTakeableDtos is null))
                 {
-                    <div class="card p-0">
-                        <div class="row">
-                            <div class="col-4">
-                                <div style="vertical-align:middle; text-align:center">
-                                    <span><strong>Item @itemIndex</strong></span>
+                    @foreach (TakeableDto takeable in dungeonClassModel.InventoryTakeableDtos)
+                    {
+                        <div class="card p-0">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div style="vertical-align:middle; text-align:center">
+                                        <span><strong>Item @itemIndex</strong></span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div style="vertical-align:middle">
-                                    <span>@takeable.Name</span>
+                                <div class="col">
+                                    <div style="vertical-align:middle">
+                                        <span>@takeable.Name</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-1">
-                                <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveTakeableButtonClicked(takeable))">
-                                    <TooltipComponent Text="Item entfernen">
-                                        <span style="vertical-align:middle"><strong>-</strong></span>
-                                    </TooltipComponent>
-                                </button>
+                                <div class="col-1">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveTakeableButtonClicked(takeable))">
+                                        <TooltipComponent Text="Item entfernen">
+                                            <span style="vertical-align:middle"><strong>-</strong></span>
+                                        </TooltipComponent>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    itemIndex++;
+                        itemIndex++;
+                    }
                 }
-                @foreach (ConsumableDto consumable in classConsumables)
+                @if (!(dungeonClassModel.InventoryConsumableDtos is null))
                 {
-                    <div class="card p-0">
-                        <div class="row">
-                            <div class="col-4">
-                                <div style="vertical-align:middle; text-align:center">
-                                    <span><strong>Item @itemIndex</strong></span>
+                    @foreach (ConsumableDto consumable in dungeonClassModel.InventoryConsumableDtos)
+                    {
+                        <div class="card p-0">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div style="vertical-align:middle; text-align:center">
+                                        <span><strong>Item @itemIndex</strong></span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div style="vertical-align:middle">
-                                    <span>@consumable.Name</span>
+                                <div class="col">
+                                    <div style="vertical-align:middle">
+                                        <span>@consumable.Name</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-1">
-                                <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveConsumableButtonClicked(consumable))">
-                                    <TooltipComponent Text="Item entfernen">
-                                        <span style="vertical-align:middle"><strong>-</strong></span>
-                                    </TooltipComponent>
-                                </button>
+                                <div class="col-1">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveConsumableButtonClicked(consumable))">
+                                        <TooltipComponent Text="Item entfernen">
+                                            <span style="vertical-align:middle"><strong>-</strong></span>
+                                        </TooltipComponent>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    itemIndex++;
+                        itemIndex++;
+                    }
                 }
-                @foreach (UsableDto usable in classUsables)
+                @if (!(dungeonClassModel.InventoryUsableDtos is null))
                 {
-                    <div class="card p-0">
-                        <div class="row">
-                            <div class="col-4">
-                                <div style="vertical-align:middle; text-align:center">
-                                    <span><strong>Item @itemIndex</strong></span>
+                    @foreach (UsableDto usable in dungeonClassModel.InventoryUsableDtos)
+                    {
+                        <div class="card p-0">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div style="vertical-align:middle; text-align:center">
+                                        <span><strong>Item @itemIndex</strong></span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div style="vertical-align:middle">
-                                    <span>@usable.Name</span>
+                                <div class="col">
+                                    <div style="vertical-align:middle">
+                                        <span>@usable.Name</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-1">
-                                <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveUsableButtonClicked(usable))">
-                                    <TooltipComponent Text="Item entfernen">
-                                        <span style="vertical-align:middle"><strong>-</strong></span>
-                                    </TooltipComponent>
-                                </button>
+                                <div class="col-1">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveUsableButtonClicked(usable))">
+                                        <TooltipComponent Text="Item entfernen">
+                                            <span style="vertical-align:middle"><strong>-</strong></span>
+                                        </TooltipComponent>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    itemIndex++;
+                        itemIndex++;
+                    }
                 }
-                @foreach (WearableDto wearable in classWearables)
+                @if (!(dungeonClassModel.InventoryWearableDtos is null))
                 {
-                    <div class="card p-0">
-                        <div class="row">
-                            <div class="col-4">
-                                <div style="vertical-align:middle; text-align:center">
-                                    <span><strong>Item @itemIndex</strong></span>
+                    @foreach (WearableDto wearable in dungeonClassModel.InventoryWearableDtos)
+                    {
+                        <div class="card p-0">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div style="vertical-align:middle; text-align:center">
+                                        <span><strong>Item @itemIndex</strong></span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div style="vertical-align:middle">
-                                    <span>@wearable.Name</span>
+                                <div class="col">
+                                    <div style="vertical-align:middle">
+                                        <span>@wearable.Name</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-1">
-                                <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveWearableButtonClicked(wearable))">
-                                    <TooltipComponent Text="Item entfernen">
-                                        <span style="vertical-align:middle"><strong>-</strong></span>
-                                    </TooltipComponent>
-                                </button>
+                                <div class="col-1">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveWearableButtonClicked(wearable))">
+                                        <TooltipComponent Text="Item entfernen">
+                                            <span style="vertical-align:middle"><strong>-</strong></span>
+                                        </TooltipComponent>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    itemIndex++;
+                        itemIndex++;
+                    }
                 }
             </div>
 
@@ -391,26 +392,6 @@
     private string chosenClass = "NoClass";
 
     /// <summary>
-    /// The List containing the takeable default items of the class
-    /// </summary>
-    List<TakeableDto> classTakeables = new List<TakeableDto>();
-
-    /// <summary>
-    /// The List containing the usable default items of the class
-    /// </summary>
-    List<UsableDto> classUsables = new List<UsableDto>();
-
-    /// <summary>
-    /// The list containing the wearable default items of the class
-    /// </summary>
-    List<WearableDto> classWearables = new List<WearableDto>();
-
-    /// <summary>
-    /// The List containing the consumable default items of the class
-    /// </summary>
-    List<ConsumableDto> classConsumables = new List<ConsumableDto>();
-
-    /// <summary>
     /// The string array bound to the maximum of default items per class
     /// </summary>
     string[] classItems = new string[5];
@@ -514,10 +495,10 @@
             submitClass.DefaultHealth = int.Parse(dungeonClassModel.Health);
             submitClass.DefaultDamage = int.Parse(dungeonClassModel.Damage);
             submitClass.DefaultProtection = int.Parse(dungeonClassModel.Protection);
-            submitClass.InventoryTakeableDtos = classTakeables;
-            submitClass.InventoryConsumableDtos = classConsumables;
-            submitClass.InventoryUsableDtos = classUsables;
-            submitClass.InventoryWearableDtos = classWearables;
+            submitClass.InventoryTakeableDtos = dungeonClassModel.InventoryTakeableDtos;
+            submitClass.InventoryConsumableDtos = dungeonClassModel.InventoryConsumableDtos;
+            submitClass.InventoryUsableDtos = dungeonClassModel.InventoryUsableDtos;
+            submitClass.InventoryWearableDtos = dungeonClassModel.InventoryWearableDtos;
             submitClass.Status = dungeonClassModel.Status.Equals("Approved") ? 0 : 1;
             if (newClass)
             {
@@ -546,21 +527,20 @@
 
             if (!(newTakeable is null))
             {
-                classTakeables.Add(newTakeable);
+                dungeonClassModel.InventoryTakeableDtos.Add(newTakeable);
             }
             if (!(newConsumable is null))
             {
-                classConsumables.Add(newConsumable);
+                dungeonClassModel.InventoryConsumableDtos.Add(newConsumable);
             }
             if (!(newUsable is null))
             {
-                classUsables.Add(newUsable);
+                dungeonClassModel.InventoryUsableDtos.Add(newUsable);
             }
             if (!(newWearable is null))
             {
-                classWearables.Add(newWearable);
+                dungeonClassModel.InventoryWearableDtos.Add(newWearable);
             }
-
             if (defaultItemCount < 5)
             {
                 defaultItemCount++;
@@ -573,7 +553,7 @@
     /// </summary>
     private EventCallback RemoveTakeableButtonClicked(TakeableDto item)
     {
-        classTakeables.Remove(item);
+        dungeonClassModel.InventoryTakeableDtos.Remove(item);
         if (defaultItemCount > 1)
             defaultItemCount--;
         return EventCallback.Empty;
@@ -581,7 +561,7 @@
 
     private EventCallback RemoveConsumableButtonClicked(ConsumableDto item)
     {
-        classConsumables.Remove(item);
+        dungeonClassModel.InventoryConsumableDtos.Remove(item);
         if (defaultItemCount > 1)
             defaultItemCount--;
         return EventCallback.Empty;
@@ -589,7 +569,7 @@
 
     private EventCallback RemoveUsableButtonClicked(UsableDto item)
     {
-        classUsables.Remove(item);
+        dungeonClassModel.InventoryUsableDtos.Remove(item);
         if (defaultItemCount > 1)
             defaultItemCount--;
         return EventCallback.Empty;
@@ -597,7 +577,7 @@
 
     private EventCallback RemoveWearableButtonClicked(WearableDto item)
     {
-        classWearables.Remove(item);
+        dungeonClassModel.InventoryWearableDtos.Remove(item);
         if (defaultItemCount > 1)
             defaultItemCount--;
         return EventCallback.Empty;
@@ -611,44 +591,36 @@
     {
         if (!chosenClass.Equals(dungeonClassModel.Name) && !chosenClass.Equals("NoClass"))
         {
-            defaultItemCount = 1;
             var newClass = dungeonClasses.Find(i => i.Name.Equals(chosenClass));
             if (!(newClass is null))
             {
-                for (int i = 0; i < 5; i++)
-                {
-                    classItems[i] = "NoItem";
-                }
+                dungeonClassModel.InventoryTakeableDtos.Clear();
+                dungeonClassModel.InventoryConsumableDtos.Clear();
+                dungeonClassModel.InventoryUsableDtos.Clear();
+                dungeonClassModel.InventoryWearableDtos.Clear();
                 dungeonClassModel.Name = chosenClass;
                 dungeonClassModel.Description = newClass.Description;
                 dungeonClassModel.Health = newClass.DefaultHealth.ToString();
                 dungeonClassModel.Protection = newClass.DefaultProtection.ToString();
                 dungeonClassModel.Damage = newClass.DefaultDamage.ToString();
                 dungeonClassModel.Status = newClass.Status == 0 ? "Approved" : "Pending";
-                defaultItemCount = 0;
-                int counter = 0;
                 if (!(newClass.InventoryTakeableDtos is null))
                 {
                     newClass.InventoryTakeableDtos.ToList().ForEach(t =>
                     {
-                        if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
+                        if (!(t is null))
                         {
-                            classItems[counter] = t.Name + " 1";
-                            counter++;
-                            defaultItemCount++;
+                            dungeonClassModel.InventoryTakeableDtos.Add(t);
                         }
                     });
-
                 }
                 if (!(newClass.InventoryConsumableDtos is null))
                 {
                     newClass.InventoryConsumableDtos.ToList().ForEach(t =>
                     {
-                        if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
+                        if (!(t is null))
                         {
-                            classItems[counter] = t.Name + " 2";
-                            counter++;
-                            defaultItemCount++;
+                            dungeonClassModel.InventoryConsumableDtos.Add(t);
                         }
                     });
                 }
@@ -656,11 +628,9 @@
                 {
                     newClass.InventoryUsableDtos.ToList().ForEach(t =>
                     {
-                        if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
+                        if (!(t is null))
                         {
-                            classItems[counter] = t.Name + " 3";
-                            counter++;
-                            defaultItemCount++;
+                            dungeonClassModel.InventoryUsableDtos.Add(t);
                         }
                     });
                 }
@@ -668,17 +638,11 @@
                 {
                     newClass.InventoryWearableDtos.ToList().ForEach(t =>
                     {
-                        if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
+                        if (!(t is null))
                         {
-                            classItems[counter] = t.Name + " 4";
-                            counter++;
-                            defaultItemCount++;
+                            dungeonClassModel.InventoryWearableDtos.Add(t);
                         }
                     });
-                }
-                if (defaultItemCount == 0)
-                {
-                    defaultItemCount = 1;
                 }
             }
         }

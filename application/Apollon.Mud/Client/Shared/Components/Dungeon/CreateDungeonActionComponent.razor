@@ -98,8 +98,19 @@
 
             <hr class="featurette-divder" />
 
-            <div class="row  d-flex justify-content-center">
-                <button class="btn btn-success" style="max-width:20rem" type="button" @onclick="HandleActionSubmit">Speichern</button>
+            <div class="row">
+                <div class="col-3">
+
+                </div>
+                <div class="col">
+                    <button class="btn btn-success" style="max-width:20rem" type="button" @onclick="HandleActionSubmit">Speichern</button>
+                </div>
+                <div class="col">
+                    @if (!(chosenAction == "NoAction"))
+                    {
+                        <button class="btn btn-danger float-end" type="button" @onclick="RemoveActionButtonClicked">Entfernen</button>
+                    }
+                </div>
             </div>
         </EditForm>
 
@@ -216,6 +227,15 @@
     /// <param name="args">Event Arguments</param>
     private void NewActionButtonClicked(System.EventArgs args)
     {
+        chosenAction = "NoAction";
+        dungeonActionModel.MessageRegex = string.Empty;
+        dungeonActionModel.PatternForPlayer = string.Empty;
+        dungeonActionModel.Status = string.Empty;
+    }
+
+    private void RemoveActionButtonClicked(System.EventArgs args)
+    {
+        dungeonActionModel.RequestableList.Remove(dungeonActionModel.RequestableList.Find(i => i.PatternForPlayer.Equals(chosenAction)));
         chosenAction = "NoAction";
         dungeonActionModel.MessageRegex = string.Empty;
         dungeonActionModel.PatternForPlayer = string.Empty;
