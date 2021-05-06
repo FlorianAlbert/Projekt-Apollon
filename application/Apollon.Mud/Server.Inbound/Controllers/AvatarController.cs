@@ -263,7 +263,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     DefaultHealth = avatar.ChosenClass.DefaultHealth,
                     DefaultProtection = avatar.ChosenClass.DefaultProtection,
                     DefaultDamage = avatar.ChosenClass.DefaultDamage,
-                    InventoryTakeableDtos = avatar.Inventory.OfType<Takeable>().Select(x => new TakeableDto
+                    InventoryTakeableDtos = avatar.Inventory.OfType<Takeable>().Where(x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select(x => new TakeableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -324,14 +324,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Status = (int)avatar.CurrentRoom.Status,
                     Description = avatar.CurrentRoom.Description,
                     Name = avatar.CurrentRoom.Name,
-                    Inspectables = avatar.CurrentRoom.Inspectables.OfType<Inspectable>().Select(x => new InspectableDto
+                    Inspectables = avatar.CurrentRoom.Inspectables.OfType<Inspectable>().Where(x => !x.GetType().IsSubclassOf(typeof(Inspectable))).Select(x => new InspectableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
                         Name = x.Description,
                     }).ToList(),
-                    Takeables = avatar.CurrentRoom.Inspectables.OfType<Takeable>().Select(x => new TakeableDto
+                    Takeables = avatar.CurrentRoom.Inspectables.OfType<Takeable>().Where(x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select(x => new TakeableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
