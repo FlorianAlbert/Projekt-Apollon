@@ -46,8 +46,9 @@ namespace Apollon.Mud.Server.Domain.Interfaces.Shared
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="item"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<bool> NewOrUpdate<T>(T item) where T : class, IApprovable;
+        Task<bool> NewOrUpdate<T>(T item, Guid dungeonId) where T : class, IApprovable;
 
         /// <summary>
         /// ToDo
