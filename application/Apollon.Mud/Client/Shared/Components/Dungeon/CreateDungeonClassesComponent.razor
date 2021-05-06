@@ -326,6 +326,9 @@
 
 @code {
 
+    [Parameter]
+    public bool IsDungeonMasterConfigurating { get; set; }
+
     /// <summary>
     /// TODO
     /// </summary>
@@ -594,10 +597,10 @@
             var newClass = dungeonClasses.Find(i => i.Name.Equals(chosenClass));
             if (!(newClass is null))
             {
-                dungeonClassModel.InventoryTakeableDtos.Clear();
-                dungeonClassModel.InventoryConsumableDtos.Clear();
-                dungeonClassModel.InventoryUsableDtos.Clear();
-                dungeonClassModel.InventoryWearableDtos.Clear();
+                dungeonClassModel.InventoryTakeableDtos = new List<TakeableDto>();
+                dungeonClassModel.InventoryConsumableDtos = new List<ConsumableDto>();
+                dungeonClassModel.InventoryUsableDtos = new List<UsableDto>();
+                dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
                 dungeonClassModel.Name = chosenClass;
                 dungeonClassModel.Description = newClass.Description;
                 dungeonClassModel.Health = newClass.DefaultHealth.ToString();
@@ -609,7 +612,7 @@
                     newClass.InventoryTakeableDtos.ToList().ForEach(t =>
                     {
                         if (!(t is null))
-                        {
+                       {
                             dungeonClassModel.InventoryTakeableDtos.Add(t);
                         }
                     });
