@@ -287,7 +287,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> SubmitDungeonEnterRequest([FromRoute] Guid dungeonId, [FromBody] SubmitDungeonEnterRequest submitDungeonEnterRequest)
+        public async Task<IActionResult> SubmitDungeonEnterRequest([FromRoute] Guid dungeonId, [FromBody] SubmitDungeonEnterRequestDto submitDungeonEnterRequestDto)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
 
@@ -301,11 +301,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (dungeon.DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
 
-            var requestingUser = await UserService.GetUser(submitDungeonEnterRequest.RequestUserId);
+            var requestingUser = await UserService.GetUser(submitDungeonEnterRequestDto.RequestUserId);
 
             if (requestingUser is null) return BadRequest();
 
-            if (submitDungeonEnterRequest.GrantAccess)
+            if (submitDungeonEnterRequestDto.GrantAccess)
             {
                 if (dungeon.WhiteList.All(x => x.Id != requestingUser.Id))
                 {
