@@ -13,7 +13,6 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Dungeon.User;
 using Apollon.Mud.Shared;
-using FluentEmail.Core;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -98,17 +97,26 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 dungeonDto.DungeonMasters.Select(async x => await UserService.GetUser(x.Id));
             var dungeonMasters = await Task.WhenAll(dungeonMasterTasks);
             dungeonToUpdate.DungeonMasters.Clear();
-            dungeonMasters.ForEach(x => dungeonToUpdate.DungeonMasters.Add(x));
+            foreach (var dungeonMaster in dungeonMasters)
+            {
+                dungeonToUpdate.DungeonMasters.Add(dungeonMaster);
+            }
 
             var whiteListTasks = dungeonDto.WhiteList.Select(async x => await UserService.GetUser(x.Id));
             var dungeonWhiteList = await Task.WhenAll(whiteListTasks);
             dungeonToUpdate.WhiteList.Clear();
-            dungeonWhiteList.ForEach(x => dungeonToUpdate.WhiteList.Add(x));
+            foreach (var dungeonUser in dungeonWhiteList)
+            {
+                dungeonToUpdate.WhiteList.Add(dungeonUser);
+            }
 
             var blackListTasks = dungeonDto.BlackList.Select(async x => await UserService.GetUser(x.Id));
             var dungeonBlackList = await Task.WhenAll(blackListTasks);
             dungeonToUpdate.BlackList.Clear();
-            dungeonBlackList.ForEach(x => dungeonToUpdate.BlackList.Add(x));
+            foreach (var dungeonUser in dungeonBlackList)
+            {
+                dungeonToUpdate.BlackList.Add(dungeonUser);
+            }
 
             if (GameConfigService.NewOrUpdate(dungeonToUpdate)) return Ok();
 
