@@ -2,7 +2,9 @@
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables;
+using Apollon.Mud.Shared.Dungeon.Npc;
 using Apollon.Mud.Shared.Dungeon.Requestable;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,15 +16,15 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
-    [Route("api/specialActions")]
+    [Route("api/npcs")]
     [ApiController]
-    public class SpecialActionController : ControllerBase
+    public class NpcController : ControllerBase
     {
         private IGameDbService GameConfigService { get; }
 
         private IUserService UserService { get; }
 
-        public SpecialActionController(IGameDbService gameDbService, IUserService userService)
+        public NpcController(IGameDbService gameDbService, IUserService userService)
         {
             GameConfigService = gameDbService;
             UserService = userService;
@@ -33,9 +35,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Authorize(Roles = "Player, Admin")]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateNew([FromRoute] Guid dungeonId, [FromBody] RequestableDto specialActionDto)
+        public async Task<IActionResult> CreateNew([FromBody] NpcDto npcDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(u => u.Type == "UserId");
 
@@ -47,22 +48,19 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (!GameConfigService.Get<Dungeon>(dungeonId).DungeonMasters.Contains(user)) return Unauthorized();
 
-            var newSpecialAction = new Requestable(specialActionDto.MessageRegex, specialActionDto.PatternForPlayer)
+            var newNpc = new Npc(npcDto.Text, npcDto.Description, npcDto.Name) { Status = (Status)npcDto.Status };
+
+            var npcDungeon = GameConfigService.Get<Dungeon>(dungeonId);
+
+            npcDungeon.ConfiguredInspectables.Add(newNpc);
+
+            if (GameConfigService.NewOrUpdate(newNpc))
             {
-                Status = (Status)specialActionDto.Status
-            };
-
-            var actionDungeon = GameConfigService.Get<Dungeon>(dungeonId);
-
-            actionDungeon.ConfiguredRequestables.Add(newSpecialAction);
-
-            if (GameConfigService.NewOrUpdate(newSpecialAction))
-            {
-                if (GameConfigService.NewOrUpdate(actionDungeon))
+                if (GameConfigService.NewOrUpdate(npcDungeon))
                 {
-                    return Ok(newSpecialAction.Id);
+                    return Ok(newNpc.Id);
                 }
-                GameConfigService.Delete<Requestable>(newSpecialAction.Id);
+                GameConfigService.Delete<Npc>(newNpc.Id);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
@@ -75,7 +73,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Udpate([FromBody] RequestableDto specialActionDto, [FromRoute] Guid dungeonId)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Udpate([FromBody] NpcDto npcDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
 
@@ -87,47 +86,51 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (!GameConfigService.Get<Dungeon>(dungeonId).DungeonMasters.Contains(user)) return Unauthorized();
 
-            var actionToUpdate = GameConfigService.Get<Requestable>(specialActionDto.Id);
+            var npcToUpdate = GameConfigService.Get<Npc>(npcDto.Id);
 
-            if (actionToUpdate is null) return BadRequest();
+            if (npcToUpdate is null) return BadRequest();
 
-            var actionDungeon = GameConfigService.Get<Dungeon>(dungeonId);
-            actionDungeon.ConfiguredRequestables.Remove(actionToUpdate);
+            var npcDungeon = GameConfigService.Get<Dungeon>(dungeonId);
+            npcDungeon.ConfiguredInspectables.Remove(npcToUpdate);
 
-            actionToUpdate.Status = (Status)specialActionDto.Status;
-            actionToUpdate.MessageRegex = specialActionDto.MessageRegex;
-            actionToUpdate.PatternForPlayer = specialActionDto.PatternForPlayer;
+            npcToUpdate.Status = (Status)npcDto.Status;
+            npcToUpdate.Name = npcDto.Name;
+            npcToUpdate.Text = npcDto.Text;
+            npcToUpdate.Description = npcDto.Description;
 
-            if (GameConfigService.NewOrUpdate(actionToUpdate))
+            npcDungeon.ConfiguredInspectables.Add(npcToUpdate);
+
+            if (GameConfigService.NewOrUpdate(npcToUpdate))
             {
-                if (GameConfigService.NewOrUpdate(actionDungeon))
+                if (GameConfigService.NewOrUpdate(npcDungeon))
                 {
                     return Ok();
                 }
-                GameConfigService.Delete<Requestable>(actionToUpdate.Id);
+                GameConfigService.Delete<Npc>(npcToUpdate.Id);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
-            var oldAction = GameConfigService.Get<Requestable>(specialActionDto.Id);
+            var oldNpc = GameConfigService.Get<Npc>(npcDto.Id);
 
-            var oldActionDto = new RequestableDto
+            var oldNpcDto = new NpcDto
             {
-                Status = (int)oldAction.Status,
-                Id = oldAction.Id,
-                PatternForPlayer = oldAction.PatternForPlayer,
-                MessageRegex = oldAction.MessageRegex
+                Status = (int)oldNpc.Status,
+                Id = oldNpc.Id,
+                Name = oldNpc.Name,
+                Text = oldNpc.Text,
+                Description = oldNpc.Description
             };
 
-            return BadRequest(oldActionDto);
+            return BadRequest(oldNpcDto);
         }
 
         [HttpDelete]
         [Authorize(Roles = "Player")]
-        [Route("{dungeonId}/{actionId}")]
+        [Route("{dungeonId}/{npcId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid actionId)
+        public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid npcId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
 
@@ -139,32 +142,33 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (!GameConfigService.Get<Dungeon>(dungeonId).DungeonMasters.Contains(user)) return Unauthorized();
 
-            var actionToDelete = GameConfigService.Get<Requestable>(actionId);
+            var npcToDelete = GameConfigService.Get<Npc>(npcId);
 
-            if (actionToDelete is null) return BadRequest();
+            if (npcToDelete is null) return BadRequest();
 
-            if (GameConfigService.Delete<Requestable>(actionId)) return Ok();
+            if (GameConfigService.Delete<Npc>(npcId)) return Ok();
 
-            return BadRequest();            // TODO: evtl ändern
+            return BadRequest();     // TODO: evtl ändern
         }
 
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(ICollection<RequestableDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ICollection<NpcDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
-            var specialActions = GameConfigService.Get<Dungeon>(dungeonId).ConfiguredRequestables;
+            var npcs = GameConfigService.Get<Dungeon>(dungeonId).ConfiguredInspectables.OfType<Npc>();
 
-            if (!(specialActions is null))
+            if (!(npcs is null))
             {
-                var specialActionDtos = specialActions.Select(s => new RequestableDto()
+                var specialActionDtos = npcs.Select(n => new NpcDto()
                 {
-                    Id = s.Id,
-                    MessageRegex = s.MessageRegex,
-                    PatternForPlayer = s.PatternForPlayer,
-                    Status = (int)s.Status
+                    Id = n.Id,
+                    Description = n.Description,
+                    Name = n.Name,
+                    Text = n.Text,
+                    Status = (int)n.Status
                 }).ToList();
 
                 return Ok(specialActionDtos);
@@ -180,19 +184,20 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid actionId)
         {
-            var action = GameConfigService.Get<Dungeon>(dungeonId).ConfiguredRequestables.FirstOrDefault(r => r.Id == actionId);
+            var npc = GameConfigService.Get<Dungeon>(dungeonId).ConfiguredInspectables.OfType<Npc>().FirstOrDefault(n => n.Id == actionId);
 
-            if (action is null) return BadRequest();
+            if (npc is null) return BadRequest();
 
-            var actionDto = new RequestableDto
+            var npcDto = new NpcDto
             {
-                Id = action.Id,
-                PatternForPlayer = action.PatternForPlayer,
-                MessageRegex = action.MessageRegex,
-                Status = (int)action.Status
+                Text = npc.Text,
+                Name = npc.Name,
+                Description = npc.Description,
+                Status = (int)npc.Status,
+                Id = npc.Id
             };
 
-            return Ok(actionDto);
+            return Ok(npcDto);
         }
     }
 }

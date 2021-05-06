@@ -988,6 +988,8 @@
 
     #endregion
 
+
+    #region methods
     /// <summary>
     /// TODO
     /// </summary>
@@ -1153,6 +1155,10 @@
         }
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
     private EventCallback RoomSelectionChanged()
     {
         if (!chosenRoom.Equals(dungeonRoomModel.Name) && !chosenRoom.Equals("NoRoom"))
@@ -1257,6 +1263,10 @@
         return EventCallback.Empty;
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="args"></param>
     private void NameFieldLostFocus(System.EventArgs args)
     {
         RoomDto checkRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.Name));
@@ -1456,6 +1466,7 @@
         }
         selectedNpc = "NoNpc";
     }
+    #endregion
     #endregion
 }
 
