@@ -9,7 +9,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
     public class UserDbServiceTests
     {
         //ToDo Tests
-        private IFixture _Fixture;
+        private readonly IFixture _Fixture;
 
         public UserDbServiceTests()
         {

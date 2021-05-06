@@ -13,8 +13,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
 {
     public class EmailServiceTests
     {
-        //ToDo Tests
-        private IFixture _Fixture;
+        private readonly IFixture _Fixture;
 
         public EmailServiceTests()
         {

@@ -80,7 +80,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        private async Task<string> GenerateToken(DungeonUser user)
+        internal async Task<string> GenerateToken(DungeonUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_tokenSecret);
