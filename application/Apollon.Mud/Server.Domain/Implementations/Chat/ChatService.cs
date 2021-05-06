@@ -46,7 +46,9 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
             foreach (var inspectable in senderAvatar.CurrentRoom.Inspectables)
             {
                 Connection recipientConnection;
-                if (inspectable is Avatar avatar && avatar.Status == Status.Approved && (recipientConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id)) is not null)
+                if (inspectable is Avatar avatar && 
+                        avatar.Status == Status.Approved && 
+                        (recipientConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id)) is not null)
                     recipientChatConnectionIds.Add(recipientConnection.ChatConnectionId);
             }
 

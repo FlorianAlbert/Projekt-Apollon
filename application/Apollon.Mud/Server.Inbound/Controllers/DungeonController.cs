@@ -12,6 +12,8 @@ using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Dungeon.User;
+using Apollon.Mud.Shared;
+using FluentEmail.Core;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -60,7 +62,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpPut]
         [Authorize(Roles = "Player")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(DungeonDto), StatusCodes.Status400BadRequest)]
+        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Update([FromBody]DungeonDto dungeonDto)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -75,7 +80,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (dungeonToUpdate is null) return BadRequest();
 
-            if (!dungeonToUpdate.DungeonMasters.Contains(user)) return Unauthorized();
+            if (dungeonToUpdate.DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
 
             var newDungeonOwner = await UserService.GetUser(dungeonDto.DungeonOwner.Id);
             if (dungeonToUpdate.DungeonOwner.Id != newDungeonOwner.Id && dungeonToUpdate.DungeonOwner.Id != user.Id)
@@ -91,13 +96,19 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var dungeonMasterTasks =
                 dungeonDto.DungeonMasters.Select(async x => await UserService.GetUser(x.Id));
-            dungeonToUpdate.DungeonMasters = await Task.WhenAll(dungeonMasterTasks);
+            var dungeonMasters = await Task.WhenAll(dungeonMasterTasks);
+            dungeonToUpdate.DungeonMasters.Clear();
+            dungeonMasters.ForEach(x => dungeonToUpdate.DungeonMasters.Add(x));
 
             var whiteListTasks = dungeonDto.WhiteList.Select(async x => await UserService.GetUser(x.Id));
-            dungeonToUpdate.WhiteList = await Task.WhenAll(whiteListTasks);
+            var dungeonWhiteList = await Task.WhenAll(whiteListTasks);
+            dungeonToUpdate.WhiteList.Clear();
+            dungeonWhiteList.ForEach(x => dungeonToUpdate.WhiteList.Add(x));
 
             var blackListTasks = dungeonDto.BlackList.Select(async x => await UserService.GetUser(x.Id));
-            dungeonToUpdate.WhiteList = await Task.WhenAll(blackListTasks);
+            var dungeonBlackList = await Task.WhenAll(blackListTasks);
+            dungeonToUpdate.BlackList.Clear();
+            dungeonBlackList.ForEach(x => dungeonToUpdate.BlackList.Add(x));
 
             if (GameConfigService.NewOrUpdate(dungeonToUpdate)) return Ok();
 
@@ -176,6 +187,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpGet]
         [Authorize(Roles = "Player")]
         [ProducesResponseType(typeof(DungeonDto[]), StatusCodes.Status200OK)]
+        [Produces("application/json")]
         public async Task<IActionResult> GetAll()
         {
             var dungeons = GameConfigService.GetAll<Dungeon>();
@@ -202,6 +214,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
         [ProducesResponseType(typeof(DungeonDto), StatusCodes.Status200OK)]
+        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId)
         {
@@ -230,6 +243,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpPost]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}/request")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> OpenDungeonEnterRequest([FromRoute] Guid dungeonId)
         {
             var dungeon = GameConfigService.Get<Dungeon>(dungeonId);
@@ -246,7 +263,62 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (dungeon.BlackList.Any(x => x.Id == user.Id)) return Forbid();
 
-            if (dungeon.WhiteList.Any(x => x.Id == user.Id)) return Ok();
+            if (dungeon.WhiteList.Any(x => x.Id == user.Id)) return Conflict();
+
+            if (dungeon.OpenRequests.Any(x => x.Id == user.Id)) return Conflict();
+
+            if (dungeon.Visibility == Visibility.Private)
+            {
+                dungeon.OpenRequests.Add(user);
+            }
+            else
+            {
+                dungeon.WhiteList.Add(user);
+            }
+
+            GameConfigService.NewOrUpdate(dungeon);
+            
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Player")]
+        [Route("{dungeonId}/submitRequest")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> SubmitDungeonEnterRequest([FromRoute] Guid dungeonId, [FromBody] SubmitDungeonEnterRequest submitDungeonEnterRequest)
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
+
+            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
+
+            var user = await UserService.GetUser(userId);
+
+            if (user is null) return BadRequest();
+
+            var dungeon = GameConfigService.Get<Dungeon>(dungeonId);
+
+            if (dungeon.DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
+
+            var requestingUser = await UserService.GetUser(submitDungeonEnterRequest.RequestUserId);
+
+            if (requestingUser is null) return BadRequest();
+
+            if (submitDungeonEnterRequest.GrantAccess)
+            {
+                if (dungeon.WhiteList.All(x => x.Id != requestingUser.Id))
+                {
+                    dungeon.WhiteList.Add(requestingUser);
+                }
+            }
+            else
+            {
+                if (dungeon.BlackList.All(x => x.Id != requestingUser.Id))
+                {
+                    dungeon.BlackList.Add(requestingUser);
+                }
+            }
 
             return Ok();
         }
