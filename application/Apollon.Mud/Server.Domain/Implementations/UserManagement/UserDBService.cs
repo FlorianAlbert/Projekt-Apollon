@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.User;
@@ -28,9 +29,9 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// <inheritdoc cref="IUserDbService.CreateUser"/>
         public async Task<bool> CreateUser(DungeonUser user, string password, bool asAdmin = false)
         {
-            var creartionSucceeded = await _userManager.CreateAsync(user, password);
+            var creationSucceeded = await _userManager.CreateAsync(user, password);
 
-            if (!creartionSucceeded.Succeeded)
+            if (!creationSucceeded.Succeeded)
             {
                 return false;
             }
@@ -56,20 +57,26 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         }
 
         /// <inheritdoc cref="IUserDbService.GetUser"/>
+        [ExcludeFromCodeCoverage]
         public async Task<DungeonUser> GetUser(Guid userId)
         {
+            //Just pipes call to userManager and does not need a test for this "logic"
             return await _userManager.FindByIdAsync(userId.ToString());
         }
 
         /// <inheritdoc cref="IUserDbService.GetUsers"/>
+        [ExcludeFromCodeCoverage]
         public async Task<ICollection<DungeonUser>> GetUsers()
         {
+            //Just pipes call to userManager and does not need a test for this "logic"
             return await _userManager.Users.ToListAsync();
         }
 
         /// <inheritdoc cref="IUserDbService.UpdateUser"/>
+        [ExcludeFromCodeCoverage]
         public async Task<bool> UpdateUser(DungeonUser user, string oldPassword, string newPassword)
         {
+            //Just pipes call to userManager and does not need a test for this "logic"
             var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
             return result.Succeeded;
         }
@@ -84,34 +91,44 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         }
 
         /// <inheritdoc cref="IUserDbService.GetUserByEmail"/>
+        [ExcludeFromCodeCoverage]
         public async Task<DungeonUser> GetUserByEmail(string userEmail)
         {
+            //Just pipes call to userManager and does not need a test for this "logic"
             return await _userManager.FindByEmailAsync(userEmail);
         }
 
         /// <inheritdoc cref="IUserDbService.ResetPassword"/>
+        [ExcludeFromCodeCoverage]
         public async Task<bool> ResetPassword(DungeonUser user, string token, string password)
         {
+            //Just pipes call to userManager and does not need a test for this "logic"
             var result = await _userManager.ResetPasswordAsync(user, token, password);
             return result.Succeeded;
         }
 
         /// <inheritdoc cref="IUserDbService.GetResetToken"/>
+        [ExcludeFromCodeCoverage]
         public async Task<string> GetResetToken(DungeonUser user)
         {
+            //Just pipes call to userManager and does not need a test for this "logic"
             return await _userManager.GeneratePasswordResetTokenAsync(user);
         }
 
         /// <inheritdoc cref="IUserDbService.ConfirmEmail"/>
+        [ExcludeFromCodeCoverage]
         public async Task<bool> ConfirmEmail(DungeonUser user, string token)
         {
+            //Just pipes call to userManager and does not need a test for this "logic"
             var result = await _userManager.ConfirmEmailAsync(user, token);
             return result.Succeeded;
         }
 
         /// <inheritdoc cref="IUserDbService.GetEmailConfirmationToken"/>
+        [ExcludeFromCodeCoverage]
         public async Task<string> GetEmailConfirmationToken(DungeonUser user)
         {
+            //Just pipes call to userManager and does not need a test for this "logic"
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
 
@@ -127,7 +144,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        private async Task RollbackUserCreation(DungeonUser user)
+        internal async Task RollbackUserCreation(DungeonUser user)
         {
             IdentityResult result;
             do

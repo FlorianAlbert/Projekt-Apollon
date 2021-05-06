@@ -2,6 +2,7 @@
 using Apollon.Mud.Server.Domain.Implementations.UserManagement;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
+using FluentAssertions;
 using Xunit;
 
 namespace Apollon.Mud.Server.Domain.Test.UserManagement

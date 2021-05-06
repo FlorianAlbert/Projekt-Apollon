@@ -70,7 +70,6 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var emailMock = _Fixture.Create<string>();
             var secretMock = _Fixture.Create<string>();
             var dungeonUserMock = _Fixture.Create<DungeonUser>();
-            var signInResultMock = SignInResult.Failed;
 
             var userDbServiceMock = Substitute.For<IUserDbService>();
             userDbServiceMock.GetUserByEmail(emailMock).Returns(dungeonUserMock);
@@ -93,7 +92,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
                 null,
                 null,
                 null);
-            signInManagerMock.CheckPasswordSignInAsync(dungeonUserMock, secretMock, false).Returns(signInResultMock);
+            signInManagerMock.CheckPasswordSignInAsync(dungeonUserMock, secretMock, false).Returns(SignInResult.Failed);
 
 
             var configurationMock = Substitute.For<IConfiguration>();
@@ -114,7 +113,6 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var emailMock = _Fixture.Create<string>();
             var secretMock = _Fixture.Create<string>();
             var dungeonUserMock = _Fixture.Create<DungeonUser>();
-            var signInResultMock = SignInResult.Success;
 
             var userDbServiceMock = Substitute.For<IUserDbService>();
             userDbServiceMock.GetUserByEmail(emailMock).Returns(dungeonUserMock);
@@ -140,7 +138,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
                 null,
                 null,
                 null);
-            signInManagerMock.CheckPasswordSignInAsync(dungeonUserMock, secretMock, false).Returns(signInResultMock);
+            signInManagerMock.CheckPasswordSignInAsync(dungeonUserMock, secretMock, false).Returns(SignInResult.Success);
 
 
             var configurationMock = Substitute.For<IConfiguration>();
