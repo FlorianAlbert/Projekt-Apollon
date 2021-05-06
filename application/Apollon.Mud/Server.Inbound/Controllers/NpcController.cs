@@ -3,7 +3,6 @@ using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
-using Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables;
 using Apollon.Mud.Shared.Dungeon.Npc;
 using Apollon.Mud.Shared.Dungeon.Requestable;
 using Microsoft.AspNetCore.Authorization;
@@ -35,6 +34,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Authorize(Roles = "Player, Admin")]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateNew([FromBody] NpcDto npcDto, [FromRoute] Guid dungeonId)
         {

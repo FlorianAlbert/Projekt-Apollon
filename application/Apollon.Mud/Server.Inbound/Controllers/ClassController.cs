@@ -55,13 +55,19 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 
             };
 
+            var classDungeon = GameConfigService.Get<Dungeon>(dungeonId);
 
+            classDungeon.ConfiguredClasses.Add(newClass);
 
-            var newNpc = new Npc(npcDto.Text, npcDto.Description, npcDto.Name) { Status = (Status)npcDto.Status };
-
-            GameConfigService.Get<Dungeon>(dungeonId).ConfiguredInspectables.Add(newNpc); //Müssen wir das machen???
-
-            if (GameConfigService.NewOrUpdate(newNpc)) return Ok(newNpc.Id);
+            if (GameConfigService.NewOrUpdate(newClass))
+            {
+                if (GameConfigService.NewOrUpdate(classDungeon))
+                {
+                    return Ok(newClass.Id);
+                }
+                GameConfigService.Delete<Npc>(newClass.Id);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
 
             return BadRequest();
         }
@@ -72,7 +78,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Udpate([FromBody] NpcDto npcDto, [FromRoute] Guid dungeonId)
+        public async Task<IActionResult> Udpate([FromBody] ClassDto classDto, [FromRoute] Guid dungeonId)
         {
 
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -83,20 +89,36 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            var npcToUpdate = GameConfigService.Get<Npc>(npcDto.Id);
-
-            if (npcToUpdate is null) return BadRequest();
-
             if (!GameConfigService.Get<Dungeon>(dungeonId).DungeonMasters.Contains(user)) return Unauthorized();
 
-            npcToUpdate.Status = (Status)npcDto.Status;
-            npcToUpdate.Name = npcDto.Name;
-            npcToUpdate.Text = npcDto.Text;
-            npcToUpdate.Description = npcDto.Description;
+            var classToUpdate = GameConfigService.Get<Class>(classDto.Id);
 
-            if (GameConfigService.NewOrUpdate(npcToUpdate)) return Ok();
+            if (classToUpdate is null) return BadRequest();
 
-            var oldNpc = GameConfigService.Get<Npc>(npcDto.Id);
+            var classDungeon = GameConfigService.Get<Dungeon>(dungeonId);
+            classDungeon.ConfiguredClasses.Remove(classToUpdate);
+
+            classToUpdate.Status = (Status)classDto.Status;
+            classToUpdate.Name = classDto.Name;
+            classToUpdate.DefaultDamage = classDto.DefaultDamage;
+            classToUpdate.DefaultHealth = classDto.DefaultHealth;
+            classToUpdate.DefaultProtection = classDto.DefaultProtection;
+            classToUpdate.Description = classDto.Description;
+            classToUpdate.
+
+            classDungeon.ConfiguredInspectables.Add(classToUpdate);
+
+            if (GameConfigService.NewOrUpdate(classToUpdate))
+            {
+                if (GameConfigService.NewOrUpdate(classDungeon))
+                {
+                    return Ok();
+                }
+                GameConfigService.Delete<Npc>(classToUpdate.Id);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
+            var oldNpc = GameConfigService.Get<Npc>(classDto.Id);
 
             var oldNpcDto = new NpcDto
             {

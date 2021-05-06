@@ -92,17 +92,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 });
             }
 
-
-
-
-            //newAvatar.Inventory.Add(avatar.);
-
             if (GameConfigService.NewOrUpdate(newAvatar)) return Ok(newAvatar.Id);
 
             return BadRequest();
         }
 
-       /* //Brauchen wir überhaupt eine Update?
+        /*//Brauchen wir überhaupt eine Update?
         [HttpPut]
         [Route("{dungeonId}")]
         [Authorize(Roles = "Player")]
@@ -181,6 +176,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Delete([FromRoute] Guid avatarId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -192,6 +188,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (user is null) return BadRequest();
 
             var avatarToDelete = GameConfigService.Get<Avatar>(avatarId);
+
+            if (avatarToDelete.Owner != user) return Unauthorized();
 
             if (avatarToDelete is null) return BadRequest();
 
@@ -265,10 +263,41 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     DefaultHealth = avatar.ChosenClass.DefaultHealth,
                     DefaultProtection = avatar.ChosenClass.DefaultProtection,
                     DefaultDamage = avatar.ChosenClass.DefaultDamage,
-                    InventoryTakeableDtos = avatar.Inventory.OfType<TakeableDto>().ToList(),
-                    InventoryUsableDtos = avatar.Inventory.OfType<UsableDto>().ToList(),
-                    InventoryConsumableDtos = avatar.Inventory.OfType<ConsumableDto>().ToList(),
-                    InventoryWearableDtos = avatar.Inventory.OfType<WearableDto>().ToList()
+                    InventoryTakeableDtos = avatar.Inventory.OfType<Takeable>().Select(x => new TakeableDto
+                    {
+                        Id = x.Id,
+                        Status = (int)x.Status,
+                        Description = x.Description,
+                        Name = x.Description,
+                        Weight = x.Weight
+                    }).ToList(),
+                    InventoryUsableDtos = avatar.Inventory.OfType<Usable>().Select(x => new UsableDto
+                    {
+                        Id = x.Id,
+                        Status = (int)x.Status,
+                        Description = x.Description,
+                        Name = x.Description,
+                        Weight = x.Weight,
+                        DamageBoost = x.DamageBoost
+                    }).ToList(),
+                    InventoryConsumableDtos = avatar.Inventory.OfType<Consumable>().Select(x => new ConsumableDto
+                    {
+                        Id = x.Id,
+                        Status = (int)x.Status,
+                        Description = x.Description,
+                        Name = x.Description,
+                        Weight = x.Weight,
+                        EffectDescription = x.EffectDescription
+                    }).ToList(),
+                    InventoryWearableDtos = avatar.Inventory.OfType<Wearable>().Select(x => new WearableDto
+                    {
+                        Id = x.Id,
+                        Status = (int)x.Status,
+                        Description = x.Description,
+                        Name = x.Description,
+                        Weight = x.Weight,
+                        ProtectionBoost = x.ProtectionBoost
+                    }).ToList(),
                 },
                 Gender = (int)avatar.ChosenGender,
                 CurrentHealth = avatar.CurrentHealth,
@@ -339,7 +368,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     }).ToList(),
                 }
             };
-
             return Ok(avatarDto);
         }
     }
