@@ -182,12 +182,6 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
             return item.EffectDescription;
         }
 
-        // TODO: diskutieren ob überhaupt noch nötig
-        public void SendPrivateMessage(string message)
-        {
-            throw new NotImplementedException();
-        }
-
         public ITakeable ThrowAway(string itemName)
         {
             var item = Inventory.FirstOrDefault(takeable => takeable.Name == itemName);

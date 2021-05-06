@@ -5,7 +5,7 @@ namespace Apollon.Mud.Shared
     /// <summary>
     /// Dto to submit a Dungeon Enter Request
     /// </summary>
-    public class SubmitDungeonEnterRequestDto      // TODO: In UML hinzufügen
+    public class SubmitDungeonEnterRequestDto
     {
         /// <summary>
         /// UserId of the user that wants to access the dungeon
