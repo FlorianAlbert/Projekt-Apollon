@@ -12,7 +12,7 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
     public interface IAuthorizationService
     {
         /// <summary>
-        /// 
+        /// Tries to log in a user with the given email and his/her secret.
         /// </summary>
         /// <param name="email"></param>
         /// <param name="secret"></param>
