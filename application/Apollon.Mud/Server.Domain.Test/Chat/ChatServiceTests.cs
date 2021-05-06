@@ -195,9 +195,8 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
-            var returnArray = _Fixture.Create<Avatar[]>();
-            returnArray.SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved)
-                .Returns(null as Avatar);
+            var returnArray = new Avatar[0];
+
 
             var senderAvatar = new Avatar();
 
