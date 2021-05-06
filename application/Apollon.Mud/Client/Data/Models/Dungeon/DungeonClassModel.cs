@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 
 namespace Apollon.Mud.Client.Data.Models
 {
@@ -43,15 +47,36 @@ namespace Apollon.Mud.Client.Data.Models
         [RegularExpression("[0-9]*", ErrorMessage = "Die Verteidigung kann nur eine Ganzzahl sein")]
         public string Protection { get; set; }
 
+
         /// <summary>
         /// A Class can have a StartInventory of up to 5 Items, but it isn't mandatory
         /// </summary>
-        public List<string> StartInventory { get; set; }
+        /// 
+        /// <summary>
+        /// The part of the start-inventory, which includes the takeables.
+        /// </summary>
+        public List<TakeableDto> InventoryTakeableDtos { get; set; } = new List<TakeableDto>();
+
+        /// <summary>
+        /// The part of the start-inventory, which includes the usables.
+        /// </summary>
+        public List<UsableDto> InventoryUsableDtos { get; set; } = new List<UsableDto>();
+
+        /// <summary>
+        /// The part of the start-inventory, which includes the consumables.
+        /// </summary>
+        public List<ConsumableDto> InventoryConsumableDtos { get; set; } = new List<ConsumableDto>();
+
+        /// <summary>
+        /// The part of the start-inventory, which includes the wearables.
+        /// </summary>
+        public List<WearableDto> InventoryWearableDtos { get; set; } = new List<WearableDto>();
 
         /// <summary>
         /// TODO
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }
+
     }
 }

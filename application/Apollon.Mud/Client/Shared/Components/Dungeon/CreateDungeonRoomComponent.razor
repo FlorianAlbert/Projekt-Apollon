@@ -868,10 +868,20 @@
 
             <hr class="featurette-divder" />
 
-            <div class="row  d-flex justify-content-center">
-                <button class="btn btn-success" style="max-width:20rem" type="submit">Speichern</button>
-            </div>
+            <div class="row">
+                <div class="col-3">
 
+                </div>
+                <div class="col">
+                    <button class="btn btn-success" style="max-width:20rem" type="submit">Speichern</button>
+                </div>
+                <div class="col">
+                    @if (!(chosenRoom == "NoRoom"))
+                    {
+                        <button class="btn btn-danger float-end" type="button" @onclick="RemoveRoomButtonClicked">Entfernen</button>
+                    }
+                </div>
+            </div>
 
         </EditForm>
 
@@ -1094,6 +1104,7 @@
             submitRoom.Consumables = new List<ConsumableDto>();
             submitRoom.Wearables = new List<WearableDto>();
             submitRoom.SpecialActions = roomRequestables;
+            submitRoom.Npcs = roomNpcs;
             for (int i = 0; i < roomItemCount; i++)
             {
                 switch (itemCategory[i])
@@ -1393,7 +1404,26 @@
         {
             roomItems[i] = "NoItem";
         }
+    }
 
+    private void RemoveRoomButtonClicked(System.EventArgs args)
+    {
+        dungeonRooms.Remove(dungeonRooms.Find(i => i.Name.Equals(chosenRoom)));
+        chosenRoom = "NoRoom";
+        dungeonRoomModel.Name = string.Empty;
+        dungeonRoomModel.Description = string.Empty;
+        dungeonRoomModel.RoomNorth = "NoRoom";
+        dungeonRoomModel.RoomEast = "NoRoom";
+        dungeonRoomModel.RoomWest = "NoRoom";
+        dungeonRoomModel.RoomSouth = "NoRoom";
+        dungeonRoomModel.Status = string.Empty;
+        roomRequestables.Clear();
+        roomNpcs.Clear();
+        roomItemCount = 0;
+        for (int i = 0; i < 8; i++)
+        {
+            roomItems[i] = "NoItem";
+        }
     }
 
     #region Add/Remove Buttons
@@ -1466,6 +1496,7 @@
         }
         selectedNpc = "NoNpc";
     }
+
     #endregion
     #endregion
 }

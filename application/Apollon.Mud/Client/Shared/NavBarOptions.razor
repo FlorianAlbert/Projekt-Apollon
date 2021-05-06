@@ -1,18 +1,18 @@
 ﻿<AuthorizeView>
     <Authorized>
         <li class="nav-item">
-            <a class="nav-link text-light" href="#">Home</a>
+            <a class="nav-link text-light" href="/">Home</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-light" href="games">Games</a>
+            <a class="nav-link text-light" href="dungeons">Games</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-light" href="dungeons">Your Dungeons</a>
+            <a class="nav-link text-light" href="YourDungeons">Deine Dungeons</a>
         </li>
-        <li class="nav-item me-0">
+        <!--<li class="nav-item me-0">-->
             @*<a class="nav-link text-light" href="Identity/Account/Manage">Hello, @context.User.Identity.Name!</a>*@
-            <a class="nav-link text-light" href="Identity/Account/Manage">Profile</a>
-        </li>
+            <!--<a class="nav-link text-light" href="Identity/Account/Manage">context.User.Identity.Name</a>
+        </li>-->
         <li class="nav-item">
             <form method="post" action="Identity/Account/LogOut">
                 <button type="submit" class="nav-link btn btn-link text-light">Log out</button>
