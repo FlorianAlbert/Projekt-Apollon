@@ -50,9 +50,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(typeof(RoomDto[]), StatusCodes.Status200OK)]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetAll([FromRoute] Guid dungeonId)
+        public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
-            var dungeon = GameConfigService.Get<Dungeon>(dungeonId);
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
             if (dungeon is null) return BadRequest();
 
@@ -149,9 +149,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public IActionResult Get([FromRoute] Guid dungeonId, [FromRoute] Guid roomId)
+        public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid roomId)
         {
-            var dungeon = GameConfigService.Get<Dungeon>(dungeonId);
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
             if (dungeon is null) return BadRequest();
 
@@ -260,7 +260,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> DeleteRoom([FromRoute] Guid dungeonId, [FromRoute] Guid roomId)
         {
-            var dungeon = GameConfigService.Get<Dungeon>(dungeonId);
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
             if (dungeon is null) return BadRequest();
 
@@ -290,7 +290,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateNew([FromRoute] Guid dungeonId, [FromBody] RoomDto roomDto)
         {
-            var dungeon = GameConfigService.Get<Dungeon>(dungeonId);
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
             if (dungeon is null) return BadRequest();
 
@@ -445,7 +445,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 }
             }
 
-            if (GameConfigService.NewOrUpdate(room)) return Ok(room.Id);
+            if (await GameConfigService.NewOrUpdate(room)) return Ok(room.Id);
 
             return BadRequest();
         }

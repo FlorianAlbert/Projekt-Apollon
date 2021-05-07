@@ -175,7 +175,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Delete([FromRoute] Guid dungeonId)
         {
-            var dungeonToDelete = GameConfigService.Get<Dungeon>(dungeonId);
+            var dungeonToDelete = await GameConfigService.Get<Dungeon>(dungeonId);
 
             if (dungeonToDelete is null) return BadRequest();
 
@@ -188,10 +188,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             var user = await UserService.GetUser(userId);
 
             if (user is null) return BadRequest();
-
-            var dungeonToDelete = await GameConfigService.Get<Dungeon>(dungeonId);
-
-            if (dungeonToDelete is null) return BadRequest();
 
             if (dungeonToDelete.DungeonOwner.Id != user.Id) return Unauthorized();
 
@@ -313,7 +309,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            var dungeon = GameConfigService.Get<Dungeon>(dungeonId);
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
             if (dungeon.DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
 
