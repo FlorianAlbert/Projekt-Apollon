@@ -21,7 +21,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
         public void Confirmation_AllInOne()
         {
             var tokenService = new TokenService();
-            var emptyGuid = new Guid();
+            var emptyGuid = Guid.Empty;
 
 
             var confirmationToken = tokenService.GenerateNewConfirmationToken();
@@ -38,7 +38,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
         public void Reset_AllInOne()
         {
             var tokenService = new TokenService();
-            var emptyGuid = new Guid();
+            var emptyGuid = Guid.Empty;
 
 
             var resetToken = tokenService.GenerateNewResetToken();
