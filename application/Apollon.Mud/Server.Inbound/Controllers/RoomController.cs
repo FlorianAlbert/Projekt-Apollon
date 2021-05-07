@@ -446,6 +446,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             }
 
             if (GameConfigService.NewOrUpdate(room)) return Ok(room.Id);
+
+            return BadRequest();
         }
     }
 }
