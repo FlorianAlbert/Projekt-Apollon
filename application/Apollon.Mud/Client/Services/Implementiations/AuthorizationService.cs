@@ -22,13 +22,16 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        public CancellationTokenSource TokenSource { get; set; }
+        public CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
         /// TODO
         /// </summary>
         public UserContext CurrentUserContext { get; set; }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
         public CustomAuthenticationStateProvider AuthenticationProvider { get; set; }
 
         /// <summary>
@@ -39,7 +42,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         public AuthorizationService(IHttpClientFactory httpClientFactory, UserContext userContext, CustomAuthenticationStateProvider authenticationStateProvider)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
-            TokenSource = new CancellationTokenSource();
+            CancellationTokenSource = new CancellationTokenSource();
             CurrentUserContext = userContext;
             AuthenticationProvider = authenticationStateProvider;
         }
@@ -56,7 +59,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
             userCredentials.UserEmail = userId;
             userCredentials.Password = secret;
 
-            CancellationToken cancellationToken = TokenSource.Token;
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
 
             var response = await HttpClient.PostAsJsonAsync("api/authorization/login", userCredentials, cancellationToken);
             if (response.StatusCode == HttpStatusCode.OK)
@@ -85,9 +88,8 @@ namespace Apollon.Mud.Client.Services.Implementiations
                 Password = secret
             };
 
-            CancellationToken cancellationToken = TokenSource.Token;
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            
             var response = await HttpClient.PostAsJsonAsync("api/user/registration/request", userCredentials, cancellationToken);
             return response.StatusCode == HttpStatusCode.OK;
         }
@@ -99,7 +101,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <returns></returns>
         public async Task<bool> ConfirmRegistration(Guid userId, string token)
         {
-            CancellationToken cancellationToken = TokenSource.Token;
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
 
             var response = await HttpClient.PostAsync("api/user/registration/confirmation/" + userId + "/" + token, null, cancellationToken);
 
@@ -124,7 +126,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <returns></returns>
         public async Task<bool> RequestPasswordReset(string userEmail)
         {
-            CancellationToken cancellationToken = TokenSource.Token;
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
             RequestPasswordResetDto resetDto =new RequestPasswordResetDto();
             resetDto.UserEmail = userEmail;
 
@@ -141,7 +143,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <returns></returns>
         public async Task<bool> ResetPasswordRequest(Guid userId, string token, string secret)
         {
-            CancellationToken cancellationToken = TokenSource.Token;
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
             PasswortResetConfirmationDto confirmationDto = new PasswortResetConfirmationDto
             {
                 NewPassword = secret,

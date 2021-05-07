@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs
@@ -6,6 +7,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs
     /// <summary>
     /// Describes a NPC an avatar can interact with
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Npc : Inspectable
     {
         /// <summary>

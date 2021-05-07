@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace Apollon.Mud.Shared.Dungeon.User
@@ -10,6 +7,7 @@ namespace Apollon.Mud.Shared.Dungeon.User
     /// <summary>
     /// Class which represents the data representation of IDungeonUser.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DungeonUserDto
     {
         /// <summary>
@@ -34,5 +32,16 @@ namespace Apollon.Mud.Shared.Dungeon.User
         /// </summary>
         [JsonProperty("EmailConfirmed")]
         public bool EmailConfirmed { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is DungeonUserDto dUDto)
+            {
+                return LastActive == dUDto.LastActive
+                       && Email == dUDto.Email
+                       && EmailConfirmed == dUDto.EmailConfirmed;
+            }
+                return base.Equals(obj);
+        }
     }
 }

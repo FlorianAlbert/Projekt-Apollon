@@ -5,14 +5,14 @@ using System.ComponentModel.DataAnnotations;
 namespace Apollon.Mud.Client.Data.Models
 {
     /// <summary>
-    /// This is the Model to validate the form a user has to fill out when creating or changing an Item of a dungeon
+    /// The Model to validate the form a user has to fill out when creating or changing an Item of a dungeon
     /// </summary>
     class DungeonItemModel
     {
         #region Inspectable
 
         /// <summary>
-        /// TODO
+        /// The Status, active or inactive
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }

@@ -220,8 +220,20 @@
 
             <hr class="featurette-divder" />
 
-            <div class="row  d-flex justify-content-center">
-                <button class="btn btn-success" style="max-width:20rem" type="submit">Speichern</button>
+            <div class="row">
+                <div class="col-3">
+
+                </div>
+                <div class="col">
+                    <button class="btn btn-success" style="max-width:20rem" type="submit">Speichern</button>
+                </div>
+                <div class="col">
+                    @if (!(chosenItem == "NoItem"))
+                    {
+                        <button class="btn btn-danger float-end" type="button" @onclick="RemoveItemButtonClicked">Entfernen</button>
+                    }
+                </div>
+
             </div>
         </EditForm>
 
@@ -229,6 +241,22 @@
 </div>
 
 @code {
+
+    #region Dungeon Information
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public bool IsDungeonMasterConfigurating { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    #endregion
 
     #region Bound variables
     /// <summary>
@@ -596,6 +624,39 @@
     /// <param name="args">Event Arguments</param>
     private void NewItemButtonClicked(System.EventArgs args)
     {
+        chosenItem = "NoItem";
+        chosenItemCategory = string.Empty;
+        dungeonItemModel.Name = string.Empty;
+        dungeonItemModel.Description = string.Empty;
+        dungeonItemModel.Weight = string.Empty;
+        dungeonItemModel.DamageBoost = string.Empty;
+        dungeonItemModel.ProtectionBoost = string.Empty;
+        dungeonItemModel.EffectDescription = string.Empty;
+        dungeonItemModel.Status = string.Empty;
+    }
+
+    private void RemoveItemButtonClicked(System.EventArgs args)
+    {
+        if(chosenItemCategory == "Inspectable")
+        {
+            dungeonInspectables.Remove(dungeonInspectables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2)))));
+        }
+        if(chosenItemCategory == "Takeable")
+        {
+            dungeonTakeables.Remove(dungeonTakeables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2)))));
+        }
+        if (chosenItemCategory == "Consumable")
+        {
+            dungeonConsumables.Remove(dungeonConsumables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2)))));
+        }
+        if (chosenItemCategory == "Usable")
+        {
+            dungeonUsables.Remove(dungeonUsables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2)))));
+        }
+        if (chosenItemCategory == "Wearable")
+        {
+            dungeonWearables.Remove(dungeonWearables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2)))));
+        }
         chosenItem = "NoItem";
         chosenItemCategory = string.Empty;
         dungeonItemModel.Name = string.Empty;

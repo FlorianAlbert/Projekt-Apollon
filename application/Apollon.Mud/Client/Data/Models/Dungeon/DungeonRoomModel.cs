@@ -4,7 +4,6 @@ using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Shared.Dungeon.Npc;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -54,37 +53,37 @@ namespace Apollon.Mud.Client.Data.Models
         public string RoomWest { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The List of Inspectables added to a dungeons room (no Inspectable-subclasses)
         /// </summary>
         public List<InspectableDto> Inspectables { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The List of Takeables added to a dungeons room (no Takeable-subclasses)
         /// </summary>
         public List<TakeableDto> Takeables { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The List of Consumables added to a dungeons room 
         /// </summary>
         public List<ConsumableDto> Consumables { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The List of Wearables added to a dungeons room 
         /// </summary>
         public List<WearableDto> Wearables { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The List of Usables added to a dungeons room 
         /// </summary>
         public List<UsableDto> Usables { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The List of Npcs added to a dungeons room 
         /// </summary>
         public List<NpcDto> Npcs { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The Status, active or inactive
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }

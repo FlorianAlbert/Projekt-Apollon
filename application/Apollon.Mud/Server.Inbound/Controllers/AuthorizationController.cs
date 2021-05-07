@@ -11,7 +11,7 @@ using IAuthorizationService = Apollon.Mud.Server.Domain.Interfaces.UserManagemen
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
     /// <summary>
-    /// Controller which is responsable for the authorization.
+    /// Controller which is responsible for the authorization.
     /// </summary>
     [Route("api/authorization")]
     [ApiController]

@@ -1,4 +1,6 @@
-﻿namespace Apollon.Mud.Server.Model.Implementations
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Apollon.Mud.Server.Model.Implementations
 {
     /// <summary>
     /// Possible Login events

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 
@@ -24,9 +25,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         public int WeightSum => Items.Sum(takeable => takeable.Weight);
 
         /// <inheritdoc cref="ICollection{Takeable}.Count"/>
+        [ExcludeFromCodeCoverage]
         public int Count => Items.Count;
 
         /// <inheritdoc cref="ICollection{Takeable}.IsReadOnly"/>
+        [ExcludeFromCodeCoverage]
         public bool IsReadOnly => false;
 
         /// <inheritdoc cref="ICollection{Takeable}.Add"/>
@@ -37,36 +40,42 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         }
 
         /// <inheritdoc cref="ICollection{Takeable}.Clear"/>
+        [ExcludeFromCodeCoverage]
         public void Clear()
         {
             Items.Clear();
         }
 
         /// <inheritdoc cref="ICollection{Takeable}.Contains"/>
+        [ExcludeFromCodeCoverage]
         public bool Contains(Takeable item)
         {
             return Items.Contains(item);
         }
 
         /// <inheritdoc cref="ICollection{Takeable}.CopyTo"/>
+        [ExcludeFromCodeCoverage]
         public void CopyTo(Takeable[] array, int arrayIndex)
         {
             Items.CopyTo(array, arrayIndex);
         }
 
         /// <inheritdoc cref="IEnumerable{Takeable}.GetEnumerator"/>
+        [ExcludeFromCodeCoverage]
         public IEnumerator<Takeable> GetEnumerator()
         {
             return Items.GetEnumerator();
         }
 
         /// <inheritdoc cref="ICollection{Takeable}.Remove"/>
+        [ExcludeFromCodeCoverage]
         public bool Remove(Takeable item)
         {
             return Items.Remove(item);
         }
 
         /// <inheritdoc cref="IEnumerable.GetEnumerator"/>
+        [ExcludeFromCodeCoverage]
         IEnumerator IEnumerable.GetEnumerator()
         {
             return Items.GetEnumerator();
@@ -77,6 +86,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// </summary>
         /// <param name="predicate">The condition the result item has to fulfill</param>
         /// <returns>The first matching item</returns>
+        [ExcludeFromCodeCoverage]
         public Takeable FirstOrDefault(Func<Takeable, bool> predicate)
         {
             return Items.FirstOrDefault(predicate);

@@ -24,25 +24,25 @@ namespace Apollon.Mud.Client.Data.Models
         public string Description { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The Epoch-Description of a dungeon
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon eine Epoche geben")]
         public string Epoch { get; set; }
 
         /// <summary>
-        /// TODO
+        /// A Dungeons default room's Name
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Startraum geben")]
         public string DefaultRoom { get; set; }
 
         /// <summary>
-        /// TODO
+        /// A Dungeons Visibility: public / private
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon eine Sichtbarkeit geben")]
         public string Visibility { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The Status, active or inactive
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }

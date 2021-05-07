@@ -1,7 +1,15 @@
-﻿using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+﻿using System;
+using System.Threading.Tasks;
+using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+using Apollon.Mud.Server.Inbound.Controllers;
+using Apollon.Mud.Server.Model.Implementations;
+using Apollon.Mud.Server.Model.Implementations.User;
+using Apollon.Mud.Shared.Dungeon.User;
 using Apollon.Mud.Shared.UserManagement.Authorization;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using Xunit;
 
@@ -9,38 +17,115 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
 {
     public class AuthorizationControllerTests
     {
-        private IFixture _Fixture;
+        private readonly IFixture _Fixture;
         public AuthorizationControllerTests()
         {
             _Fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
         }
 
         [Fact]
-        public void UnauthorizedLogin_Fails()
+        public async Task UnauthorizedLogin_Fails()
         {
-            var authorizationRequestDto = _Fixture.Build<AuthorizationRequestDto>().With(x => x.UserEmail, "").Create();
+            var emailMock = _Fixture.Create<string>();
+            var passwordMock = _Fixture.Create<string>();
 
-            var _authorizationService = Substitute.For<IAuthorizationService>();
+            var loginResultMock = _Fixture.Build<LoginResult>()
+                .With(x => x.Status, LoginResultStatus.Unauthorized)
+                .Create();
+
+            var authorizationRequestDtoMock = _Fixture.Build<AuthorizationRequestDto>()
+                .With(x => x.UserEmail, emailMock)
+                .With(x => x.Password, passwordMock)
+                .Create();
+
+            var authorizationServiceMock = Substitute.For<IAuthorizationService>();
+            authorizationServiceMock.Login(emailMock, passwordMock).Returns(loginResultMock);
 
 
+            var authorizationController = new AuthorizationController(authorizationServiceMock);
+            var result = await authorizationController.Login(authorizationRequestDtoMock);
+
+
+            await authorizationServiceMock.Received().Login(emailMock, passwordMock);
+            result.Should().BeOfType<UnauthorizedResult>();
         }
 
         [Fact]
-        public void BadRequestLogin_Fails()
+        public async Task BadRequestLogin_Fails()
         {
-            var authorizationRequestDto = _Fixture.Build<AuthorizationRequestDto>().With(x => x.UserEmail, "").Create();
+            var emailMock = _Fixture.Create<string>();
+            var passwordMock = _Fixture.Create<string>();
 
-            var _authorizationService = Substitute.For<IAuthorizationService>();
+            var loginResultMock = _Fixture.Build<LoginResult>()
+                .With(x => x.Status, LoginResultStatus.BadRequest)
+                .Create();
 
+            var authorizationRequestDtoMock = _Fixture.Build<AuthorizationRequestDto>()
+                .With(x => x.UserEmail, emailMock)
+                .With(x => x.Password, passwordMock)
+                .Create();
+
+            var authorizationServiceMock = Substitute.For<IAuthorizationService>();
+            authorizationServiceMock.Login(emailMock, passwordMock).Returns(loginResultMock);
+
+
+            var authorizationController = new AuthorizationController(authorizationServiceMock);
+            var result = await authorizationController.Login(authorizationRequestDtoMock);
+
+
+            await authorizationServiceMock.Received().Login(emailMock, passwordMock);
+            result.Should().BeOfType<BadRequestResult>();
         }
 
         [Fact]
-        public void Login_Succeds()
+        public async Task Login_Succeeds()
         {
-            var authorizationRequestDto = _Fixture.Build<AuthorizationRequestDto>().With(x => x.UserEmail, "").Create();
+            var emailMock = _Fixture.Create<string>();
+            var passwordMock = _Fixture.Create<string>();
+            var tokenMock = _Fixture.Create<string>();
 
-            var _authorizationService = Substitute.For<IAuthorizationService>();
+            var dungeonUserMock = _Fixture.Build<DungeonUser>()
+                .With(x => x.LastActive, DateTime.Now)
+                .With(x => x.Email, emailMock)
+                .With(x => x.EmailConfirmed, true)
+                .Create();
 
+            var dungeonUserDtoMock = _Fixture.Build<DungeonUserDto>()
+                .With(x => x.LastActive, dungeonUserMock.LastActive)
+                .With(x => x.Email, dungeonUserMock.Email)
+                .With(x => x.EmailConfirmed, dungeonUserMock.EmailConfirmed)
+                .Create();
+
+            var loginResultMock = _Fixture.Build<LoginResult>()
+                .With(x => x.Token, tokenMock)
+                .With(x => x.User, dungeonUserMock)
+                .With(x => x.Status, LoginResultStatus.OK)
+                .Create();
+
+            var authorizationRequestDtoMock = _Fixture.Build<AuthorizationRequestDto>()
+                .With(x => x.UserEmail, emailMock)
+                .With(x => x.Password, passwordMock)
+                .Create();
+
+            var authorizationResponseDtoMock = _Fixture.Build<AuthorizationResponseDto>()
+                .With(x => x.Token, tokenMock)
+                .With(x => x.DungeonUserDto, dungeonUserDtoMock)
+                .Create();
+
+            var authorizationServiceMock = Substitute.For<IAuthorizationService>();
+            authorizationServiceMock.Login(emailMock, passwordMock).Returns(loginResultMock);
+
+
+            var authorizationController = new AuthorizationController(authorizationServiceMock);
+            var result = await authorizationController.Login(authorizationRequestDtoMock);
+
+
+            await authorizationServiceMock.Received().Login(emailMock, passwordMock);
+            result.Should().BeOfType<OkObjectResult>();
+
+            var okResult = result as OkObjectResult;
+            Assert.NotNull(okResult);
+            okResult.Value.Should().Be(authorizationResponseDtoMock);
         }
 
     }

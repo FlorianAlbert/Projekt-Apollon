@@ -15,7 +15,7 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// <param name="message"></param>
         /// <param name="subject"></param>
         /// <returns></returns>
-        Task BroadcastEmail(ICollection<string> userEmails, string message, string subject); //ToDo in UML abändern
+        Task BroadcastEmail(ICollection<string> userEmails, string message, string subject);
 
         /// <summary>
         /// Sends one email to the userEmail with the given message and subject
@@ -24,6 +24,6 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// <param name="message"></param>
         /// <param name="subject"></param>
         /// <returns></returns>
-        Task SendEmail(string userEmail, string message, string subject); //ToDo in UML abändern
+        Task SendEmail(string userEmail, string message, string subject);
     }
 }

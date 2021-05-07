@@ -1,11 +1,13 @@
 ﻿using Apollon.Mud.Server.Model.Interfaces;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables
 {
     /// <summary>
     /// Describes an item that can be worn
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Wearable : Takeable
     {
         /// <summary>

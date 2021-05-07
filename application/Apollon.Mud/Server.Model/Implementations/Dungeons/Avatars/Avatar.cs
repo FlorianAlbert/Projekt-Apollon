@@ -1,4 +1,5 @@
-﻿using Apollon.Mud.Server.Model.Implementations.User;
+﻿using System.Diagnostics.CodeAnalysis;
+using Apollon.Mud.Server.Model.Implementations.User;
 using Apollon.Mud.Server.Model.ModelExtensions;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
@@ -51,21 +52,25 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <summary>
         /// The race of the avatar
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public Race ChosenRace { get; set; }
 
         /// <summary>
         /// The class of the avatar
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public Class ChosenClass { get; set; }
 
         /// <summary>
         /// The gender of the avatar
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public Gender ChosenGender { get; set; }
 
         /// <summary>
         /// The dungeon the avatar is part of
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public Dungeon Dungeon { get; set; }
 
         /// <summary>
@@ -123,6 +128,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <summary>
         /// The inventory with everything the avatar is carrying
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public Inventory Inventory 
         { 
             get => _Inventory ??= new Inventory();
@@ -132,21 +138,25 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <summary>
         /// The item the avatar is holding in his hand
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public Takeable HoldingItem { get; set; }
 
         /// <summary>
         /// The armor the avatar is wearing
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public Wearable Armor { get; set; }
 
         /// <summary>
         /// The room the avatar is in
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public Room CurrentRoom { get; set; }
 
         /// <summary>
         /// The user the avatar belongs to
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public DungeonUser Owner { get; set; }
 
         /// <inheritdoc cref="Inspectable.Description"/>

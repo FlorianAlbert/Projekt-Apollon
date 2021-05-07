@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.Chat;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Model.Implementations;
@@ -34,11 +35,11 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
         }
 
         /// <inheritdoc cref="IChatService.PostRoomMessage"/>
-        public void PostRoomMessage(Guid dungeonId, Guid avatarId, string message)
+        public async Task PostRoomMessage(Guid dungeonId, Guid avatarId, string message)      // TODO: In UML anpassen
         {
             Avatar senderAvatar;
 
-            senderAvatar = GameDbService.Get<Avatar>(avatarId);
+            senderAvatar = await GameDbService.Get<Avatar>(avatarId);
 
             if (senderAvatar is null) return;
 
@@ -56,7 +57,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
         }
 
         /// <inheritdoc cref="IChatService.PostWhisperMessage"/>
-        public void PostWhisperMessage(Guid dungeonId, Guid? senderAvatarId, string recipientName, string message)
+        public async Task PostWhisperMessage(Guid dungeonId, Guid? senderAvatarId, string recipientName, string message)      // TODO: In UML anpassen
         {
             Connection recipientConnection;
             string senderName;
@@ -71,15 +72,15 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
                 Avatar recipientAvatar;
                 try
                 {
-                    recipientAvatar = GameDbService.GetAll<Avatar>()
-                        .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
+                    var avatars = await GameDbService.GetAll<Avatar>();
+                    recipientAvatar = avatars.SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
                 }
                 catch (InvalidOperationException)
                 {
                     return;
                 }
 
-                var senderAvatar = GameDbService.Get<Avatar>(senderAvatarId.Value);
+                var senderAvatar = await GameDbService.Get<Avatar>(senderAvatarId.Value);
 
                 if (senderAvatar is null || recipientAvatar is null ||
                     (recipientConnection = ConnectionService.GetConnectionByAvatarId(recipientAvatar.Id)) is null)
@@ -93,10 +94,10 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
         }
 
         /// <inheritdoc cref="IChatService.PostGlobalMessage"/>
-        public void PostGlobalMessage(Guid dungeonId, string message)
+        public async Task PostGlobalMessage(Guid dungeonId, string message)
         {
-            var recipientAvatars = GameDbService.GetAll<Avatar>()
-                .Where(x => x.Dungeon.Id == dungeonId && x.Status == Status.Approved).ToArray();
+            var avatars = await GameDbService.GetAll<Avatar>();
+            var recipientAvatars = avatars.Where(x => x.Dungeon.Id == dungeonId && x.Status == Status.Approved).ToArray();
 
             var recipientChatConnectionIds = new List<string>();
             foreach (var avatar in recipientAvatars)

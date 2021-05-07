@@ -1,6 +1,8 @@
 ﻿@using Apollon.Mud.Client.Data.Models
 @using Apollon.Mud.Shared.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Room
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+
 <div class="card">
     <div class="card-header">
         <h2>Allgemeines</h2>
@@ -56,27 +58,30 @@
                 </div>
             </div>
 
-            <div class="form-group mt-5">
-                <div class="row">
-                    <div class="col-3">
-                        <h5 class="mt-1">Startraum</h5>
-                    </div>
-                    <div class="col">
-                        <div class="d-flex justify-content-center">
-                            <select class="form-select" @bind="dungeonModel.DefaultRoom">
-                                <option selected hidden value=""></option>
-                                @foreach (RoomDto room in dungeonRooms)
-                                {
-                                    <option value="@room.Name">@room.Name</option>
-                                }
-                            </select>
+            @if (DungeonHasRooms)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-3">
+                            <h5 class="mt-1">Startraum</h5>
                         </div>
-                        <div class="text-danger">
-                            <ValidationMessage For=@(() => dungeonModel.DefaultRoom) />
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="dungeonModel.DefaultRoom">
+                                    <option selected hidden value=""></option>
+                                    @foreach (RoomDto room in dungeonRooms)
+                                    {
+                                        <option value="@room.Name">@room.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="text-danger">
+                                <ValidationMessage For=@(() => dungeonModel.DefaultRoom) />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
 
             <div class="form-group mt-5">
                 <div class="row">
@@ -108,9 +113,18 @@
                     <div class="col">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" @bind="dungeonModel.Status">
-                                <option selected hidden value=""></option>
-                                <option value="Approved">Aktiv</option>
-                                <option value="Pending">Inaktiv</option>
+                                @if (DungeonMustBeInactive)
+                                {
+                                    <option selected hidden value=""></option>
+                                    <option value="Pending">Inaktiv</option>
+                                    <option value="Approved" disabled>Aktiv</option>
+                                }
+                                else
+                                {
+                                    <option selected hidden value=""></option>
+                                    <option value="Approved">Aktiv</option>
+                                    <option value="Pending">Inaktiv</option>
+                                }
                             </select>
                         </div>
                         <div class="text-danger">
@@ -131,6 +145,19 @@
 </div>
 
 @code {
+
+    /// <summary>
+    /// Represents wether a Dungeon has atleast 1 Room
+    /// </summary>
+    [Parameter]
+    public bool DungeonHasRooms { get; set; }
+
+    /// <summary>
+    /// Represents wether a dungeon has at least 1: Class, Race and Room to enable its activitiy
+    /// </summary>
+    [Parameter]
+    public bool DungeonMustBeInactive { get; set; }
+
     /// <summary>
     /// The attribute of the validation model when creating a new Race
     /// </summary>
@@ -147,15 +174,36 @@
     List<RoomDto> dungeonRooms = new List<RoomDto>();
 
     /// <summary>
+    /// The Guid of the dungeon
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    ///<summary>
+    /// Called when the Dungeon is saved or loaded
+    ///</summary>
+    [Parameter]
+    public EventCallback<Guid> OnDungeonSavedOrLoaded { get; set; }
+
+    /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
-        #region to Delete
-
-        #endregion
-
         dungeonContext = new EditContext(dungeonModel);
+
+        if (DungeonId != Guid.Empty)
+        {
+            var dungeonDto = await DungeonService.GetDungeon(DungeonId);
+            dungeonModel.Name = dungeonDto.DungeonName;
+            dungeonModel.Description = dungeonDto.DungeonDescription;
+            dungeonModel.Epoch = dungeonDto.DungeonEpoch;
+            dungeonModel.Status = dungeonDto.Status == 0 ? "Approved" : "Pending";
+            dungeonModel.Visibility = dungeonDto.Visibility == 0 ? "Private" : "Public";
+            DungeonId = dungeonDto.Id;
+            await OnDungeonSavedOrLoaded.InvokeAsync(DungeonId);
+            if (!(dungeonDto.DefaultRoom is null)) dungeonModel.DefaultRoom = dungeonDto.DefaultRoom.Name;
+        }
     }
 
     /// <summary>
@@ -174,13 +222,36 @@
             submitDungeon.DefaultRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonModel.DefaultRoom));
             submitDungeon.Visibility = dungeonModel.Visibility.Equals("Private") ? 0 : 1;
             submitDungeon.Status = dungeonModel.Status.Equals("Approved") ? 0 : 1;
-            //TODO Daten ans Backend senden
-        }
-        else
-        {
-            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
+            if (submitDungeon.Id == Guid.Empty)
+            {
+                var responseGuid = DungeonService.CreateNewDungeon(submitDungeon);
+                if (!(responseGuid is null))
+                {
+                    await OnDungeonSavedOrLoaded.InvokeAsync(responseGuid.Result);
+                    DungeonId = responseGuid.Result;
+                }
+            }
+            else
+            {
+                submitDungeon.Id = DungeonId;
+                var oldDungeonDto = await DungeonService.UpdateDungeon(submitDungeon);
+                if (!(oldDungeonDto is null))
+                {
+                    DungeonId = oldDungeonDto.Id;
+                    dungeonModel.Name = oldDungeonDto.DungeonName;
+                    dungeonModel.Description = oldDungeonDto.DungeonDescription;
+                    dungeonModel.Epoch = oldDungeonDto.DungeonEpoch;
+                    dungeonModel.Status = oldDungeonDto.Status == 0 ? "Approved" : "Pending";
+                    dungeonModel.Visibility = oldDungeonDto.Visibility == 0 ? "Private" : "Pending";
+                    if (!(oldDungeonDto.DefaultRoom is null))
+                    {
+                        dungeonModel.DefaultRoom = oldDungeonDto.DefaultRoom.Name;
+                    }
+                    //TODO: Maybe den User Benachrichtigen über Fehler?
+                }
+
+            }
         }
     }
-
 }
 

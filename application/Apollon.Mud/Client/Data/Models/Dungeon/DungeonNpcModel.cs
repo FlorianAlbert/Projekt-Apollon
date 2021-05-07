@@ -29,9 +29,9 @@ namespace Apollon.Mud.Client.Data.Models
         public string Text { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The Status, active or inactive
         /// </summary>
-        [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
+        [Required(ErrorMessage = "Du musst dem NPC einen Status geben")]
         public string Status { get; set; }
 
 

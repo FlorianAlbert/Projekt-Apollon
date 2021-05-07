@@ -53,13 +53,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             newDungeon.WhiteList.Add(user);
             newDungeon.DungeonMasters.Add(user);
 
-            if (GameConfigService.NewOrUpdate(newDungeon)) return Ok(newDungeon.Id);
+            if (await GameConfigService.NewOrUpdate(newDungeon)) return Ok(newDungeon.Id);
 
             return BadRequest();        // TODO: evtl ändern
         }
 
         [HttpPut]
         [Authorize(Roles = "Player")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(DungeonDto), StatusCodes.Status400BadRequest)]
         [Produces("application/json")]
@@ -75,7 +76,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            var dungeonToUpdate = GameConfigService.Get<Dungeon>(dungeonDto.Id);
+            var dungeonToUpdate = await GameConfigService.Get<Dungeon>(dungeonDto.Id);
 
             if (dungeonToUpdate is null) return BadRequest();
 
@@ -89,7 +90,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             dungeonToUpdate.Visibility = (Visibility) dungeonDto.Visibility;
             dungeonToUpdate.DungeonName = dungeonDto.DungeonName;
             dungeonToUpdate.DungeonDescription = dungeonDto.DungeonDescription;
-            dungeonToUpdate.DefaultRoom = GameConfigService.Get<Room>(dungeonDto.DefaultRoom.Id);
+            dungeonToUpdate.DefaultRoom = await GameConfigService.Get<Room>(dungeonDto.DefaultRoom.Id);
             dungeonToUpdate.DungeonEpoch = dungeonDto.DungeonEpoch;
             dungeonToUpdate.DungeonOwner = newDungeonOwner;
 
@@ -118,9 +119,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 dungeonToUpdate.BlackList.Add(dungeonUser);
             }
 
-            if (GameConfigService.NewOrUpdate(dungeonToUpdate)) return Ok();
+            if (await GameConfigService.NewOrUpdate(dungeonToUpdate)) return Ok();
 
-            var oldDungeon = GameConfigService.Get<Dungeon>(dungeonDto.Id);
+            var oldDungeon = await GameConfigService.Get<Dungeon>(dungeonDto.Id);
 
             var oldDungeonDto = new DungeonDto
             {
@@ -188,9 +189,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
+            var dungeonToDelete = await GameConfigService.Get<Dungeon>(dungeonId);
+
+            if (dungeonToDelete is null) return BadRequest();
+
             if (dungeonToDelete.DungeonOwner.Id != user.Id) return Unauthorized();
 
-            if (GameConfigService.Delete<Dungeon>(dungeonId)) return Ok();
+            if (await GameConfigService.Delete<Dungeon>(dungeonId)) return Ok();
 
             return BadRequest();            // TODO: evtl ändern
         }
@@ -201,7 +206,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetAll()
         {
-            var dungeons = GameConfigService.GetAll<Dungeon>();
+            var dungeons = await GameConfigService.GetAll<Dungeon>();
 
             var dungeonDtos = dungeons.Select(x => new DungeonDto
             {
@@ -229,7 +234,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId)
         {
-            var dungeon = GameConfigService.Get<Dungeon>(dungeonId);
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
             if (dungeon is null) return BadRequest();
 
@@ -260,7 +265,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> OpenDungeonEnterRequest([FromRoute] Guid dungeonId)
         {
-            var dungeon = GameConfigService.Get<Dungeon>(dungeonId);
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
             if (dungeon is null) return BadRequest();
 
