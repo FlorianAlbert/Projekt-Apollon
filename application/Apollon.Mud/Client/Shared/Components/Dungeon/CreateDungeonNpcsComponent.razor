@@ -1,5 +1,7 @@
 ﻿@using Apollon.Mud.Client.Data.Models
 @using Apollon.Mud.Shared.Dungeon.Npc
+@inject Apollon.Mud.Client.Services.Interfaces.INpcService NpcService
+
 <div class="card">
     <div class="card-header">
         <h2>NPCs</h2>
@@ -166,17 +168,19 @@
     /// </summary>
     protected override void OnInitialized()
     {
-        #region to Delete
+        dungeonNpcs = NpcService.GetAllNpcs(DungeonId).Result.ToList();
+
         npcContext = new EditContext(dungeonNpcModel);
 
+        #region to Delete
         NpcDto testNpc = new NpcDto();
         testNpc.Description = "KLa";
         testNpc.Name = "Leon";
         testNpc.Text = "Test Text????";
-
+        dungeonNpcs.Add(testNpc);
         #endregion
 
-        dungeonNpcs.Add(testNpc);
+
     }
 
     /// <summary>
@@ -202,9 +206,13 @@
             if (newNpc)
             {
                 dungeonNpcs.Add(submitNpc);
+                await NpcService.CreateNewNpc(submitNpc, DungeonId);
+            }
+            else
+            {
+                await NpcService.UpdateNpc(submitNpc, DungeonId);
             }
             chosenNpc = dungeonNpcModel.Name;
-            //TODO Daten ans Backend senden
         }
         else
         {
@@ -265,9 +273,12 @@
         dungeonNpcModel.Status = string.Empty;
     }
 
-    private void RemoveNpcButtonClicked(System.EventArgs args)
+    private async void RemoveNpcButtonClicked(System.EventArgs args)
     {
-        dungeonNpcs.Remove(dungeonNpcs.Find(i => i.Name.Equals(chosenNpc)));
+        var selectedNpc = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
+        dungeonNpcs.Remove(selectedNpc);
+        await NpcService.DeleteNpc(selectedNpc, DungeonId);
+
         chosenNpc = "NoNpc";
         dungeonNpcModel.Name = string.Empty;
         dungeonNpcModel.Description = string.Empty;
