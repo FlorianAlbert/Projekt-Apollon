@@ -46,17 +46,17 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (!GameConfigService.Get<Dungeon>(dungeonId).DungeonMasters.Contains(user)) return Unauthorized();
+            if (!(await GameConfigService.Get<Dungeon>(dungeonId)).DungeonMasters.Contains(user)) return Unauthorized();
 
             var newNpc = new Npc(npcDto.Text, npcDto.Description, npcDto.Name) { Status = (Status)npcDto.Status };
 
-            var npcDungeon = GameConfigService.Get<Dungeon>(dungeonId);
+            var npcDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
             npcDungeon.ConfiguredInspectables.Add(newNpc);
 
-            if (GameConfigService.NewOrUpdate(newNpc))
+            if (await GameConfigService.NewOrUpdate(newNpc))
             {
-                if (GameConfigService.NewOrUpdate(npcDungeon))
+                if (await GameConfigService.NewOrUpdate(npcDungeon))
                 {
                     return Ok(newNpc.Id);
                 }
@@ -84,13 +84,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (!GameConfigService.Get<Dungeon>(dungeonId).DungeonMasters.Contains(user)) return Unauthorized();
+            if (!(await GameConfigService.Get<Dungeon>(dungeonId)).DungeonMasters.Contains(user)) return Unauthorized();
 
-            var npcToUpdate = GameConfigService.Get<Npc>(npcDto.Id);
+            var npcToUpdate = await GameConfigService.Get<Npc>(npcDto.Id);
 
             if (npcToUpdate is null) return BadRequest();
 
-            var npcDungeon = GameConfigService.Get<Dungeon>(dungeonId);
+            var npcDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             npcDungeon.ConfiguredInspectables.Remove(npcToUpdate);
 
             npcToUpdate.Status = (Status)npcDto.Status;
@@ -100,9 +100,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             npcDungeon.ConfiguredInspectables.Add(npcToUpdate);
 
-            if (GameConfigService.NewOrUpdate(npcToUpdate))
+            if (await GameConfigService.NewOrUpdate(npcToUpdate))
             {
-                if (GameConfigService.NewOrUpdate(npcDungeon))
+                if (await GameConfigService.NewOrUpdate(npcDungeon))
                 {
                     return Ok();
                 }
@@ -110,7 +110,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
-            var oldNpc = GameConfigService.Get<Npc>(npcDto.Id);
+            var oldNpc = await GameConfigService.Get<Npc>(npcDto.Id);
 
             var oldNpcDto = new NpcDto
             {
@@ -140,13 +140,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (!GameConfigService.Get<Dungeon>(dungeonId).DungeonMasters.Contains(user)) return Unauthorized();
+            if (!(await GameConfigService.Get<Dungeon>(dungeonId)).DungeonMasters.Contains(user)) return Unauthorized();
 
             var npcToDelete = GameConfigService.Get<Npc>(npcId);
 
             if (npcToDelete is null) return BadRequest();
 
-            if (GameConfigService.Delete<Npc>(npcId)) return Ok();
+            if (await GameConfigService.Delete<Npc>(npcId)) return Ok();
 
             return BadRequest();     // TODO: evtl ändern
         }
@@ -158,11 +158,15 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
-            var npcs = GameConfigService.Get<Dungeon>(dungeonId).ConfiguredInspectables.OfType<Npc>();
+            var npcDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
+
+            if (npcDungeon is null) return BadRequest();
+
+            var npcs = npcDungeon.ConfiguredInspectables.OfType<Npc>();
 
             if (!(npcs is null))
             {
-                var specialActionDtos = npcs.Select(n => new NpcDto()
+                var npcDtos = npcs.Select(n => new NpcDto()
                 {
                     Id = n.Id,
                     Description = n.Description,
@@ -171,7 +175,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Status = (int)n.Status
                 }).ToList();
 
-                return Ok(specialActionDtos);
+                return Ok(npcDtos);
             }
 
             return BadRequest();
@@ -179,12 +183,16 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Player")]
-        [Route("{dungeonId}/{actionId}")]
+        [Route("{dungeonId}/{npcId}")]
         [ProducesResponseType(typeof(RequestableDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid actionId)
+        public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid npcId)
         {
-            var npc = GameConfigService.Get<Dungeon>(dungeonId).ConfiguredInspectables.OfType<Npc>().FirstOrDefault(n => n.Id == actionId);
+            var npcDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
+
+            if (npcDungeon is null) return BadRequest();
+
+            var npc = npcDungeon.ConfiguredInspectables.OfType<Npc>().FirstOrDefault(n => n.Id == npcId);
 
             if (npc is null) return BadRequest();
 

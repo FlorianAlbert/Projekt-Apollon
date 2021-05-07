@@ -168,9 +168,9 @@
     /// </summary>
     protected override void OnInitialized()
     {
-        dungeonNpcs = NpcService.GetAllNpcs(DungeonId).Result.ToList();
-
         npcContext = new EditContext(dungeonNpcModel);
+
+        dungeonNpcs = NpcService.GetAllNpcs(DungeonId).Result.ToList();
 
         #region to Delete
         NpcDto testNpc = new NpcDto();
@@ -277,7 +277,7 @@
     {
         var selectedNpc = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
         dungeonNpcs.Remove(selectedNpc);
-        await NpcService.DeleteNpc(selectedNpc, DungeonId);
+        await NpcService.DeleteNpc(selectedNpc.Id, DungeonId);
 
         chosenNpc = "NoNpc";
         dungeonNpcModel.Name = string.Empty;

@@ -1,6 +1,7 @@
 ﻿using Apollon.Mud.Server.Model.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables;
 
@@ -9,6 +10,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
     /// <summary>
     /// Describes a room in a dungeon
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Room : IApprovable
     {
         /// <summary>

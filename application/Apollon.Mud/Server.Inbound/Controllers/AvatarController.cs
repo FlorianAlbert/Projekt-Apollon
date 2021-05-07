@@ -59,9 +59,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            var newAvatar = new Avatar(avatar.Name, GameConfigService.Get<Race>(avatar.Race.Id), GameConfigService.Get<Class>(avatar.Class.Id), (Gender)avatar.Gender, GameConfigService.Get<Dungeon>(dungeonId), user)
+            var newAvatar = new Avatar(avatar.Name, await GameConfigService.Get<Race>(avatar.Race.Id), await GameConfigService.Get<Class>(avatar.Class.Id), (Gender)avatar.Gender, await GameConfigService.Get<Dungeon>(dungeonId), user)
             {
-                CurrentRoom = GameConfigService.Get<Dungeon>(dungeonId).DefaultRoom,
+                CurrentRoom = (await GameConfigService.Get<Dungeon>(dungeonId)).DefaultRoom,
             };
             foreach(TakeableDto takeable in avatar.Class.InventoryTakeableDtos)
             {
@@ -86,13 +86,16 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             }
             foreach (ConsumableDto consumable in avatar.Class.InventoryConsumableDtos)
             {
-                newAvatar.Inventory.Add(new Consumable(consumable.Name, consumable.Description, consumable.Weight, consumable.EffectDescription)
-                {
-                    Status = (Status)consumable.Status
-                });
+                newAvatar.Inventory.Add(new Consumable(consumable.Name, 
+                                        consumable.Description, 
+                                        consumable.Weight, 
+                                        consumable.EffectDescription)
+                                        {
+                                            Status = (Status)consumable.Status
+                                        });
             }
 
-            if (GameConfigService.NewOrUpdate(newAvatar)) return Ok(newAvatar.Id);
+            if (await GameConfigService.NewOrUpdate(newAvatar)) return Ok(newAvatar.Id);
 
             return BadRequest();
         }
@@ -187,13 +190,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            var avatarToDelete = GameConfigService.Get<Avatar>(avatarId);
+            var avatarToDelete = await GameConfigService.Get<Avatar>(avatarId);
 
             if (avatarToDelete.Owner != user) return Unauthorized();
 
             if (avatarToDelete is null) return BadRequest();
 
-            if (GameConfigService.Delete<Avatar>(avatarId)) return Ok();
+            if (await GameConfigService.Delete<Avatar>(avatarId)) return Ok();
 
             return BadRequest();            // TODO: evtl ändern
         }
@@ -205,7 +208,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
-            var avatars = GameConfigService.Get<Dungeon>(dungeonId).RegisteredAvatars;
+            var avatars = (await GameConfigService.Get<Dungeon>(dungeonId)).RegisteredAvatars;
 
             if (!(avatars is null)) return Ok(avatars);
 
@@ -219,7 +222,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllForUser([FromRoute] Guid dungeonId)
         {
-            var avatars = GameConfigService.Get<Dungeon>(dungeonId).RegisteredAvatars;
+            var avatars = (await GameConfigService.Get<Dungeon>(dungeonId)).RegisteredAvatars;
 
             var userAvatars = avatars.Where(x => x.Owner.Id == "User.Id");
 
@@ -235,7 +238,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid avatarId)
         {
-            var avatar = GameConfigService.Get<Dungeon>(dungeonId).RegisteredAvatars.FirstOrDefault(r => r.Id == avatarId);
+            var avatar = (await GameConfigService.Get<Dungeon>(dungeonId)).RegisteredAvatars.FirstOrDefault(r => r.Id == avatarId);
 
             if (avatar is null) return BadRequest();
 
@@ -263,7 +266,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     DefaultHealth = avatar.ChosenClass.DefaultHealth,
                     DefaultProtection = avatar.ChosenClass.DefaultProtection,
                     DefaultDamage = avatar.ChosenClass.DefaultDamage,
-                    InventoryTakeableDtos = avatar.Inventory.OfType<Takeable>().Where(x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select(x => new TakeableDto
+                    InventoryTakeableDtos = avatar.Inventory.OfType<Takeable>().Where
+                    (x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select
+                    (x => new TakeableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -271,7 +276,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Name = x.Description,
                         Weight = x.Weight
                     }).ToList(),
-                    InventoryUsableDtos = avatar.Inventory.OfType<Usable>().Select(x => new UsableDto
+                    InventoryUsableDtos = avatar.Inventory.OfType<Usable>().Select
+                    (x => new UsableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -280,7 +286,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Weight = x.Weight,
                         DamageBoost = x.DamageBoost
                     }).ToList(),
-                    InventoryConsumableDtos = avatar.Inventory.OfType<Consumable>().Select(x => new ConsumableDto
+                    InventoryConsumableDtos = avatar.Inventory.OfType<Consumable>().Select
+                    (x => new ConsumableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -289,7 +296,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Weight = x.Weight,
                         EffectDescription = x.EffectDescription
                     }).ToList(),
-                    InventoryWearableDtos = avatar.Inventory.OfType<Wearable>().Select(x => new WearableDto
+                    InventoryWearableDtos = avatar.Inventory.OfType<Wearable>().Select
+                    (x => new WearableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,

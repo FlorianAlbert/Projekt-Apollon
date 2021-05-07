@@ -171,7 +171,9 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
             var gameDbService = Substitute.For<IGameDbService>();
-            gameDbService.GetAll<Avatar>().SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved)
+            gameDbService.GetAll<Avatar>()
+                .Result
+                .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved)
                 .Throws<InvalidOperationException>();
 
             var chatService = new ChatService(gameDbService, connectionService, hubContext);
@@ -210,6 +212,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             gameDbService.Received().Get<Avatar>(avatarId);
             gameDbService.Received().GetAll<Avatar>()
+                .Result
                 .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
             connectionService.DidNotReceive().GetConnectionByAvatarId(Arg.Any<Guid>());
             hubContext.DidNotReceive().Clients.Client(Arg.Any<string>()).ReceiveChatMessage(Arg.Any<string>(), message);
@@ -235,6 +238,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             gameDbService.Received().Get<Avatar>(avatarId);
             gameDbService.Received().GetAll<Avatar>()
+                .Result
                 .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
             connectionService.DidNotReceive().GetConnectionByAvatarId(Arg.Any<Guid>());
             hubContext.DidNotReceive().Clients.Client(Arg.Any<string>()).ReceiveChatMessage(Arg.Any<string>(), message);
@@ -274,8 +278,9 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             gameDbService.Received().Get<Avatar>(avatarId);
             gameDbService.Received().GetAll<Avatar>()
-                .SingleOrDefault(x => x.Name == recipientAvatar.Name && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
-            connectionService.Received().GetConnectionByAvatarId(recipientAvatar.Id);
+                .Result
+                .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
+            connectionService.Received().GetConnectionByAvatarId(recipientAvatarId);
             hubContext.DidNotReceive().Clients.Client(Arg.Any<string>()).ReceiveChatMessage(Arg.Any<string>(), message);
         }
 
@@ -323,9 +328,9 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             gameDbService.Received().Get<Avatar>(avatarId);
             gameDbService.Received().GetAll<Avatar>()
-                .SingleOrDefault(x => x.Name == recipientAvatar.Name && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
-            connectionService.Received().GetConnectionByAvatarId(recipientAvatar.Id);
-            hubContext.Received().Clients.Client(chatConnectionId).ReceiveChatMessage(senderAvatar.Name, message);
+                .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
+            connectionService.Received().GetConnectionByAvatarId(recipientAvatarId);
+            hubContext.Received().Clients.Client(chatConnectionId).ReceiveChatMessage(senderAvatarName, message);
         }
 
         [Fact]
@@ -351,6 +356,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var gameDbService = Substitute.For<IGameDbService>();
             gameDbService.GetAll<Avatar>()
+                .Result
                 .Where(x => x.Dungeon.Id == dungeonId && x.Status == Status.Approved).ToArray().Returns(returnArray);
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 

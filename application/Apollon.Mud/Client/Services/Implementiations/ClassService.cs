@@ -1,7 +1,9 @@
 ﻿using Apollon.Mud.Client.Services.Interfaces;
+using Apollon.Mud.Shared.Dungeon.Class;
 using Apollon.Mud.Shared.Dungeon.Npc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Client.Services.Implementiations
 {
-    public class NpcService : INpcService
+    public class ClassService : IClassService
     {
         /// <summary>
         /// TODO
@@ -26,7 +28,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// TODO
         /// </summary>
         /// <param name="httpClient"></param>
-        public NpcService(IHttpClientFactory httpClientFactory)
+        public ClassService(IHttpClientFactory httpClientFactory)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
             CancellationTokenSource = new CancellationTokenSource();
@@ -35,14 +37,14 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
+        /// <param name="classDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public async Task<Guid> CreateNewNpc(NpcDto npcDto, Guid dungeonId)
+        public async Task<Guid> CreateNewClass(ClassDto classDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PostAsJsonAsync("api/npcs/{dungeonId}", npcDto, cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("api/classes/" + dungeonId, classDto, cancellationToken);
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var responseGuid = await response.Content.ReadFromJsonAsync<Guid>();
@@ -54,16 +56,16 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
+        /// <param name="classDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public async Task<NpcDto> UpdateNpc(NpcDto npcDto, Guid dungeonId)
+        public async Task<ClassDto> UpdateClass(ClassDto classDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PutAsJsonAsync("api/npcs/{dungeonId}", npcDto, cancellationToken);
+            var response = await HttpClient.PutAsJsonAsync("api/classes", classDto, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<NpcDto>();
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ClassDto>();
 
             return null;
         }
@@ -71,34 +73,49 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
+        /// <param name="classId"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public Task<bool> DeleteNpc(Guid npcId, Guid dungeonId)
+        public async Task<bool> DeleteClass(Guid classId, Guid dungeonId)
         {
-            throw new NotImplementedException();
-        }
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <param name="npcDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
-        public Task<ICollection<NpcDto>> GetAllNpcs(Guid dungeonId)
-        {
-            throw new NotImplementedException();
+            var response = await HttpClient.DeleteAsync("api/classes/" + dungeonId + "/" + classId, cancellationToken);
+
+            return response.StatusCode == HttpStatusCode.OK;
         }
 
         /// <summary>
         /// TODO
         /// </summary>
         /// <param name="dungeonId"></param>
-        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public Task<NpcDto> GetNpc(Guid dungeonId, Guid actionId)
+        public async Task<ICollection<ClassDto>> GetAllClasses(Guid dungeonId)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.GetAsync("api/dungeons" + dungeonId, cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<ClassDto>>();
+
+            return null;
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="dungeonId"></param>
+        /// <param name="actionId"></param>
+        /// <returns></returns>
+        public async Task<ClassDto> GetClass(Guid dungeonId, Guid classId)
+        {
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.GetAsync("api/dungeons/" + dungeonId + "/" + classId, cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ClassDto>();
+
+            return null;
         }
 
     }

@@ -180,7 +180,7 @@
     public Guid DungeonId { get; set; }
 
     ///<summary>
-    /// Called when the Dungeon is saved or loaded 
+    /// Called when the Dungeon is saved or loaded
     ///</summary>
     [Parameter]
     public EventCallback<Guid> OnDungeonSavedOrLoaded { get; set; }
@@ -191,6 +191,7 @@
     protected async override void OnInitialized()
     {
         dungeonContext = new EditContext(dungeonModel);
+
         if (DungeonId != Guid.Empty)
         {
             var dungeonDto = await DungeonService.GetDungeon(DungeonId);
@@ -224,8 +225,11 @@
             if (submitDungeon.Id == Guid.Empty)
             {
                 var responseGuid = DungeonService.CreateNewDungeon(submitDungeon);
-                await OnDungeonSavedOrLoaded.InvokeAsync(responseGuid.Result);
-                DungeonId = responseGuid.Result;
+                if (!(responseGuid is null))
+                {
+                    await OnDungeonSavedOrLoaded.InvokeAsync(responseGuid.Result);
+                    DungeonId = responseGuid.Result;
+                }
             }
             else
             {

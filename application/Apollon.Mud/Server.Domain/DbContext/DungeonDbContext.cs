@@ -147,7 +147,7 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasOne(e => e.ChosenClass);
             builder.Entity<Avatar>()
                 .HasOne(e => e.CurrentRoom)
-                .WithMany(x => x.Inspectables as ICollection<Avatar>);  // CHECK: könnte schief gehen
+                .WithMany(x => x.Inspectables as ICollection<Avatar>);  // CHECK: könnte schief gehen - denke des ist nicht richtig -Etienne
             builder.Entity<Avatar>()
                 .HasOne(e => e.Dungeon)
                 .WithMany(x => x.RegisteredAvatars);

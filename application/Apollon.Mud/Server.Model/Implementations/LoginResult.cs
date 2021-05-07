@@ -1,10 +1,12 @@
-﻿using Apollon.Mud.Server.Model.Implementations.User;
+﻿using System.Diagnostics.CodeAnalysis;
+using Apollon.Mud.Server.Model.Implementations.User;
 
 namespace Apollon.Mud.Server.Model.Implementations
 {
     /// <summary>
     /// Result of login at the AuthorizationController
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class LoginResult
     {
         /// <summary>

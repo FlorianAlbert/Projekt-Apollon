@@ -1,7 +1,6 @@
-﻿using Apollon.Mud.Shared.Dungeon.Npc;
+﻿using Apollon.Mud.Shared.Dungeon.Class;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +10,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
     /// <summary>
     /// TODO
     /// </summary>
-    public interface INpcService
+    public interface IClassService
     {
         /// <summary>
         /// TODO
@@ -26,41 +25,39 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
-        /// <param name="dungeonId"></param>
+        /// <param name="classDto"></param>
         /// <returns></returns>
-        Task<Guid> CreateNewNpc(NpcDto npcDto, Guid dungeonId);
+        Task<Guid> CreateNewClass(ClassDto classDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
-        /// <param name="dungeonId"></param>
+        /// <param name="classDto"></param>
         /// <returns></returns>
-        Task<NpcDto> UpdateNpc(NpcDto npcDto, Guid dungeonId);
+        Task<ClassDto> UpdateClass(ClassDto classDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
-        /// <param name="dungeonId"></param>
+        /// <param name="classDto"></param>
         /// <returns></returns>
         /// 
-        Task<bool> DeleteNpc(Guid npcId, Guid dungeonId);
+        Task<bool> DeleteClass(Guid classId, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="dungeonId"></param>
+        /// <param></param>
         /// <returns></returns>
-        Task<ICollection<NpcDto>> GetAllNpcs(Guid dungeonId);
+        Task<ICollection<ClassDto>> GetAllClasses(Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <param name="actionId"></param>
+        /// <param></param>
         /// <returns></returns>
-        Task<NpcDto> GetNpc(Guid dungeonId, Guid actionId);
+        Task<ClassDto> GetClass(Guid dungeonId, Guid actionId);
+
+
     }
 }

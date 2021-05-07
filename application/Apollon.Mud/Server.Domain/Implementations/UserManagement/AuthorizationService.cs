@@ -13,8 +13,10 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 {
+    /// <inheritdoc cref="IAuthorizationService"/>
     public class AuthorizationService : IAuthorizationService
     {
+        #region member
         /// <summary>
         /// The service for user-db functionality.
         /// </summary>
@@ -26,33 +28,30 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         private readonly SignInManager<DungeonUser> _signInManager;
 
         /// <summary>
-        /// ToDo
+        /// Manager to check which roles one user is assigned to.
         /// </summary>
         private readonly UserManager<DungeonUser> _userManager;
-
-        /// <summary>
-        /// Configuration to load the settings.
-        /// </summary>
-        private IConfiguration _configuration;
 
         /// <summary>
         /// The secret to generate a JWT.
         /// </summary>
         private readonly string _tokenSecret;
-
+        #endregion
+        
         public AuthorizationService(IUserDbService userDbService, SignInManager<DungeonUser> signInManager, UserManager<DungeonUser> userManager, IConfiguration configuration)
         {
             _userDbService = userDbService;
             _signInManager = signInManager;
             _userManager = userManager;
-            _configuration = configuration;
-            _tokenSecret = _configuration["JwtBearer:TokenSecret"];  //ToDo passt es so?
+            _tokenSecret = configuration["JwtBearer:TokenSecret"];  //ToDo passt es so?
         }
 
+        #region methods
+        /// <inheritdoc cref="IAuthorizationService.Login"/>
         public async Task<LoginResult> Login(string email, string secret)
         {
             var user = await _userDbService.GetUserByEmail(email);
-            if (user == null) return new LoginResult
+            if (user is null) return new LoginResult
             {
                 Status = LoginResultStatus.BadRequest
             };
@@ -76,8 +75,12 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             };
         }
 
-        //ToDo in UML übertragen
-        private async Task<string> GenerateToken(DungeonUser user)
+        /// <summary>
+        /// Generates a JWT for the user.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        internal async Task<string> GenerateToken(DungeonUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_tokenSecret);
@@ -89,7 +92,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
             foreach (var role in Enum.GetNames<Roles>())
             {
-                if (await _userManager.IsInRoleAsync(user, role)) //ToDo Aufruf in UserDbService kapseln für konsistente Logik
+                if (await _userManager.IsInRoleAsync(user, role))
                 {
                     listClaims.Add(new Claim(ClaimTypes.Role, role));
                 }
@@ -103,5 +106,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+        #endregion
     }
 }

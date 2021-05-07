@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Model.Interfaces;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables
@@ -6,6 +7,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables
     /// <summary>
     /// Describes a special action that can be defined by the Dungeon Master and which will be forwarded to him
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Requestable : IApprovable
     {
         /// <summary>

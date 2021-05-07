@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Model.Interfaces;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables
@@ -6,6 +7,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeabl
     /// <summary>
     /// Describes an item that can be used as a weapon
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Usable : Takeable
     {
         /// <summary>

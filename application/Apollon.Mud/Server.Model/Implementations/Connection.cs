@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Apollon.Mud.Server.Model.Implementations
 {
     /// <summary>
     /// Describes a connection that exists during playing in a dungeon
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Connection
     {
         /// <summary>

@@ -2,6 +2,7 @@
 using Apollon.Mud.Server.Model.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
@@ -14,6 +15,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
     /// <summary>
     /// Describes a dungeon
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Dungeon : IApprovable
     {
         /// <summary>
