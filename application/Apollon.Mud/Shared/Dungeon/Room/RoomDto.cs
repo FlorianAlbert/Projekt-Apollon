@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Shared.Dungeon.Inspectable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
@@ -17,6 +15,7 @@ namespace Apollon.Mud.Shared.Dungeon.Room
     /// <summary>
     /// Class which represents the data representation of IRoom.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class RoomDto
     {
         /// <summary>

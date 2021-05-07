@@ -1,4 +1,5 @@
-﻿using Apollon.Mud.Shared.Dungeon.User;
+﻿using System.Diagnostics.CodeAnalysis;
+using Apollon.Mud.Shared.Dungeon.User;
 using Newtonsoft.Json;
 
 namespace Apollon.Mud.Shared.UserManagement.Authorization
@@ -6,6 +7,7 @@ namespace Apollon.Mud.Shared.UserManagement.Authorization
     /// <summary>
     /// Class which represents an authorization request response.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class AuthorizationResponseDto
     {
         /// <summary>
@@ -19,5 +21,14 @@ namespace Apollon.Mud.Shared.UserManagement.Authorization
         /// </summary>
         [JsonProperty("DungeonUserDto")]
         public DungeonUserDto DungeonUserDto { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is AuthorizationResponseDto aRDto)
+            {
+                return Token == aRDto.Token && DungeonUserDto.Equals(aRDto.DungeonUserDto);
+            }
+            return base.Equals(obj);
+        }
     }
 }

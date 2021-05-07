@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Dungeon.User;
 using Newtonsoft.Json;
@@ -13,6 +10,7 @@ namespace Apollon.Mud.Shared.Dungeon
     /// <summary>
     /// Class which represents the data representation of IDungeon.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DungeonDto
     {
 

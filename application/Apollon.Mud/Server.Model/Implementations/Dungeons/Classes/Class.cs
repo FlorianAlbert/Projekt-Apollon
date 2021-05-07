@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Interfaces;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
@@ -8,6 +9,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
     /// <summary>
     /// Describes a class an avatar can be part of
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Class : IChoosable
     {
         /// <summary>
