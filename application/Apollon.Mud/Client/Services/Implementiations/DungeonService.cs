@@ -49,8 +49,9 @@ namespace Apollon.Mud.Client.Services.Implementiations
             var response = await HttpClient.PostAsJsonAsync("api/dungeons", dungeonDto, cancellationToken);
             if(response.StatusCode == HttpStatusCode.OK)
             {
-                var responseGuid = await response.Content.ReadFromJsonAsync<Guid>();
-                return responseGuid;
+                var responseGuid = response.Content.ReadFromJsonAsync<Guid>();
+                responseGuid.Wait();
+                return responseGuid.Result;
             }
             return Guid.Empty;
         }
