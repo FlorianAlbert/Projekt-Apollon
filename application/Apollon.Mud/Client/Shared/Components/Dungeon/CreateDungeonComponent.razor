@@ -112,23 +112,20 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            @if (DungeonMustBeInactive)
-                            {
-                                <TooltipComponent Text="Du musst zuerst die initiale Erstellung abschließen">
-                                    <select class="form-select" @bind="dungeonModel.Status" disabled>
-                                        <option value="Approved">Aktiv</option>
-                                        <option value="Pending" selected>Inaktiv</option>
-                                    </select>
-                                </TooltipComponent>
-                            }
-                            else
-                            {
-                                <select class="form-select" @bind="dungeonModel.Status">
+                            <select class="form-select" @bind="dungeonModel.Status">
+                                @if (DungeonMustBeInactive)
+                                {
+                                    <option selected hidden value=""></option>
+                                    <option value="Pending">Inaktiv</option>
+                                    <option value="Approved" disabled>Aktiv</option>
+                                }
+                                else
+                                {
                                     <option selected hidden value=""></option>
                                     <option value="Approved">Aktiv</option>
                                     <option value="Pending">Inaktiv</option>
-                                </select>
-                            }
+                                }
+                            </select>
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonModel.Status) />
