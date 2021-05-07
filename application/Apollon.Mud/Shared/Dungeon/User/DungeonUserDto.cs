@@ -27,5 +27,16 @@ namespace Apollon.Mud.Shared.Dungeon.User
         /// </summary>
         [JsonProperty("EmailConfirmed")]
         public bool EmailConfirmed { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is DungeonUserDto dUDto)
+            {
+                return LastActive == dUDto.LastActive
+                       && Email == dUDto.Email
+                       && EmailConfirmed == dUDto.EmailConfirmed;
+            }
+                return base.Equals(obj);
+        }
     }
 }

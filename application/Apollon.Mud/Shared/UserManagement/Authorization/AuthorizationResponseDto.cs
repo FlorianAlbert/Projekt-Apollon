@@ -21,5 +21,14 @@ namespace Apollon.Mud.Shared.UserManagement.Authorization
         /// </summary>
         [JsonProperty("DungeonUserDto")]
         public DungeonUserDto DungeonUserDto { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is AuthorizationResponseDto aRDto)
+            {
+                return Token == aRDto.Token && DungeonUserDto.Equals(aRDto.DungeonUserDto);
+            }
+            return base.Equals(obj);
+        }
     }
 }

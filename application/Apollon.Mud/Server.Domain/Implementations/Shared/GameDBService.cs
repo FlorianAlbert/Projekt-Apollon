@@ -7,9 +7,6 @@ using Apollon.Mud.Server.Domain.DbContext;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Interfaces;
-using Apollon.Mud.Server.Outbound.Hubs;
-using Apollon.Mud.Shared.HubContract;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Apollon.Mud.Server.Domain.Implementations.Shared

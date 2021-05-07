@@ -51,8 +51,6 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
                 null,
                 null);
 
-            
-
             var configurationMock = Substitute.For<IConfiguration>();
 
 
