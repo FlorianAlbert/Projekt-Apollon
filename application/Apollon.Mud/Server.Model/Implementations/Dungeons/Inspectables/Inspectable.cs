@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Model.Interfaces;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables
@@ -6,6 +7,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables
     /// <summary>
     /// Describes an item that can be inspected by an avatar
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Inspectable : IApprovable
     {
         /// <summary>

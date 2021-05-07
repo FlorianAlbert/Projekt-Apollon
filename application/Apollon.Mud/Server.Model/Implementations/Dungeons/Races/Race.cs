@@ -1,11 +1,13 @@
 ﻿using Apollon.Mud.Server.Model.Interfaces;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Races
 {
     /// <summary>
     /// Describes a race an avatar can have
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Race : IChoosable
     {
         /// <summary>

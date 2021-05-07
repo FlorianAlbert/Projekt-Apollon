@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables
 {
     /// <summary>
     /// Describes an item that can be consumed
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Consumable : Takeable
     {
         /// <summary>

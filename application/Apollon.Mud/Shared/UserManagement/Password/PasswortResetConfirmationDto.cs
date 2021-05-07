@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace Apollon.Mud.Shared.UserManagement.Password
@@ -6,6 +7,7 @@ namespace Apollon.Mud.Shared.UserManagement.Password
     /// <summary>
     /// Class which represents the confimation of the request to reset the password of an user.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class PasswortResetConfirmationDto
     {
         /// <summary>

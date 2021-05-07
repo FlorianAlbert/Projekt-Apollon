@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace Apollon.Mud.Shared.UserManagement.Registration
 {
     /// <summary>
     ///  Class which represents a registration request.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class RegistrationRequestDto
     {
         /// <summary>

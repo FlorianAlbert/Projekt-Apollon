@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace Apollon.Mud.Shared.UserManagement.Authorization
 {
     /// <summary>
     /// Class which represents an authorization request.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class AuthorizationRequestDto
     {
         /// <summary>
