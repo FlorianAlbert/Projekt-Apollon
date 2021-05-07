@@ -8,6 +8,19 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Races
     /// </summary>
     public class Race : IChoosable
     {
+        private string empty;
+        private int v1;
+        private int v2;
+        private int v3;
+
+        public Race(string empty, int v1, int v2, int v3)
+        {
+            this.empty = empty;
+            this.v1 = v1;
+            this.v2 = v2;
+            this.v3 = v3;
+        }
+
         /// <summary>
         /// Creates new instance of Race
         /// </summary>
