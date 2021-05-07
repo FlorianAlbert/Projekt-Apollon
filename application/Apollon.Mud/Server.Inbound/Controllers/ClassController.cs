@@ -226,9 +226,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var classToDelete = GameConfigService.Get<Class>(classId);
 
-            if (npcToDelete is null) return BadRequest();
+            if (classToDelete is null) return BadRequest();
 
-            if (GameConfigService.Delete<Npc>(npcId)) return Ok();
+            if (GameConfigService.Delete<Class>(classId)) return Ok();
 
             return BadRequest();     // TODO: evtl ändern
         }
@@ -240,46 +240,139 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
-            var npcs = GameConfigService.Get<Dungeon>(dungeonId).ConfiguredInspectables.OfType<Npc>();
+            var classesDungeon = GameConfigService.Get<Dungeon>(dungeonId);
 
-            if (!(npcs is null))
+            if (classesDungeon is null) return BadRequest();
+
+            var classes = classesDungeon.ConfiguredClasses;
+
+            if (!(classes is null))
             {
-                var specialActionDtos = npcs.Select(n => new NpcDto()
+                var ClassDtos = classes.Select(c => new ClassDto()
                 {
-                    Id = n.Id,
-                    Description = n.Description,
-                    Name = n.Name,
-                    Text = n.Text,
-                    Status = (int)n.Status
+                    Id = c.Id,
+                    Description = c.Description,
+                    Name = c.Name,
+                    Status = (int)c.Status,
+                    DefaultDamage = c.DefaultDamage,
+                    DefaultHealth = c.DefaultHealth,
+                    DefaultProtection = c.DefaultProtection,
+                    InventoryTakeableDtos = c.StartInventory.OfType<Takeable>().Where
+                    (x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select
+                    (x => new TakeableDto
+                    {
+                        Id = x.Id,
+                        Status = (int)x.Status,
+                        Description = x.Description,
+                        Name = x.Description,
+                        Weight = x.Weight
+                    }).ToList(),
+                    InventoryUsableDtos = c.StartInventory.OfType<Usable>().Select
+                    (x => new UsableDto
+                    {
+                        Id = x.Id,
+                        Status = (int)x.Status,
+                        Description = x.Description,
+                        Name = x.Description,
+                        Weight = x.Weight,
+                        DamageBoost = x.DamageBoost
+                    }).ToList(),
+                    InventoryConsumableDtos = c.StartInventory.OfType<Consumable>().Select
+                    (x => new ConsumableDto
+                    {
+                        Id = x.Id,
+                        Status = (int)x.Status,
+                        Description = x.Description,
+                        Name = x.Description,
+                        Weight = x.Weight,
+                        EffectDescription = x.EffectDescription
+                    }).ToList(),
+                    InventoryWearableDtos = c.StartInventory.OfType<Wearable>().Select
+                    (x => new WearableDto
+                    {
+                        Id = x.Id,
+                        Status = (int)x.Status,
+                        Description = x.Description,
+                        Name = x.Description,
+                        Weight = x.Weight,
+                        ProtectionBoost = x.ProtectionBoost
+                    }).ToList(),
                 }).ToList();
 
-                return Ok(specialActionDtos);
+                return Ok(ClassDtos);
             }
-
             return BadRequest();
         }
 
         [HttpGet]
         [Authorize(Roles = "Player")]
-        [Route("{dungeonId}/{actionId}")]
+        [Route("{dungeonId}/{classId}")]
         [ProducesResponseType(typeof(RequestableDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid actionId)
+        public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid classId)
         {
-            var npc = GameConfigService.Get<Dungeon>(dungeonId).ConfiguredInspectables.OfType<Npc>().FirstOrDefault(n => n.Id == actionId);
+            var classesDungeon = GameConfigService.Get<Dungeon>(dungeonId);
 
-            if (npc is null) return BadRequest();
+            if (classesDungeon is null) return BadRequest();
 
-            var npcDto = new NpcDto
+            var classToSend = classesDungeon.ConfiguredClasses.FirstOrDefault(c => c.Id == classId);
+
+            if (!(classToSend is null))
             {
-                Text = npc.Text,
-                Name = npc.Name,
-                Description = npc.Description,
-                Status = (int)npc.Status,
-                Id = npc.Id
-            };
+                var ClassDto = new ClassDto()
+                {
+                    Id = classToSend.Id,
+                    Description = classToSend.Description,
+                    Name = classToSend.Name,
+                    Status = (int)classToSend.Status,
+                    DefaultDamage = classToSend.DefaultDamage,
+                    DefaultHealth = classToSend.DefaultHealth,
+                    DefaultProtection = classToSend.DefaultProtection,
+                    InventoryTakeableDtos = classToSend.StartInventory.OfType<Takeable>().Where
+                    (x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select
+                    (x => new TakeableDto
+                    {
+                        Id = x.Id,
+                        Status = (int)x.Status,
+                        Description = x.Description,
+                        Name = x.Description,
+                        Weight = x.Weight
+                    }).ToList(),
+                    InventoryUsableDtos = classToSend.StartInventory.OfType<Usable>().Select
+                    (x => new UsableDto
+                    {
+                        Id = x.Id,
+                        Status = (int)x.Status,
+                        Description = x.Description,
+                        Name = x.Description,
+                        Weight = x.Weight,
+                        DamageBoost = x.DamageBoost
+                    }).ToList(),
+                    InventoryConsumableDtos = classToSend.StartInventory.OfType<Consumable>().Select
+                    (x => new ConsumableDto
+                    {
+                        Id = x.Id,
+                        Status = (int)x.Status,
+                        Description = x.Description,
+                        Name = x.Description,
+                        Weight = x.Weight,
+                        EffectDescription = x.EffectDescription
+                    }).ToList(),
+                    InventoryWearableDtos = classToSend.StartInventory.OfType<Wearable>().Select
+                    (x => new WearableDto
+                    {
+                        Id = x.Id,
+                        Status = (int)x.Status,
+                        Description = x.Description,
+                        Name = x.Description,
+                        Weight = x.Weight,
+                        ProtectionBoost = x.ProtectionBoost
+                    }).ToList(),
+                };
 
-            return Ok(npcDto);
+                return Ok(ClassDto);
+            }
+            return BadRequest();
         }
     }
 }

@@ -263,7 +263,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     DefaultHealth = avatar.ChosenClass.DefaultHealth,
                     DefaultProtection = avatar.ChosenClass.DefaultProtection,
                     DefaultDamage = avatar.ChosenClass.DefaultDamage,
-                    InventoryTakeableDtos = avatar.Inventory.OfType<Takeable>().Where(x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select(x => new TakeableDto
+                    InventoryTakeableDtos = avatar.Inventory.OfType<Takeable>().Where
+                    (x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select
+                    (x => new TakeableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -271,7 +273,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Name = x.Description,
                         Weight = x.Weight
                     }).ToList(),
-                    InventoryUsableDtos = avatar.Inventory.OfType<Usable>().Select(x => new UsableDto
+                    InventoryUsableDtos = avatar.Inventory.OfType<Usable>().Select
+                    (x => new UsableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -280,7 +283,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Weight = x.Weight,
                         DamageBoost = x.DamageBoost
                     }).ToList(),
-                    InventoryConsumableDtos = avatar.Inventory.OfType<Consumable>().Select(x => new ConsumableDto
+                    InventoryConsumableDtos = avatar.Inventory.OfType<Consumable>().Select
+                    (x => new ConsumableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -289,7 +293,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Weight = x.Weight,
                         EffectDescription = x.EffectDescription
                     }).ToList(),
-                    InventoryWearableDtos = avatar.Inventory.OfType<Wearable>().Select(x => new WearableDto
+                    InventoryWearableDtos = avatar.Inventory.OfType<Wearable>().Select
+                    (x => new WearableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,

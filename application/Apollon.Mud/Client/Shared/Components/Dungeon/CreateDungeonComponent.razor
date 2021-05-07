@@ -194,6 +194,7 @@
     protected async override void OnInitialized()
     {
         dungeonContext = new EditContext(dungeonModel);
+        
         if (DungeonId != Guid.Empty)
         {
             var dungeonDto = await DungeonService.GetDungeon(DungeonId);
