@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Apollon.Mud.Shared.Dungeon;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,12 +11,12 @@ namespace Apollon.Mud.Client.Services.Interfaces
     /// <summary>
     /// TODO
     /// </summary>
-    public interface IAuthorizationService
+    public interface IDungeonService
     {
         /// <summary>
         /// TODO
         /// </summary>
-        HttpClient HttpClient { get; }
+        public HttpClient HttpClient { get;}
 
         /// <summary>
         /// TODO
@@ -23,41 +26,35 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="secret"></param>
+        /// <param name="dungeonDto"></param>
         /// <returns></returns>
-        Task<bool> Login(string userId, string secret);
+        Task<Guid> CreateNewDungeon(DungeonDto dungeonDto);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="secret"></param>
+        /// <param name="dungeonDto"></param>
         /// <returns></returns>
-        Task<bool> Register(string userId, string secret);
+        Task<DungeonDto> UpdateDungeon(DungeonDto dungeonDto);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="token"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<bool> ConfirmRegistration(Guid userId, string token);
+        Task<bool> DeleteDungeon(Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="userEmail"></param>
         /// <returns></returns>
-        Task<bool> RequestPasswordReset(string userEmail);
+        Task<ICollection<DungeonDto>> GetAllDungeons();
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="token"></param>
-        /// <param name="secret"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<bool> ResetPasswordRequest(Guid userId, string token, string secret);
+        Task<DungeonDto> GetDungeon(Guid dungeonId);
     }
 }

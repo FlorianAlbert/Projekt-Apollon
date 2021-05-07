@@ -200,7 +200,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Player")]
-        [Route("{dungeonId}/user")]
+        [Route("{dungeonId}")]
         [ProducesResponseType(typeof(ICollection<RequestableDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
@@ -214,7 +214,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Player")]
-        [Route("{dungeonId}")]
+        [Route("{dungeonId}/user")]
         [ProducesResponseType(typeof(ICollection<RequestableDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllForUser([FromRoute] Guid dungeonId)

@@ -1,6 +1,8 @@
 ﻿@using Apollon.Mud.Client.Data.Models
 @using Apollon.Mud.Shared.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Room
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+
 <div class="card">
     <div class="card-header">
         <h2>Allgemeines</h2>
@@ -56,27 +58,30 @@
                 </div>
             </div>
 
-            <div class="form-group mt-5">
-                <div class="row">
-                    <div class="col-3">
-                        <h5 class="mt-1">Startraum</h5>
-                    </div>
-                    <div class="col">
-                        <div class="d-flex justify-content-center">
-                            <select class="form-select" @bind="dungeonModel.DefaultRoom">
-                                <option selected hidden value=""></option>
-                                @foreach (RoomDto room in dungeonRooms)
-                                {
-                                    <option value="@room.Name">@room.Name</option>
-                                }
-                            </select>
+            @if (!DungeonHasRooms)
+            {
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-3">
+                            <h5 class="mt-1">Startraum</h5>
                         </div>
-                        <div class="text-danger">
-                            <ValidationMessage For=@(() => dungeonModel.DefaultRoom) />
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" @bind="dungeonModel.DefaultRoom">
+                                    <option selected hidden value=""></option>
+                                    @foreach (RoomDto room in dungeonRooms)
+                                    {
+                                        <option value="@room.Name">@room.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="text-danger">
+                                <ValidationMessage For=@(() => dungeonModel.DefaultRoom) />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
 
             <div class="form-group mt-5">
                 <div class="row">
@@ -107,11 +112,23 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" @bind="dungeonModel.Status">
-                                <option selected hidden value=""></option>
-                                <option value="Approved">Aktiv</option>
-                                <option value="Pending">Inaktiv</option>
-                            </select>
+                            @if (DungeonMustBeInactive)
+                            {
+                                <TooltipComponent Text="Du musst zuerst die initiale Erstellung abschließen">
+                                    <select class="form-select" @bind="dungeonModel.Status" disabled>
+                                        <option value="Approved">Aktiv</option>
+                                        <option value="Pending" selected>Inaktiv</option>
+                                    </select>
+                                </TooltipComponent>
+                            }
+                            else
+                            {
+                                <select class="form-select" @bind="dungeonModel.Status">
+                                    <option selected hidden value=""></option>
+                                    <option value="Approved">Aktiv</option>
+                                    <option value="Pending">Inaktiv</option>
+                                </select>
+                            }
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonModel.Status) />
@@ -139,6 +156,18 @@
     public EventCallback<Guid> OnDungeonSaved { get; set; }
 
     /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public bool DungeonHasRooms { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public bool DungeonMustBeInactive { get; set; }
+
+    /// <summary>
     /// The attribute of the validation model when creating a new Race
     /// </summary>
     DungeonModel dungeonModel = new DungeonModel();
@@ -154,6 +183,11 @@
     List<RoomDto> dungeonRooms = new List<RoomDto>();
 
     /// <summary>
+    /// The Guid of the dungeon
+    /// </summary>
+    private Guid DungeonId;
+
+    /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
     protected override void OnInitialized()
@@ -161,7 +195,8 @@
         #region to Delete
 
         #endregion
-
+        DungeonId = new Guid();
+        //TODO Wenn nicht initialie Erstellung: DungeonDto aus Backend holen und ID in DungeonId speichern
         dungeonContext = new EditContext(dungeonModel);
     }
 
@@ -181,8 +216,17 @@
             submitDungeon.DefaultRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonModel.DefaultRoom));
             submitDungeon.Visibility = dungeonModel.Visibility.Equals("Private") ? 0 : 1;
             submitDungeon.Status = dungeonModel.Status.Equals("Approved") ? 0 : 1;
-            await OnDungeonSaved.InvokeAsync(Guid.NewGuid());
-            // Aufrufen: await OnDungeonSaved.InvokeAsync(Guid) <- Rückgabe = Antwort vom Server
+            if (submitDungeon.Id == Guid.Empty)
+            {
+                var responseGuid = DungeonService.CreateNewDungeon(submitDungeon);
+                await OnDungeonSaved.InvokeAsync(responseGuid.Result);
+                DungeonId = responseGuid.Result;
+            }
+            else
+            {
+                submitDungeon.Id = DungeonId;
+                await DungeonService.UpdateDungeon(submitDungeon);
+            }
             //TODO Daten ans Backend senden
         }
         else

@@ -3,9 +3,16 @@ using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
-using Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables;
 using Apollon.Mud.Shared.Dungeon.Class;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Shared.Dungeon.Npc;
 using Apollon.Mud.Shared.Dungeon.Requestable;
 using Microsoft.AspNetCore.Authorization;
@@ -49,11 +56,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (!GameConfigService.Get<Dungeon>(dungeonId).DungeonMasters.Contains(user)) return Unauthorized();
 
-            var newClass = new Class(classDto.Name, classDto.Description, classDto.DefaultHealth, classDto.DefaultProtection, classDto.DefaultDamage)
-            {
-                Status = (Status)classDto.Status,
-                
-            };
+            var newClass = new Class(classDto.Name, 
+                classDto.Description, 
+                classDto.DefaultHealth, 
+                classDto.DefaultProtection, 
+                classDto.DefaultDamage)
+                { Status = (Status)classDto.Status };
 
             var classDungeon = GameConfigService.Get<Dungeon>(dungeonId);
 
@@ -104,9 +112,32 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             classToUpdate.DefaultHealth = classDto.DefaultHealth;
             classToUpdate.DefaultProtection = classDto.DefaultProtection;
             classToUpdate.Description = classDto.Description;
-            classToUpdate.
+            foreach(ConsumableDto consumable in classDto.InventoryConsumableDtos)
+            {
+                classToUpdate.StartInventory.Add(
+                    new Consumable(consumable.Name, consumable.Description, consumable.Weight, consumable.EffectDescription)
+                    { Status = (Status)consumable.Status });
+            }
+            foreach (WearableDto wearable in classDto.InventoryWearableDtos)
+            {
+                classToUpdate.StartInventory.Add(
+                    new Wearable(wearable.Name, wearable.Description, wearable.Weight, wearable.ProtectionBoost)
+                    { Status = (Status)wearable.Status });
+            }
+            foreach (UsableDto usable in classDto.InventoryUsableDtos)
+            {
+                classToUpdate.StartInventory.Add(
+                    new Usable(usable.Name, usable.Description, usable.Weight, usable.DamageBoost)
+                    { Status = (Status)usable.Status });
+            }
+            foreach (TakeableDto takeable in classDto.InventoryTakeableDtos)
+            {
+                classToUpdate.StartInventory.Add(
+                    new Takeable(takeable.Weight, takeable.Description, takeable.Name)
+                    { Status = (Status)takeable.Status });
+            }
 
-            classDungeon.ConfiguredInspectables.Add(classToUpdate);
+            classDungeon.ConfiguredClasses.Add(classToUpdate);
 
             if (GameConfigService.NewOrUpdate(classToUpdate))
             {
@@ -118,18 +149,56 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
-            var oldNpc = GameConfigService.Get<Npc>(classDto.Id);
+            var oldClass = GameConfigService.Get<Class>(classDto.Id);
 
-            var oldNpcDto = new NpcDto
+            var oldClassDto = new ClassDto
             {
-                Status = (int)oldNpc.Status,
-                Id = oldNpc.Id,
-                Name = oldNpc.Name,
-                Text = oldNpc.Text,
-                Description = oldNpc.Description
+                Status = (int)oldClass.Status,
+                Id = oldClass.Id,
+                Name = oldClass.Name,
+                Description = oldClass.Description,
+                DefaultHealth = oldClass.DefaultHealth,
+                DefaultDamage = oldClass.DefaultDamage,
+                DefaultProtection = oldClass.DefaultProtection,
+                InventoryTakeableDtos = oldClass.StartInventory.OfType<Takeable>().Where
+                (x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select(x => new TakeableDto
+                {
+                    Id = x.Id,
+                    Status = (int)x.Status,
+                    Description = x.Description,
+                    Name = x.Description,
+                    Weight = x.Weight
+                }).ToList(),
+                InventoryUsableDtos = oldClass.StartInventory.OfType<Usable>().Select(x => new UsableDto
+                {
+                    Id = x.Id,
+                    Status = (int)x.Status,
+                    Description = x.Description,
+                    Name = x.Description,
+                    Weight = x.Weight,
+                    DamageBoost = x.DamageBoost
+                }).ToList(),
+                InventoryConsumableDtos = oldClass.StartInventory.OfType<Consumable>().Select(x => new ConsumableDto
+                {
+                    Id = x.Id,
+                    Status = (int)x.Status,
+                    Description = x.Description,
+                    Name = x.Description,
+                    Weight = x.Weight,
+                    EffectDescription = x.EffectDescription
+                }).ToList(),
+                InventoryWearableDtos = oldClass.StartInventory.OfType<Wearable>().Select(x => new WearableDto
+                {
+                    Id = x.Id,
+                    Status = (int)x.Status,
+                    Description = x.Description,
+                    Name = x.Description,
+                    Weight = x.Weight,
+                    ProtectionBoost = x.ProtectionBoost
+                }).ToList(),
             };
 
-            return BadRequest(oldNpcDto);
+            return BadRequest(oldClassDto);
         }
 
         [HttpDelete]
@@ -138,8 +207,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid npcId)
         {
+            if (GameConfigService.Get<Dungeon>(dungeonId) is null) return BadRequest();
+
+            if (GameConfigService.Get<Dungeon>(dungeonId).Status is Status.Approved) return Forbid();
+
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
 
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
