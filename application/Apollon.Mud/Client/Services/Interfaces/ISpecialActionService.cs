@@ -1,4 +1,4 @@
-﻿using Apollon.Mud.Shared.Dungeon.Npc;
+﻿using Apollon.Mud.Shared.Dungeon.Requestable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,12 +6,10 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace Apollon.Mud.Client.Services.Interfaces
 {
-    /// <summary>
-    /// TODO
-    /// </summary>
-    public interface INpcService
+    public interface ISpecialActionService
     {
         /// <summary>
         /// TODO
@@ -26,33 +24,33 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
+        /// <param name="requestableDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<Guid> CreateNewNpc(NpcDto npcDto, Guid dungeonId);
+        Task<Guid> CreateNewRequestable(RequestableDto requestableDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
+        /// <param name="requestableDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<NpcDto> UpdateNpc(NpcDto npcDto, Guid dungeonId);
+        Task<RequestableDto> UpdateRequestable(RequestableDto requestableDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
+        /// <param name="actionId"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<bool> DeleteNpc(NpcDto npcDto, Guid dungeonId);
+        Task<bool> DeleteRequestable(Guid dungeonId, Guid actionId);
 
         /// <summary>
         /// TODO
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<ICollection<NpcDto>> GetAllNpcs(Guid dungeonId);
+        Task<ICollection<RequestableDto>> GetAllRequestables(Guid dungeonId);
 
         /// <summary>
         /// TODO
@@ -60,6 +58,6 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <param name="dungeonId"></param>
         /// <param name="actionId"></param>
         /// <returns></returns>
-        Task<NpcDto> GetNpc(Guid dungeonId, Guid actionId);
+        Task<RequestableDto> GetRequestable(Guid dungeonId, Guid actionId);
     }
 }

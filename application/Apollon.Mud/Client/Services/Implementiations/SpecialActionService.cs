@@ -1,5 +1,5 @@
 ﻿using Apollon.Mud.Client.Services.Interfaces;
-using Apollon.Mud.Shared.Dungeon.Npc;
+using Apollon.Mud.Shared.Dungeon.Requestable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Client.Services.Implementiations
 {
-    public class NpcService : INpcService
+    public class SpecialActionService : ISpecialActionService
     {
         /// <summary>
         /// TODO
@@ -27,7 +27,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// TODO
         /// </summary>
         /// <param name="httpClient"></param>
-        public NpcService(HttpClient httpClient)
+        public SpecialActionService(HttpClient httpClient)
         {
             HttpClient = httpClient;
             CancellationTokenSource = new CancellationTokenSource();
@@ -36,14 +36,14 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
+        /// <param name="requestableDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public async Task<Guid> CreateNewNpc(NpcDto npcDto, Guid dungeonId)
+        public async Task<Guid> CreateNewRequestable(RequestableDto requestableDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PostAsJsonAsync("api/npcs/{dungeonId}", npcDto, cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("api/specialActions/{dungeonId}", requestableDto, cancellationToken);
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var responseGuid = await response.Content.ReadFromJsonAsync<Guid>();
@@ -55,16 +55,16 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
+        /// <param name="requestableDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public async Task<NpcDto> UpdateNpc(NpcDto npcDto, Guid dungeonId)
+        public async Task<RequestableDto> UpdateRequestable(RequestableDto requestableDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PutAsJsonAsync("api/npcs/{dungeonId}", npcDto, cancellationToken);
+            var response = await HttpClient.PutAsJsonAsync("api/specialActions/{dungeonId}", requestableDto, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<NpcDto>();
+            if (response.StatusCode == HttpStatusCode.OK) return null;
 
             return null;
         }
@@ -72,10 +72,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
         /// <param name="dungeonId"></param>
+        /// <param name="actionId"></param>
         /// <returns></returns>
-        public Task<bool> DeleteNpc(NpcDto npcdto, Guid dungeonId)
+        public Task<bool> DeleteRequestable(Guid dungeonId, Guid actionId)
         {
             throw new NotImplementedException();
         }
@@ -83,10 +83,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
+        /// <param name="requestableDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public Task<ICollection<NpcDto>> GetAllNpcs(Guid dungeonId)
+        public Task<ICollection<RequestableDto>> GetAllRequestables(Guid dungeonId)
         {
             throw new NotImplementedException();
         }
@@ -95,12 +95,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// TODO
         /// </summary>
         /// <param name="dungeonId"></param>
-        /// <param name="dungeonId"></param>
+        /// <param name="actionId"></param>
         /// <returns></returns>
-        public Task<NpcDto> GetNpc(Guid dungeonId, Guid actionId)
+        public Task<RequestableDto> GetRequestable(Guid dungeonId, Guid actionId)
         {
             throw new NotImplementedException();
         }
-
     }
 }
