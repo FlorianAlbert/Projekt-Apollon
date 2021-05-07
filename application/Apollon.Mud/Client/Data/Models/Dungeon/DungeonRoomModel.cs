@@ -54,7 +54,7 @@ namespace Apollon.Mud.Client.Data.Models
         public string RoomWest { get; set; }
 
         /// <summary>
-        /// TODO
+        /// This is the list of purely investigable items.
         /// </summary>
         public List<InspectableDto> Inspectables { get; set; }
 
@@ -84,7 +84,7 @@ namespace Apollon.Mud.Client.Data.Models
         public List<NpcDto> Npcs { get; set; }
 
         /// <summary>
-        /// TODO
+        /// TODO Abhilfe wie sonst
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }

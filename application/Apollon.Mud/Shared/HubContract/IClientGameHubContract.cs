@@ -10,19 +10,20 @@ namespace Apollon.Mud.Shared.HubContract
     public interface IClientGameHubContract
     {
         /// <summary>
-        /// ToDo
+        /// Receive a specific message.
         /// </summary>
         /// <param name="message"></param>
         void ReceiveGameMessage(string message);
 
         /// <summary>
-        /// ToDo
+        /// ToDo Abhilfe
         /// </summary>
         /// <param name="dungeonMasterRequestDto"></param>
         void ReceiveRequest(DungeonMasterRequestDto dungeonMasterRequestDto);
 
         /// <summary>
-        /// ToDo
+        /// Method for showing the avatar list, 
+        /// which will list all avatars in the dungeon. ToDo Abhilfe
         /// </summary>
         /// <param name="avatars"></param>
         void ReceiveAvatarList(ICollection<AvatarDto> avatars);

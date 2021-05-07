@@ -3,7 +3,7 @@
 namespace Apollon.Mud.Server.Domain.Implementations.Game
 {
     /// <summary>
-    /// ToDo
+    /// ToDo Muss noch implementiert werden
     /// </summary>
     public class MasterService: IMasterService
     {

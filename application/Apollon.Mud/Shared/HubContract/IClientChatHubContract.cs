@@ -1,12 +1,12 @@
 ﻿namespace Apollon.Mud.Shared.HubContract
 {
     /// <summary>
-    /// ToDo
+    /// TODO Abhilfe
     /// </summary>
     public interface IClientChatHubContract
     {
         /// <summary>
-        /// ToDo
+        /// Receive a specific message from a specific sender.
         /// </summary>
         /// <param name="senderName"></param>
         /// <param name="message"></param>

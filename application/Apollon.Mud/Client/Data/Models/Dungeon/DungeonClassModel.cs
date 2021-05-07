@@ -49,7 +49,7 @@ namespace Apollon.Mud.Client.Data.Models
         public List<string> StartInventory { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The dungeon has to have a status. ToDo Abhilfe
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }

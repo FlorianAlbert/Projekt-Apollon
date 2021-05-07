@@ -44,7 +44,7 @@ namespace Apollon.Mud.Client.Data.Models
         public string Protection { get; set; }
 
         /// <summary>
-        /// TODO
+        /// TODO Abhilfe wie sonst auch
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }

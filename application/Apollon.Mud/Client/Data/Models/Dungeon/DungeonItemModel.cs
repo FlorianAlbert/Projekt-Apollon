@@ -12,7 +12,7 @@ namespace Apollon.Mud.Client.Data.Models
         #region Inspectable
 
         /// <summary>
-        /// TODO
+        /// TODO Abhilfe wie davor
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }

@@ -5,42 +5,44 @@ using System.ComponentModel.DataAnnotations;
 namespace Apollon.Mud.Client.Data.Models
 {
     /// <summary>
-    /// This is the Model to validate the form a user has to fill out when creating or changing a NPC of a dungeon
+    /// This is the model to validate the form a user has to fill out when creating or changing a NPC of a dungeon
     /// </summary>
     class DungeonModel
     {
         /// <summary>
-        /// Every Dungeon has to have a Name
+        /// Every dungeon has to have a Name
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Namen geben")]
         public string Name { get; set; }
 
         /// <summary>
-        /// Every Dungeon has to have a Description
+        /// Every dungeon has to have a Description
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon eine Beschreibung geben")]
         public string Description { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The dungeon requires an era
+        /// to determine the theme of the dungeon.
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon eine Epoche geben")]
         public string Epoch { get; set; }
 
         /// <summary>
-        /// TODO
+        /// Every dungeon has to have a default start room.
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Startraum geben")]
         public string DefaultRoom { get; set; }
 
         /// <summary>
-        /// TODO
+        /// A dungeon has to have a visibility,
+        /// which can be private or public.
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon eine Sichtbarkeit geben")]
         public string Visibility { get; set; }
 
         /// <summary>
-        /// TODO
+        /// TODO Abhilfe wie sonst auch
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }

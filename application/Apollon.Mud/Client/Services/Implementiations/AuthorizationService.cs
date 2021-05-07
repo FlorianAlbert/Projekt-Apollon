@@ -15,24 +15,25 @@ namespace Apollon.Mud.Client.Services.Implementiations
     public class AuthorizationService : IAuthorizationService
     {
         /// <summary>
-        /// TODO
+        /// TODO Abhilfe
         /// </summary>
         public HttpClient HttpClient { get; }
 
         /// <summary>
-        /// TODO
+        /// TODO Abhilfe
         /// </summary>
         public CancellationTokenSource TokenSource { get; set; }
 
         /// <summary>
-        /// TODO
+        /// TODO Abhilfe
         /// </summary>
         public UserContext CurrentUserContext { get; set; }
 
         public CustomAuthenticationStateProvider AuthenticationProvider { get; set; }
 
         /// <summary>
-        /// TODO
+        /// This service contains all the logic
+        /// for entitlement management.
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="userContext"></param>
@@ -45,7 +46,8 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
         
         /// <summary>
-        /// TODO
+        /// The method contains the logic
+        /// to log in to the website.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="secret"></param>
@@ -72,7 +74,8 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// The user can register with
+        /// a password and a email.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="secret"></param>
@@ -92,7 +95,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// After confirming the email with the link, the registration is done.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
@@ -106,7 +109,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// The player will leave the game with the avatar.
         /// </summary>
         public void LogOut()
         {
@@ -117,7 +120,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// The reset password is sent to the user by email.
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
@@ -132,7 +135,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// The user is able to set a new password.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="token"></param>
