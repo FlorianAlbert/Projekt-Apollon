@@ -58,7 +58,7 @@
                 </div>
             </div>
 
-            @if (!DungeonHasRooms)
+            @if (DungeonHasRooms)
             {
                 <div class="form-group mt-5">
                     <div class="row">
@@ -149,20 +149,14 @@
 
 @code {
 
-    ///<summary>
-    /// TODO
-    ///</summary>
-    [Parameter]
-    public EventCallback<Guid> OnDungeonSaved { get; set; }
-
     /// <summary>
-    /// TODO
+    /// Represents wether a Dungeon has atleast 1 Room
     /// </summary>
     [Parameter]
     public bool DungeonHasRooms { get; set; }
 
     /// <summary>
-    /// TODO
+    /// Represents wether a dungeon has at least 1: Class, Race and Room to enable its activitiy
     /// </summary>
     [Parameter]
     public bool DungeonMustBeInactive { get; set; }
@@ -185,19 +179,33 @@
     /// <summary>
     /// The Guid of the dungeon
     /// </summary>
-    private Guid DungeonId;
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    ///<summary>
+    /// TODO
+    ///</summary>
+    [Parameter]
+    public EventCallback<Guid> OnDungeonSavedOrLoaded { get; set; }
 
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
-        #region to Delete
-
-        #endregion
-        DungeonId = new Guid();
-        //TODO Wenn nicht initialie Erstellung: DungeonDto aus Backend holen und ID in DungeonId speichern
         dungeonContext = new EditContext(dungeonModel);
+        if (DungeonId != Guid.Empty)
+        {
+            var dungeonDto = await DungeonService.GetDungeon(DungeonId);
+            dungeonModel.Name = dungeonDto.DungeonName;
+            dungeonModel.Description = dungeonDto.DungeonDescription;
+            dungeonModel.Epoch = dungeonDto.DungeonEpoch;
+            dungeonModel.Status = dungeonDto.Status == 0 ? "Approved" : "Pending";
+            dungeonModel.Visibility = dungeonDto.Visibility == 0 ? "Private" : "Public";
+            DungeonId = dungeonDto.Id;
+            await OnDungeonSavedOrLoaded.InvokeAsync(DungeonId);
+            if (!(dungeonDto.DefaultRoom is null)) dungeonModel.DefaultRoom = dungeonDto.DefaultRoom.Name;
+        }
     }
 
     /// <summary>
@@ -219,21 +227,30 @@
             if (submitDungeon.Id == Guid.Empty)
             {
                 var responseGuid = DungeonService.CreateNewDungeon(submitDungeon);
-                await OnDungeonSaved.InvokeAsync(responseGuid.Result);
+                await OnDungeonSavedOrLoaded.InvokeAsync(responseGuid.Result);
                 DungeonId = responseGuid.Result;
             }
             else
             {
                 submitDungeon.Id = DungeonId;
-                await DungeonService.UpdateDungeon(submitDungeon);
+                var oldDungeonDto = await DungeonService.UpdateDungeon(submitDungeon);
+                if (!(oldDungeonDto is null))
+                {
+                    DungeonId = oldDungeonDto.Id;
+                    dungeonModel.Name = oldDungeonDto.DungeonName;
+                    dungeonModel.Description = oldDungeonDto.DungeonDescription;
+                    dungeonModel.Epoch = oldDungeonDto.DungeonEpoch;
+                    dungeonModel.Status = oldDungeonDto.Status == 0 ? "Approved" : "Pending";
+                    dungeonModel.Visibility = oldDungeonDto.Visibility == 0 ? "Private" : "Pending";
+                    if (!(oldDungeonDto.DefaultRoom is null))
+                    {
+                        dungeonModel.DefaultRoom = oldDungeonDto.DefaultRoom.Name;
+                    }
+                    //TODO: Maybe den User Benachrichtigen über Fehler?
+                }
+
             }
-            //TODO Daten ans Backend senden
-        }
-        else
-        {
-            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
         }
     }
-
 }
 

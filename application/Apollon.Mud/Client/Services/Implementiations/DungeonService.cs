@@ -78,9 +78,15 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public Task<DungeonDto> GetDungeon(Guid dungeonId)
+        public async Task<DungeonDto> GetDungeon(Guid dungeonId)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.GetAsync("api/dungeons/" + dungeonId, cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<DungeonDto>();
+
+            return null;
         }
 
         /// <summary>
@@ -94,7 +100,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
 
             var response = await HttpClient.PutAsJsonAsync("api/dungeons", dungeonDto, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return null;
+            if(response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<DungeonDto>();
 
             return null;
         }

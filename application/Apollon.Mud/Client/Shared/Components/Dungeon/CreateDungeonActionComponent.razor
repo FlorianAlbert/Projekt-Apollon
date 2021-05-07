@@ -118,6 +118,23 @@
 </div>
 
 @code {
+
+    #region Dungeon Information
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public bool IsDungeonMasterConfigurating { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    #endregion
+
     /// <summary>
     /// The attribute of the validation model when creating a new Action
     /// </summary>

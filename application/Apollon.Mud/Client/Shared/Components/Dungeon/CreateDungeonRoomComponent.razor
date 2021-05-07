@@ -890,7 +890,27 @@
 
 @code {
 
-    //TODO: Event wenn erster Room erstellt
+    #region Dungeon Information
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public bool IsDungeonMasterConfigurating { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    ///<summary>
+    /// TODO
+    ///</summary>
+    [Parameter]
+    public EventCallback<Guid> OnRoomSavedOrLoaded { get; set; }
+
+    #endregion
 
     #region Dungeon Room Model
     /// <summary>
@@ -1163,6 +1183,9 @@
                 dungeonRooms.Add(submitRoom);
             }
             chosenRoom = dungeonRoomModel.Name;
+
+            //TODO: OnRoomSavedOrLoaded Event wenn erster Room erstellt
+
         }
     }
 
