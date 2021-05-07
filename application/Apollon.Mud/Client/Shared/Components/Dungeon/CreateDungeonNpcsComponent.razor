@@ -1,5 +1,7 @@
 ﻿@using Apollon.Mud.Client.Data.Models
 @using Apollon.Mud.Shared.Dungeon.Npc
+@inject Apollon.Mud.Client.Services.Interfaces.INpcService NpcService
+
 <div class="card">
     <div class="card-header">
         <h2>NPCs</h2>
@@ -150,6 +152,8 @@
     /// </summary>
     protected override void OnInitialized()
     {
+        dungeonNpcs = NpcService.GetAllNpcs().Result.ToList();
+
         #region to Delete
         npcContext = new EditContext(dungeonNpcModel);
 

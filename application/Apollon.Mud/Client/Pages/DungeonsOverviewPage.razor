@@ -1,5 +1,7 @@
 ﻿@page "/Dungeons"
 
+@using Apollon.Mud.Shared.Dungeon
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 
 <div class="container shadow d-flex bg-white min-vh-100">
     <div class="row container-fluid">
@@ -24,27 +26,23 @@
         <div class="col-lg-9 mt-3">
             <div class="container ">
                 <h1>Games</h1>
-                <div class="card mt-2 shadow">
-                    <h5 class="card-header">Dungeon One</h5>
-                    <div class="card-body">
-                        <h5 class="card-title">Alpha-Dungeon (Early Access)</h5>
-                        <p class="card-text">This is the very first demo of a dungeon. Keep in mind that this game is still in a pre-alpha state and only covers the very basics of a Multi-User-Dungeon<a href="/Avatar/Selection" class="btn btn-primary float-end">Play</a></p>
+                @if (allDungeons.Count == 0)
+                {
+                    <h2 class="text-muted">Momentan gibt es keine aktiven Dungeons</h2>
+                }
+                @foreach (DungeonDto dungeon in allDungeons)
+                {
+                    <div class="card mt-2 shadow">
+                        <h5 class="card-header">@dungeon.DungeonName</h5>
+                        <div class="card-body">
+                            <div class="row">
+                                <p class="card-text">@dungeon.DungeonDescription</p>
+                            </div>
+                            <a href="/Avatar/Selection" class="btn btn-primary float-end">Play</a>
+                        </div>
+                        <div class="card-footer">Erstellt von @dungeon.DungeonOwner</div>
                     </div>
-                </div>
-                <div class="card mt-2 shadow">
-                    <h5 class="card-header">Dungeon Two</h5>
-                    <div class="card-body">
-                        <h5 class="card-title">Example Dungeon Card</h5>
-                        <p class="card-text">This Card is only to show what it would look like if there was another dungeon available to play.<a href="#" class="btn btn-primary float-end disabled">Play</a></p>
-                    </div>
-                </div>
-                <div class="card mt-2 shadow">
-                    <h5 class="card-header">Game Three</h5>
-                    <div class="card-body">
-                        <h5 class="card-title">Dungeon Three</h5>
-                        <p class="card-text">This Card is only to show what it would look like if there was another dungeon available to play.<a href="#" class="btn btn-primary float-end disabled">Play</a></p>
-                    </div>
-                </div>
+                }
             </div>
         </div>
     </div>
@@ -52,5 +50,21 @@
 
 
 @code {
+    /// <summary>
+    /// This list contains all dungeons belonging to the user
+    /// </summary>
+    private List<DungeonDto> allDungeons = new List<DungeonDto>();
 
+    /// <summary>
+    /// When initialized the Method requests all Dungeons belonging to user from the Server and saves them locally
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        allDungeons = DungeonService.GetAllDungeons().Result.ToList();
+
+        DungeonDto quciktest = new DungeonDto();
+        quciktest.DungeonName = "TestDungeon";
+        quciktest.DungeonDescription = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,";
+        allDungeons.Add(quciktest);
+    }
 }
