@@ -1,4 +1,5 @@
 ﻿@page "/CreateDungeon"
+@page "/CreateDungeon/{DungeonId:guid}"
 @using Apollon.Mud.Client.Shared.Components.Dungeon
 
 <div class="container-fluid" style="height:93vh">
@@ -14,27 +15,27 @@
                     <h4>Benötigst du Hilfe? Alle Infos zum Erstellen eines Dungeon findest du <a href="/">hier</a></h4> @*TODO Link einfügen*@
                     <hr class="featurette-divider" />
                     <section class="Classes mt-3" id="Classes">
-                        <CreateDungeonComponent OnDungeonSaved="DungeonSaved"/>
+                        <CreateDungeonComponent DungeonId="DungeonId" OnDungeonSavedOrLoaded="DungeonSavedOrLoaded" DungeonMustBeInactive="dungeonMustBeInactive" DungeonHasRooms="dungeonHasRoom"/>
                     </section>
                     @if (dungeonCreated)
                     { 
                         <section class="Classes mt-3" id="Classes">
-                            <CreateDungeonClassesComponent DungeonId="DungeonId" IsDungeonMasterConfigurating="false"/>
+                            <CreateDungeonClassesComponent DungeonId="DungeonId" OnClassSavedOrLoaded="ClassSavedOrLoaded" IsDungeonMasterConfigurating="false"/>
                         </section>
                         <section class="Races mt-3" id="Races">
-                            <CreateDungeonRacesComponent />
+                            <CreateDungeonRacesComponent DungeonId="DungeonId" OnRaceSavedOrLoaded="RaceSavedOrLoaded" IsDungeonMasterConfigurating="false"/>
                         </section>
                         <section class="Items mt-3" id="Items">
-                            <CreateDungeonItemComponent />
+                            <CreateDungeonItemComponent DungeonId="DungeonId" IsDungeonMasterConfigurating="false"/>
                         </section>
                         <section class="Npcs mt-3" id="Npcs">
-                            <CreateDungeonNpcsComponent />
+                            <CreateDungeonNpcsComponent DungeonId="DungeonId" IsDungeonMasterConfigurating="false"/>
                         </section>
                         <section class="Npcs mt-3" id="Actions">
-                            <CreateDungeonActionComponent />
+                            <CreateDungeonActionComponent DungeonId="DungeonId" IsDungeonMasterConfigurating="false"/>
                         </section>
                         <section class="Rooms mt-3" id="Rooms">
-                            <CreateDungeonRoomComponent />
+                            <CreateDungeonRoomComponent DungeonId="DungeonId" OnRoomSavedOrLoaded="RoomSavedOrLoaded" IsDungeonMasterConfigurating="false"/>
                         </section>
                     }
                 </div>
@@ -47,17 +48,70 @@
     /// <summary>
     /// TODO
     /// </summary>
+    [Parameter]
     public Guid DungeonId { get; set; }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
     bool dungeonCreated = false;
 
     /// <summary>
     /// TODO
     /// </summary>
+    bool dungeonMustBeInactive = true;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    bool dungeonHasRoom = false;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    bool dungeonHasClass = false;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    bool dungeonHasRace = false;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
     /// <param name="guid"></param>
-    public void DungeonSaved(Guid guid)
+    public void DungeonSavedOrLoaded(Guid guid)
     {
         dungeonCreated = true;
         DungeonId = guid;
     }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void RoomSavedOrLoaded()
+    {
+        dungeonHasRoom = true;
+        if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void ClassSavedOrLoaded()
+    {
+        dungeonHasClass = true;
+        if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void RaceSavedOrLoaded()
+    {
+        dungeonHasRace = true;
+        if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
+    }
+
+
 }

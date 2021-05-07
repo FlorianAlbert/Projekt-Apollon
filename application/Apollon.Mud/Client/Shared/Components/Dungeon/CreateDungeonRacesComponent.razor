@@ -162,6 +162,28 @@
 
 @code {
 
+    #region Dungeon Information
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public bool IsDungeonMasterConfigurating { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    ///<summary>
+    /// TODO
+    ///</summary>
+    [Parameter]
+    public EventCallback<Guid> OnRaceSavedOrLoaded { get; set; }
+
+    #endregion
+
     /// <summary>
     /// The attribute of the validation model when creating a new Race
     /// </summary>
@@ -201,7 +223,6 @@
         #endregion
 
         raceContext = new EditContext(dungeonRaceModel);
-
     }
 
     /// <summary>

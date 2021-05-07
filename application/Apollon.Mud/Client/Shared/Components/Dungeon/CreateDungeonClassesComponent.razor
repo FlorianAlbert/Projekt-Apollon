@@ -326,6 +326,11 @@
 
 @code {
 
+    #region Dungeon Information
+
+    /// <summary>
+    /// TODO
+    /// </summary>
     [Parameter]
     public bool IsDungeonMasterConfigurating { get; set; }
 
@@ -334,6 +339,14 @@
     /// </summary>
     [Parameter]
     public Guid DungeonId { get; set; }
+
+    ///<summary>
+    /// TODO
+    ///</summary>
+    [Parameter]
+    public EventCallback<Guid> OnClassSavedOrLoaded { get; set; }
+
+    #endregion
 
     #region validation Attributes
 
@@ -612,7 +625,7 @@
                     newClass.InventoryTakeableDtos.ToList().ForEach(t =>
                     {
                         if (!(t is null))
-                       {
+                        {
                             dungeonClassModel.InventoryTakeableDtos.Add(t);
                         }
                     });
