@@ -6,6 +6,7 @@ using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Kernel;
 using FluentEmail.Core;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
@@ -27,8 +28,9 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var subject = _Fixture.Create<string>();
             var message = _Fixture.Create<string>();
             var fluentMailFactory = Substitute.For<IFluentEmailFactory>();
+            var logger = Substitute.For<ILogger<EmailService>>();
 
-            var emailService = new EmailService(fluentMailFactory); 
+            var emailService = new EmailService(logger, fluentMailFactory); 
             await emailService.SendEmail(userEmail, message, subject);
 
             await fluentMailFactory
@@ -47,8 +49,9 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
         public async Task SendMail_SomethingNull_Fails(string userEmail, string message, string subject)
         {
             var fluentMailFactory = Substitute.For<IFluentEmailFactory>();
+            var logger = Substitute.For<ILogger<EmailService>>();
 
-            var emailService = new EmailService(fluentMailFactory);
+            var emailService = new EmailService(logger, fluentMailFactory);
             await emailService.SendEmail(userEmail, message, subject);
 
             await fluentMailFactory
@@ -69,8 +72,9 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var email = _Fixture.Create<string>();
             var userEmails = userEmailsNull ? null : new List<string>{ email };
             var fluentMailFactory = Substitute.For<IFluentEmailFactory>();
+            var logger = Substitute.For<ILogger<EmailService>>();
 
-            var emailService = new EmailService(fluentMailFactory);
+            var emailService = new EmailService(logger, fluentMailFactory);
             await emailService.BroadcastEmail(userEmails, message, subject);
 
             await fluentMailFactory
@@ -94,8 +98,9 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var message = _Fixture.Create<string>();
             
             var fluentMailFactory = Substitute.For<IFluentEmailFactory>();
+            var logger = Substitute.For<ILogger<EmailService>>();
 
-            var emailService = new EmailService(fluentMailFactory);
+            var emailService = new EmailService(logger, fluentMailFactory);
             await emailService.BroadcastEmail(userEmails, message, subject);
 
             await fluentMailFactory
@@ -135,8 +140,9 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var message = _Fixture.Create<string>();
 
             var fluentMailFactory = Substitute.For<IFluentEmailFactory>();
+            var logger = Substitute.For<ILogger<EmailService>>();
 
-            var emailService = new EmailService(fluentMailFactory);
+            var emailService = new EmailService(logger, fluentMailFactory);
             await emailService.BroadcastEmail(userEmails, message, subject);
 
             await fluentMailFactory

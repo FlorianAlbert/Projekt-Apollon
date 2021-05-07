@@ -51,8 +51,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             {
                 _logger.LogInformation(ex, "Could not send Email.");
             }
-            
-
         }
 
         /// <inheritdoc cref="IEmailService.SendEmail"/>
@@ -73,9 +71,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
                 _logger.LogInformation(ex, "Could not send Email.");
             }
         }
-            
-        }
         #endregion
-
     }
 }
