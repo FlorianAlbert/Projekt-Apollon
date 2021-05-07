@@ -203,12 +203,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         [HttpDelete]
         [Authorize(Roles = "Player")]
-        [Route("{dungeonId}/{npcId}")]
+        [Route("{dungeonId}/{classId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid npcId)
+        public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid classId)
         {
             if (GameConfigService.Get<Dungeon>(dungeonId) is null) return BadRequest();
 
@@ -224,7 +224,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (!GameConfigService.Get<Dungeon>(dungeonId).DungeonMasters.Contains(user)) return Unauthorized();
 
-            var npcToDelete = GameConfigService.Get<Npc>(npcId);
+            var classToDelete = GameConfigService.Get<Class>(classId);
 
             if (npcToDelete is null) return BadRequest();
 
