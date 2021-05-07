@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
-    [Route("api/npcs")]
+    [Route("api/classes")]
     [ApiController]
     public class ClassController : ControllerBase
     {

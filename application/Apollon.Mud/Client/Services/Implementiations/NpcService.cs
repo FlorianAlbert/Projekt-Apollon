@@ -2,7 +2,6 @@
 using Apollon.Mud.Shared.Dungeon.Npc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -27,9 +26,9 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// TODO
         /// </summary>
         /// <param name="httpClient"></param>
-        public NpcService(HttpClient httpClient)
+        public NpcService(IHttpClientFactory httpClientFactory)
         {
-            HttpClient = httpClient;
+            HttpClient = httpClientFactory.CreateClient("RestHttpClient");
             CancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -72,7 +71,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// </summary>
         /// <param name="npcDto, dungeonId"></param>
         /// <returns></returns>
-        public Task<bool> DeleteNpc(NpcDto npcdto, Guid dungeonId)
+        public Task<bool> DeleteNpc(Guid npcId, Guid dungeonId)
         {
             throw new NotImplementedException();
         }

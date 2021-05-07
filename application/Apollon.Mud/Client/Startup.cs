@@ -40,6 +40,8 @@ namespace Apollon.Mud.Client
             });
             services.AddTransient<IAuthorizationService, AuthorizationService>();
             services.AddTransient<IDungeonService, DungeonService>();
+            services.AddTransient<INpcService, NpcService>();
+            services.AddTransient<IClassService, ClassService>();
             services.AddScoped<UserContext>();
             services.AddScoped<CustomAuthenticationStateProvider>();
             services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomAuthenticationStateProvider>());

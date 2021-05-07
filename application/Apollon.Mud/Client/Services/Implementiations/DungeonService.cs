@@ -1,8 +1,8 @@
-﻿using Apollon.Mud.Client.Services.Interfaces;
+﻿using Apollon.Mud.Client.Data;
+using Apollon.Mud.Client.Services.Interfaces;
 using Apollon.Mud.Shared.Dungeon;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -30,9 +30,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// TODO
         /// </summary>
         /// <param name=""></param>
-        public DungeonService(HttpClient httpClient)
+        public DungeonService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
-            HttpClient = httpClient;
+            HttpClient = httpClientFactory.CreateClient("RestHttpClient");
+            HttpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + userContext.Token);
             CancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -59,18 +60,28 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public Task<bool> DeleteDungeon(Guid dungeonId)
+        public async Task<bool> DeleteDungeon(Guid dungeonId)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.DeleteAsync("api/dungeons/" + dungeonId, cancellationToken);
+
+            return response.StatusCode == HttpStatusCode.OK;
         }
 
         /// <summary>
         /// TODO
         /// </summary>
         /// <returns></returns>
-        public Task<ICollection<DungeonDto>> GetAllDungeons()
+        public async Task<ICollection<DungeonDto>> GetAllDungeons()
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.GetAsync("api/dungeons", cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<DungeonDto>>();
+
+            return null;
         }
 
         /// <summary>
