@@ -33,16 +33,16 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeabl
         /// <summary>
         /// The avatars whose inventory contain this takeable
         /// </summary>
-        public ICollection<Avatar> InventoryAvatars { get; set; }
+        public virtual ICollection<Avatar> InventoryAvatars { get; set; }
 
         /// <summary>
         /// The avatars who are holding this takeable
         /// </summary>
-        public ICollection<Avatar> HoldingItemAvatars { get; set; }
+        public virtual ICollection<Avatar> HoldingItemAvatars { get; set; }
 
         /// <summary>
         /// The classes whose StartInventory contain this takeable
         /// </summary>
-        public ICollection<Class> Classes { get; set; }
+        public virtual ICollection<Class> Classes { get; set; }
     }
 }

@@ -67,9 +67,12 @@ namespace Apollon.Mud.Server.Inbound
             });
 
             services.AddDbContext<DungeonDbContext>(options =>
+            {
+                options.UseLazyLoadingProxies();
                 options.UseSqlite(
                     Configuration.GetConnectionString("DungeonDbConnection"),
-                    optionsBuilder => optionsBuilder.MigrationsAssembly("Apollon.Mud.Server.Domain")));
+                    optionsBuilder => optionsBuilder.MigrationsAssembly("Apollon.Mud.Server.Domain"));
+            });
 
             services.AddIdentityCore<DungeonUser>(options =>
                 {

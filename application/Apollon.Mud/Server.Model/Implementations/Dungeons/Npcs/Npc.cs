@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs

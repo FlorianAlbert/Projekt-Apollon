@@ -53,13 +53,13 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// The race of the avatar
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public Race ChosenRace { get; set; }
+        public virtual Race ChosenRace { get; set; }
 
         /// <summary>
         /// The class of the avatar
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public Class ChosenClass { get; set; }
+        public virtual Class ChosenClass { get; set; }
 
         /// <summary>
         /// The gender of the avatar
@@ -123,7 +123,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// The inventory with everything the avatar is carrying
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public Inventory Inventory 
+        public virtual Inventory Inventory 
         { 
             get => _Inventory ??= new Inventory();
             init => _Inventory = value;
@@ -133,25 +133,25 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// The item the avatar is holding in his hand
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public Takeable HoldingItem { get; set; }
+        public virtual Takeable HoldingItem { get; set; }
 
         /// <summary>
         /// The armor the avatar is wearing
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public Wearable Armor { get; set; }
+        public virtual Wearable Armor { get; set; }
 
         /// <summary>
         /// The room the avatar is in
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public Room CurrentRoom { get; set; }
+        public virtual Room CurrentRoom { get; set; }
 
         /// <summary>
         /// The user the avatar belongs to
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public DungeonUser Owner { get; set; }
+        public virtual DungeonUser Owner { get; set; }
 
         /// <inheritdoc cref="Inspectable.Description"/>
         public override string Description 

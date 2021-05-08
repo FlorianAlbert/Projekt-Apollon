@@ -46,11 +46,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables
         /// <summary>
         /// The Rooms this inspectable is placed in
         /// </summary>
-        public ICollection<Room> Rooms { get; set; }
+        public virtual ICollection<Room> Rooms { get; set; }
 
         /// <summary>
         /// The dungeon the inspectable is configured in
         /// </summary>
-        public Dungeon Dungeon { get; set; }
+        public virtual Dungeon Dungeon { get; set; }
     }
 }

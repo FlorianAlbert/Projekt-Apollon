@@ -35,6 +35,6 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeabl
         /// <summary>
         /// The avatars who are wearing this wearable
         /// </summary>
-        public ICollection<Avatar> ArmorAvatars { get; set; }
+        public virtual ICollection<Avatar> ArmorAvatars { get; set; }
     }
 }

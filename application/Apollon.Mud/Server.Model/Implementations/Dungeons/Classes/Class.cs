@@ -39,7 +39,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
         /// <summary>
         /// The start inventory every avatar with this class has right after creation
         /// </summary>
-        public Inventory StartInventory => _StartInventory ??= new Inventory();
+        public virtual Inventory StartInventory => _StartInventory ??= new Inventory();
 
         /// <inheritdoc cref="Inspectable.Name"/>
         public string Name { get; set; }
@@ -65,11 +65,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
         /// <summary>
         /// Dungeon the class belongs to
         /// </summary>
-        public Dungeon Dungeon { get; set; }
+        public virtual Dungeon Dungeon { get; set; }
 
         /// <summary>
         /// Avatars with this class
         /// </summary>
-        public ICollection<Avatar> Avatars { get; set; }
+        public virtual ICollection<Avatar> Avatars { get; set; }
     }
 }
