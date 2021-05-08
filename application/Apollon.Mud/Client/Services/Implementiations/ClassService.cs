@@ -65,7 +65,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
 
             var response = await HttpClient.PutAsJsonAsync("api/classes", classDto, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ClassDto>();
+            if (response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<ClassDto>();
 
             return null;
         }
@@ -94,7 +94,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/dungeons" + dungeonId, cancellationToken);
+            var response = await HttpClient.GetAsync("api/classes" + dungeonId, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<ClassDto>>();
 
@@ -111,7 +111,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/dungeons/" + dungeonId + "/" + classId, cancellationToken);
+            var response = await HttpClient.GetAsync("api/classes/" + dungeonId + "/" + classId, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ClassDto>();
 
