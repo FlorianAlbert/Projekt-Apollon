@@ -1,4 +1,4 @@
-﻿using Apollon.Mud.Shared.Dungeon.Class;
+﻿using Apollon.Mud.Shared.Dungeon.Race;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -10,7 +10,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
     /// <summary>
     /// TODO
     /// </summary>
-    public interface IClassService
+    public interface IRaceService
     {
         /// <summary>
         /// TODO
@@ -25,39 +25,42 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="classDto"></param>
+        /// <param name="raceDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<Guid> CreateNewClass(ClassDto classDto, Guid dungeonId);
+        Task<Guid> CreateNewRace(RaceDto raceDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="classDto"></param>
+        /// <param name="raceDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<ClassDto> UpdateClass(ClassDto classDto, Guid dungeonId);
+        Task<RaceDto> UpdateRace(RaceDto raceDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="classDto"></param>
+        /// <param name="raceId"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
         /// 
-        Task<bool> DeleteClass(Guid classId, Guid dungeonId);
+        Task<bool> DeleteRace(Guid dungeonId, Guid raceId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<ICollection<ClassDto>> GetAllClasses(Guid dungeonId);
+        Task<ICollection<RaceDto>> GetAllRaces(Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param></param>
+        /// <param name="raceId"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<ClassDto> GetClass(Guid dungeonId, Guid classId);
-
+        Task<RaceDto> GetRace(Guid dungeonId, Guid raceId);
 
     }
 }
