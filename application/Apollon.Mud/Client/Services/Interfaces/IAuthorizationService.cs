@@ -58,6 +58,6 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <param name="token"></param>
         /// <param name="secret"></param>
         /// <returns></returns>
-        Task<bool> ResetPasswordRequest(Guid userId, string token, string secret);
+        Task<bool> ResetPassword(Guid userId, string token, string secret);
     }
 }

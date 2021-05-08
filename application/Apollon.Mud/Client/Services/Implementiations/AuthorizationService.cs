@@ -141,7 +141,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="token"></param>
         /// <param name="secret"></param>
         /// <returns></returns>
-        public async Task<bool> ResetPasswordRequest(Guid userId, string token, string secret)
+        public async Task<bool> ResetPassword(Guid userId, string token, string secret)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
             PasswortResetConfirmationDto confirmationDto = new PasswortResetConfirmationDto
@@ -150,7 +150,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
                 Token = token
             };
 
-            var response = await HttpClient.PostAsJsonAsync("/api/user/password/confirm/" + userId.ToString(), confirmationDto, cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("/api/user/password/confirm/" + userId, confirmationDto, cancellationToken);
             return response.StatusCode == HttpStatusCode.OK;
         }
     }
