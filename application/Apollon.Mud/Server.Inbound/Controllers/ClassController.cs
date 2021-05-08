@@ -101,7 +101,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (classToUpdate is null) return BadRequest();
 
             var classDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
-            classDungeon.ConfiguredClasses.Remove(classToUpdate);
 
             classToUpdate.Status = (Status)classDto.Status;
             classToUpdate.Name = classDto.Name;
