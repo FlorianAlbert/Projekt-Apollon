@@ -1,6 +1,8 @@
-﻿using Apollon.Mud.Server.Model.Interfaces;
-using System;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables
 {
@@ -29,5 +31,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeabl
         /// The protection boost the item gives if it is worn
         /// </summary>
         public int ProtectionBoost { get; set; }
+
+        /// <summary>
+        /// The avatars who are wearing this wearable
+        /// </summary>
+        public virtual ICollection<Avatar> ArmorAvatars { get; set; }
     }
 }

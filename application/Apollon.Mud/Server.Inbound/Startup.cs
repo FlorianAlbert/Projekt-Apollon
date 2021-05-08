@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -39,12 +40,39 @@ namespace Apollon.Mud.Server.Inbound
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Apollon.Mud API", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme."
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+
+                    }
+                });
             });
 
             services.AddDbContext<DungeonDbContext>(options =>
+            {
+                options.UseLazyLoadingProxies();
                 options.UseSqlite(
                     Configuration.GetConnectionString("DungeonDbConnection"),
-                    optionsBuilder => optionsBuilder.MigrationsAssembly("Apollon.Mud.Server.Domain")));
+                    optionsBuilder => optionsBuilder.MigrationsAssembly("Apollon.Mud.Server.Domain"));
+            });
 
             services.AddIdentityCore<DungeonUser>(options =>
                 {
@@ -109,7 +137,10 @@ namespace Apollon.Mud.Server.Inbound
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Apollon.Mud API"));
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Apollon.Mud API");
+            });
 
             //app.UseHttpsRedirection();
 

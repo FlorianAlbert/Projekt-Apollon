@@ -44,7 +44,7 @@ namespace Apollon.Mud.Client.Data.Models
         public string Protection { get; set; }
 
         /// <summary>
-        /// The Status, active or inactive
+        /// The status indicates whether the dungeon is active
         /// </summary>
         [Required(ErrorMessage = "Du musst der Rasse einen Status geben")]
         public string Status { get; set; }

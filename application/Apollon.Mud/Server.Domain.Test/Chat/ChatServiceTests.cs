@@ -328,6 +328,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             gameDbService.Received().Get<Avatar>(avatarId);
             gameDbService.Received().GetAll<Avatar>()
+                .Result
                 .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
             connectionService.Received().GetConnectionByAvatarId(recipientAvatarId);
             hubContext.Received().Clients.Client(chatConnectionId).ReceiveChatMessage(senderAvatarName, message);

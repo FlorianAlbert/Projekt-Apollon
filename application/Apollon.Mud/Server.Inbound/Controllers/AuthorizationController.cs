@@ -53,7 +53,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     {
                         Email = loginResult.User.Email,
                         EmailConfirmed = loginResult.User.EmailConfirmed,
-                        LastActive = loginResult.User.LastActive
+                        LastActive = loginResult.User.LastActive,
+                        Id = Guid.Parse(loginResult.User.Id)
                     }
                 });
             }

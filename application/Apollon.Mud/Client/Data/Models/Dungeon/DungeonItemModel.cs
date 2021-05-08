@@ -12,7 +12,7 @@ namespace Apollon.Mud.Client.Data.Models
         #region Inspectable
 
         /// <summary>
-        /// The Status, active or inactive
+        /// The status indicates whether the dungeon is active
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using Apollon.Mud.Server.Model.Interfaces;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables
 {
@@ -29,5 +27,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeabl
         /// The damage boost the item gives
         /// </summary>
         public int DamageBoost { get; set; }
+
+        
     }
 }

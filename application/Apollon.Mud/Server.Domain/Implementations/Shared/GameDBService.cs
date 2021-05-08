@@ -33,16 +33,26 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
         {
             await using var transaction = await _dungeonDbContext.Database.BeginTransactionAsync();
 
-            var dungeon = await _dungeonDbContext.Dungeons.FindAsync(dungeonId);
-            if (dungeon is null)
+            try
+            {
+                var dungeon = await _dungeonDbContext.Dungeons.FindAsync(dungeonId);
+                if (dungeon is null)
+                {
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+
+                var isDungeonMaster = dungeon.DungeonMasters.Any(x => x.Id == userId.ToString());
+                await _dungeonDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return isDungeonMaster;
+            }
+            catch (Exception e)
             {
                 await transaction.RollbackAsync();
                 return false;
             }
 
-            var isDungeonMaster = dungeon.DungeonMasters.Any(x => x.Id == userId.ToString());
-            await transaction.CommitAsync();
-            return isDungeonMaster;
         }
 
         /// <inheritdoc cref="IGameDbService.Delete{T}"/>
@@ -50,23 +60,32 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
         {
             await using var transaction = await _dungeonDbContext.Database.BeginTransactionAsync();
 
-            var dbSet = GetDbSet<T>();
-            if (dbSet is null)
+            try
+            {
+                var dbSet = GetDbSet<T>();
+                if (dbSet is null)
+                {
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+
+                var toDelete = await dbSet.FindAsync(id);
+                if (toDelete is null)
+                {
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+
+                dbSet.Remove(toDelete);
+                await _dungeonDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch (Exception e)
             {
                 await transaction.RollbackAsync();
                 return false;
             }
-
-            var toDelete = await dbSet.FindAsync(id);
-            if (toDelete is null)
-            {
-                await transaction.RollbackAsync();
-                return false;
-            }
-
-            dbSet.Remove(toDelete);
-            await transaction.CommitAsync();
-            return true;
         }
 
         /// <inheritdoc cref="IGameDbService.Get{T}"/>
@@ -74,16 +93,25 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
         {
             await using var transaction = await _dungeonDbContext.Database.BeginTransactionAsync();
 
-            var dbSet = GetDbSet<T>();
-            if (dbSet is null)
+            try
+            {
+                var dbSet = GetDbSet<T>();
+                if (dbSet is null)
+                {
+                    await transaction.RollbackAsync();
+                    return null;
+                }
+
+                var resultItem = await dbSet.FindAsync(id);
+                await _dungeonDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return resultItem;
+            }
+            catch (Exception e)
             {
                 await transaction.RollbackAsync();
                 return null;
             }
-
-            var resultItem = await dbSet.FindAsync(id);
-            await transaction.CommitAsync();
-            return resultItem;
         }
 
         /// <inheritdoc cref="IGameDbService.GetAll{T}"/>
@@ -91,16 +119,25 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
         {
             await using var transaction = await _dungeonDbContext.Database.BeginTransactionAsync();
 
-            var dbSet = GetDbSet<T>();
-            if (dbSet is null)
+            try
+            {
+                var dbSet = GetDbSet<T>();
+                if (dbSet is null)
+                {
+                    await transaction.RollbackAsync();
+                    return new List<T>();
+                }
+
+                var resultList = await dbSet.ToListAsync();
+                await _dungeonDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return resultList;
+            }
+            catch (Exception e)
             {
                 await transaction.RollbackAsync();
                 return new List<T>();
             }
-
-            var resultList = await dbSet.ToListAsync();
-            await transaction.CommitAsync();
-            return resultList;
         }
 
         /// <inheritdoc cref="IGameDbService.NewOrUpdate{T}"/>
@@ -109,39 +146,68 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
             if (item is null) return false;
             await using var transaction = await _dungeonDbContext.Database.BeginTransactionAsync();
 
-            var dbSet = GetDbSet<T>();
-            if (dbSet is null)
+            try
+            {
+                var dbSet = GetDbSet<T>();
+                if (dbSet is null)
+                {
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+
+                var itemExists = await dbSet.FindAsync(item.Id) is not null;
+
+                if (itemExists)
+                {
+                    dbSet.Update(item);
+                }
+                else
+                {
+                    await dbSet.AddAsync(item);
+                }
+
+                await _dungeonDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch (Exception e)
             {
                 await transaction.RollbackAsync();
                 return false;
             }
-
-            dbSet.Update(item);
-            await transaction.CommitAsync();
-            return true;
         }
 
         /// <inheritdoc cref="IGameDbService.DeleteAllFromUser"/>
         public async Task<bool> DeleteAllFromUser(Guid userId)
         {
             await using var transaction = await _dungeonDbContext.Database.BeginTransactionAsync();
-            var dungeonDbSet = GetDbSet<Dungeon>();
-            var avatarDbSet = GetDbSet<Avatar>();
 
-            if (dungeonDbSet is null || avatarDbSet is null)
+            try
+            {
+                var dungeonDbSet = GetDbSet<Dungeon>();
+                var avatarDbSet = GetDbSet<Avatar>();
+
+                if (dungeonDbSet is null || avatarDbSet is null)
+                {
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+
+                var userDungeons = dungeonDbSet.AsQueryable().Where(x => x.DungeonOwner.Id == userId.ToString());
+                var usersAvatars = avatarDbSet.AsQueryable().Where(x => x.Owner.Id == userId.ToString());
+
+                dungeonDbSet.RemoveRange(userDungeons);
+                avatarDbSet.RemoveRange(usersAvatars);
+
+                await _dungeonDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch (Exception e)
             {
                 await transaction.RollbackAsync();
                 return false;
             }
-
-            var userDungeons = dungeonDbSet.AsQueryable().Where(x => x.DungeonOwner.Id == userId.ToString());
-            var usersAvatars = avatarDbSet.AsQueryable().Where(x => x.Owner.Id == userId.ToString());
-
-            dungeonDbSet.RemoveRange(userDungeons);
-            avatarDbSet.RemoveRange(usersAvatars);
-
-            await transaction.CommitAsync();
-            return true;
         }
 
         /// <summary>

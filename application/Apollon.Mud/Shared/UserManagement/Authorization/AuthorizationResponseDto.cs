@@ -26,7 +26,8 @@ namespace Apollon.Mud.Shared.UserManagement.Authorization
         {
             if (obj is AuthorizationResponseDto aRDto)
             {
-                return Token == aRDto.Token && DungeonUserDto.Equals(aRDto.DungeonUserDto);
+                return Token == aRDto.Token 
+                       && DungeonUserDto.Equals(aRDto.DungeonUserDto);
             }
             return base.Equals(obj);
         }

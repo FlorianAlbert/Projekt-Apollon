@@ -1,6 +1,8 @@
 ﻿using Apollon.Mud.Server.Model.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Races
 {
@@ -10,19 +12,6 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Races
     [ExcludeFromCodeCoverage]
     public class Race : IChoosable
     {
-        private string empty;
-        private int v1;
-        private int v2;
-        private int v3;
-
-        public Race(string empty, int v1, int v2, int v3)
-        {
-            this.empty = empty;
-            this.v1 = v1;
-            this.v2 = v2;
-            this.v3 = v3;
-        }
-
         /// <summary>
         /// Creates new instance of Race
         /// </summary>
@@ -64,5 +53,15 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Races
 
         /// <inheritdoc cref="IApprovable.Status"/>
         public Status Status { get; set; }
+
+        /// <summary>
+        /// Dungeon the race belongs to
+        /// </summary>
+        public virtual Dungeon Dungeon { get; set; }
+
+        /// <summary>
+        /// Avatars with this race
+        /// </summary>
+        public virtual ICollection<Avatar> Avatars { get; set; }
     }
 }

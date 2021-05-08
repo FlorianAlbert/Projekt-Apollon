@@ -931,32 +931,32 @@
 
     #region Bound Variables
     /// <summary>
-    /// TODO
+    /// Initializes the item category
     /// </summary>
     string[] itemCategory = new string[8];
 
     /// <summary>
-    /// TODO
+    /// Initializes the item in the room
     /// </summary>
     string[] roomItems = new string[8];
 
     /// <summary>
-    /// TODO
+    /// The room selected by default is the "NoRoom".
     /// </summary>
     string chosenRoom = "NoRoom";
 
     /// <summary>
-    /// TODO
+    /// TODO Abhilfe
     /// </summary>
     List<RequestableDto> roomRequestables = new List<RequestableDto>();
 
     /// <summary>
-    /// TODO
+    /// The context of the room is customizable
     /// </summary>
     string selectedRequestable = "NoAction";
 
     /// <summary>
-    /// TODO
+    /// Lists the data to be managed in the room
     /// </summary>
     List<NpcDto> roomNpcs = new List<NpcDto>();
 
@@ -969,27 +969,27 @@
     #region Item Lists
 
     /// <summary>
-    /// TODO
+    /// Lists the inspectable items in the room
     /// </summary>
     List<InspectableDto> dungeonInspectables = new List<InspectableDto>();
 
     /// <summary>
-    /// TODO
+    /// Lists the items that can be picked up in the room
     /// </summary>
     List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
 
     /// <summary>
-    /// TODO
+    /// Lists the consumable items in the room
     /// </summary>
     List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
 
     /// <summary>
-    /// TODO
+    /// Lists the wearing items in the room
     /// </summary>
     List<WearableDto> dungeonWearables = new List<WearableDto>();
 
     /// <summary>
-    /// TODO
+    /// Lists the items that can be used in the room
     /// </summary>
     List<UsableDto> dungeonUsables = new List<UsableDto>();
 
@@ -1007,7 +1007,8 @@
     #region Item Dropdown Counters
 
     /// <summary>
-    /// TODO
+    /// When an item is kicked out of the inventory,
+    /// the number of items in the room changes
     /// </summary>
     int roomItemCount = 1;
 
@@ -1018,10 +1019,8 @@
 
     #endregion
 
-
-    #region methods
     /// <summary>
-    /// TODO
+    /// TODO Abhilfe
     /// </summary>
     protected override void OnInitialized()
     {
@@ -1100,7 +1099,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// The method manages the save function when specific changes have been made in the room
     /// </summary>
     /// <returns></returns>
     private async Task HandleRoomSubmit()
@@ -1189,10 +1188,6 @@
         }
     }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    /// <returns></returns>
     private EventCallback RoomSelectionChanged()
     {
         if (!chosenRoom.Equals(dungeonRoomModel.Name) && !chosenRoom.Equals("NoRoom"))
@@ -1297,10 +1292,6 @@
         return EventCallback.Empty;
     }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    /// <param name="args"></param>
     private void NameFieldLostFocus(System.EventArgs args)
     {
         RoomDto checkRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.Name));
@@ -1451,7 +1442,8 @@
 
     #region Add/Remove Buttons
     /// <summary>
-    /// TODO
+    /// As long as the number of items in the room is less than 8,
+    /// it is possible to add one more item to the room.
     /// </summary>
     private void AddItemButtonClicked()
     {
@@ -1460,7 +1452,8 @@
     }
 
     /// <summary>
-    /// TODO
+    /// As long as the number of items in the room is greater than 0,
+    /// it is possible to remove an item from the room.
     /// </summary>
     private void RemoveItemButtonClicked()
     {
@@ -1520,7 +1513,6 @@
         selectedNpc = "NoNpc";
     }
 
-    #endregion
     #endregion
 }
 

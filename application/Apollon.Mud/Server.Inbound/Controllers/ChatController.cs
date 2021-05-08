@@ -42,7 +42,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> PostRoomMessage(ChatMessageDto chatMessageDto)
+        public async Task<IActionResult> PostRoomMessage([FromBody] ChatMessageDto chatMessageDto)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
             var sessionIdClaim = User.Claims.FirstOrDefault(x => x.Type == "SessionId");
@@ -53,7 +53,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var connection = _ConnectionService.GetConnection(userId, sessionId);
 
-            if (connection.AvatarId is null) return Forbid();
+            if (connection.IsDungeonMaster) return Forbid();
 
             _ChatService.PostRoomMessage(connection.DungeonId, connection.AvatarId.Value, chatMessageDto.Message);
 
@@ -70,7 +70,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Route("whisper")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> PostWhisperMessage(ChatMessageDto chatMessageDto)
+        public async Task<IActionResult> PostWhisperMessage([FromBody] ChatMessageDto chatMessageDto)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
             var sessionIdClaim = User.Claims.FirstOrDefault(x => x.Type == "SessionId");
@@ -96,7 +96,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Route("global")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> PostGlobalMessage(ChatMessageDto chatMessageDto)
+        public async Task<IActionResult> PostGlobalMessage([FromBody] ChatMessageDto chatMessageDto)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
             var sessionIdClaim = User.Claims.FirstOrDefault(x => x.Type == "SessionId");
@@ -107,7 +107,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var connection = _ConnectionService.GetConnection(userId, sessionId);
 
-            if (connection.AvatarId is not null) return Forbid();
+            if (!connection.IsDungeonMaster) return Forbid();
 
             _ChatService.PostGlobalMessage(connection.DungeonId, chatMessageDto.Message);
 
