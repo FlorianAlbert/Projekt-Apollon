@@ -47,14 +47,14 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <summary>
         /// Start room of the dungeon
         /// </summary>
-        public Room DefaultRoom { get; set; }
+        public virtual Room DefaultRoom { get; set; }
 
         private ICollection<Race> _ConfiguredRaces;
 
         /// <summary>
         /// All races an avatar can choose between
         /// </summary>
-        public ICollection<Race> ConfiguredRaces
+        public virtual ICollection<Race> ConfiguredRaces
         {
             get
             {
@@ -67,7 +67,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <summary>
         /// All classes an avatar can choose between
         /// </summary>
-        public ICollection<Class> ConfiguredClasses
+        public virtual ICollection<Class> ConfiguredClasses
         {
             get
             {
@@ -80,7 +80,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <summary>
         /// All rooms of the dungeon
         /// </summary>
-        public ICollection<Room> ConfiguredRooms
+        public virtual ICollection<Room> ConfiguredRooms
         {
             get
             {
@@ -93,7 +93,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <summary>
         /// All inspectables that can be placed in the rooms
         /// </summary>
-        public ICollection<Inspectable> ConfiguredInspectables
+        public virtual ICollection<Inspectable> ConfiguredInspectables
         {
             get
             {
@@ -106,7 +106,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <summary>
         /// All requestables that can be attached to a room
         /// </summary>
-        public ICollection<Requestable> ConfiguredRequestables
+        public virtual ICollection<Requestable> ConfiguredRequestables
         {
             get
             {
@@ -119,7 +119,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <summary>
         /// All registered avatar
         /// </summary>
-        public ICollection<Avatar> RegisteredAvatars
+        public virtual ICollection<Avatar> RegisteredAvatars
         {
             get
             {
@@ -132,7 +132,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <summary>
         /// All possible Dungeon Masters of the dungeon
         /// </summary>
-        public ICollection<DungeonUser> DungeonMasters
+        public virtual ICollection<DungeonUser> DungeonMasters
         {
             get
             {
@@ -145,7 +145,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <summary>
         /// List of all users who have access to this dungeon
         /// </summary>
-        public ICollection<DungeonUser> WhiteList
+        public virtual ICollection<DungeonUser> WhiteList
         {
             get
             {
@@ -158,7 +158,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <summary>
         /// List of all users who are not allowed to have avatars in this dungeon
         /// </summary>
-        public ICollection<DungeonUser> BlackList
+        public virtual ICollection<DungeonUser> BlackList
         {
             get
             {
@@ -171,7 +171,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <summary>
         /// List of all users who want to have access to this dungeon, in case it is private
         /// </summary>
-        public ICollection<DungeonUser> OpenRequests
+        public virtual ICollection<DungeonUser> OpenRequests
         {
             get
             {
@@ -182,12 +182,12 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <summary>
         /// User who is currently the Dungeon Master
         /// </summary>
-        public DungeonUser CurrentDungeonMaster { get; set; }
+        public virtual DungeonUser CurrentDungeonMaster { get; set; }
 
         /// <summary>
         /// User who owns this dungeon
         /// </summary>
-        public DungeonUser DungeonOwner { get; set; }
+        public virtual DungeonUser DungeonOwner { get; set; }
 
         /// <summary>
         /// Defines wether this dungeon is public or private accessible

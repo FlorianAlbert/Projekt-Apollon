@@ -22,36 +22,36 @@ namespace Apollon.Mud.Server.Model.Implementations.User
         /// <summary>
         /// The dungeons this user is the DungeonOwner of
         /// </summary>
-        public ICollection<Dungeon> DungeonOwnerDungeons { get; set; }
+        public virtual ICollection<Dungeon> DungeonOwnerDungeons { get; set; }
 
         /// <summary>
         /// The dungeons this user is blacklisted in
         /// </summary>
-        public ICollection<Dungeon> BlackListDungeons { get; set; }
+        public virtual ICollection<Dungeon> BlackListDungeons { get; set; }
 
         /// <summary>
         /// The dungeons this user is whitelisted in
         /// </summary>
-        public ICollection<Dungeon> WhiteListDungeons { get; set; }
+        public virtual ICollection<Dungeon> WhiteListDungeons { get; set; }
 
         /// <summary>
         /// The dungeons this user is a DungeonMaster of
         /// </summary>
-        public ICollection<Dungeon> DungeonMasterDungeons { get; set; }
+        public virtual ICollection<Dungeon> DungeonMasterDungeons { get; set; }
 
         /// <summary>
         /// The dungeons this user is currently the DungeonMaster of
         /// </summary>
-        public ICollection<Dungeon> CurrentDungeonMasterDungeons { get; set; }
+        public virtual ICollection<Dungeon> CurrentDungeonMasterDungeons { get; set; }
 
         /// <summary>
         /// The dungeons this user has open EnterRequests on
         /// </summary>
-        public ICollection<Dungeon> OpenRequestDungeons { get; set; }
+        public virtual ICollection<Dungeon> OpenRequestDungeons { get; set; }
 
         /// <summary>
         /// The avatars this user owns
         /// </summary>
-        public ICollection<Avatar> Avatars { get; set; }
+        public virtual ICollection<Avatar> Avatars { get; set; }
     }
 }
