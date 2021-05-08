@@ -7,14 +7,11 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
-using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
 using Apollon.Mud.Shared.Dungeon.Class;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
-using Apollon.Mud.Shared.Dungeon.Npc;
-using Apollon.Mud.Shared.Dungeon.Requestable;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -63,7 +60,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 classDto.DefaultDamage)
                 { Status = (Status)classDto.Status };
 
-            var classDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
+            var classDungeon = await GameConfigService.Get<Dungeon>(dungeonId);//würde ich weiter vorne machen, dann kannst du bei der Authorization Abfrage die Variable benutzen
 
             classDungeon.ConfiguredClasses.Add(newClass);
 
@@ -73,7 +70,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 {
                     return Ok(newClass.Id);
                 }
-                await GameConfigService.Delete<Npc>(newClass.Id);
+                await GameConfigService.Delete<Class>(newClass.Id);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
@@ -104,7 +101,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (classToUpdate is null) return BadRequest();
 
             var classDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
-            classDungeon.ConfiguredClasses.Remove(classToUpdate);
+            classDungeon.ConfiguredClasses.Remove(classToUpdate);//müsste nicht aufgerufen werden, da die Klasse nur geupdated wird oder?
 
             classToUpdate.Status = (Status)classDto.Status;
             classToUpdate.Name = classDto.Name;
@@ -145,7 +142,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 {
                     return Ok();
                 }
-                await GameConfigService.Delete<Npc>(classToUpdate.Id);
+                await GameConfigService.Delete<Class>(classToUpdate.Id);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
@@ -236,7 +233,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(ICollection<NpcDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ICollection<ClassDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
@@ -307,7 +304,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}/{classId}")]
-        [ProducesResponseType(typeof(RequestableDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ClassDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid classId)
         {

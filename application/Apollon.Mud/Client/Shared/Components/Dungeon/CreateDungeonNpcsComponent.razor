@@ -170,7 +170,7 @@
     {
         npcContext = new EditContext(dungeonNpcModel);
 
-        dungeonNpcs = NpcService.GetAllNpcs(DungeonId).Result.ToList();
+        //dungeonNpcs = NpcService.GetAllNpcs(DungeonId).Result.ToList();
 
         #region to Delete
         NpcDto testNpc = new NpcDto();
@@ -272,7 +272,10 @@
         dungeonNpcModel.Text = string.Empty;
         dungeonNpcModel.Status = string.Empty;
     }
-
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="args"></param>
     private async void RemoveNpcButtonClicked(System.EventArgs args)
     {
         var selectedNpc = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
