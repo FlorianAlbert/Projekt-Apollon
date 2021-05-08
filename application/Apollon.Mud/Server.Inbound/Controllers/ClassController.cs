@@ -63,7 +63,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 classDto.DefaultDamage)
                 { Status = (Status)classDto.Status };
 
-            var classDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
+            var classDungeon = await GameConfigService.Get<Dungeon>(dungeonId);//würde ich weiter vorne machen, dann kannst du bei der Authorization Abfrage die Variable benutzen
 
             classDungeon.ConfiguredClasses.Add(newClass);
 
@@ -104,7 +104,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (classToUpdate is null) return BadRequest();
 
             var classDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
-            classDungeon.ConfiguredClasses.Remove(classToUpdate);
+            classDungeon.ConfiguredClasses.Remove(classToUpdate);//müsste nicht aufgerufen werden, da die Klasse nur geupdated wird oder?
 
             classToUpdate.Status = (Status)classDto.Status;
             classToUpdate.Name = classDto.Name;
