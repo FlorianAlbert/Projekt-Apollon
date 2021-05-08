@@ -68,12 +68,6 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         public Gender ChosenGender { get; set; }
 
         /// <summary>
-        /// The dungeon the avatar is part of
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        public Dungeon Dungeon { get; set; }
-
-        /// <summary>
         /// The maximum health value of the avatar
         /// </summary>
         public int MaxHealth 

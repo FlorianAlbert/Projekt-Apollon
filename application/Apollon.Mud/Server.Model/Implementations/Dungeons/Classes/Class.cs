@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Interfaces;
@@ -60,5 +61,15 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
 
         /// <inheritdoc cref="IApprovable.Status"/>
         public Status Status { get; set; }
+
+        /// <summary>
+        /// Dungeon the class belongs to
+        /// </summary>
+        public Dungeon Dungeon { get; set; }
+
+        /// <summary>
+        /// Avatars with this class
+        /// </summary>
+        public ICollection<Avatar> Avatars { get; set; }
     }
 }

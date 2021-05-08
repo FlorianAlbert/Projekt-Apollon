@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Apollon.Mud.Server.Domain.Migrations
 {
     [DbContext(typeof(DungeonDbContext))]
-    [Migration("20210504170947_Initial")]
+    [Migration("20210508120841_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,7 +20,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -36,7 +36,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("DungeonId")
+                    b.Property<string>("DungeonId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -54,14 +54,14 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CurrentDungeonMasterId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("DefaultRoomId")
+                    b.Property<string>("DefaultRoomId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DungeonDescription")
@@ -106,7 +106,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("DungeonId1")
+                    b.Property<string>("DungeonId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -117,7 +117,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DungeonId1");
+                    b.HasIndex("DungeonId");
 
                     b.ToTable("Inspectables");
 
@@ -126,7 +126,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Races.Race", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -142,7 +142,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("DungeonId")
+                    b.Property<string>("DungeonId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -160,20 +160,17 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables.Requestable", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("DungeonId")
+                    b.Property<string>("DungeonId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("MessageRegex")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PatternForPlayer")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("RoomId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Status")
@@ -183,30 +180,28 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
                     b.HasIndex("DungeonId");
 
-                    b.HasIndex("RoomId");
-
                     b.ToTable("SpecialActions");
                 });
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("DungeonId")
+                    b.Property<string>("DungeonId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("NeighborNorthId")
+                    b.Property<string>("NeighborNorthId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("NeighborWestId")
+                    b.Property<string>("NeighborWestId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Status")
@@ -235,18 +230,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("DungeonId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("DungeonId1")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("DungeonId2")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("DungeonId3")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
@@ -294,14 +277,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DungeonId");
-
-                    b.HasIndex("DungeonId1");
-
-                    b.HasIndex("DungeonId2");
-
-                    b.HasIndex("DungeonId3");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -310,6 +285,111 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("AvatarTakeable", b =>
+                {
+                    b.Property<string>("InventoryAvatarsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InventoryId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("InventoryAvatarsId", "InventoryId");
+
+                    b.HasIndex("InventoryId");
+
+                    b.ToTable("AvatarTakeable");
+                });
+
+            modelBuilder.Entity("ClassTakeable", b =>
+                {
+                    b.Property<string>("ClassesId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StartInventoryId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ClassesId", "StartInventoryId");
+
+                    b.HasIndex("StartInventoryId");
+
+                    b.ToTable("ClassTakeable");
+                });
+
+            modelBuilder.Entity("DungeonDungeonUser", b =>
+                {
+                    b.Property<string>("BlackListDungeonsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BlackListId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("BlackListDungeonsId", "BlackListId");
+
+                    b.HasIndex("BlackListId");
+
+                    b.ToTable("DungeonDungeonUser");
+                });
+
+            modelBuilder.Entity("DungeonDungeonUser1", b =>
+                {
+                    b.Property<string>("WhiteListDungeonsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WhiteListId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("WhiteListDungeonsId", "WhiteListId");
+
+                    b.HasIndex("WhiteListId");
+
+                    b.ToTable("DungeonDungeonUser1");
+                });
+
+            modelBuilder.Entity("DungeonDungeonUser2", b =>
+                {
+                    b.Property<string>("DungeonMasterDungeonsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DungeonMastersId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("DungeonMasterDungeonsId", "DungeonMastersId");
+
+                    b.HasIndex("DungeonMastersId");
+
+                    b.ToTable("DungeonDungeonUser2");
+                });
+
+            modelBuilder.Entity("DungeonDungeonUser3", b =>
+                {
+                    b.Property<string>("OpenRequestDungeonsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("OpenRequestsId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("OpenRequestDungeonsId", "OpenRequestsId");
+
+                    b.HasIndex("OpenRequestsId");
+
+                    b.ToTable("DungeonDungeonUser3");
+                });
+
+            modelBuilder.Entity("InspectableRoom", b =>
+                {
+                    b.Property<string>("InspectablesId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoomsId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("InspectablesId", "RoomsId");
+
+                    b.HasIndex("RoomsId");
+
+                    b.ToTable("InspectableRoom");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -440,6 +520,21 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("RequestableRoom", b =>
+                {
+                    b.Property<string>("RoomsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SpecialActionsId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("RoomsId", "SpecialActionsId");
+
+                    b.HasIndex("SpecialActionsId");
+
+                    b.ToTable("RequestableRoom");
+                });
+
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars.Avatar", b =>
                 {
                     b.HasBaseType("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Inspectable");
@@ -447,22 +542,22 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.Property<string>("ArmorId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("ChosenClassId")
+                    b.Property<string>("ChosenClassId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ChosenGender")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid?>("ChosenRaceId")
+                    b.Property<string>("ChosenRaceId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("CurrentHealth")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid?>("CurrentRoomId")
+                    b.Property<string>("CurrentRoomId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("DungeonId")
+                    b.Property<string>("DungeonId1")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("HoldingItemId")
@@ -479,7 +574,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
                     b.HasIndex("CurrentRoomId");
 
-                    b.HasIndex("DungeonId");
+                    b.HasIndex("DungeonId1");
 
                     b.HasIndex("HoldingItemId");
 
@@ -492,18 +587,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 {
                     b.HasBaseType("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Inspectable");
 
-                    b.Property<string>("AvatarId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("ClassId")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Weight")
                         .HasColumnType("INTEGER");
-
-                    b.HasIndex("AvatarId");
-
-                    b.HasIndex("ClassId");
 
                     b.HasDiscriminator().HasValue("Takeable");
                 });
@@ -550,15 +635,17 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", b =>
                 {
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", null)
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
                         .WithMany("ConfiguredClasses")
                         .HasForeignKey("DungeonId");
+
+                    b.Navigation("Dungeon");
                 });
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", b =>
                 {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", "CurrentDungeonMaster")
-                        .WithMany()
+                        .WithMany("CurrentDungeonMasterDungeons")
                         .HasForeignKey("CurrentDungeonMasterId");
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "DefaultRoom")
@@ -566,7 +653,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         .HasForeignKey("DefaultRoomId");
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", "DungeonOwner")
-                        .WithMany()
+                        .WithMany("DungeonOwnerDungeons")
                         .HasForeignKey("DungeonOwnerId");
 
                     b.Navigation("CurrentDungeonMaster");
@@ -578,32 +665,34 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Inspectable", b =>
                 {
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", null)
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
                         .WithMany("ConfiguredInspectables")
-                        .HasForeignKey("DungeonId1");
+                        .HasForeignKey("DungeonId");
+
+                    b.Navigation("Dungeon");
                 });
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Races.Race", b =>
                 {
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", null)
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
                         .WithMany("ConfiguredRaces")
                         .HasForeignKey("DungeonId");
+
+                    b.Navigation("Dungeon");
                 });
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables.Requestable", b =>
                 {
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", null)
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
                         .WithMany("ConfiguredRequestables")
                         .HasForeignKey("DungeonId");
 
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", null)
-                        .WithMany("SpecialActions")
-                        .HasForeignKey("RoomId");
+                    b.Navigation("Dungeon");
                 });
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", b =>
                 {
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", null)
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
                         .WithMany("ConfiguredRooms")
                         .HasForeignKey("DungeonId");
 
@@ -615,28 +704,116 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         .WithOne("NeighborEast")
                         .HasForeignKey("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "NeighborWestId");
 
+                    b.Navigation("Dungeon");
+
                     b.Navigation("NeighborNorth");
 
                     b.Navigation("NeighborWest");
                 });
 
-            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", b =>
+            modelBuilder.Entity("AvatarTakeable", b =>
+                {
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars.Avatar", null)
+                        .WithMany()
+                        .HasForeignKey("InventoryAvatarsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", null)
+                        .WithMany()
+                        .HasForeignKey("InventoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ClassTakeable", b =>
+                {
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", null)
+                        .WithMany()
+                        .HasForeignKey("ClassesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", null)
+                        .WithMany()
+                        .HasForeignKey("StartInventoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DungeonDungeonUser", b =>
                 {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", null)
-                        .WithMany("BlackList")
-                        .HasForeignKey("DungeonId");
+                        .WithMany()
+                        .HasForeignKey("BlackListDungeonsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", null)
-                        .WithMany("DungeonMasters")
-                        .HasForeignKey("DungeonId1");
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", null)
+                        .WithMany()
+                        .HasForeignKey("BlackListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
+            modelBuilder.Entity("DungeonDungeonUser1", b =>
+                {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", null)
-                        .WithMany("OpenRequests")
-                        .HasForeignKey("DungeonId2");
+                        .WithMany()
+                        .HasForeignKey("WhiteListDungeonsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", null)
+                        .WithMany()
+                        .HasForeignKey("WhiteListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DungeonDungeonUser2", b =>
+                {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", null)
-                        .WithMany("WhiteList")
-                        .HasForeignKey("DungeonId3");
+                        .WithMany()
+                        .HasForeignKey("DungeonMasterDungeonsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", null)
+                        .WithMany()
+                        .HasForeignKey("DungeonMastersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DungeonDungeonUser3", b =>
+                {
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", null)
+                        .WithMany()
+                        .HasForeignKey("OpenRequestDungeonsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", null)
+                        .WithMany()
+                        .HasForeignKey("OpenRequestsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("InspectableRoom", b =>
+                {
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Inspectable", null)
+                        .WithMany()
+                        .HasForeignKey("InspectablesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", null)
+                        .WithMany()
+                        .HasForeignKey("RoomsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -690,34 +867,49 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RequestableRoom", b =>
+                {
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", null)
+                        .WithMany()
+                        .HasForeignKey("RoomsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables.Requestable", null)
+                        .WithMany()
+                        .HasForeignKey("SpecialActionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars.Avatar", b =>
                 {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables.Wearable", "Armor")
-                        .WithMany()
+                        .WithMany("ArmorAvatars")
                         .HasForeignKey("ArmorId");
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", "ChosenClass")
-                        .WithMany()
+                        .WithMany("Avatars")
                         .HasForeignKey("ChosenClassId");
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Races.Race", "ChosenRace")
-                        .WithMany()
+                        .WithMany("Avatars")
                         .HasForeignKey("ChosenRaceId");
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "CurrentRoom")
-                        .WithMany("Inspectables")
+                        .WithMany()
                         .HasForeignKey("CurrentRoomId");
 
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", null)
                         .WithMany("RegisteredAvatars")
-                        .HasForeignKey("DungeonId");
+                        .HasForeignKey("DungeonId1");
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", "HoldingItem")
-                        .WithMany()
+                        .WithMany("HoldingItemAvatars")
                         .HasForeignKey("HoldingItemId");
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", "Owner")
-                        .WithMany()
+                        .WithMany("Avatars")
                         .HasForeignKey("OwnerId");
 
                     b.Navigation("Armor");
@@ -728,33 +920,18 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
                     b.Navigation("CurrentRoom");
 
-                    b.Navigation("Dungeon");
-
                     b.Navigation("HoldingItem");
 
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", b =>
-                {
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars.Avatar", null)
-                        .WithMany("Inventory")
-                        .HasForeignKey("AvatarId");
-
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", null)
-                        .WithMany("StartInventory")
-                        .HasForeignKey("ClassId");
-                });
-
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", b =>
                 {
-                    b.Navigation("StartInventory");
+                    b.Navigation("Avatars");
                 });
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", b =>
                 {
-                    b.Navigation("BlackList");
-
                     b.Navigation("ConfiguredClasses");
 
                     b.Navigation("ConfiguredInspectables");
@@ -765,29 +942,38 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
                     b.Navigation("ConfiguredRooms");
 
-                    b.Navigation("DungeonMasters");
-
-                    b.Navigation("OpenRequests");
-
                     b.Navigation("RegisteredAvatars");
+                });
 
-                    b.Navigation("WhiteList");
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Races.Race", b =>
+                {
+                    b.Navigation("Avatars");
                 });
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", b =>
                 {
-                    b.Navigation("Inspectables");
-
                     b.Navigation("NeighborEast");
 
                     b.Navigation("NeighborSouth");
-
-                    b.Navigation("SpecialActions");
                 });
 
-            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars.Avatar", b =>
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", b =>
                 {
-                    b.Navigation("Inventory");
+                    b.Navigation("Avatars");
+
+                    b.Navigation("CurrentDungeonMasterDungeons");
+
+                    b.Navigation("DungeonOwnerDungeons");
+                });
+
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", b =>
+                {
+                    b.Navigation("HoldingItemAvatars");
+                });
+
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables.Wearable", b =>
+                {
+                    b.Navigation("ArmorAvatars");
                 });
 #pragma warning restore 612, 618
         }

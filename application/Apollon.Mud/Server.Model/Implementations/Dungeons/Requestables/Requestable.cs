@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Server.Model.Interfaces;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables
@@ -40,5 +43,15 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables
         /// A readable command pattern for the player help
         /// </summary>
         public string PatternForPlayer { get; set; }
+
+        /// <summary>
+        /// Dungeon the requestable belongs to
+        /// </summary>
+        public Dungeon Dungeon { get; set; }
+
+        /// <summary>
+        /// Rooms with this requestable
+        /// </summary>
+        public ICollection<Room> Rooms { get; set; }
     }
 }

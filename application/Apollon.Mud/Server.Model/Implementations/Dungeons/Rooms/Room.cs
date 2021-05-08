@@ -90,6 +90,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
         /// <inheritdoc cref="IApprovable.Status"/>
         public Status Status { get; set; }
 
+        /// <summary>
+        /// The dungeon this room belongs to
+        /// </summary>
+        public Dungeon Dungeon { get; set; }
+
         /**
         public bool SupportsSpecialAction(string action)
         {

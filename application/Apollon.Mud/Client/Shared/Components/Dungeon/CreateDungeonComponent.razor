@@ -224,11 +224,11 @@
             submitDungeon.Status = dungeonModel.Status.Equals("Approved") ? 0 : 1;
             if (submitDungeon.Id == Guid.Empty)
             {
-                var responseGuid = DungeonService.CreateNewDungeon(submitDungeon);
-                if (!(responseGuid is null))
+                var responseGuid = await DungeonService.CreateNewDungeon(submitDungeon);
+                if (responseGuid != Guid.Empty)
                 {
-                    await OnDungeonSavedOrLoaded.InvokeAsync(responseGuid.Result);
-                    DungeonId = responseGuid.Result;
+                    await OnDungeonSavedOrLoaded.InvokeAsync(responseGuid);
+                    DungeonId = responseGuid;
                 }
             }
             else
