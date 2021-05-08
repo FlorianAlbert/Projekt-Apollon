@@ -47,11 +47,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables
         /// <summary>
         /// Dungeon the requestable belongs to
         /// </summary>
-        public Dungeon Dungeon { get; set; }
+        public virtual Dungeon Dungeon { get; set; }
 
         /// <summary>
         /// Rooms with this requestable
         /// </summary>
-        public ICollection<Room> Rooms { get; set; }
+        public virtual ICollection<Room> Rooms { get; set; }
     }
 }

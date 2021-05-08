@@ -57,11 +57,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Races
         /// <summary>
         /// Dungeon the race belongs to
         /// </summary>
-        public Dungeon Dungeon { get; set; }
+        public virtual Dungeon Dungeon { get; set; }
 
         /// <summary>
         /// Avatars with this race
         /// </summary>
-        public ICollection<Avatar> Avatars { get; set; }
+        public virtual ICollection<Avatar> Avatars { get; set; }
     }
 }
