@@ -101,7 +101,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
             }
         }
 
-        private ICollection<Requestable> _ConfiguredRequestable;
+        private ICollection<Requestable> _ConfiguredRequestables;
 
         /// <summary>
         /// All requestables that can be attached to a room
@@ -110,11 +110,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         {
             get
             {
-                return _ConfiguredRequestable ??= new List<Requestable>();
+                return _ConfiguredRequestables ??= new List<Requestable>();
             }
         }
 
-        private ICollection<Avatar> _ConfiguredAvatars;
+        private ICollection<Avatar> _RegisteredAvatars;
 
         /// <summary>
         /// All registered avatar
@@ -123,7 +123,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         {
             get
             {
-                return _ConfiguredAvatars ??= new List<Avatar>();
+                return _RegisteredAvatars ??= new List<Avatar>();
             }
         }
 
