@@ -44,7 +44,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
-            if (dungeon.DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
+            if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
             if (raceDto is null) return BadRequest();
             var newRace = new Race(
@@ -57,21 +57,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 Status = (Status) raceDto.Status,
                 Dungeon = dungeon
             };
-
-            //dungeon.ConfiguredRaces.Add(newRace);
-
+            
             var raceSaved = await GameConfigService.NewOrUpdate(newRace);
             if (!raceSaved) return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             return Ok(newRace.Id);
-            //var dungeonSaved = await GameConfigService.NewOrUpdate(dungeon);
-            //if (dungeonSaved) return Ok(newRace.Id);
-
-            // var raceDeleted = await GameConfigService.Delete<Race>(newRace.Id);
-            // while (!raceDeleted)
-            // {
-            //     raceDeleted = await GameConfigService.Delete<Race>(newRace.Id);
-            // }
-            // return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
         [HttpPut]
@@ -91,7 +80,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
-            if (dungeon.DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
+            if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
             if (raceDto is null) return BadRequest();
             var newRace = new Race(
@@ -143,7 +132,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
-            if (dungeon.DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
+            if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
             if (dungeon.Status is Status.Approved) return Forbid();
 
             var raceDeleted = await GameConfigService.Delete<Race>(raceId);
