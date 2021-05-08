@@ -1,6 +1,6 @@
 ﻿@using Apollon.Mud.Client.Data.Models
 @using Apollon.Mud.Shared.Dungeon.Npc
-@inject Apollon.Mud.Client.Services.Interfaces.INpcService NpcService
+@*@inject Apollon.Mud.Client.Services.Interfaces.INpcService NpcService*@
 
 <div class="card">
     <div class="card-header">
@@ -111,7 +111,7 @@
 
                 </div>
                 <div class="col">
-                    <button class="btn btn-success" style="max-width:20rem" type="submit">Speichern</button>
+                    <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
                 </div>
                 <div class="col">
                     @if (!(chosenNpc == "NoNpc"))
@@ -170,7 +170,7 @@
     {
         npcContext = new EditContext(dungeonNpcModel);
 
-        dungeonNpcs = NpcService.GetAllNpcs(DungeonId).Result.ToList();
+        //dungeonNpcs = NpcService.GetAllNpcs(DungeonId).Result.ToList();
 
         #region to Delete
         NpcDto testNpc = new NpcDto();
@@ -206,11 +206,11 @@
             if (newNpc)
             {
                 dungeonNpcs.Add(submitNpc);
-                await NpcService.CreateNewNpc(submitNpc, DungeonId);
+                //await NpcService.CreateNewNpc(submitNpc, DungeonId);
             }
             else
             {
-                await NpcService.UpdateNpc(submitNpc, DungeonId);
+                //await NpcService.UpdateNpc(submitNpc, DungeonId);
             }
             chosenNpc = dungeonNpcModel.Name;
         }
@@ -277,7 +277,7 @@
     {
         var selectedNpc = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
         dungeonNpcs.Remove(selectedNpc);
-        await NpcService.DeleteNpc(selectedNpc.Id, DungeonId);
+        //await NpcService.DeleteNpc(selectedNpc.Id, DungeonId);
 
         chosenNpc = "NoNpc";
         dungeonNpcModel.Name = string.Empty;
