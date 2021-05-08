@@ -187,7 +187,7 @@
         dungeonNpcs.Add(testNpc);
         #endregion
 
-
+        StateHasChanged();
     }
 
     /// <summary>
@@ -298,21 +298,25 @@
     {
         var npcToDelete = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
         bool shouldFieldsBeEmptied = true;
-
-        if (!(npcToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await NpcService.DeleteNpc(npcToDelete.Id, DungeonId);
-
-        if (shouldFieldsBeEmptied)
+        if (!(npcToDelete is null))
         {
-            chosenNpc = "NoNpc";
-            dungeonNpcModel.Name = string.Empty;
-            dungeonNpcModel.Description = string.Empty;
-            dungeonNpcModel.Text = string.Empty;
-            dungeonNpcModel.Status = string.Empty;
-            dungeonNpcs.Remove(npcToDelete);
-        }
-        else
-        {
+            if (!(npcToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await NpcService.DeleteNpc(npcToDelete.Id, DungeonId);
 
+            if (shouldFieldsBeEmptied)
+            {
+                chosenNpc = "NoNpc";
+                dungeonNpcModel.Name = string.Empty;
+                dungeonNpcModel.Description = string.Empty;
+                dungeonNpcModel.Text = string.Empty;
+                dungeonNpcModel.Status = string.Empty;
+                dungeonNpcs.Remove(npcToDelete);
+                StateHasChanged();
+            }
+            else
+            {
+
+            }
         }
+
     }
 }

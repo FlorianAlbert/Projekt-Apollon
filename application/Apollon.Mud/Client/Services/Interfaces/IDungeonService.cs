@@ -53,6 +53,12 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
+        /// <returns></returns>
+        Task<ICollection<DungeonDto>> GetAllDungeonsForUser();
+
+        /// <summary>
+        /// TODO
+        /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
         Task<DungeonDto> GetDungeon(Guid dungeonId);
