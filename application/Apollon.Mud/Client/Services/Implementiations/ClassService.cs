@@ -1,4 +1,5 @@
-﻿using Apollon.Mud.Client.Services.Interfaces;
+﻿using Apollon.Mud.Client.Data;
+using Apollon.Mud.Client.Services.Interfaces;
 using Apollon.Mud.Shared.Dungeon.Class;
 using Apollon.Mud.Shared.Dungeon.Npc;
 using System;
@@ -28,9 +29,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// TODO
         /// </summary>
         /// <param name="httpClient"></param>
-        public ClassService(IHttpClientFactory httpClientFactory)
+        public ClassService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
+            HttpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + userContext.Token);
             CancellationTokenSource = new CancellationTokenSource();
         }
 
