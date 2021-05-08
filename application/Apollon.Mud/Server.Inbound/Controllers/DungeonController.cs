@@ -12,6 +12,7 @@ using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Dungeon.User;
+using System.Collections.Generic;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -189,6 +190,40 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 DungeonEpoch = x.DungeonEpoch,
                 Visibility = (int) x.Visibility,
                 Status = (int) x.Status,
+                DungeonOwner = new DungeonUserDto
+                {
+                    Email = x.DungeonOwner.Email,
+                    Id = Guid.Parse(x.DungeonOwner.Id)
+                }
+            }).ToArray();
+
+            return Ok(dungeonDtos);
+        }
+
+        [HttpGet]
+        [Route("/userdungeons")]
+        [Authorize(Roles = "Player")]
+        [ProducesResponseType(typeof(ICollection<DungeonDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllForUser()
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
+
+            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
+
+            var user = await UserService.GetUser(userId);
+
+            if (user is null) return BadRequest();
+
+            var dungeons = (await GameConfigService.GetAll<Dungeon>()).Where(x => x.DungeonOwner.Id == user.Id);
+
+            var dungeonDtos = dungeons.Select(x => new DungeonDto
+            {
+                Id = x.Id,
+                DungeonName = x.DungeonName,
+                DungeonDescription = x.DungeonDescription,
+                DungeonEpoch = x.DungeonEpoch,
+                Visibility = (int)x.Visibility,
+                Status = (int)x.Status,
                 DungeonOwner = new DungeonUserDto
                 {
                     Email = x.DungeonOwner.Email,
