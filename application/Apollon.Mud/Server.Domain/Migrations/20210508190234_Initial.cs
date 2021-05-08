@@ -22,6 +22,32 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    LastActive = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "TEXT", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -43,6 +69,47 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
+                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
+                    ProviderKey = table.Column<string>(type: "TEXT", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "TEXT", nullable: true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
@@ -58,35 +125,12 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
-                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
-                columns: table => new
-                {
-                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
-                    ProviderKey = table.Column<string>(type: "TEXT", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "TEXT", nullable: true),
-                    UserId = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -101,16 +145,94 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DungeonDungeonUser",
+                columns: table => new
+                {
+                    BlackListDungeonsId = table.Column<string>(type: "TEXT", nullable: false),
+                    BlackListId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DungeonDungeonUser", x => new { x.BlackListDungeonsId, x.BlackListId });
+                    table.ForeignKey(
+                        name: "FK_DungeonDungeonUser_AspNetUsers_BlackListId",
+                        column: x => x.BlackListId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DungeonDungeonUser1",
+                columns: table => new
+                {
+                    WhiteListDungeonsId = table.Column<string>(type: "TEXT", nullable: false),
+                    WhiteListId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DungeonDungeonUser1", x => new { x.WhiteListDungeonsId, x.WhiteListId });
+                    table.ForeignKey(
+                        name: "FK_DungeonDungeonUser1_AspNetUsers_WhiteListId",
+                        column: x => x.WhiteListId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DungeonDungeonUser2",
+                columns: table => new
+                {
+                    DungeonMasterDungeonsId = table.Column<string>(type: "TEXT", nullable: false),
+                    DungeonMastersId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DungeonDungeonUser2", x => new { x.DungeonMasterDungeonsId, x.DungeonMastersId });
+                    table.ForeignKey(
+                        name: "FK_DungeonDungeonUser2_AspNetUsers_DungeonMastersId",
+                        column: x => x.DungeonMastersId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DungeonDungeonUser3",
+                columns: table => new
+                {
+                    OpenRequestDungeonsId = table.Column<string>(type: "TEXT", nullable: false),
+                    OpenRequestsId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DungeonDungeonUser3", x => new { x.OpenRequestDungeonsId, x.OpenRequestsId });
+                    table.ForeignKey(
+                        name: "FK_DungeonDungeonUser3_AspNetUsers_OpenRequestsId",
+                        column: x => x.OpenRequestsId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Dungeons",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     DungeonEpoch = table.Column<string>(type: "TEXT", nullable: true),
                     DungeonDescription = table.Column<string>(type: "TEXT", nullable: true),
-                    DefaultRoomId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    DefaultRoomId = table.Column<string>(type: "TEXT", nullable: true),
                     CurrentDungeonMasterId = table.Column<string>(type: "TEXT", nullable: true),
                     DungeonOwnerId = table.Column<string>(type: "TEXT", nullable: true),
                     Visibility = table.Column<int>(type: "INTEGER", nullable: false),
@@ -120,58 +242,16 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Dungeons", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    LastActive = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DungeonId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    DungeonId1 = table.Column<Guid>(type: "TEXT", nullable: true),
-                    DungeonId2 = table.Column<Guid>(type: "TEXT", nullable: true),
-                    DungeonId3 = table.Column<Guid>(type: "TEXT", nullable: true),
-                    UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
-                    PasswordHash = table.Column<string>(type: "TEXT", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "TEXT", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_Dungeons_DungeonId",
-                        column: x => x.DungeonId,
-                        principalTable: "Dungeons",
+                        name: "FK_Dungeons_AspNetUsers_CurrentDungeonMasterId",
+                        column: x => x.CurrentDungeonMasterId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_Dungeons_DungeonId1",
-                        column: x => x.DungeonId1,
-                        principalTable: "Dungeons",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_Dungeons_DungeonId2",
-                        column: x => x.DungeonId2,
-                        principalTable: "Dungeons",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_Dungeons_DungeonId3",
-                        column: x => x.DungeonId3,
-                        principalTable: "Dungeons",
+                        name: "FK_Dungeons_AspNetUsers_DungeonOwnerId",
+                        column: x => x.DungeonOwnerId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -180,14 +260,14 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 name: "Classes",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     DefaultHealth = table.Column<int>(type: "INTEGER", nullable: false),
                     DefaultProtection = table.Column<int>(type: "INTEGER", nullable: false),
                     DefaultDamage = table.Column<int>(type: "INTEGER", nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    DungeonId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    DungeonId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -204,14 +284,14 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 name: "Races",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     DefaultHealth = table.Column<int>(type: "INTEGER", nullable: false),
                     DefaultProtection = table.Column<int>(type: "INTEGER", nullable: false),
                     DefaultDamage = table.Column<int>(type: "INTEGER", nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    DungeonId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    DungeonId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -228,13 +308,13 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 name: "Rooms",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
-                    NeighborNorthId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    NeighborWestId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    NeighborNorthId = table.Column<string>(type: "TEXT", nullable: true),
+                    NeighborWestId = table.Column<string>(type: "TEXT", nullable: true),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    DungeonId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    DungeonId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -260,6 +340,27 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SpecialActions",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
+                    MessageRegex = table.Column<string>(type: "TEXT", nullable: true),
+                    PatternForPlayer = table.Column<string>(type: "TEXT", nullable: true),
+                    DungeonId = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SpecialActions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SpecialActions_Dungeons_DungeonId",
+                        column: x => x.DungeonId,
+                        principalTable: "Dungeons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Inspectables",
                 columns: table => new
                 {
@@ -267,20 +368,18 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
+                    DungeonId = table.Column<string>(type: "TEXT", nullable: true),
                     Discriminator = table.Column<string>(type: "TEXT", nullable: false),
-                    DungeonId1 = table.Column<Guid>(type: "TEXT", nullable: true),
-                    ChosenRaceId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    ChosenClassId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    ChosenRaceId = table.Column<string>(type: "TEXT", nullable: true),
+                    ChosenClassId = table.Column<string>(type: "TEXT", nullable: true),
                     ChosenGender = table.Column<int>(type: "INTEGER", nullable: true),
-                    DungeonId = table.Column<Guid>(type: "TEXT", nullable: true),
                     CurrentHealth = table.Column<int>(type: "INTEGER", nullable: true),
                     HoldingItemId = table.Column<string>(type: "TEXT", nullable: true),
                     ArmorId = table.Column<string>(type: "TEXT", nullable: true),
-                    CurrentRoomId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    CurrentRoomId = table.Column<string>(type: "TEXT", nullable: true),
                     OwnerId = table.Column<string>(type: "TEXT", nullable: true),
+                    DungeonId1 = table.Column<string>(type: "TEXT", nullable: true),
                     Weight = table.Column<int>(type: "INTEGER", nullable: true),
-                    AvatarId = table.Column<string>(type: "TEXT", nullable: true),
-                    ClassId = table.Column<Guid>(type: "TEXT", nullable: true),
                     EffectDescription = table.Column<string>(type: "TEXT", nullable: true),
                     DamageBoost = table.Column<int>(type: "INTEGER", nullable: true),
                     ProtectionBoost = table.Column<int>(type: "INTEGER", nullable: true),
@@ -302,12 +401,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Inspectables_Classes_ClassId",
-                        column: x => x.ClassId,
-                        principalTable: "Classes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_Inspectables_Dungeons_DungeonId",
                         column: x => x.DungeonId,
                         principalTable: "Dungeons",
@@ -322,12 +415,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     table.ForeignKey(
                         name: "FK_Inspectables_Inspectables_ArmorId",
                         column: x => x.ArmorId,
-                        principalTable: "Inspectables",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Inspectables_Inspectables_AvatarId",
-                        column: x => x.AvatarId,
                         principalTable: "Inspectables",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -352,31 +439,99 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SpecialActions",
+                name: "RequestableRoom",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    MessageRegex = table.Column<string>(type: "TEXT", nullable: true),
-                    PatternForPlayer = table.Column<string>(type: "TEXT", nullable: true),
-                    DungeonId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    RoomId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    RoomsId = table.Column<string>(type: "TEXT", nullable: false),
+                    SpecialActionsId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SpecialActions", x => x.Id);
+                    table.PrimaryKey("PK_RequestableRoom", x => new { x.RoomsId, x.SpecialActionsId });
                     table.ForeignKey(
-                        name: "FK_SpecialActions_Dungeons_DungeonId",
-                        column: x => x.DungeonId,
-                        principalTable: "Dungeons",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SpecialActions_Rooms_RoomId",
-                        column: x => x.RoomId,
+                        name: "FK_RequestableRoom_Rooms_RoomsId",
+                        column: x => x.RoomsId,
                         principalTable: "Rooms",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RequestableRoom_SpecialActions_SpecialActionsId",
+                        column: x => x.SpecialActionsId,
+                        principalTable: "SpecialActions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AvatarTakeable",
+                columns: table => new
+                {
+                    InventoryAvatarsId = table.Column<string>(type: "TEXT", nullable: false),
+                    InventoryId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AvatarTakeable", x => new { x.InventoryAvatarsId, x.InventoryId });
+                    table.ForeignKey(
+                        name: "FK_AvatarTakeable_Inspectables_InventoryAvatarsId",
+                        column: x => x.InventoryAvatarsId,
+                        principalTable: "Inspectables",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AvatarTakeable_Inspectables_InventoryId",
+                        column: x => x.InventoryId,
+                        principalTable: "Inspectables",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClassTakeable",
+                columns: table => new
+                {
+                    ClassesId = table.Column<string>(type: "TEXT", nullable: false),
+                    StartInventoryId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClassTakeable", x => new { x.ClassesId, x.StartInventoryId });
+                    table.ForeignKey(
+                        name: "FK_ClassTakeable_Classes_ClassesId",
+                        column: x => x.ClassesId,
+                        principalTable: "Classes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClassTakeable_Inspectables_StartInventoryId",
+                        column: x => x.StartInventoryId,
+                        principalTable: "Inspectables",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InspectableRoom",
+                columns: table => new
+                {
+                    InspectablesId = table.Column<string>(type: "TEXT", nullable: false),
+                    RoomsId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InspectableRoom", x => new { x.InspectablesId, x.RoomsId });
+                    table.ForeignKey(
+                        name: "FK_InspectableRoom_Inspectables_InspectablesId",
+                        column: x => x.InspectablesId,
+                        principalTable: "Inspectables",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InspectableRoom_Rooms_RoomsId",
+                        column: x => x.RoomsId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -411,35 +566,45 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_DungeonId",
-                table: "AspNetUsers",
-                column: "DungeonId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_DungeonId1",
-                table: "AspNetUsers",
-                column: "DungeonId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_DungeonId2",
-                table: "AspNetUsers",
-                column: "DungeonId2");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_DungeonId3",
-                table: "AspNetUsers",
-                column: "DungeonId3");
-
-            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_AvatarTakeable_InventoryId",
+                table: "AvatarTakeable",
+                column: "InventoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Classes_DungeonId",
                 table: "Classes",
                 column: "DungeonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClassTakeable_StartInventoryId",
+                table: "ClassTakeable",
+                column: "StartInventoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DungeonDungeonUser_BlackListId",
+                table: "DungeonDungeonUser",
+                column: "BlackListId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DungeonDungeonUser1_WhiteListId",
+                table: "DungeonDungeonUser1",
+                column: "WhiteListId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DungeonDungeonUser2_DungeonMastersId",
+                table: "DungeonDungeonUser2",
+                column: "DungeonMastersId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DungeonDungeonUser3_OpenRequestsId",
+                table: "DungeonDungeonUser3",
+                column: "OpenRequestsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Dungeons_CurrentDungeonMasterId",
@@ -457,14 +622,14 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 column: "DungeonOwnerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InspectableRoom_RoomsId",
+                table: "InspectableRoom",
+                column: "RoomsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Inspectables_ArmorId",
                 table: "Inspectables",
                 column: "ArmorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Inspectables_AvatarId",
-                table: "Inspectables",
-                column: "AvatarId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Inspectables_ChosenClassId",
@@ -475,11 +640,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 name: "IX_Inspectables_ChosenRaceId",
                 table: "Inspectables",
                 column: "ChosenRaceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Inspectables_ClassId",
-                table: "Inspectables",
-                column: "ClassId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Inspectables_CurrentRoomId",
@@ -512,6 +672,11 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 column: "DungeonId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RequestableRoom_SpecialActionsId",
+                table: "RequestableRoom",
+                column: "SpecialActionsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Rooms_DungeonId",
                 table: "Rooms",
                 column: "DungeonId");
@@ -533,58 +698,37 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 table: "SpecialActions",
                 column: "DungeonId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_SpecialActions_RoomId",
-                table: "SpecialActions",
-                column: "RoomId");
-
             migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserRoles_AspNetUsers_UserId",
-                table: "AspNetUserRoles",
-                column: "UserId",
-                principalTable: "AspNetUsers",
+                name: "FK_DungeonDungeonUser_Dungeons_BlackListDungeonsId",
+                table: "DungeonDungeonUser",
+                column: "BlackListDungeonsId",
+                principalTable: "Dungeons",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                table: "AspNetUserClaims",
-                column: "UserId",
-                principalTable: "AspNetUsers",
+                name: "FK_DungeonDungeonUser1_Dungeons_WhiteListDungeonsId",
+                table: "DungeonDungeonUser1",
+                column: "WhiteListDungeonsId",
+                principalTable: "Dungeons",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                table: "AspNetUserLogins",
-                column: "UserId",
-                principalTable: "AspNetUsers",
+                name: "FK_DungeonDungeonUser2_Dungeons_DungeonMasterDungeonsId",
+                table: "DungeonDungeonUser2",
+                column: "DungeonMasterDungeonsId",
+                principalTable: "Dungeons",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserTokens_AspNetUsers_UserId",
-                table: "AspNetUserTokens",
-                column: "UserId",
-                principalTable: "AspNetUsers",
+                name: "FK_DungeonDungeonUser3_Dungeons_OpenRequestDungeonsId",
+                table: "DungeonDungeonUser3",
+                column: "OpenRequestDungeonsId",
+                principalTable: "Dungeons",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Dungeons_AspNetUsers_CurrentDungeonMasterId",
-                table: "Dungeons",
-                column: "CurrentDungeonMasterId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Dungeons_AspNetUsers_DungeonOwnerId",
-                table: "Dungeons",
-                column: "DungeonOwnerId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Dungeons_Rooms_DefaultRoomId",
@@ -625,13 +769,37 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "AvatarTakeable");
+
+            migrationBuilder.DropTable(
+                name: "ClassTakeable");
+
+            migrationBuilder.DropTable(
+                name: "DungeonDungeonUser");
+
+            migrationBuilder.DropTable(
+                name: "DungeonDungeonUser1");
+
+            migrationBuilder.DropTable(
+                name: "DungeonDungeonUser2");
+
+            migrationBuilder.DropTable(
+                name: "DungeonDungeonUser3");
+
+            migrationBuilder.DropTable(
+                name: "InspectableRoom");
+
+            migrationBuilder.DropTable(
+                name: "RequestableRoom");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
                 name: "Inspectables");
 
             migrationBuilder.DropTable(
                 name: "SpecialActions");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Classes");

@@ -31,6 +31,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
 
             var loginResultMock = _Fixture.Build<LoginResult>()
                 .With(x => x.Status, LoginResultStatus.Unauthorized)
+                .Without(x => x.User)
                 .Create();
 
             var authorizationRequestDtoMock = _Fixture.Build<AuthorizationRequestDto>()
@@ -58,6 +59,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
 
             var loginResultMock = _Fixture.Build<LoginResult>()
                 .With(x => x.Status, LoginResultStatus.BadRequest)
+                .Without(x => x.User)
                 .Create();
 
             var authorizationRequestDtoMock = _Fixture.Build<AuthorizationRequestDto>()
@@ -83,17 +85,27 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var emailMock = _Fixture.Create<string>();
             var passwordMock = _Fixture.Create<string>();
             var tokenMock = _Fixture.Create<string>();
+            var dungeonUserIdMock = Guid.NewGuid();
 
             var dungeonUserMock = _Fixture.Build<DungeonUser>()
                 .With(x => x.LastActive, DateTime.Now)
                 .With(x => x.Email, emailMock)
                 .With(x => x.EmailConfirmed, true)
+                .With(x => x.Id, dungeonUserIdMock.ToString)
+                .Without(x => x.DungeonMasterDungeons)
+                .Without(x => x.DungeonOwnerDungeons)
+                .Without(x => x.CurrentDungeonMasterDungeons)
+                .Without(x => x.BlackListDungeons)
+                .Without(x => x.WhiteListDungeons)
+                .Without(x => x.OpenRequestDungeons)
+                .Without(x => x.Avatars)
                 .Create();
 
             var dungeonUserDtoMock = _Fixture.Build<DungeonUserDto>()
                 .With(x => x.LastActive, dungeonUserMock.LastActive)
                 .With(x => x.Email, dungeonUserMock.Email)
                 .With(x => x.EmailConfirmed, dungeonUserMock.EmailConfirmed)
+                .With(x => x.Id, dungeonUserIdMock)
                 .Create();
 
             var loginResultMock = _Fixture.Build<LoginResult>()

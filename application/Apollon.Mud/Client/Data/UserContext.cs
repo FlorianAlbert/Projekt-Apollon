@@ -8,17 +8,17 @@ namespace Apollon.Mud.Client.Data
     public class UserContext
     {
         /// <summary>
-        /// Saves ID, E-Mail, LastActive Time and Confirmation state
+        /// Manages the data related to the user in the dungeon
         /// </summary>
         public DungeonUserDto DungeonUserContext { get; set; }
 
         /// <summary>
-        /// The users authorization Token
+        /// Manages the token
         /// </summary>
         public string Token { get; set; }
 
         /// <summary>
-        /// The Bool that represents authorization
+        /// Checks if the user is authorized
         /// </summary>
         public bool IsAuthorized { get; set; } = false;
 

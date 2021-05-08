@@ -54,24 +54,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 raceDto.DefaultProtection,
                 raceDto.DefaultDamage)
             {
-                Status = (Status) raceDto.Status
-                //ToDo Dungeon = dungeon
+                Status = (Status) raceDto.Status,
+                Dungeon = dungeon
             };
-
-            //dungeon.ConfiguredRaces.Add(newRace);
-
+            
             var raceSaved = await GameConfigService.NewOrUpdate(newRace);
             if (!raceSaved) return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             return Ok(newRace.Id);
-            //var dungeonSaved = await GameConfigService.NewOrUpdate(dungeon);
-            //if (dungeonSaved) return Ok(newRace.Id);
-
-            // var raceDeleted = await GameConfigService.Delete<Race>(newRace.Id);
-            // while (!raceDeleted)
-            // {
-            //     raceDeleted = await GameConfigService.Delete<Race>(newRace.Id);
-            // }
-            // return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
         [HttpPut]
@@ -101,8 +90,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 raceDto.DefaultProtection,
                 raceDto.DefaultDamage)
             {
-                Status = (Status)raceDto.Status
-                //ToDo Dungeon = dungeon
+                Status = (Status)raceDto.Status,
+                Dungeon = dungeon
             };
 
             var raceSaved = await GameConfigService.NewOrUpdate(newRace);

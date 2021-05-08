@@ -24,11 +24,23 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         [InlineData(125, 55, 180)]
         public void MaxHealth_SumRaceAndClass_Success(int raceHealth, int classHealth, int expectedSum)
         {
-            var raceMock = Substitute.For<Race>();
-            raceMock.DefaultHealth.Returns(raceHealth);
-            var classMock = Substitute.For<Class>();
-            classMock.DefaultHealth.Returns(classHealth);
-            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.ChosenRace, raceMock).With(x => x.ChosenClass, classMock).Create();
+            var raceMock = _Fixture.Build<Race>()
+                .With(x => x.DefaultHealth, raceHealth)
+                .Without(x => x.Avatars)
+                .Without(x => x.Dungeon)
+                .Create();
+            raceMock.DefaultHealth = raceHealth;
+            var classMock = _Fixture.Build<Class>()
+                .With(x => x.DefaultHealth, classHealth)
+                .Without(x => x.Avatars)
+                .Without(x => x.Dungeon)
+                .Create();
+            classMock.DefaultHealth = classHealth;
+            var avatar = new Implementations.Dungeons.Avatars.Avatar();
+            avatar.ChosenRace = raceMock;
+            avatar.ChosenClass = classMock;
+
+            avatar.Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty);
 
             var result = avatar.MaxHealth;
 
@@ -42,13 +54,31 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         [InlineData(125, 55, 100, 280)]
         public void Damage_SumRaceAndClassWithWeaponNotNull_Success(int raceDamage, int classDamage, int weaponBoost, int expectedSum)
         {
-            var raceMock = Substitute.For<Race>();
-            raceMock.DefaultDamage.Returns(raceDamage);
-            var classMock = Substitute.For<Class>();
-            classMock.DefaultDamage.Returns(classDamage);
-            var weaponMock = Substitute.For<Usable>();
-            weaponMock.DamageBoost.Returns(weaponBoost);
-            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.ChosenRace, raceMock).With(x => x.ChosenClass, classMock).With(x => x.HoldingItem, weaponMock).Create();
+            var raceMock = _Fixture.Build<Race>()
+                .With(x => x.DefaultDamage, raceDamage)
+                .Without(x => x.Avatars)
+                .Without(x => x.Dungeon)
+                .Create();
+            var classMock = _Fixture.Build<Class>()
+                .With(x => x.DefaultDamage, classDamage)
+                .Without(x => x.Avatars)
+                .Without(x => x.Dungeon)
+                .Create();
+            var weaponMock = _Fixture.Build<Usable>()
+                .With(x => x.DamageBoost, weaponBoost)
+                .Without(x => x.Classes)
+                .Without(x => x.Dungeon)
+                .Without(x => x.Rooms)
+                .Without(x => x.HoldingItemAvatars)
+                .Without(x => x.InventoryAvatars)
+                .Create();
+
+            var avatar = new Implementations.Dungeons.Avatars.Avatar();
+                avatar.ChosenRace = raceMock;
+                avatar.ChosenClass = classMock;
+                avatar.HoldingItem = weaponMock;
+
+            avatar.Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty);
 
             var result = avatar.Damage;
 
@@ -61,11 +91,21 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         [InlineData(55, 100, 155)]
         public void Damage_SumRaceAndClassWithWeaponNull_Success(int raceDamage, int classDamage, int expectedSum)
         {
-            var raceMock = Substitute.For<Race>();
-            raceMock.DefaultDamage.Returns(raceDamage);
-            var classMock = Substitute.For<Class>();
-            classMock.DefaultDamage.Returns(classDamage);
-            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.ChosenRace, raceMock).With(x => x.ChosenClass, classMock).With(x => x.HoldingItem, null as Usable).Create();
+            var raceMock = _Fixture.Build<Race>()
+                .With(x => x.DefaultDamage, raceDamage)
+                .Without(x => x.Avatars)
+                .Without(x => x.Dungeon)
+                .Create();
+            var classMock = _Fixture.Build<Class>()
+                .With(x => x.DefaultDamage, classDamage)
+                .Without(x => x.Avatars)
+                .Without(x => x.Dungeon)
+                .Create();
+            var avatar = new Implementations.Dungeons.Avatars.Avatar();
+            avatar.ChosenRace = raceMock;
+            avatar.ChosenClass = classMock;
+
+            avatar.Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty);
 
             var result = avatar.Damage;
 
@@ -79,13 +119,32 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         [InlineData(125, 55, 100, 280)]
         public void Protection_SumRaceAndClassWithArmorNotNull_Success(int raceProtection, int classProtection, int protectionBoost, int expectedSum)
         {
-            var raceMock = Substitute.For<Race>();
-            raceMock.DefaultProtection.Returns(raceProtection);
-            var classMock = Substitute.For<Class>();
-            classMock.DefaultProtection.Returns(classProtection);
-            var protectionMock = Substitute.For<Wearable>();
-            protectionMock.ProtectionBoost.Returns(protectionBoost);
-            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.ChosenRace, raceMock).With(x => x.ChosenClass, classMock).With(x => x.Armor, protectionMock).Create();
+            var raceMock = _Fixture.Build<Race>()
+                .With(x => x.DefaultProtection, raceProtection)
+                .Without(x => x.Avatars)
+                .Without(x => x.Dungeon)
+                .Create();
+            var classMock = _Fixture.Build<Class>()
+                .With(x => x.DefaultProtection, classProtection)
+                .Without(x => x.Avatars)
+                .Without(x => x.Dungeon)
+                .Create();
+            var protectionMock = _Fixture.Build<Wearable>()
+                .With(x => x.ProtectionBoost, protectionBoost)
+                .Without(x => x.Classes)
+                .Without(x => x.Dungeon)
+                .Without(x => x.Rooms)
+                .Without(x => x.HoldingItemAvatars)
+                .Without(x => x.InventoryAvatars)
+                .Without(x => x.ArmorAvatars)
+                .Create();
+
+            var avatar = new Implementations.Dungeons.Avatars.Avatar();
+            avatar.ChosenRace = raceMock;
+            avatar.ChosenClass = classMock;
+            avatar.Armor = protectionMock;
+
+            avatar.Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty);
 
             var result = avatar.Protection;
 
@@ -98,11 +157,22 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         [InlineData(55, 100, 155)]
         public void Protection_SumRaceAndClassWithArmorNull_Success(int raceProtection, int classProtection, int expectedSum)
         {
-            var raceMock = Substitute.For<Race>();
-            raceMock.DefaultProtection.Returns(raceProtection);
-            var classMock = Substitute.For<Class>();
-            classMock.DefaultProtection.Returns(classProtection);
-            var avatar = _Fixture.Build<Implementations.Dungeons.Avatars.Avatar>().With(x => x.ChosenRace, raceMock).With(x => x.ChosenClass, classMock).With(x => x.Armor, null as Wearable).Create();
+            var raceMock = _Fixture.Build<Race>()
+                .With(x => x.DefaultProtection, raceProtection)
+                .Without(x => x.Avatars)
+                .Without(x => x.Dungeon)
+                .Create();
+            var classMock = _Fixture.Build<Class>()
+                .With(x => x.DefaultProtection, classProtection)
+                .Without(x => x.Avatars)
+                .Without(x => x.Dungeon)
+                .Create();
+
+            var avatar = new Implementations.Dungeons.Avatars.Avatar();
+            avatar.ChosenRace = raceMock;
+            avatar.ChosenClass = classMock;
+
+            avatar.Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty);
 
             var result = avatar.Protection;
 

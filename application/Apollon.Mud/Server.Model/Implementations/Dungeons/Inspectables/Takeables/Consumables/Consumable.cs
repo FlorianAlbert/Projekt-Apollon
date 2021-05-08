@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables
 {

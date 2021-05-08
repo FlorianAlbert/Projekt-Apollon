@@ -53,37 +53,37 @@ namespace Apollon.Mud.Client.Data.Models
         public string RoomWest { get; set; }
 
         /// <summary>
-        /// The List of Inspectables added to a dungeons room (no Inspectable-subclasses)
+        /// This is the list of purely investigable items.
         /// </summary>
         public List<InspectableDto> Inspectables { get; set; }
 
         /// <summary>
-        /// The List of Takeables added to a dungeons room (no Takeable-subclasses)
+        /// This is the list of pickable items
         /// </summary>
         public List<TakeableDto> Takeables { get; set; }
 
         /// <summary>
-        /// The List of Consumables added to a dungeons room 
+        /// This is the list of purely consumable items
         /// </summary>
         public List<ConsumableDto> Consumables { get; set; }
 
         /// <summary>
-        /// The List of Wearables added to a dungeons room 
+        /// This is the list of wearable items
         /// </summary>
         public List<WearableDto> Wearables { get; set; }
 
         /// <summary>
-        /// The List of Usables added to a dungeons room 
+        /// This is the list of purely usable items
         /// </summary>
         public List<UsableDto> Usables { get; set; }
 
         /// <summary>
-        /// The List of Npcs added to a dungeons room 
+        /// This is the list of NPC
         /// </summary>
         public List<NpcDto> Npcs { get; set; }
 
         /// <summary>
-        /// The Status, active or inactive
+        /// The status indicates whether the dungeon is active
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }

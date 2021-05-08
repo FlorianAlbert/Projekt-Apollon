@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Interfaces;
@@ -38,7 +39,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
         /// <summary>
         /// The start inventory every avatar with this class has right after creation
         /// </summary>
-        public Inventory StartInventory => _StartInventory ??= new Inventory();
+        public virtual Inventory StartInventory => _StartInventory ??= new Inventory();
 
         /// <inheritdoc cref="Inspectable.Name"/>
         public string Name { get; set; }
@@ -60,5 +61,15 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
 
         /// <inheritdoc cref="IApprovable.Status"/>
         public Status Status { get; set; }
+
+        /// <summary>
+        /// Dungeon the class belongs to
+        /// </summary>
+        public virtual Dungeon Dungeon { get; set; }
+
+        /// <summary>
+        /// Avatars with this class
+        /// </summary>
+        public virtual ICollection<Avatar> Avatars { get; set; }
     }
 }

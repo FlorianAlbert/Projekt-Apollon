@@ -43,7 +43,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
         /// <summary>
         /// All inspectables that are currently in this room
         /// </summary>
-        public ICollection<Inspectable> Inspectables
+        public virtual ICollection<Inspectable> Inspectables
         {
             get
             {
@@ -54,29 +54,29 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
         /// <summary>
         /// The room that is in the north
         /// </summary>
-        public Room NeighborNorth { get; set; }
+        public virtual Room NeighborNorth { get; set; }
 
         /// <summary>
         /// The room that is in the east
         /// </summary>
-        public Room NeighborEast { get; set; }
+        public virtual Room NeighborEast { get; set; }
 
         /// <summary>
         /// The room that is in the south
         /// </summary>
-        public Room NeighborSouth { get; set; }
+        public virtual Room NeighborSouth { get; set; }
 
         /// <summary>
         /// The room that is in the west
         /// </summary>
-        public Room NeighborWest { get; set; }
+        public virtual Room NeighborWest { get; set; }
 
         private ICollection<Requestable> _SpecialActions;
 
         /// <summary>
         /// All special actions an avatar can do in this room
         /// </summary>
-        public ICollection<Requestable> SpecialActions
+        public virtual ICollection<Requestable> SpecialActions
         {
             get
             {
@@ -89,6 +89,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
 
         /// <inheritdoc cref="IApprovable.Status"/>
         public Status Status { get; set; }
+
+        /// <summary>
+        /// The dungeon this room belongs to
+        /// </summary>
+        public virtual Dungeon Dungeon { get; set; }
 
         /**
         public bool SupportsSpecialAction(string action)

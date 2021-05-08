@@ -1,6 +1,8 @@
 ﻿using Apollon.Mud.Server.Model.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Races
 {
@@ -51,5 +53,15 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Races
 
         /// <inheritdoc cref="IApprovable.Status"/>
         public Status Status { get; set; }
+
+        /// <summary>
+        /// Dungeon the race belongs to
+        /// </summary>
+        public virtual Dungeon Dungeon { get; set; }
+
+        /// <summary>
+        /// Avatars with this race
+        /// </summary>
+        public virtual ICollection<Avatar> Avatars { get; set; }
     }
 }

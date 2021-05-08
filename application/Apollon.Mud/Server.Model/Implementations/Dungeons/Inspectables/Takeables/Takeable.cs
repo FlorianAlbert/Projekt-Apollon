@@ -1,6 +1,7 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Apollon.Mud.Server.Model.Interfaces;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables
 {
@@ -28,5 +29,20 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeabl
         /// The weight of the item
         /// </summary>
         public int Weight { get; set; }
+
+        /// <summary>
+        /// The avatars whose inventory contain this takeable
+        /// </summary>
+        public virtual ICollection<Avatar> InventoryAvatars { get; set; }
+
+        /// <summary>
+        /// The avatars who are holding this takeable
+        /// </summary>
+        public virtual ICollection<Avatar> HoldingItemAvatars { get; set; }
+
+        /// <summary>
+        /// The classes whose StartInventory contain this takeable
+        /// </summary>
+        public virtual ICollection<Class> Classes { get; set; }
     }
 }
