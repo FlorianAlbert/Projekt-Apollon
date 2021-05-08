@@ -13,6 +13,7 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Dungeon.User;
 using System.Collections.Generic;
+using Apollon.Mud.Shared;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
