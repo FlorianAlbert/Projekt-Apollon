@@ -1,6 +1,6 @@
 ﻿@using Apollon.Mud.Client.Data.Models
 @using Apollon.Mud.Shared.Dungeon.Npc
-@*@inject Apollon.Mud.Client.Services.Interfaces.INpcService NpcService*@
+@inject Apollon.Mud.Client.Services.Interfaces.INpcService NpcService
 
 <div class="card">
     <div class="card-header">
@@ -166,11 +166,18 @@
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
         npcContext = new EditContext(dungeonNpcModel);
 
-        //dungeonNpcs = NpcService.GetAllNpcs(DungeonId).Result.ToList();
+        if (!(DungeonId == Guid.Empty))
+        {
+            var dungeonNpcCollection = await NpcService.GetAllNpcs(DungeonId);
+            if (!(dungeonNpcCollection is null))
+            {
+                dungeonNpcs = dungeonNpcCollection.ToList();
+            }
+        }
 
         #region to Delete
         NpcDto testNpc = new NpcDto();
@@ -205,18 +212,37 @@
             submitNpc.Status = dungeonNpcModel.Status.Equals("Approved") ? 0 : 1;
             if (newNpc)
             {
-                dungeonNpcs.Add(submitNpc);
-                //await NpcService.CreateNewNpc(submitNpc, DungeonId);
+                var response = await NpcService.CreateNewNpc(submitNpc, DungeonId);
+                if (response != Guid.Empty)
+                {
+                    submitNpc.Id = response;
+                    dungeonNpcs.Add(submitNpc);
+                    chosenNpc = dungeonNpcModel.Name;
+                }
             }
             else
             {
-                //await NpcService.UpdateNpc(submitNpc, DungeonId);
+                var response = await NpcService.UpdateNpc(submitNpc, DungeonId);
+                if (!(response is null))
+                {
+                    WriteBackNpc(response);
+                }
             }
-            chosenNpc = dungeonNpcModel.Name;
         }
         else
         {
             //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
+        }
+    }
+
+    private void WriteBackNpc(NpcDto npcDto)
+    {
+        if (!(npcDto is null))
+        {
+            dungeonNpcModel.Name = npcDto.Name;
+            dungeonNpcModel.Description = npcDto.Description;
+            dungeonNpcModel.Text = npcDto.Text;
+            dungeonNpcModel.Status = npcDto.Status == 0 ? "Approved" : "Pending";
         }
     }
 
@@ -229,13 +255,7 @@
         if (!chosenNpc.Equals(dungeonNpcModel.Name) && !chosenNpc.Equals("NoNpc"))
         {
             var newNpc = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
-            if (!(newNpc is null))
-            {
-                dungeonNpcModel.Name = chosenNpc;
-                dungeonNpcModel.Description = newNpc.Description;
-                dungeonNpcModel.Text = newNpc.Text;
-                dungeonNpcModel.Status = newNpc.Status == 0 ? "Approved" : "Pending";
-            }
+            WriteBackNpc(newNpc);
         }
         return EventCallback.Empty;
     }
@@ -253,10 +273,8 @@
         }
         else
         {
-            chosenNpc = dungeonNpcModel.Name;
-            dungeonNpcModel.Description = checkNpc.Description;
-            dungeonNpcModel.Text = checkNpc.Text;
-            dungeonNpcModel.Status = checkNpc.Status == 0 ? "Approved" : "Pending";
+            chosenNpc = checkNpc.Name;
+            WriteBackNpc(checkNpc);
         }
     }
 
@@ -278,14 +296,23 @@
     /// <param name="args"></param>
     private async void RemoveNpcButtonClicked(System.EventArgs args)
     {
-        var selectedNpc = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
-        dungeonNpcs.Remove(selectedNpc);
-        //await NpcService.DeleteNpc(selectedNpc.Id, DungeonId);
+        var npcToDelete = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
+        bool shouldFieldsBeEmptied = true;
 
-        chosenNpc = "NoNpc";
-        dungeonNpcModel.Name = string.Empty;
-        dungeonNpcModel.Description = string.Empty;
-        dungeonNpcModel.Text = string.Empty;
-        dungeonNpcModel.Status = string.Empty;
+        if (!(npcToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await NpcService.DeleteNpc(npcToDelete.Id, DungeonId);
+
+        if (shouldFieldsBeEmptied)
+        {
+            chosenNpc = "NoNpc";
+            dungeonNpcModel.Name = string.Empty;
+            dungeonNpcModel.Description = string.Empty;
+            dungeonNpcModel.Text = string.Empty;
+            dungeonNpcModel.Status = string.Empty;
+            dungeonNpcs.Remove(npcToDelete);
+        }
+        else
+        {
+
+        }
     }
 }
