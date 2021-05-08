@@ -39,9 +39,10 @@ namespace Apollon.Mud.Shared.Dungeon.User
             {
                 return LastActive == dUDto.LastActive
                        && Email == dUDto.Email
-                       && EmailConfirmed == dUDto.EmailConfirmed;
+                       && EmailConfirmed == dUDto.EmailConfirmed
+                       && Id == dUDto.Id;
             }
-                return base.Equals(obj);
+            return base.Equals(obj);
         }
     }
 }

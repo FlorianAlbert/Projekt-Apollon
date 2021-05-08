@@ -67,7 +67,15 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
         {
             var emailMock = _Fixture.Create<string>();
             var secretMock = _Fixture.Create<string>();
-            var dungeonUserMock = _Fixture.Create<DungeonUser>();
+            var dungeonUserMock = _Fixture.Build<DungeonUser>()
+                .Without(x => x.DungeonMasterDungeons)
+                .Without(x => x.DungeonOwnerDungeons)
+                .Without(x => x.CurrentDungeonMasterDungeons)
+                .Without(x => x.BlackListDungeons)
+                .Without(x => x.WhiteListDungeons)
+                .Without(x => x.OpenRequestDungeons)
+                .Without(x => x.Avatars)
+                .Create();
 
             var userDbServiceMock = Substitute.For<IUserDbService>();
             userDbServiceMock.GetUserByEmail(emailMock).Returns(dungeonUserMock);
@@ -110,7 +118,15 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
         {
             var emailMock = _Fixture.Create<string>();
             var secretMock = _Fixture.Create<string>();
-            var dungeonUserMock = _Fixture.Create<DungeonUser>();
+            var dungeonUserMock = _Fixture.Build<DungeonUser>()
+                .Without(x => x.DungeonMasterDungeons)
+                .Without(x => x.DungeonOwnerDungeons)
+                .Without(x => x.CurrentDungeonMasterDungeons)
+                .Without(x => x.BlackListDungeons)
+                .Without(x => x.WhiteListDungeons)
+                .Without(x => x.OpenRequestDungeons)
+                .Without(x => x.Avatars)
+                .Create();
 
             var userDbServiceMock = Substitute.For<IUserDbService>();
             userDbServiceMock.GetUserByEmail(emailMock).Returns(dungeonUserMock);
@@ -140,7 +156,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
 
 
             var configurationMock = Substitute.For<IConfiguration>();
-            configurationMock.GetSection("AuthorizationToken").Value.Returns("abcdefghijklmnopqrstuvwxyz");
+            configurationMock["JwtBearer:TokenSecret"].Returns("abcdefghijklmnopqrstuvwxyz");
 
             var authorizationService = new AuthorizationService(userDbServiceMock, signInManagerMock, userManagerMock, configurationMock);
             var loginResult = await authorizationService.Login(emailMock, secretMock);

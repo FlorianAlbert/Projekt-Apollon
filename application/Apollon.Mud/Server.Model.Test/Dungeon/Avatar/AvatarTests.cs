@@ -46,9 +46,22 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         [InlineData(125, 55, 100, 280)]
         public void Damage_SumRaceAndClassWithWeaponNotNull_Success(int raceDamage, int classDamage, int weaponBoost, int expectedSum)
         {
-            var raceMock = _Fixture.Build<Race>().With(x => x.DefaultDamage, raceDamage).Create();
-            var classMock = _Fixture.Build<Class>().With(x => x.DefaultDamage, classDamage).Create();
-            var weaponMock = _Fixture.Build<Usable>().With(x => x.DamageBoost, weaponBoost).Create();
+            var raceMock = _Fixture.Build<Race>()
+                .With(x => x.DefaultDamage, raceDamage)
+                .Without(x => x.Avatars)
+                .Create();
+            var classMock = _Fixture.Build<Class>()
+                .With(x => x.DefaultDamage, classDamage)
+                .Without(x => x.Avatars)
+                .Create();
+            var weaponMock = _Fixture.Build<Usable>()
+                .With(x => x.DamageBoost, weaponBoost)
+                .Without(x => x.Classes)
+                .Without(x => x.Dungeon)
+                .Without(x => x.Rooms)
+                .Without(x => x.HoldingItemAvatars)
+                .Without(x => x.InventoryAvatars)
+                .Create();
 
             var avatar = new Implementations.Dungeons.Avatars.Avatar();
                 avatar.ChosenRace = raceMock;

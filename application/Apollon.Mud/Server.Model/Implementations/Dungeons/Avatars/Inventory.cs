@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
@@ -18,6 +19,20 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         private ICollection<Takeable> _Items;
 
         private ICollection<Takeable> Items => _Items ??= new List<Takeable>();
+
+        public Inventory(){}
+
+        /// <summary>
+        /// Adds all possible Takeables while the WeightSum of the Inventory is less then _MaxWeight.
+        /// </summary>
+        /// <param name="takeables"></param>
+        public Inventory(IEnumerable<Takeable> takeables):base()
+        {
+            foreach (var takeable in takeables)
+            {
+                Add(takeable);
+            }
+        }
 
         /// <summary>
         /// weight sum of all of the items in the inventory

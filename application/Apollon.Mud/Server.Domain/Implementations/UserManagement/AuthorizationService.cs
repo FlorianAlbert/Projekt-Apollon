@@ -43,7 +43,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             _userDbService = userDbService;
             _signInManager = signInManager;
             _userManager = userManager;
-            _tokenSecret = configuration["JwtBearer:TokenSecret"];  //ToDo passt es so?
+            _tokenSecret = configuration["JwtBearer:TokenSecret"];
         }
 
         #region methods
