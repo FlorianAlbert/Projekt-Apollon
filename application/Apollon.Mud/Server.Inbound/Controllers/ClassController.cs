@@ -51,7 +51,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (!(await GameConfigService.Get<Dungeon>(dungeonId)).DungeonMasters.Contains(user)) return Unauthorized();
+            if ((await GameConfigService.Get<Dungeon>(dungeonId)).DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
 
             var newClass = new Class(classDto.Name, 
                 classDto.Description, 
