@@ -497,6 +497,7 @@
                 await OnClassSavedOrLoaded.InvokeAsync();
             }
         }
+        StateHasChanged();
     }
 
     /// <summary>
@@ -760,6 +761,7 @@
             dungeonClassModel.InventoryConsumableDtos = new List<ConsumableDto>();
             dungeonClassModel.InventoryUsableDtos = new List<UsableDto>();
             dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
+            StateHasChanged();
         }
         else
         {
