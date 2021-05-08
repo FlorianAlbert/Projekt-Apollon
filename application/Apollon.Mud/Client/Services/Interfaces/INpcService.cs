@@ -59,8 +59,8 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// TODO
         /// </summary>
         /// <param name="dungeonId"></param>
-        /// <param name="actionId"></param>
+        /// <param name="npcId"></param>
         /// <returns></returns>
-        Task<NpcDto> GetNpc(Guid dungeonId, Guid actionId);
+        Task<NpcDto> GetNpc(Guid dungeonId, Guid npcId);
     }
 }

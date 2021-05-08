@@ -40,7 +40,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// </summary>
         /// <param name="avatarId"></param>
         /// <returns></returns>
-        Task<bool> DeleteAvatar(Guid avatarId);
+        Task<bool> DeleteAvatar(Guid dungeonId, Guid avatarId);
 
         /// <summary>
         /// TODO

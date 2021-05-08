@@ -43,7 +43,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PostAsJsonAsync("api/specialActions/{dungeonId}", requestableDto, cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("api/specialActions/" + dungeonId, requestableDto, cancellationToken);
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var responseGuid = await response.Content.ReadFromJsonAsync<Guid>();
@@ -62,7 +62,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PutAsJsonAsync("api/specialActions/{dungeonId}", requestableDto, cancellationToken);
+            var response = await HttpClient.PutAsJsonAsync("api/specialActions/" + dungeonId, requestableDto, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.OK) return null;
 
@@ -75,20 +75,29 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="dungeonId"></param>
         /// <param name="actionId"></param>
         /// <returns></returns>
-        public Task<bool> DeleteRequestable(Guid dungeonId, Guid actionId)
+        public async Task<bool> DeleteRequestable(Guid dungeonId, Guid actionId)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.DeleteAsync("api/specialActions/" + dungeonId + "/" + actionId, cancellationToken);
+
+            return response.StatusCode == HttpStatusCode.OK;
         }
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="requestableDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public Task<ICollection<RequestableDto>> GetAllRequestables(Guid dungeonId)
+        public async Task<ICollection<RequestableDto>> GetAllRequestables(Guid dungeonId)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.GetAsync("api/specialActions/" + dungeonId, cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<RequestableDto>>();
+
+            return null;
         }
 
         /// <summary>
@@ -97,9 +106,15 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="dungeonId"></param>
         /// <param name="actionId"></param>
         /// <returns></returns>
-        public Task<RequestableDto> GetRequestable(Guid dungeonId, Guid actionId)
+        public async Task<RequestableDto> GetRequestable(Guid dungeonId, Guid actionId)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.GetAsync("api/specialActions/" + dungeonId + "/" + actionId, cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<RequestableDto>();
+
+            return null;
         }
     }
 }

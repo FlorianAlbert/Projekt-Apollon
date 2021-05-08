@@ -43,7 +43,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PostAsJsonAsync("api/avatars/{dungeonId}", avatarDto, cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("api/avatars/" + dungeonId, avatarDto, cancellationToken);
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var responseGuid = await response.Content.ReadFromJsonAsync<Guid>();
@@ -62,7 +62,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         //{
         //    CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-        //    var response = await HttpClient.PutAsJsonAsync("api/avatars/{dungeonId}", avatarDto, cancellationToken);
+        //    var response = await HttpClient.PutAsJsonAsync("api/avatars/" + dungeonId, avatarDto, cancellationToken);
 
         //    if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<AvatarDto>();
 
@@ -73,10 +73,15 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// TODO
         /// </summary>
         /// <param name="avatarId"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public Task<bool> DeleteAvatar(Guid avatarId)
+        public async Task<bool> DeleteAvatar(Guid dungeonId, Guid avatarId)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.DeleteAsync("api/avatars/" + dungeonId + "/" + avatarId, cancellationToken);
+
+            return response.StatusCode == HttpStatusCode.OK;
         }
 
         /// <summary>
@@ -84,9 +89,15 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public Task<ICollection<AvatarDto>> GetAllAvatars(Guid dungeonId)
+        public async Task<ICollection<AvatarDto>> GetAllAvatars(Guid dungeonId)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.GetAsync("api/avatars/" + dungeonId, cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<AvatarDto>>();
+
+            return null;
         }
 
         /// <summary>
@@ -94,9 +105,15 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public Task<ICollection<AvatarDto>> GetAllAvatarsForUser(Guid dungeonId)
+        public async Task<ICollection<AvatarDto>> GetAllAvatarsForUser(Guid dungeonId)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.GetAsync("api/avatars/" + dungeonId + "/user", cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<AvatarDto>>();
+
+            return null;
         }
 
         /// <summary>
@@ -105,9 +122,15 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="dungeonId"></param>
         /// <param name="avatarId"></param>
         /// <returns></returns>
-        public Task<AvatarDto> GetAvatar(Guid dungeonId, Guid avatarId)
+        public async Task<AvatarDto> GetAvatar(Guid dungeonId, Guid avatarId)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.GetAsync("api/avatars/" + dungeonId + "/" + avatarId, cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<AvatarDto>();
+
+            return null;
         }
 
     }
