@@ -486,6 +486,7 @@
         dungeonWearables.Add(newWearable3);
 
         #endregion
+
         classContext = new EditContext(dungeonClassModel);
         if (!(DungeonId == Guid.Empty))
         {
@@ -739,6 +740,7 @@
     private async void RemoveClassButtonClicked(System.EventArgs args)
     {
         var classToDelete = dungeonClasses.Find(c => c.Name.Equals(chosenClass));
+
         bool shouldFieldsBeEmptied = true;
 
         if (!(classToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await ClassService.DeleteClass(classToDelete.Id, DungeonId);
