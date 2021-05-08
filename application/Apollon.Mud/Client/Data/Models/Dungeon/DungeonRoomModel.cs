@@ -59,32 +59,32 @@ namespace Apollon.Mud.Client.Data.Models
         public List<InspectableDto> Inspectables { get; set; }
 
         /// <summary>
-        /// TODO
+        /// This is the list of pickable items
         /// </summary>
         public List<TakeableDto> Takeables { get; set; }
 
         /// <summary>
-        /// TODO
+        /// This is the list of purely consumable items
         /// </summary>
         public List<ConsumableDto> Consumables { get; set; }
 
         /// <summary>
-        /// TODO
+        /// This is the list of wearable items
         /// </summary>
         public List<WearableDto> Wearables { get; set; }
 
         /// <summary>
-        /// TODO
+        /// This is the list of purely usable items
         /// </summary>
         public List<UsableDto> Usables { get; set; }
 
         /// <summary>
-        /// TODO
+        /// This is the list of NPC
         /// </summary>
         public List<NpcDto> Npcs { get; set; }
 
         /// <summary>
-        /// TODO Abhilfe wie sonst
+        /// The status indicates whether the dungeon is active
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
         public string Status { get; set; }

@@ -5,7 +5,7 @@ using Apollon.Mud.Shared.Game.DungeonMaster;
 namespace Apollon.Mud.Shared.HubContract
 {
     /// <summary>
-    /// ToDo
+    /// ToDo Abhilfe
     /// </summary>
     public interface IClientGameHubContract
     {
