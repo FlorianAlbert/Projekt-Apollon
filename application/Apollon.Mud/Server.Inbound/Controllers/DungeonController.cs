@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
@@ -12,11 +13,13 @@ using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Dungeon.User;
-using System.Collections.Generic;
 using Apollon.Mud.Shared;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
+    /// <summary>
+    /// Controller to configure a dungeon
+    /// </summary>
     [Route("api/dungeons")]
     [ApiController]
     public class DungeonController : ControllerBase
@@ -25,12 +28,22 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         private IUserService UserService { get; }
 
+        /// <summary>
+        /// Creates a new instance of DungeonController
+        /// </summary>
+        /// <param name="gameDbService">The GameDbService to communicate with the database</param>
+        /// <param name="userService">The UserService to get user informations</param>
         public DungeonController(IGameDbService gameDbService, IUserService userService)
         {
             GameConfigService = gameDbService;
             UserService = userService;
         }
-         
+        
+        /// <summary>
+        /// Endpoint to create a new Dungeon
+        /// </summary>
+        /// <param name="dungeonDto">The DungeonDto containing the informations of the new dungeon</param>
+        /// <returns>The id of the new dungeon</returns>
         [HttpPost]
         [Authorize(Roles = "Player")]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
@@ -59,6 +72,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return BadRequest();        // TODO: evtl ändern
         }
 
+        /// <summary>
+        /// Endpoint to update a dungeon
+        /// </summary>
+        /// <param name="dungeonDto">The DungeonDto containing the informations of the updated dungeon</param>
+        /// <returns>The HTTP Status Result</returns>
         [HttpPut]
         [Authorize(Roles = "Player")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -167,6 +185,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return BadRequest(oldDungeonDto);       // TODO: evtl ändern
         }
 
+        /// <summary>
+        /// Endpoint to delete a dungeon
+        /// </summary>
+        /// <param name="dungeonId">The Id of the dungeon to delete</param>
+        /// <returns>The HTTP Status Result</returns>
         [HttpDelete]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
@@ -197,6 +220,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return BadRequest();            // TODO: evtl ändern
         }
 
+        /// <summary>
+        /// Endpoint to get all existing dungeons
+        /// </summary>
+        /// <returns>A list of DungeonDtos containing informations about all existing dungeons</returns>
         [HttpGet]
         [Authorize(Roles = "Player")]
         [ProducesResponseType(typeof(DungeonDto[]), StatusCodes.Status200OK)]
@@ -223,10 +250,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return Ok(dungeonDtos);
         }
 
+        /// <summary>
+        /// Endoint to get all dungeons for one user
+        /// </summary>
+        /// <returns>A list of DungeonDtos containing informations about all existing dungeons that belong to the requesting user</returns>
         [HttpGet]
         [Route("/userdungeons")]
         [Authorize(Roles = "Player")]
-        [ProducesResponseType(typeof(ICollection<DungeonDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DungeonDto[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllForUser()
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -257,6 +288,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return Ok(dungeonDtos);
         }
 
+        /// <summary>
+        /// Endpoint to get a specific dungeon
+        /// </summary>
+        /// <param name="dungeonId">The Id of the requested dungeon</param>
+        /// <returns>The DungeonDto containing informations about the requested dungeon</returns>
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
@@ -287,6 +323,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return Ok(dungeonDto);
         }
 
+        /// <summary>
+        /// Endpoint to request access to a dungeon
+        /// </summary>
+        /// <param name="dungeonId">Id of the dungeon the access gets requested for</param>
+        /// <returns>The HTTP Status Result</returns>
         [HttpPost]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}/request")]
@@ -328,6 +369,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Endpoint to submit an open request for accessing a dungeon
+        /// </summary>
+        /// <param name="dungeonId">Id of the dungeon the request gets submitted for</param>
+        /// <param name="submitDungeonEnterRequestDto">The details for the submittal</param>
+        /// <returns>The HTTP Status Result</returns>
         [HttpPost]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}/submitRequest")]
