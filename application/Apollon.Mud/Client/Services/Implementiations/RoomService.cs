@@ -1,6 +1,7 @@
 ﻿using Apollon.Mud.Client.Data;
 using Apollon.Mud.Client.Services.Interfaces;
-using Apollon.Mud.Shared.Dungeon.Class;
+using Apollon.Mud.Shared.Dungeon.Room;
+using Apollon.Mud.Shared.Dungeon.Npc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Client.Services.Implementiations
 {
-    public class ClassService : IClassService
+    public class RoomService : IRoomService
     {
         /// <summary>
         /// The Rest Http Client injected into the class
@@ -25,11 +26,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         public CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
-        /// This service contains all logic for sending Dungeon Classes to the back
+        /// This service contains all logic for sending Dungeon Roomes to the back
         /// </summary>
         /// <param name="httpClientFactory">The HttpClient injected into this class</param>
         /// <param name="userContext">The usercontext needed for authorization</param>
-        public ClassService(IHttpClientFactory httpClientFactory, UserContext userContext)
+        public RoomService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
             HttpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + userContext.Token);
@@ -39,14 +40,14 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// Sends the given class to the backend and saves its connection to the given Dungeon in the Database
         /// </summary>
-        /// <param name="classDto">The Class to create</param>
+        /// <param name="roomDto">The Room to create</param>
         /// <param name="dungeonId">The dungeon that contains the class</param>
         /// <returns>The Guid if the DB Transaction was successfull, otherwise an empty Guid</returns>
-        public async Task<Guid> CreateNewClass(ClassDto classDto, Guid dungeonId)
+        public async Task<Guid> CreateNewRoom(RoomDto roomDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PostAsJsonAsync("api/classes/" + dungeonId, classDto, cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("api/rooms/" + dungeonId, roomDto, cancellationToken);
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var responseGuid = await response.Content.ReadFromJsonAsync<Guid>();
@@ -58,16 +59,16 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// Updates the given class in the Database
         /// </summary>
-        /// <param name="classDto">The class with updated information</param>
+        /// <param name="roomDto">The class with updated information</param>
         /// <param name="dungeonId">The Dungeon that contains the class</param>
-        /// <returns>The old Class in case the Database transaction failed, otherwise null</returns>
-        public async Task<ClassDto> UpdateClass(ClassDto classDto, Guid dungeonId)
+        /// <returns>The old Room in case the Database transaction failed, otherwise null</returns>
+        public async Task<RoomDto> UpdateRoom(RoomDto roomDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PutAsJsonAsync("api/classes", classDto, cancellationToken);
+            var response = await HttpClient.PutAsJsonAsync("api/rooms", roomDto, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<ClassDto>();
+            if (response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<RoomDto>();
 
             return null;
         }
@@ -78,11 +79,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="classId">The class to delete</param>
         /// <param name="dungeonId">The Dungeon that contains the class</param>
         /// <returns>Wether the DB transaction was successfull</returns>
-        public async Task<bool> DeleteClass(Guid classId, Guid dungeonId)
+        public async Task<bool> DeleteRoom(Guid classId, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.DeleteAsync("api/classes/" + dungeonId + "/" + classId, cancellationToken);
+            var response = await HttpClient.DeleteAsync("api/rooms/" + dungeonId + "/" + classId, cancellationToken);
 
             return response.StatusCode == HttpStatusCode.OK;
         }
@@ -91,14 +92,14 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// Gets all classes of a dungeon
         /// </summary>
         /// <param name="dungeonId">The ID of the dungeon containing the requested classes</param>
-        /// <returns>A Collection of the requested Classes, otherwise null</returns>
-        public async Task<ICollection<ClassDto>> GetAllClasses(Guid dungeonId)
+        /// <returns>A Collection of the requested Roomes, otherwise null</returns>
+        public async Task<ICollection<RoomDto>> GetAllRooms(Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/classes" + dungeonId, cancellationToken);
+            var response = await HttpClient.GetAsync("api/rooms" + dungeonId, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<ClassDto>>();
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<RoomDto>>();
 
             return null;
         }
@@ -109,16 +110,15 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="dungeonId">The ID of the dungeon containing the requested class</param>
         /// <param name="classId">The ID of the requested class</param>
         /// <returns>The requested class, otherwise null</returns>
-        public async Task<ClassDto> GetClass(Guid dungeonId, Guid classId)
+        public async Task<RoomDto> GetRoom(Guid dungeonId, Guid classId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/classes/" + dungeonId + "/" + classId, cancellationToken);
+            var response = await HttpClient.GetAsync("api/rooms/" + dungeonId + "/" + classId, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ClassDto>();
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<RoomDto>();
 
             return null;
         }
-
     }
 }

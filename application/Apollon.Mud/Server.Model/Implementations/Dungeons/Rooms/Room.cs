@@ -43,13 +43,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
         /// <summary>
         /// All inspectables that are currently in this room
         /// </summary>
-        public virtual ICollection<Inspectable> Inspectables
-        {
-            get
-            {
-                return _Inspectables ??= new List<Inspectable>();
-            }
-        }
+        public virtual ICollection<Inspectable> Inspectables => _Inspectables ??= new List<Inspectable>();
 
         /// <summary>
         /// The room that is in the north
@@ -76,13 +70,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
         /// <summary>
         /// All special actions an avatar can do in this room
         /// </summary>
-        public virtual ICollection<Requestable> SpecialActions
-        {
-            get
-            {
-                return _SpecialActions ??= new List<Requestable>();
-            }
-        }
+        public virtual ICollection<Requestable> SpecialActions => _SpecialActions ??= new List<Requestable>();
 
         /// <inheritdoc cref="IApprovable.Id"/>
         public Guid Id { get; }

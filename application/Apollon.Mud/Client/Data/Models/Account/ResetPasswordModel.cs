@@ -14,7 +14,7 @@ namespace Apollon.Mud.Client.Data.Models
         /// is shorter than five characters long.
         /// </summary>
         [Required]
-        [MinLength(8, ErrorMessage = "Dein Passwort muss mindestens 5 Zeichen lang sein")]
+        [MinLength(8, ErrorMessage = "Dein Passwort muss mindestens 8 Zeichen lang sein")]
         public string NewPassword { get; set; }
 
         /// <summary>

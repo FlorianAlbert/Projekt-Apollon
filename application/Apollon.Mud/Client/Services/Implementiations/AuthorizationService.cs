@@ -15,22 +15,22 @@ namespace Apollon.Mud.Client.Services.Implementiations
     public class AuthorizationService : IAuthorizationService
     {
         /// <summary>
-        /// TODO Abhilfe
+        /// The Rest Http Client injected into the class
         /// </summary>
         public HttpClient HttpClient { get; }
 
         /// <summary>
-        /// TODO Abhilfe
+        /// Creates Cancellation Tokens for each Http Request
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
-        /// TODO Abhilfe
+        /// Contains a users information
         /// </summary>
         public UserContext CurrentUserContext { get; set; }
 
         /// <summary>
-        /// TODO
+        /// The custom AuthenticationProvider to authorize users after logging in
         /// </summary>
         public CustomAuthenticationStateProvider AuthenticationProvider { get; set; }
 
@@ -40,6 +40,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="userContext"></param>
+        /// <param name="authenticationStateProvider">The ASP injected to provide authorization</param>
         public AuthorizationService(IHttpClientFactory httpClientFactory, UserContext userContext, CustomAuthenticationStateProvider authenticationStateProvider)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
@@ -54,7 +55,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="secret"></param>
-        /// <returns></returns>
+        /// <returns>wether the Login was successfull</returns>
         public async Task<bool> Login(string userId, string secret)
         {
             AuthorizationRequestDto userCredentials = new AuthorizationRequestDto();
@@ -82,7 +83,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="secret"></param>
-        /// <returns></returns>
+        /// <returns>wether the registration was successfull</returns>
         public async Task<bool> Register(string userId, string secret)
         {
             RegistrationRequestDto userCredentials = new RegistrationRequestDto
@@ -101,7 +102,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// After confirming the email with the link, the registration is done.
         /// </summary>
         /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <returns>wether the confirmation was successfull</returns>
         public async Task<bool> ConfirmRegistration(Guid userId, string token)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -126,7 +127,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// The reset password is sent to the user by email.
         /// </summary>
         /// <param name="userEmail"></param>
-        /// <returns></returns>
+        /// <returns>wether the request was successfull</returns>
         public async Task<bool> RequestPasswordReset(string userEmail)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -143,8 +144,8 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="userId"></param>
         /// <param name="token"></param>
         /// <param name="secret"></param>
-        /// <returns></returns>
-        public async Task<bool> ResetPasswordRequest(Guid userId, string token, string secret)
+        /// <returns>wether the reset was successfull</returns>
+        public async Task<bool> ResetPassword(Guid userId, string token, string secret)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
             PasswortResetConfirmationDto confirmationDto = new PasswortResetConfirmationDto
@@ -153,7 +154,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
                 Token = token
             };
 
-            var response = await HttpClient.PostAsJsonAsync("/api/user/password/confirm/" + userId.ToString(), confirmationDto, cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("/api/user/password/confirm/" + userId, confirmationDto, cancellationToken);
             return response.StatusCode == HttpStatusCode.OK;
         }
     }

@@ -67,9 +67,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
         /// </summary>
         public virtual Dungeon Dungeon { get; set; }
 
+        private ICollection<Avatar> _Avatars;
+
         /// <summary>
         /// Avatars with this class
         /// </summary>
-        public virtual ICollection<Avatar> Avatars { get; set; }
+        public virtual ICollection<Avatar> Avatars => _Avatars ??= new List<Avatar>();
     }
 }

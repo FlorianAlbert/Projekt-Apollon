@@ -1,4 +1,4 @@
-﻿using Apollon.Mud.Shared.Dungeon;
+﻿using Apollon.Mud.Shared.Dungeon.Avatar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +8,12 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Client.Services.Interfaces
 {
-    /// <summary>
-    /// TODO
-    /// </summary>
-    public interface IDungeonService
+    public interface IAvatarService
     {
         /// <summary>
         /// TODO
         /// </summary>
-        public HttpClient HttpClient { get;}
+        public HttpClient HttpClient { get; }
 
         /// <summary>
         /// TODO
@@ -26,41 +23,44 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="dungeonDto"></param>
+        /// <param name="avatarDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<Guid> CreateNewDungeon(DungeonDto dungeonDto);
+        Task<Guid> CreateNewAvatar(AvatarDto avatarDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="dungeonDto"></param>
+        /// <param name="avatarDto"></param>
         /// <returns></returns>
-        Task<DungeonDto> UpdateDungeon(DungeonDto dungeonDto);
+        //Task<AvatarDto> UpdateAvatar(AvatarDto avatarDto);
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="avatarId"></param>
+        /// <returns></returns>
+        Task<bool> DeleteAvatar(Guid dungeonId, Guid avatarId);
 
         /// <summary>
         /// TODO
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<bool> DeleteDungeon(Guid dungeonId);
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <returns></returns>
-        Task<ICollection<DungeonDto>> GetAllDungeons();
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <returns></returns>
-        Task<ICollection<DungeonDto>> GetAllDungeonsForUser();
+        Task<ICollection<AvatarDto>> GetAllAvatars(Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<DungeonDto> GetDungeon(Guid dungeonId);
+        Task<ICollection<AvatarDto>> GetAllAvatarsForUser(Guid dungeonId);
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="avatarId"></param>
+        /// <returns></returns>
+        Task<AvatarDto> GetAvatar(Guid dungeonId, Guid avatarId);
     }
 }

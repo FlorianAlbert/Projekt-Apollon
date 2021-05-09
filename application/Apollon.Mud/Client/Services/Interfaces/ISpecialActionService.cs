@@ -1,4 +1,4 @@
-﻿using Apollon.Mud.Shared.Dungeon;
+﻿using Apollon.Mud.Shared.Dungeon.Requestable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,17 +6,15 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace Apollon.Mud.Client.Services.Interfaces
 {
-    /// <summary>
-    /// TODO
-    /// </summary>
-    public interface IDungeonService
+    public interface ISpecialActionService
     {
         /// <summary>
         /// TODO
         /// </summary>
-        public HttpClient HttpClient { get;}
+        public HttpClient HttpClient { get; }
 
         /// <summary>
         /// TODO
@@ -26,41 +24,40 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="dungeonDto"></param>
+        /// <param name="requestableDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<Guid> CreateNewDungeon(DungeonDto dungeonDto);
+        Task<Guid> CreateNewRequestable(RequestableDto requestableDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="dungeonDto"></param>
+        /// <param name="requestableDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<DungeonDto> UpdateDungeon(DungeonDto dungeonDto);
+        Task<RequestableDto> UpdateRequestable(RequestableDto requestableDto, Guid dungeonId);
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="actionId"></param>
+        /// <param name="dungeonId"></param>
+        /// <returns></returns>
+        Task<bool> DeleteRequestable(Guid dungeonId, Guid actionId);
 
         /// <summary>
         /// TODO
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<bool> DeleteDungeon(Guid dungeonId);
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <returns></returns>
-        Task<ICollection<DungeonDto>> GetAllDungeons();
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <returns></returns>
-        Task<ICollection<DungeonDto>> GetAllDungeonsForUser();
+        Task<ICollection<RequestableDto>> GetAllRequestables(Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
         /// <param name="dungeonId"></param>
+        /// <param name="actionId"></param>
         /// <returns></returns>
-        Task<DungeonDto> GetDungeon(Guid dungeonId);
+        Task<RequestableDto> GetRequestable(Guid dungeonId, Guid actionId);
     }
 }

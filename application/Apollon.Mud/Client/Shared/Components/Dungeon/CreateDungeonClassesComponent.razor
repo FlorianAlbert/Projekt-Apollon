@@ -4,6 +4,7 @@
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
+@inject Apollon.Mud.Client.Services.Interfaces.IClassService ClassService;
 
 <div class="card">
     <div class="card-header">
@@ -129,19 +130,19 @@
 
                         @foreach (TakeableDto takeable in dungeonTakeables)
                         {
-                                <option value="@takeable.Name">@takeable.Name</option>
+                            <option value="@takeable.Name">@takeable.Name</option>
                         }
                         @foreach (ConsumableDto consumable in dungeonConsumables)
                         {
-                                <option value="@consumable.Name">@consumable.Name</option>
+                            <option value="@consumable.Name">@consumable.Name</option>
                         }
                         @foreach (UsableDto usable in dungeonUsables)
                         {
-                                <option value="@usable.Name">@usable.Name</option>
+                            <option value="@usable.Name">@usable.Name</option>
                         }
                         @foreach (WearableDto wearable in dungeonWearables)
                         {
-                                <option value="@wearable.Name">@wearable.Name</option>
+                            <option value="@wearable.Name">@wearable.Name</option>
                         }
                     </select>
                 </div>
@@ -329,19 +330,19 @@
     #region Dungeon Information
 
     /// <summary>
-    /// TODO
+    /// Deactives all "Delete" Buttons when true
     /// </summary>
     [Parameter]
     public bool IsDungeonMasterConfigurating { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The ID of the dungeon being edited used in the components
     /// </summary>
     [Parameter]
     public Guid DungeonId { get; set; }
 
     ///<summary>
-    /// TODO
+    /// Event fired when the first class of a dungeon is saved or loaded
     ///</summary>
     [Parameter]
     public EventCallback<Guid> OnClassSavedOrLoaded { get; set; }
@@ -423,7 +424,7 @@
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
         #region toDelete
 
@@ -485,8 +486,18 @@
         dungeonWearables.Add(newWearable3);
 
         #endregion
-        ///TODO Daten aus dem Backend lokal ablegen
+
         classContext = new EditContext(dungeonClassModel);
+        if (DungeonId != Guid.Empty)
+        {
+            var dungeonClassCollection = await ClassService.GetAllClasses(DungeonId);
+            if (!(dungeonClassCollection is null))
+            {
+                dungeonClasses = dungeonClassCollection.ToList();
+                await OnClassSavedOrLoaded.InvokeAsync();
+            }
+        }
+        StateHasChanged();
     }
 
     /// <summary>
@@ -497,7 +508,7 @@
     {
         ///TODO Als Task erstellen, damit es parallel läuft
         var validClass = classContext.Validate();
-        if (validClass)
+        if (validClass && DungeonId != Guid.Empty)
         {
             bool newClass = false;
             ClassDto submitClass = dungeonClasses.Find(i => i.Name.Equals(dungeonClassModel.Name));
@@ -518,14 +529,21 @@
             submitClass.Status = dungeonClassModel.Status.Equals("Approved") ? 0 : 1;
             if (newClass)
             {
-                dungeonClasses.Add(submitClass);
+                var response = await ClassService.CreateNewClass(submitClass, DungeonId);
+                if (response != Guid.Empty)
+                {
+                    submitClass.Id = response;
+                    await OnClassSavedOrLoaded.InvokeAsync();
+                    dungeonClasses.Add(submitClass);
+                    chosenClass = dungeonClassModel.Name;
+                }
             }
-            chosenClass = dungeonClassModel.Name;
-            //TODO Klasse ans Backend senden
-        }
-        else
-        {
-            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
+            else
+            {
+                var response = await ClassService.UpdateClass(submitClass, DungeonId);
+                if (!(response is null))  WriteBackClass(response);
+            }
+        StateHasChanged();
         }
     }
 
@@ -565,7 +583,7 @@
     }
 
     /// <summary>
-    /// Removes a default class item
+    /// TODO
     /// </summary>
     private EventCallback RemoveTakeableButtonClicked(TakeableDto item)
     {
@@ -575,6 +593,11 @@
         return EventCallback.Empty;
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     private EventCallback RemoveConsumableButtonClicked(ConsumableDto item)
     {
         dungeonClassModel.InventoryConsumableDtos.Remove(item);
@@ -583,6 +606,11 @@
         return EventCallback.Empty;
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     private EventCallback RemoveUsableButtonClicked(UsableDto item)
     {
         dungeonClassModel.InventoryUsableDtos.Remove(item);
@@ -591,6 +619,11 @@
         return EventCallback.Empty;
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     private EventCallback RemoveWearableButtonClicked(WearableDto item)
     {
         dungeonClassModel.InventoryWearableDtos.Remove(item);
@@ -607,68 +640,77 @@
     {
         if (!chosenClass.Equals(dungeonClassModel.Name) && !chosenClass.Equals("NoClass"))
         {
-            var newClass = dungeonClasses.Find(i => i.Name.Equals(chosenClass));
-            if (!(newClass is null))
-            {
-                dungeonClassModel.InventoryTakeableDtos = new List<TakeableDto>();
-                dungeonClassModel.InventoryConsumableDtos = new List<ConsumableDto>();
-                dungeonClassModel.InventoryUsableDtos = new List<UsableDto>();
-                dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
-                dungeonClassModel.Name = chosenClass;
-                dungeonClassModel.Description = newClass.Description;
-                dungeonClassModel.Health = newClass.DefaultHealth.ToString();
-                dungeonClassModel.Protection = newClass.DefaultProtection.ToString();
-                dungeonClassModel.Damage = newClass.DefaultDamage.ToString();
-                dungeonClassModel.Status = newClass.Status == 0 ? "Approved" : "Pending";
-                if (!(newClass.InventoryTakeableDtos is null))
-                {
-                    newClass.InventoryTakeableDtos.ToList().ForEach(t =>
-                    {
-                        if (!(t is null))
-                        {
-                            dungeonClassModel.InventoryTakeableDtos.Add(t);
-                        }
-                    });
-                }
-                if (!(newClass.InventoryConsumableDtos is null))
-                {
-                    newClass.InventoryConsumableDtos.ToList().ForEach(t =>
-                    {
-                        if (!(t is null))
-                        {
-                            dungeonClassModel.InventoryConsumableDtos.Add(t);
-                        }
-                    });
-                }
-                if (!(newClass.InventoryUsableDtos is null))
-                {
-                    newClass.InventoryUsableDtos.ToList().ForEach(t =>
-                    {
-                        if (!(t is null))
-                        {
-                            dungeonClassModel.InventoryUsableDtos.Add(t);
-                        }
-                    });
-                }
-                if (!(newClass.InventoryWearableDtos is null))
-                {
-                    newClass.InventoryWearableDtos.ToList().ForEach(t =>
-                    {
-                        if (!(t is null))
-                        {
-                            dungeonClassModel.InventoryWearableDtos.Add(t);
-                        }
-                    });
-                }
-            }
+            var selectedClass = dungeonClasses.Find(i => i.Name.Equals(chosenClass));
+            WriteBackClass(selectedClass);
         }
         return EventCallback.Empty;
     }
 
     /// <summary>
-    /// When the Name field loses its focus, this Method checks wether a class with this name already exists and if so fills out the form accordingly
+    /// Refills the form when needed, according to the classname
     /// </summary>
-    /// <param name="args">Event Arguments</param>
+    /// <param name="className"></param>
+    private void WriteBackClass(ClassDto newClass)
+    {
+        if (!(newClass is null))
+        {
+            dungeonClassModel.InventoryTakeableDtos = new List<TakeableDto>();
+            dungeonClassModel.InventoryConsumableDtos = new List<ConsumableDto>();
+            dungeonClassModel.InventoryUsableDtos = new List<UsableDto>();
+            dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
+            dungeonClassModel.Name = newClass.Name;
+            dungeonClassModel.Description = newClass.Description;
+            dungeonClassModel.Health = newClass.DefaultHealth.ToString();
+            dungeonClassModel.Protection = newClass.DefaultProtection.ToString();
+            dungeonClassModel.Damage = newClass.DefaultDamage.ToString();
+            dungeonClassModel.Status = newClass.Status == 0 ? "Approved" : "Pending";
+            if (!(newClass.InventoryTakeableDtos is null))
+            {
+                newClass.InventoryTakeableDtos.ToList().ForEach(t =>
+                {
+                    if (!(t is null))
+                    {
+                        dungeonClassModel.InventoryTakeableDtos.Add(t);
+                    }
+                });
+            }
+            if (!(newClass.InventoryConsumableDtos is null))
+            {
+                newClass.InventoryConsumableDtos.ToList().ForEach(t =>
+                {
+                    if (!(t is null))
+                    {
+                        dungeonClassModel.InventoryConsumableDtos.Add(t);
+                    }
+                });
+            }
+            if (!(newClass.InventoryUsableDtos is null))
+            {
+                newClass.InventoryUsableDtos.ToList().ForEach(t =>
+                {
+                    if (!(t is null))
+                    {
+                        dungeonClassModel.InventoryUsableDtos.Add(t);
+                    }
+                });
+            }
+            if (!(newClass.InventoryWearableDtos is null))
+            {
+                newClass.InventoryWearableDtos.ToList().ForEach(t =>
+                {
+                    if (!(t is null))
+                    {
+                        dungeonClassModel.InventoryWearableDtos.Add(t);
+                    }
+                });
+            }
+        }
+    }
+
+    /// <summary>
+    /// When the Name field loses its focus, this Method checks wether a class with this name already exists and if so fills out the form accordingly
+    ///</summary>
+    ///<param name="args">Event Arguments</param>
     private void NameFieldLostFocus(FocusEventArgs args)
     {
         ClassDto checkClass = dungeonClasses.Find(i => i.Name.Equals(dungeonClassModel.Name));
@@ -678,74 +720,10 @@
         }
         else
         {
-            for (int i = 0; i < 5; i++)
-            {
-                classItems[i] = "NoItem";
-            }
-            chosenClass = dungeonClassModel.Name;
-            dungeonClassModel.Description = checkClass.Description;
-            dungeonClassModel.Health = checkClass.DefaultHealth.ToString();
-            dungeonClassModel.Protection = checkClass.DefaultProtection.ToString();
-            dungeonClassModel.Damage = checkClass.DefaultDamage.ToString();
-            dungeonClassModel.Status = checkClass.Status == 0 ? "Approved" : "Pending";
-            defaultItemCount = 0;
-            int counter = 0;
-            if (!(checkClass.InventoryTakeableDtos is null))
-            {
-                checkClass.InventoryTakeableDtos.ToList().ForEach(t =>
-                {
-                    if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
-                    {
-                        classItems[counter] = t.Name + " 1";
-                        counter++;
-                        defaultItemCount++;
-                    }
-                });
-
-            }
-            if (!(checkClass.InventoryConsumableDtos is null))
-            {
-                checkClass.InventoryConsumableDtos.ToList().ForEach(t =>
-                {
-                    if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
-                    {
-                        classItems[counter] = t.Name + " 2";
-                        counter++;
-                        defaultItemCount++;
-                    }
-                });
-            }
-            if (!(checkClass.InventoryUsableDtos is null))
-            {
-                checkClass.InventoryUsableDtos.ToList().ForEach(t =>
-                {
-                    if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
-                    {
-                        classItems[counter] = t.Name + " 3";
-                        counter++;
-                        defaultItemCount++;
-                    }
-                });
-            }
-            if (!(checkClass.InventoryWearableDtos is null))
-            {
-                checkClass.InventoryWearableDtos.ToList().ForEach(t =>
-                {
-                    if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
-                    {
-                        classItems[counter] = t.Name + " 4";
-                        counter++;
-                        defaultItemCount++;
-                    }
-                });
-            }
-            if (defaultItemCount == 0)
-            {
-                defaultItemCount = 1;
-            }
+            chosenClass = checkClass.Name;
+            WriteBackClass(checkClass);
         }
     }
-
 
     /// <summary>
     /// To create a new class this Method clears all form input fields
@@ -761,31 +739,44 @@
         dungeonClassModel.Damage = string.Empty;
         dungeonClassModel.Status = string.Empty;
         defaultItemCount = 1;
-        for (int i = 0; i < 5; i++)
-        {
-            classItems[i] = "NoItem";
-        }
+        dungeonClassModel.InventoryTakeableDtos = new List<TakeableDto>();
+        dungeonClassModel.InventoryConsumableDtos = new List<ConsumableDto>();
+        dungeonClassModel.InventoryUsableDtos = new List<UsableDto>();
+        dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
     }
-
 
     /// <summary>
     /// To delete an existing class of the dungeon
     ///</summary>
     ///<param name="args">Event Arguments</param>
-    private void RemoveClassButtonClicked(System.EventArgs args)
+    private async void RemoveClassButtonClicked(System.EventArgs args)
     {
-        dungeonClasses.Remove(dungeonClasses.Find(i => i.Name.Equals(chosenClass)));
-        chosenClass = "NoClass";
-        dungeonClassModel.Name = string.Empty;
-        dungeonClassModel.Description = string.Empty;
-        dungeonClassModel.Health = string.Empty;
-        dungeonClassModel.Protection = string.Empty;
-        dungeonClassModel.Damage = string.Empty;
-        dungeonClassModel.Status = string.Empty;
-        defaultItemCount = 1;
-        for (int i = 0; i < 5; i++)
+        var classToDelete = dungeonClasses.Find(c => c.Name == chosenClass);
+
+        bool shouldFieldsBeEmptied = true;
+
+        if (!(classToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await ClassService.DeleteClass(classToDelete.Id, DungeonId);
+
+        if (shouldFieldsBeEmptied)
         {
-            classItems[i] = "NoItem";
+            dungeonClasses.Remove(classToDelete);
+            chosenClass = "NoClass";
+            dungeonClassModel.Name = string.Empty;
+            dungeonClassModel.Description = string.Empty;
+            dungeonClassModel.Health = string.Empty;
+            dungeonClassModel.Protection = string.Empty;
+            dungeonClassModel.Damage = string.Empty;
+            dungeonClassModel.Status = string.Empty;
+            defaultItemCount = 1;
+            dungeonClassModel.InventoryTakeableDtos = new List<TakeableDto>();
+            dungeonClassModel.InventoryConsumableDtos = new List<ConsumableDto>();
+            dungeonClassModel.InventoryUsableDtos = new List<UsableDto>();
+            dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
+            StateHasChanged();
+        }
+        else
+        {
+            //TODO Maybe Nutzer hinweisen
         }
     }
     #endregion

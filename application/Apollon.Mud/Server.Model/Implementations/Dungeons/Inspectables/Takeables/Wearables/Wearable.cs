@@ -32,9 +32,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeabl
         /// </summary>
         public int ProtectionBoost { get; set; }
 
+        private ICollection<Avatar> _ArmorAvatars;
+
         /// <summary>
         /// The avatars who are wearing this wearable
         /// </summary>
-        public virtual ICollection<Avatar> ArmorAvatars { get; set; }
+        public virtual ICollection<Avatar> ArmorAvatars => _ArmorAvatars ??= new List<Avatar>();
     }
 }

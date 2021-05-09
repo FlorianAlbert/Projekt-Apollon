@@ -33,7 +33,8 @@ namespace Apollon.Mud.Client
             services.AddServerSideBlazor();
             services.AddHttpClient("RestHttpClient", httpClient =>
             {
-                httpClient.BaseAddress = new Uri(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + ":" + Configuration.GetSection("LoginConfiguration").GetSection("Port").Value);
+                httpClient.BaseAddress = new Uri(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + ":" 
+                    + Configuration.GetSection("LoginConfiguration").GetSection("Port").Value);
                 
                 // Appsettings.json Config Sachen festlegen und darüber Base URI und Port festlegen
 
@@ -42,6 +43,8 @@ namespace Apollon.Mud.Client
             services.AddTransient<IDungeonService, DungeonService>();
             services.AddTransient<INpcService, NpcService>();
             services.AddTransient<IClassService, ClassService>();
+            services.AddTransient<IRaceService, RaceService>();
+            services.AddTransient<IRoomService, RoomService>();
             services.AddScoped<UserContext>();
             services.AddScoped<CustomAuthenticationStateProvider>();
             services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomAuthenticationStateProvider>());

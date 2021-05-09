@@ -49,9 +49,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var user = await UserService.GetUser(userId);
 
-            if (user is null) return BadRequest();
+            var classDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
-            if ((await GameConfigService.Get<Dungeon>(dungeonId)).DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
+            if (user is null || classDungeon is null) return BadRequest();
+
+            if (!classDungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
             var newClass = new Class(classDto.Name, 
                 classDto.Description, 
@@ -59,8 +61,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 classDto.DefaultProtection, 
                 classDto.DefaultDamage)
                 { Status = (Status)classDto.Status };
-
-            var classDungeon = await GameConfigService.Get<Dungeon>(dungeonId);//würde ich weiter vorne machen, dann kannst du bei der Authorization Abfrage die Variable benutzen
 
             classDungeon.ConfiguredClasses.Add(newClass);
 
@@ -101,7 +101,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (classToUpdate is null) return BadRequest();
 
             var classDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
-            classDungeon.ConfiguredClasses.Remove(classToUpdate);//müsste nicht aufgerufen werden, da die Klasse nur geupdated wird oder?
 
             classToUpdate.Status = (Status)classDto.Status;
             classToUpdate.Name = classDto.Name;
@@ -109,6 +108,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             classToUpdate.DefaultHealth = classDto.DefaultHealth;
             classToUpdate.DefaultProtection = classDto.DefaultProtection;
             classToUpdate.Description = classDto.Description;
+            classToUpdate.StartInventory.Clear();
             foreach(ConsumableDto consumable in classDto.InventoryConsumableDtos)
             {
                 classToUpdate.StartInventory.Add(
