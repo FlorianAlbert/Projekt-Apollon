@@ -295,10 +295,11 @@
         dungeonNpcModel.Text = string.Empty;
         dungeonNpcModel.Status = string.Empty;
     }
+
     /// <summary>
-    /// Empties all input fields
+    /// This Method removes a selected Npc and clears all form input fields
     /// </summary>
-    /// <param name="args"></param>
+    /// <param name="args">Event Arguments</param>
     private async void RemoveNpcButtonClicked(System.EventArgs args)
     {
         var npcToDelete = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
