@@ -330,19 +330,19 @@
     #region Dungeon Information
 
     /// <summary>
-    /// TODO
+    /// Deactives all "Delete" Buttons when true
     /// </summary>
     [Parameter]
     public bool IsDungeonMasterConfigurating { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The ID of the dungeon being edited used in the components
     /// </summary>
     [Parameter]
     public Guid DungeonId { get; set; }
 
     ///<summary>
-    /// TODO
+    /// Event fired when the first class of a dungeon is saved or loaded
     ///</summary>
     [Parameter]
     public EventCallback<Guid> OnClassSavedOrLoaded { get; set; }
@@ -488,7 +488,7 @@
         #endregion
 
         classContext = new EditContext(dungeonClassModel);
-        if (!(DungeonId == Guid.Empty))
+        if (DungeonId != Guid.Empty)
         {
             var dungeonClassCollection = await ClassService.GetAllClasses(DungeonId);
             if (!(dungeonClassCollection is null))
@@ -508,7 +508,7 @@
     {
         ///TODO Als Task erstellen, damit es parallel läuft
         var validClass = classContext.Validate();
-        if (validClass)
+        if (validClass && DungeonId != Guid.Empty)
         {
             bool newClass = false;
             ClassDto submitClass = dungeonClasses.Find(i => i.Name.Equals(dungeonClassModel.Name));
@@ -541,11 +541,9 @@
             else
             {
                 var response = await ClassService.UpdateClass(submitClass, DungeonId);
-                if (!(response is null))
-                {
-                    WriteBackClass(response);
-                }
+                if (!(response is null))  WriteBackClass(response);
             }
+        StateHasChanged();
         }
     }
 
@@ -585,7 +583,7 @@
     }
 
     /// <summary>
-    /// Removes a default class item
+    /// TODO
     /// </summary>
     private EventCallback RemoveTakeableButtonClicked(TakeableDto item)
     {
@@ -595,6 +593,11 @@
         return EventCallback.Empty;
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     private EventCallback RemoveConsumableButtonClicked(ConsumableDto item)
     {
         dungeonClassModel.InventoryConsumableDtos.Remove(item);
@@ -603,6 +606,11 @@
         return EventCallback.Empty;
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     private EventCallback RemoveUsableButtonClicked(UsableDto item)
     {
         dungeonClassModel.InventoryUsableDtos.Remove(item);
@@ -611,6 +619,11 @@
         return EventCallback.Empty;
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     private EventCallback RemoveWearableButtonClicked(WearableDto item)
     {
         dungeonClassModel.InventoryWearableDtos.Remove(item);
@@ -712,7 +725,6 @@
         }
     }
 
-
     /// <summary>
     /// To create a new class this Method clears all form input fields
     ///</summary>
@@ -733,18 +745,17 @@
         dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
     }
 
-
     /// <summary>
     /// To delete an existing class of the dungeon
     ///</summary>
     ///<param name="args">Event Arguments</param>
     private async void RemoveClassButtonClicked(System.EventArgs args)
     {
-        var classToDelete = dungeonClasses.Find(c => c.Name.Equals(chosenClass));
+        var classToDelete = dungeonClasses.Find(c => c.Name == chosenClass);
 
         bool shouldFieldsBeEmptied = true;
 
-        if (!(classToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await ClassService.DeleteClass(DungeonId, classToDelete.Id);
+        if (!(classToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await ClassService.DeleteClass(classToDelete.Id, DungeonId);
 
         if (shouldFieldsBeEmptied)
         {

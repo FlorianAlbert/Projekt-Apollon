@@ -116,13 +116,13 @@
     #region Dungeon Information
 
     /// <summary>
-    /// TODO
+    /// Deactives all "Delete" Buttons when true
     /// </summary>
     [Parameter]
     public bool IsDungeonMasterConfigurating { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The ID of the dungeon being edited used in the components
     /// </summary>
     [Parameter]
     public Guid DungeonId { get; set; }
@@ -149,6 +149,12 @@
     /// The chosen Action in the Dropdown Menu
     /// </summary>
     private string chosenAction = "NoAction";
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public EventCallback SpecialActionsChanged { get; set; }
 
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
@@ -178,7 +184,7 @@
     private async Task HandleActionSubmit()
     {
         var validDungeon = dungeonActionContext.Validate();
-        if (validDungeon)
+        if (validDungeon && DungeonId != Guid.Empty)
         {
             bool newRequestable = false;
             var requestableDto = dungeonRequestables.Find(r => r.PatternForPlayer.Equals(dungeonActionModel.PatternForPlayer));
@@ -209,7 +215,6 @@
                 }
             }
             chosenAction = dungeonActionModel.PatternForPlayer;
-            //TODO Daten ans Backend senden
         }
     }
 

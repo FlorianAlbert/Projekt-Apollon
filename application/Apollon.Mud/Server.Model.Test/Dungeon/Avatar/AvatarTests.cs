@@ -26,13 +26,11 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         {
             var raceMock = _Fixture.Build<Race>()
                 .With(x => x.DefaultHealth, raceHealth)
-                .Without(x => x.Avatars)
                 .Without(x => x.Dungeon)
                 .Create();
             raceMock.DefaultHealth = raceHealth;
             var classMock = _Fixture.Build<Class>()
                 .With(x => x.DefaultHealth, classHealth)
-                .Without(x => x.Avatars)
                 .Without(x => x.Dungeon)
                 .Create();
             classMock.DefaultHealth = classHealth;
@@ -56,21 +54,15 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         {
             var raceMock = _Fixture.Build<Race>()
                 .With(x => x.DefaultDamage, raceDamage)
-                .Without(x => x.Avatars)
                 .Without(x => x.Dungeon)
                 .Create();
             var classMock = _Fixture.Build<Class>()
                 .With(x => x.DefaultDamage, classDamage)
-                .Without(x => x.Avatars)
                 .Without(x => x.Dungeon)
                 .Create();
             var weaponMock = _Fixture.Build<Usable>()
                 .With(x => x.DamageBoost, weaponBoost)
-                .Without(x => x.Classes)
                 .Without(x => x.Dungeon)
-                .Without(x => x.Rooms)
-                .Without(x => x.HoldingItemAvatars)
-                .Without(x => x.InventoryAvatars)
                 .Create();
 
             var avatar = new Implementations.Dungeons.Avatars.Avatar();
@@ -93,12 +85,10 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         {
             var raceMock = _Fixture.Build<Race>()
                 .With(x => x.DefaultDamage, raceDamage)
-                .Without(x => x.Avatars)
                 .Without(x => x.Dungeon)
                 .Create();
             var classMock = _Fixture.Build<Class>()
                 .With(x => x.DefaultDamage, classDamage)
-                .Without(x => x.Avatars)
                 .Without(x => x.Dungeon)
                 .Create();
             var avatar = new Implementations.Dungeons.Avatars.Avatar();
@@ -121,22 +111,15 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         {
             var raceMock = _Fixture.Build<Race>()
                 .With(x => x.DefaultProtection, raceProtection)
-                .Without(x => x.Avatars)
                 .Without(x => x.Dungeon)
                 .Create();
             var classMock = _Fixture.Build<Class>()
                 .With(x => x.DefaultProtection, classProtection)
-                .Without(x => x.Avatars)
                 .Without(x => x.Dungeon)
                 .Create();
             var protectionMock = _Fixture.Build<Wearable>()
                 .With(x => x.ProtectionBoost, protectionBoost)
-                .Without(x => x.Classes)
                 .Without(x => x.Dungeon)
-                .Without(x => x.Rooms)
-                .Without(x => x.HoldingItemAvatars)
-                .Without(x => x.InventoryAvatars)
-                .Without(x => x.ArmorAvatars)
                 .Create();
 
             var avatar = new Implementations.Dungeons.Avatars.Avatar();
@@ -159,12 +142,10 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         {
             var raceMock = _Fixture.Build<Race>()
                 .With(x => x.DefaultProtection, raceProtection)
-                .Without(x => x.Avatars)
                 .Without(x => x.Dungeon)
                 .Create();
             var classMock = _Fixture.Build<Class>()
                 .With(x => x.DefaultProtection, classProtection)
-                .Without(x => x.Avatars)
                 .Without(x => x.Dungeon)
                 .Create();
 

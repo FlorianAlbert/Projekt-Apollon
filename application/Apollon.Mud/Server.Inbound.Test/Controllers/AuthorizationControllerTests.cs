@@ -92,13 +92,6 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
                 .With(x => x.Email, emailMock)
                 .With(x => x.EmailConfirmed, true)
                 .With(x => x.Id, dungeonUserIdMock.ToString)
-                .Without(x => x.DungeonMasterDungeons)
-                .Without(x => x.DungeonOwnerDungeons)
-                .Without(x => x.CurrentDungeonMasterDungeons)
-                .Without(x => x.BlackListDungeons)
-                .Without(x => x.WhiteListDungeons)
-                .Without(x => x.OpenRequestDungeons)
-                .Without(x => x.Avatars)
                 .Create();
 
             var dungeonUserDtoMock = _Fixture.Build<DungeonUserDto>()

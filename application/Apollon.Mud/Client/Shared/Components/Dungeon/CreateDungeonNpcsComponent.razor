@@ -130,16 +130,22 @@
     #region Dungeon Information
 
     /// <summary>
-    /// TODO
+    /// Represents wether a dungeon has at least 1: Class, Race and Room to enable its activitiy
     /// </summary>
     [Parameter]
     public bool IsDungeonMasterConfigurating { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The Guid of the dungeon
     /// </summary>
     [Parameter]
     public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public EventCallback NpcsChanged { get; set; }
 
     #endregion
 
@@ -197,7 +203,7 @@
     private async Task HandleNpcSubmit()
     {
         var validNpc = npcContext.Validate();
-        if (validNpc)
+        if (validNpc && DungeonId != Guid.Empty)
         {
             bool newNpc = false;
             NpcDto submitNpc = dungeonNpcs.Find(r => r.Name.Equals(dungeonNpcModel.Name));
@@ -217,24 +223,23 @@
                 {
                     submitNpc.Id = response;
                     dungeonNpcs.Add(submitNpc);
+                    await NpcsChanged.InvokeAsync();
                     chosenNpc = dungeonNpcModel.Name;
                 }
             }
             else
             {
                 var response = await NpcService.UpdateNpc(submitNpc, DungeonId);
-                if (!(response is null))
-                {
-                    WriteBackNpc(response);
-                }
+                if (!(response is null))  WriteBackNpc(response);
+                else await NpcsChanged.InvokeAsync();
             }
-        }
-        else
-        {
-            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
         }
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="npcDto"></param>
     private void WriteBackNpc(NpcDto npcDto)
     {
         if (!(npcDto is null))
@@ -301,7 +306,7 @@
         bool shouldFieldsBeEmptied = true;
         if (!(npcToDelete is null))
         {
-            if (!(npcToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await NpcService.DeleteNpc(DungeonId, npcToDelete.Id);
+            if (!(npcToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await NpcService.DeleteNpc(npcToDelete.Id, DungeonId);
 
             if (shouldFieldsBeEmptied)
             {
@@ -311,6 +316,7 @@
                 dungeonNpcModel.Text = string.Empty;
                 dungeonNpcModel.Status = string.Empty;
                 dungeonNpcs.Remove(npcToDelete);
+                await NpcsChanged.InvokeAsync();
                 StateHasChanged();
             }
             else

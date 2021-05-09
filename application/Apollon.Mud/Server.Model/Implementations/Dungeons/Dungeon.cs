@@ -54,130 +54,70 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// <summary>
         /// All races an avatar can choose between
         /// </summary>
-        public virtual ICollection<Race> ConfiguredRaces
-        {
-            get
-            {
-                return _ConfiguredRaces ??= new List<Race>();
-            }
-        }
+        public virtual ICollection<Race> ConfiguredRaces => _ConfiguredRaces ??= new List<Race>();
 
         private ICollection<Class> _ConfiguredClasses;
 
         /// <summary>
         /// All classes an avatar can choose between
         /// </summary>
-        public virtual ICollection<Class> ConfiguredClasses
-        {
-            get
-            {
-                return _ConfiguredClasses ??= new List<Class>();
-            }
-        }
+        public virtual ICollection<Class> ConfiguredClasses => _ConfiguredClasses ??= new List<Class>();
 
         private ICollection<Room> _ConfiguredRooms;
 
         /// <summary>
         /// All rooms of the dungeon
         /// </summary>
-        public virtual ICollection<Room> ConfiguredRooms
-        {
-            get
-            {
-                return _ConfiguredRooms ??= new List<Room>();
-            }
-        }
+        public virtual ICollection<Room> ConfiguredRooms => _ConfiguredRooms ??= new List<Room>();
 
         private ICollection<Inspectable> _ConfiguredInspectables;
 
         /// <summary>
         /// All inspectables that can be placed in the rooms
         /// </summary>
-        public virtual ICollection<Inspectable> ConfiguredInspectables
-        {
-            get
-            {
-                return _ConfiguredInspectables ??= new List<Inspectable>();
-            }
-        }
+        public virtual ICollection<Inspectable> ConfiguredInspectables => _ConfiguredInspectables ??= new List<Inspectable>();
 
         private ICollection<Requestable> _ConfiguredRequestables;
 
         /// <summary>
         /// All requestables that can be attached to a room
         /// </summary>
-        public virtual ICollection<Requestable> ConfiguredRequestables
-        {
-            get
-            {
-                return _ConfiguredRequestables ??= new List<Requestable>();
-            }
-        }
+        public virtual ICollection<Requestable> ConfiguredRequestables => _ConfiguredRequestables ??= new List<Requestable>();
 
         private ICollection<Avatar> _RegisteredAvatars;
 
         /// <summary>
         /// All registered avatar
         /// </summary>
-        public virtual ICollection<Avatar> RegisteredAvatars
-        {
-            get
-            {
-                return _RegisteredAvatars ??= new List<Avatar>();
-            }
-        }
+        public virtual ICollection<Avatar> RegisteredAvatars => _RegisteredAvatars ??= new List<Avatar>();
 
         private ICollection<DungeonUser> _DungeonMasters;
 
         /// <summary>
         /// All possible Dungeon Masters of the dungeon
         /// </summary>
-        public virtual ICollection<DungeonUser> DungeonMasters
-        {
-            get
-            {
-                return _DungeonMasters ??= new List<DungeonUser>();
-            }
-        }
+        public virtual ICollection<DungeonUser> DungeonMasters => _DungeonMasters ??= new List<DungeonUser>();
 
         private ICollection<DungeonUser> _WhiteList;
 
         /// <summary>
         /// List of all users who have access to this dungeon
         /// </summary>
-        public virtual ICollection<DungeonUser> WhiteList
-        {
-            get
-            {
-                return _WhiteList ??= new List<DungeonUser>();
-            }
-        }
+        public virtual ICollection<DungeonUser> WhiteList => _WhiteList ??= new List<DungeonUser>();
 
         private ICollection<DungeonUser> _BlackList;
 
         /// <summary>
         /// List of all users who are not allowed to have avatars in this dungeon
         /// </summary>
-        public virtual ICollection<DungeonUser> BlackList
-        {
-            get
-            {
-                return _BlackList ??= new List<DungeonUser>();
-            }
-        }
+        public virtual ICollection<DungeonUser> BlackList => _BlackList ??= new List<DungeonUser>();
 
         private ICollection<DungeonUser> _OpenRequests;
 
         /// <summary>
         /// List of all users who want to have access to this dungeon, in case it is private
         /// </summary>
-        public virtual ICollection<DungeonUser> OpenRequests
-        {
-            get
-            {
-                return _OpenRequests ??= new List<DungeonUser>();
-            }
-        }
+        public virtual ICollection<DungeonUser> OpenRequests => _OpenRequests ??= new List<DungeonUser>();
 
         /// <summary>
         /// User who is currently the Dungeon Master

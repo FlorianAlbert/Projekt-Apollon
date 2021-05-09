@@ -14,20 +14,20 @@ namespace Apollon.Mud.Client.Services.Implementiations
     public class NpcService : INpcService
     {
         /// <summary>
-        /// TODO
+        /// The Rest Http Client injected into the class
         /// </summary>
         public HttpClient HttpClient { get; }
 
         /// <summary>
-        /// TODO
+        /// Creates Cancellation Tokens for each Http Request
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
-        /// TODO
+        /// This service contains all logic for sending NPCS to the backend and persist them
         /// </summary>
-        /// <param name="httpClientFactory"></param>
-        /// <param name="userContext"></param>
+        /// <param name="httpClientFactory">The HttpClient injected into this class</param>
+        /// <param name="userContext">The usercontext needed for authorization</param>
         public NpcService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
@@ -36,11 +36,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Sends the given dungeon to the backend and persists it in the Database
         /// </summary>
-        /// <param name="npcDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="npcDto">The Dungeon to create</param>
+        /// <param name="dungeonId">The Dungeon that contains the npc</param>
+        /// <returns>The Guid if the DB Transaction was successfull, otherwise an empty Guid</returns>
         public async Task<Guid> CreateNewNpc(NpcDto npcDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -55,11 +55,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Updates the given npc in the Database
         /// </summary>
-        /// <param name="npcDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="npcDto">The Npc with updated information</param>
+        /// <param name="dungeonId">The Dungeon that contains the Npc</param>
+        /// <returns>The old Npc in case the Database transaction failed, otherwise null</returns>
         public async Task<NpcDto> UpdateNpc(NpcDto npcDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -72,12 +72,12 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Deletes the given Npc in the Database
         /// </summary>
-        /// <param name="npcId"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
-        public async Task<bool> DeleteNpc(Guid dungeonId, Guid npcId)
+        /// <param name="npcId">The id of the Npc to delete</param>
+        /// <param name="dungeonId">The Dungeon that contains the npc</param>
+        /// <returns>Wether the DB transaction was successfull</returns>
+        public async Task<bool> DeleteNpc(Guid npcId, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
@@ -87,10 +87,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets all Npcs of a dungeon
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the dungeon containing the requested npcs</param>
+        /// <returns>A Collection of the requested Npcs, otherwise null</returns>
         public async Task<ICollection<NpcDto>> GetAllNpcs(Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -103,11 +103,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets one Npc of a dungeon
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <param name="npcId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the dungeon containing the requested Npc</param>
+        /// <param name="npcId">The ID of the requested class</param>
+        /// <returns>The requested class, otherwise null</returns>
         public async Task<NpcDto> GetNpc(Guid dungeonId, Guid npcId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;

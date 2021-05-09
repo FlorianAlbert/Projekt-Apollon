@@ -44,6 +44,7 @@ namespace Apollon.Mud.Client
             services.AddTransient<INpcService, NpcService>();
             services.AddTransient<IClassService, ClassService>();
             services.AddTransient<IRaceService, RaceService>();
+            services.AddTransient<IRoomService, RoomService>();
             services.AddTransient<ISpecialActionService, SpecialActionService>();
             services.AddTransient<IInspectableService, InspectableService>();
             services.AddTransient<ITakeableService, TakeableService>();

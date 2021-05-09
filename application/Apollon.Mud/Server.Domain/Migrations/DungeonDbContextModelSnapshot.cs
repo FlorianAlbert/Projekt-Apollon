@@ -635,7 +635,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
                         .WithMany("ConfiguredClasses")
-                        .HasForeignKey("DungeonId");
+                        .HasForeignKey("DungeonId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Dungeon");
                 });
@@ -644,7 +645,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", "CurrentDungeonMaster")
                         .WithMany("CurrentDungeonMasterDungeons")
-                        .HasForeignKey("CurrentDungeonMasterId");
+                        .HasForeignKey("CurrentDungeonMasterId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "DefaultRoom")
                         .WithMany()
@@ -652,7 +654,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", "DungeonOwner")
                         .WithMany("DungeonOwnerDungeons")
-                        .HasForeignKey("DungeonOwnerId");
+                        .HasForeignKey("DungeonOwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("CurrentDungeonMaster");
 
@@ -665,7 +668,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
                         .WithMany("ConfiguredInspectables")
-                        .HasForeignKey("DungeonId");
+                        .HasForeignKey("DungeonId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Dungeon");
                 });
@@ -674,7 +678,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
                         .WithMany("ConfiguredRaces")
-                        .HasForeignKey("DungeonId");
+                        .HasForeignKey("DungeonId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Dungeon");
                 });
@@ -683,7 +688,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
                         .WithMany("ConfiguredRequestables")
-                        .HasForeignKey("DungeonId");
+                        .HasForeignKey("DungeonId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Dungeon");
                 });
@@ -692,15 +698,18 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
                         .WithMany("ConfiguredRooms")
-                        .HasForeignKey("DungeonId");
+                        .HasForeignKey("DungeonId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "NeighborNorth")
                         .WithOne("NeighborSouth")
-                        .HasForeignKey("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "NeighborNorthId");
+                        .HasForeignKey("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "NeighborNorthId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "NeighborWest")
                         .WithOne("NeighborEast")
-                        .HasForeignKey("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "NeighborWestId");
+                        .HasForeignKey("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "NeighborWestId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Dungeon");
 
@@ -884,15 +893,18 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables.Wearable", "Armor")
                         .WithMany("ArmorAvatars")
-                        .HasForeignKey("ArmorId");
+                        .HasForeignKey("ArmorId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", "ChosenClass")
                         .WithMany("Avatars")
-                        .HasForeignKey("ChosenClassId");
+                        .HasForeignKey("ChosenClassId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Races.Race", "ChosenRace")
                         .WithMany("Avatars")
-                        .HasForeignKey("ChosenRaceId");
+                        .HasForeignKey("ChosenRaceId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "CurrentRoom")
                         .WithMany()
@@ -904,11 +916,13 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", "HoldingItem")
                         .WithMany("HoldingItemAvatars")
-                        .HasForeignKey("HoldingItemId");
+                        .HasForeignKey("HoldingItemId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", "Owner")
                         .WithMany("Avatars")
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Armor");
 

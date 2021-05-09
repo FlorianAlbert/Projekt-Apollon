@@ -11,25 +11,24 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Client.Services.Implementiations
 {
-    /// <summary>
-    /// TODO
-    /// </summary>
+    
     public class DungeonService : IDungeonService
     {
         /// <summary>
-        /// TODO
+        /// The Rest Http Client injected into the class
         /// </summary>
         public HttpClient HttpClient { get; }
 
         /// <summary>
-        /// TODO
+        /// Creates Cancellation Tokens for each Http Request
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
-        /// TODO
+        /// This service contains all logic for sending Dungeons to the backend and persist them
         /// </summary>
-        /// <param name=""></param>
+        /// <param name="httpClientFactory">The HttpClient injected into this class</param>
+        /// <param name="userContext">The usercontext needed for authorization</param>
         public DungeonService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
@@ -38,10 +37,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Sends the given dungeon to the backend and persists it in the Database
         /// </summary>
-        /// <param name="dungeonDto"></param>
-        /// <returns></returns>
+        /// <param name="dungeonDto">The Dungeon to create</param>
+        /// <returns>The Guid if the DB Transaction was successfull, otherwise an empty Guid</returns>
         public async Task<Guid> CreateNewDungeon(DungeonDto dungeonDto)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -57,10 +56,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Deletes the Dungeon of the given ID from the database
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The Dungeon that contains the class</param>
+        /// <returns>Wether the DB transaction was successfull</returns>
         public async Task<bool> DeleteDungeon(Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -71,9 +70,9 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets all Dungeons
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A Collection of DungeonDtos, otherwise null</returns>
         public async Task<ICollection<DungeonDto>> GetAllDungeons()
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -89,7 +88,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/avatars/userdungeons", cancellationToken);
+            var response = await HttpClient.GetAsync("api/dungeons/userdungeons", cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<DungeonDto>>();
 
@@ -97,10 +96,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets the Dungeon of the ID
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the requested dungeon</param>
+        /// <returns>The requested dungeon, otherwise null</returns>
         public async Task<DungeonDto> GetDungeon(Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -113,10 +112,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Updates the given Dungeon in the Database
         /// </summary>
-        /// <param name="dungeonDto"></param>
-        /// <returns></returns>
+        /// <param name="dungeonDto">The dungeon with updated information</param>
+        /// <returns>The old dungeon in case the Database transaction failed, otherwise null</returns>
         public async Task<DungeonDto> UpdateDungeon(DungeonDto dungeonDto)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;

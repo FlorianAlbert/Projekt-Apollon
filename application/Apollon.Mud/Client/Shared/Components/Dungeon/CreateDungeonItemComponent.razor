@@ -251,13 +251,13 @@
     #region Dungeon Information
 
     /// <summary>
-    /// TODO
+    /// Represents wether a dungeon has at least 1: Class, Race and Room to enable its activitiy
     /// </summary>
     [Parameter]
     public bool IsDungeonMasterConfigurating { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The Guid of the dungeon
     /// </summary>
     [Parameter]
     public Guid DungeonId { get; set; }
@@ -400,7 +400,7 @@
                 break;
         }
         var validItem = itemContext.Validate();
-        if (validItem)
+        if (validItem && DungeonId != Guid.Empty)
         {
             bool newItem = false;
             switch (chosenItemCategory)
@@ -582,10 +582,6 @@
                     break;
             }
 
-        }
-        else
-        {
-            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
         }
     }
 
