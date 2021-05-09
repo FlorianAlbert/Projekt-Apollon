@@ -141,6 +141,12 @@
     [Parameter]
     public Guid DungeonId { get; set; }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public EventCallback NpcsChanged { get; set; }
+
     #endregion
 
     /// <summary>
@@ -178,15 +184,6 @@
                 dungeonNpcs = dungeonNpcCollection.ToList();
             }
         }
-
-        #region to Delete
-        NpcDto testNpc = new NpcDto();
-        testNpc.Description = "KLa";
-        testNpc.Name = "Leon";
-        testNpc.Text = "Test Text????";
-        dungeonNpcs.Add(testNpc);
-        #endregion
-
         StateHasChanged();
     }
 
@@ -217,20 +214,23 @@
                 {
                     submitNpc.Id = response;
                     dungeonNpcs.Add(submitNpc);
+                    await NpcsChanged.InvokeAsync();
                     chosenNpc = dungeonNpcModel.Name;
                 }
             }
             else
             {
                 var response = await NpcService.UpdateNpc(submitNpc, DungeonId);
-                if (!(response is null))
-                {
-                    WriteBackNpc(response);
-                }
+                if (!(response is null))  WriteBackNpc(response);
+                else await NpcsChanged.InvokeAsync();
             }
         }
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="npcDto"></param>
     private void WriteBackNpc(NpcDto npcDto)
     {
         if (!(npcDto is null))
@@ -286,10 +286,11 @@
         dungeonNpcModel.Text = string.Empty;
         dungeonNpcModel.Status = string.Empty;
     }
+
     /// <summary>
-    /// Empties all input fields
+    /// This Method removes a selected Npc and clears all form input fields
     /// </summary>
-    /// <param name="args"></param>
+    /// <param name="args">Event Arguments</param>
     private async void RemoveNpcButtonClicked(System.EventArgs args)
     {
         var npcToDelete = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
@@ -306,6 +307,7 @@
                 dungeonNpcModel.Text = string.Empty;
                 dungeonNpcModel.Status = string.Empty;
                 dungeonNpcs.Remove(npcToDelete);
+                await NpcsChanged.InvokeAsync();
                 StateHasChanged();
             }
             else

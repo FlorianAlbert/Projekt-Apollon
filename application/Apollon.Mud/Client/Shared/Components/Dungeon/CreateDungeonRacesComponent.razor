@@ -210,19 +210,8 @@
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
-    protected async override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        #region toDelete
-        RaceDto testRace = new RaceDto();
-        testRace.DefaultDamage = 10;
-        testRace.DefaultHealth = 10;
-        testRace.DefaultProtection = 10;
-        testRace.Description = "Test Beschreibung";
-        testRace.Name = "Leon";
-
-        dungeonRaces.Add(testRace);
-        #endregion
-
         raceContext = new EditContext(dungeonRaceModel);
         if (!(DungeonId == Guid.Empty))
         {
@@ -356,7 +345,7 @@
         bool shouldFieldsBeEmptied = true;
         if (!(raceToDelete is null))
         {
-            if (!(raceToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await RaceService.DeleteRace(raceToDelete.Id, DungeonId);
+            if (!(raceToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await RaceService.DeleteRace(DungeonId, raceToDelete.Id);
 
             if (shouldFieldsBeEmptied)
             {

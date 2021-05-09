@@ -1,9 +1,8 @@
 ﻿using Apollon.Mud.Client.Data;
 using Apollon.Mud.Client.Services.Interfaces;
-using Apollon.Mud.Shared.Dungeon.Race;
+using Apollon.Mud.Shared.Dungeon.Inspectable;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Client.Services.Implementiations
 {
-    public class RaceService : IRaceService
+    public class InspectableService : IInspectableService
     {
         /// <summary>
         /// TODO
@@ -27,8 +26,9 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="httpClient"></param>
-        public RaceService(IHttpClientFactory httpClientFactory, UserContext userContext)
+        /// <param name="httpClientFactory"></param>
+        /// <param name="userContext"></param>
+        public InspectableService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
             HttpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + userContext.Token);
@@ -38,14 +38,14 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="raceDto"></param>
+        /// <param name="inspectableDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public async Task<Guid> CreateNewRace(RaceDto raceDto, Guid dungeonId)
+        public async Task<Guid> CreateNewInspectable(InspectableDto inspectableDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PostAsJsonAsync("api/races/" + dungeonId, raceDto, cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("api/inspectables/" + dungeonId, inspectableDto, cancellationToken);
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var responseGuid = await response.Content.ReadFromJsonAsync<Guid>();
@@ -57,16 +57,16 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="raceDto"></param>
+        /// <param name="inspectableDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public async Task<RaceDto> UpdateRace(RaceDto raceDto, Guid dungeonId)
+        public async Task<InspectableDto> UpdateInspectable(InspectableDto inspectableDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PutAsJsonAsync("api/races", raceDto, cancellationToken);
+            var response = await HttpClient.PutAsJsonAsync("api/inspectables/" + dungeonId, inspectableDto, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<RaceDto>();
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<InspectableDto>();
 
             return null;
         }
@@ -74,14 +74,14 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="raceId"></param>
+        /// <param name="inspectableId"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public async Task<bool> DeleteRace(Guid raceId, Guid dungeonId)
+        public async Task<bool> DeleteInspectable(Guid dungeonId, Guid inspectableId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.DeleteAsync("api/races/" + dungeonId + "/" + raceId, cancellationToken);
+            var response = await HttpClient.DeleteAsync("api/inspectables/" + dungeonId + "/" + inspectableId, cancellationToken);
 
             return response.StatusCode == HttpStatusCode.OK;
         }
@@ -89,15 +89,16 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
+        /// <param name="inspectableDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public async Task<ICollection<RaceDto>> GetAllRaces(Guid dungeonId)
+        public async Task<ICollection<InspectableDto>> GetAllInspectables(Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/races" + dungeonId, cancellationToken);
+            var response = await HttpClient.GetAsync("api/inspectables" + dungeonId, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<RaceDto>>();
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<InspectableDto>>();
 
             return null;
         }
@@ -106,15 +107,15 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// TODO
         /// </summary>
         /// <param name="dungeonId"></param>
-        /// <param name="raceId"></param>
+        /// <param name="inspectableId"></param>
         /// <returns></returns>
-        public async Task<RaceDto> GetRace(Guid dungeonId, Guid raceId)
+        public async Task<InspectableDto> GetInspectable(Guid dungeonId, Guid inspectableId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/races/" + dungeonId + "/" + raceId, cancellationToken);
+            var response = await HttpClient.GetAsync("api/inspectables/" + dungeonId + "/" + inspectableId, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<RaceDto>();
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<InspectableDto>();
 
             return null;
         }

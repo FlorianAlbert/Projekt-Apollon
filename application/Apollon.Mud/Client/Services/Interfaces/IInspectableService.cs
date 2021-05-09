@@ -1,6 +1,7 @@
-﻿using Apollon.Mud.Shared.Dungeon.Class;
+﻿using Apollon.Mud.Shared.Dungeon.Inspectable;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
     /// <summary>
     /// TODO
     /// </summary>
-    public interface IClassService
+    public interface IInspectableService
     {
         /// <summary>
         /// TODO
@@ -25,39 +26,41 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="classDto"></param>
+        /// <param name="inspectableDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<Guid> CreateNewClass(ClassDto classDto, Guid dungeonId);
+        Task<Guid> CreateNewInspectable(InspectableDto inspectableDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="classDto"></param>
+        /// <param name="inspectableDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<ClassDto> UpdateClass(ClassDto classDto, Guid dungeonId);
+        Task<InspectableDto> UpdateInspectable(InspectableDto inspectableDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="classDto"></param>
+        /// <param name="inspectableId"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
         /// 
-        Task<bool> DeleteClass(Guid dungeonId, Guid classId);
+        Task<bool> DeleteInspectable(Guid dungeonId, Guid inspectableId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<ICollection<ClassDto>> GetAllClasses(Guid dungeonId);
+        Task<ICollection<InspectableDto>> GetAllInspectables(Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param></param>
+        /// <param name="dungeonId"></param>
+        /// <param name="inspectableId"></param>
         /// <returns></returns>
-        Task<ClassDto> GetClass(Guid dungeonId, Guid classId);
-
-
+        Task<InspectableDto> GetInspectable(Guid dungeonId, Guid inspectableId);
     }
 }

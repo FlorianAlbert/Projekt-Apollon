@@ -188,7 +188,7 @@
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
-    protected async override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
         dungeonContext = new EditContext(dungeonModel);
 
@@ -215,7 +215,7 @@
     {
         if (dungeonModel.DefaultRoom is null)
         {
-            var defaultRoom = await RoomService.GetRoom(roomGuid, DungeonId);
+            var defaultRoom = await RoomService.GetRoom(DungeonId, roomGuid);
             if (!(defaultRoom is null))
             {
                 dungeonRooms.Add(defaultRoom);

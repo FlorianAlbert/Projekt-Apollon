@@ -110,11 +110,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="dungeonId">The ID of the dungeon containing the requested class</param>
         /// <param name="classId">The ID of the requested class</param>
         /// <returns>The requested class, otherwise null</returns>
-        public async Task<RoomDto> GetRoom(Guid dungeonId, Guid classId)
+        public async Task<RoomDto> GetRoom(Guid dungeonId, Guid roomId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/rooms/" + dungeonId + "/" + classId, cancellationToken);
+            var response = await HttpClient.GetAsync("api/rooms/" + dungeonId + "/" + roomId, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<RoomDto>();
 
