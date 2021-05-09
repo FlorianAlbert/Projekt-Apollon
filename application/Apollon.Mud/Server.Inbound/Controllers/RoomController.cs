@@ -26,6 +26,7 @@ using Apollon.Mud.Shared.Dungeon.Requestable;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -35,11 +36,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
     {
         private IGameDbService GameConfigService { get; }
 
-        private UserService UserService { get; }
+        private IUserService UserService { get; }
 
         private ILogger<RoomController> _logger;
 
-        public RoomController(ILogger<RoomController> logger, IGameDbService gameDbService, UserService userService)
+        public RoomController(ILogger<RoomController> logger, IGameDbService gameDbService, IUserService userService)
         {
             _logger = logger;
             GameConfigService = gameDbService;

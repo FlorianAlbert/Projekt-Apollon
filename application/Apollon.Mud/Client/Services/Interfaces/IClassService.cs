@@ -56,7 +56,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// </summary>
         /// <param></param>
         /// <returns></returns>
-        Task<ClassDto> GetClass(Guid dungeonId, Guid actionId);
+        Task<ClassDto> GetClass(Guid dungeonId, Guid classId);
 
 
     }

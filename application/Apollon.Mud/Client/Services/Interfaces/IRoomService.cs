@@ -1,4 +1,4 @@
-﻿using Apollon.Mud.Shared.Dungeon;
+﻿using Apollon.Mud.Shared.Dungeon.Room;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +11,12 @@ namespace Apollon.Mud.Client.Services.Interfaces
     /// <summary>
     /// TODO
     /// </summary>
-    public interface IDungeonService
+    public interface IRoomService
     {
         /// <summary>
         /// TODO
         /// </summary>
-        public HttpClient HttpClient { get;}
+        public HttpClient HttpClient { get; }
 
         /// <summary>
         /// TODO
@@ -26,41 +26,42 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="dungeonDto"></param>
+        /// <param name="roomDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<Guid> CreateNewDungeon(DungeonDto dungeonDto);
+        Task<Guid> CreateNewRoom(RoomDto roomDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="dungeonDto"></param>
+        /// <param name="roomDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<DungeonDto> UpdateDungeon(DungeonDto dungeonDto);
+        Task<RoomDto> UpdateRoom(RoomDto roomDto, Guid dungeonId);
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <param name="dungeonId"></param>
+        /// <returns></returns>
+        Task<bool> DeleteRoom(Guid roomId, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<bool> DeleteDungeon(Guid dungeonId);
+        Task<ICollection<RoomDto>> GetAllRooms(Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <returns></returns>
-        Task<ICollection<DungeonDto>> GetAllDungeons();
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <returns></returns>
-        Task<ICollection<DungeonDto>> GetAllDungeonsForUser();
-
-        /// <summary>
-        /// TODO
-        /// </summary>
+        /// <param name="roomId"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<DungeonDto> GetDungeon(Guid dungeonId);
+        Task<RoomDto> GetRoom(Guid roomId, Guid dungeonId);
+
+
     }
 }

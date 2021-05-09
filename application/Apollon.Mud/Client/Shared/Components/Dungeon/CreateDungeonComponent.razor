@@ -2,6 +2,7 @@
 @using Apollon.Mud.Shared.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Room
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+@inject Apollon.Mud.Client.Services.Interfaces.IRoomService RoomService
 
 <div class="card">
     <div class="card-header">
@@ -68,7 +69,6 @@
                         <div class="col">
                             <div class="d-flex justify-content-center">
                                 <select class="form-select" @bind="dungeonModel.DefaultRoom">
-                                    <option selected hidden value=""></option>
                                     @foreach (RoomDto room in dungeonRooms)
                                     {
                                         <option value="@room.Name">@room.Name</option>
@@ -203,6 +203,26 @@
             DungeonId = dungeonDto.Id;
             await OnDungeonSavedOrLoaded.InvokeAsync(DungeonId);
             if (!(dungeonDto.DefaultRoom is null)) dungeonModel.DefaultRoom = dungeonDto.DefaultRoom.Name;
+        }
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="roomGuid"></param>
+    public async void SetDefaultRoom(Guid roomGuid)
+    {
+        if (dungeonModel.DefaultRoom is null)
+        {
+            var defaultRoom = await RoomService.GetRoom(roomGuid, DungeonId);
+            if (!(defaultRoom is null))
+            {
+                dungeonRooms.Add(defaultRoom);
+                dungeonModel.DefaultRoom = defaultRoom.Name;
+                await HandleDungeonSubmit();
+            }
+            StateHasChanged();
         }
     }
 
