@@ -1056,7 +1056,7 @@
     /// <summary>
     /// TODO Abhilfe
     /// </summary>
-    protected async override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
         #region toDelete
 
@@ -1540,6 +1540,7 @@
         if(!(npcList is null))
         {
             dungeonNpcs = npcList.ToList();
+            StateHasChanged();
         }
     }
 
@@ -1552,6 +1553,7 @@
         if(!(actionList is null))
         {
             dungeonRequestables = actionList.ToList();
+            StateHasChanged();
         }
     }
 
