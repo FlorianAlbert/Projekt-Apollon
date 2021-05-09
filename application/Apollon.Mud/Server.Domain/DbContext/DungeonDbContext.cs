@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
@@ -65,16 +63,19 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithMany(x => x.DungeonMasters);
             builder.Entity<DungeonUser>()
                 .HasMany(x => x.DungeonOwnerDungeons)
-                .WithOne(x => x.DungeonOwner);
+                .WithOne(x => x.DungeonOwner)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<DungeonUser>()
                 .HasMany(x => x.CurrentDungeonMasterDungeons)
-                .WithOne(x => x.CurrentDungeonMaster);
+                .WithOne(x => x.CurrentDungeonMaster)
+                .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<DungeonUser>()
                 .HasMany(x => x.OpenRequestDungeons)
                 .WithMany(x => x.OpenRequests);
             builder.Entity<DungeonUser>()
                 .HasMany(x => x.Avatars)
-                .WithOne(x => x.Owner);
+                .WithOne(x => x.Owner)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Dungeon>()
                 .HasKey(e => e.Id);
@@ -92,29 +93,36 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithMany(x => x.OpenRequestDungeons);
             builder.Entity<Dungeon>()
                 .HasMany(e => e.ConfiguredRaces)
-                .WithOne(x => x.Dungeon);
+                .WithOne(x => x.Dungeon)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Dungeon>()
                 .HasMany(e => e.ConfiguredClasses)
-                .WithOne(x => x.Dungeon);
+                .WithOne(x => x.Dungeon)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Dungeon>()
                 .HasMany(e => e.ConfiguredInspectables)
-                .WithOne(x => x.Dungeon);
+                .WithOne(x => x.Dungeon)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Dungeon>()
                 .HasMany(e => e.ConfiguredRequestables)
-                .WithOne(x => x.Dungeon);
+                .WithOne(x => x.Dungeon)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Dungeon>()
                 .HasMany(e => e.RegisteredAvatars);
             builder.Entity<Dungeon>()
                 .HasMany(e => e.ConfiguredRooms)
-                .WithOne(x => x.Dungeon);
+                .WithOne(x => x.Dungeon)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Dungeon>()
                 .HasOne(e => e.CurrentDungeonMaster)
-                .WithMany(x => x.CurrentDungeonMasterDungeons);
+                .WithMany(x => x.CurrentDungeonMasterDungeons)
+                .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<Dungeon>()
                 .HasOne(e => e.DefaultRoom);
             builder.Entity<Dungeon>()
                 .HasOne(e => e.DungeonOwner)
-                .WithMany(x => x.DungeonOwnerDungeons);
+                .WithMany(x => x.DungeonOwnerDungeons)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Dungeon>()
                 .Property(x => x.Id)
                 .HasConversion(
@@ -131,19 +139,24 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithMany(x => x.Rooms);
             builder.Entity<Room>()
                 .HasOne(e => e.NeighborEast)
-                .WithOne(x => x.NeighborWest);
+                .WithOne(x => x.NeighborWest)
+                .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<Room>()
                 .HasOne(e => e.NeighborSouth)
-                .WithOne(x => x.NeighborNorth);
+                .WithOne(x => x.NeighborNorth)
+                .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<Room>()
                 .HasOne(e => e.NeighborWest)
-                .WithOne(x => x.NeighborEast);
+                .WithOne(x => x.NeighborEast)
+                .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<Room>()
                 .HasOne(e => e.NeighborNorth)
-                .WithOne(x => x.NeighborSouth);
+                .WithOne(x => x.NeighborSouth)
+                .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<Room>()
                 .HasOne(x => x.Dungeon)
-                .WithMany(x => x.ConfiguredRooms);
+                .WithMany(x => x.ConfiguredRooms)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Room>()
                 .Property(x => x.Id)
                 .HasConversion(
@@ -157,10 +170,12 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithMany(x => x.Classes);
             builder.Entity<Class>()
                 .HasOne(x => x.Dungeon)
-                .WithMany(x => x.ConfiguredClasses);
+                .WithMany(x => x.ConfiguredClasses)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Class>()
                 .HasMany(x => x.Avatars)
-                .WithOne(x => x.ChosenClass);
+                .WithOne(x => x.ChosenClass)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Class>()
                 .Property(x => x.Id)
                 .HasConversion(
@@ -171,10 +186,12 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasKey(e => e.Id);
             builder.Entity<Race>()
                 .HasMany(x => x.Avatars)
-                .WithOne(x => x.ChosenRace);
+                .WithOne(x => x.ChosenRace)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Race>()
                 .HasOne(x => x.Dungeon)
-                .WithMany(x => x.ConfiguredRaces);
+                .WithMany(x => x.ConfiguredRaces)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Race>()
                 .Property(x => x.Id)
                 .HasConversion(
@@ -188,7 +205,8 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithMany(x => x.Inspectables);
             builder.Entity<Inspectable>()
                 .HasOne(x => x.Dungeon)
-                .WithMany(x => x.ConfiguredInspectables);
+                .WithMany(x => x.ConfiguredInspectables)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Inspectable>()
                 .Property(x => x.Id)
                 .HasConversion(
@@ -200,21 +218,26 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithMany(x => x.InventoryAvatars);
             builder.Entity<Avatar>()
                 .HasOne(e => e.Armor)
-                .WithMany(x => x.ArmorAvatars);
+                .WithMany(x => x.ArmorAvatars)
+                .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<Avatar>()
                 .HasOne(e => e.ChosenClass)
-                .WithMany(x => x.Avatars);
+                .WithMany(x => x.Avatars)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Avatar>()
                 .HasOne(e => e.CurrentRoom);  // CHECK: könnte schief gehen - denke des ist nicht richtig -Etienne
             builder.Entity<Avatar>()
                 .HasOne(e => e.HoldingItem)
-                .WithMany(x => x.HoldingItemAvatars);
+                .WithMany(x => x.HoldingItemAvatars)
+                .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<Avatar>()
                 .HasOne(e => e.Owner)
-                .WithMany(x => x.Avatars);
+                .WithMany(x => x.Avatars)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Avatar>()
                 .HasOne(e => e.ChosenRace)
-                .WithMany(x => x.Avatars);
+                .WithMany(x => x.Avatars)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Avatar>()
                 .Property(x => x.ChosenGender)
                 .HasConversion(
@@ -235,7 +258,8 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasKey(e => e.Id);
             builder.Entity<Requestable>()
                 .HasOne(x => x.Dungeon)
-                .WithMany(x => x.ConfiguredRequestables);
+                .WithMany(x => x.ConfiguredRequestables)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Requestable>()
                 .HasMany(x => x.Rooms)
                 .WithMany(x => x.SpecialActions);
@@ -250,7 +274,8 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithMany(x => x.StartInventory); 
             builder.Entity<Takeable>()
                 .HasMany(x => x.HoldingItemAvatars)
-                .WithOne(x => x.HoldingItem); 
+                .WithOne(x => x.HoldingItem)
+                .OnDelete(DeleteBehavior.SetNull); 
             builder.Entity<Takeable>()
                 .HasMany(x => x.InventoryAvatars)
                 .WithMany(x => x.Inventory);
@@ -268,7 +293,8 @@ namespace Apollon.Mud.Server.Domain.DbContext
 
             builder.Entity<Wearable>()
                 .HasMany(x => x.ArmorAvatars)
-                .WithOne(x => x.Armor);
+                .WithOne(x => x.Armor)
+                .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<Wearable>()
                 .Property(x => x.Id)
                 .HasConversion(

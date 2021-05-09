@@ -247,13 +247,13 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         column: x => x.CurrentDungeonMasterId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Dungeons_AspNetUsers_DungeonOwnerId",
                         column: x => x.DungeonOwnerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -277,7 +277,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         column: x => x.DungeonId,
                         principalTable: "Dungeons",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -301,7 +301,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         column: x => x.DungeonId,
                         principalTable: "Dungeons",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -324,19 +324,19 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         column: x => x.DungeonId,
                         principalTable: "Dungeons",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Rooms_Rooms_NeighborNorthId",
                         column: x => x.NeighborNorthId,
                         principalTable: "Rooms",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Rooms_Rooms_NeighborWestId",
                         column: x => x.NeighborWestId,
                         principalTable: "Rooms",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -357,7 +357,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         column: x => x.DungeonId,
                         principalTable: "Dungeons",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -393,19 +393,19 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         column: x => x.OwnerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Inspectables_Classes_ChosenClassId",
                         column: x => x.ChosenClassId,
                         principalTable: "Classes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Inspectables_Dungeons_DungeonId",
                         column: x => x.DungeonId,
                         principalTable: "Dungeons",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Inspectables_Dungeons_DungeonId1",
                         column: x => x.DungeonId1,
@@ -417,19 +417,19 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         column: x => x.ArmorId,
                         principalTable: "Inspectables",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Inspectables_Inspectables_HoldingItemId",
                         column: x => x.HoldingItemId,
                         principalTable: "Inspectables",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Inspectables_Races_ChosenRaceId",
                         column: x => x.ChosenRaceId,
                         principalTable: "Races",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Inspectables_Rooms_CurrentRoomId",
                         column: x => x.CurrentRoomId,
