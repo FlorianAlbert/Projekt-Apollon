@@ -1,5 +1,6 @@
 ﻿@using Apollon.Mud.Client.Data.Models
 @using Apollon.Mud.Shared.Dungeon.Race
+@inject Apollon.Mud.Client.Services.Interfaces.IRaceService RaceService;
 
 <div class="card">
     <div class="card-header">
@@ -209,7 +210,7 @@
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
         #region toDelete
         RaceDto testRace = new RaceDto();
@@ -223,6 +224,16 @@
         #endregion
 
         raceContext = new EditContext(dungeonRaceModel);
+        if (!(DungeonId == Guid.Empty))
+        {
+            var dungeonRaceCollection = await RaceService.GetAllRaces(DungeonId);
+            if (!(dungeonRaceCollection is null))
+            {
+                dungeonRaces = dungeonRaceCollection.ToList();
+                await OnRaceSavedOrLoaded.InvokeAsync();
+            }
+        }
+        StateHasChanged();
     }
 
     /// <summary>
@@ -249,14 +260,44 @@
             submitRace.Status = dungeonRaceModel.Status.Equals("Approved") ? 0 : 1;
             if (newRace)
             {
-                dungeonRaces.Add(submitRace);
+                var response = await RaceService.CreateNewRace(submitRace, DungeonId);
+                if (response != Guid.Empty)
+                {
+                    submitRace.Id = response;
+                    await OnRaceSavedOrLoaded.InvokeAsync();
+                    dungeonRaces.Add(submitRace);
+                    chosenRace = dungeonRaceModel.Name;
+                }
             }
-            chosenRace = dungeonRaceModel.Name;
-            //TODO Klasse ans Backend senden
+            else
+            {
+                var response = await RaceService.UpdateRace(submitRace, DungeonId);
+                if (!(response is null))
+                {
+                    WriteBackRace(response);
+                }
+            }
         }
         else
         {
             //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
+        }
+    }
+
+    /// <summary>
+    /// Refills the form when needed, according to the race name
+    /// </summary>
+    /// <param name="newRace"></param>
+    private void WriteBackRace(RaceDto newRace)
+    {
+        if (!(newRace is null))
+        {
+            dungeonRaceModel.Name = chosenRace;
+            dungeonRaceModel.Description = newRace.Description;
+            dungeonRaceModel.Health = newRace.DefaultHealth.ToString();
+            dungeonRaceModel.Protection = newRace.DefaultProtection.ToString();
+            dungeonRaceModel.Damage = newRace.DefaultDamage.ToString();
+            dungeonRaceModel.Status = newRace.Status == 0 ? "Approved" : "Pending";
         }
     }
 
@@ -269,16 +310,7 @@
         if (!chosenRace.Equals(dungeonRaceModel.Name) && !chosenRace.Equals("NoRace"))
         {
             var newRace = dungeonRaces.Find(i => i.Name.Equals(chosenRace));
-            if (!(newRace is null))
-            {
-
-                dungeonRaceModel.Name = chosenRace;
-                dungeonRaceModel.Description = newRace.Description;
-                dungeonRaceModel.Health = newRace.DefaultHealth.ToString();
-                dungeonRaceModel.Protection = newRace.DefaultProtection.ToString();
-                dungeonRaceModel.Damage = newRace.DefaultDamage.ToString();
-                dungeonRaceModel.Status = newRace.Status == 0 ? "Approved" : "Pending";
-            }
+            WriteBackRace(newRace);
         }
         return EventCallback.Empty;
     }
@@ -296,12 +328,7 @@
         }
         else
         {
-            chosenRace = dungeonRaceModel.Name;
-            dungeonRaceModel.Description = checkRace.Description;
-            dungeonRaceModel.Health = checkRace.DefaultHealth.ToString();
-            dungeonRaceModel.Protection = checkRace.DefaultProtection.ToString();
-            dungeonRaceModel.Damage = checkRace.DefaultDamage.ToString();
-            dungeonRaceModel.Status = checkRace.Status == 0 ? "Approved" : "Pending";
+            WriteBackRace(checkRace);
         }
     }
 
@@ -320,16 +347,35 @@
         dungeonRaceModel.Status = string.Empty;
     }
 
-    private void RemoveRaceButtonClicked(System.EventArgs args)
+    /// <summary>
+    /// This Method removes a selected Race and clears all form input fields
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private async void RemoveRaceButtonClicked(System.EventArgs args)
     {
-        dungeonRaces.Remove(dungeonRaces.Find(i => i.Name.Equals(chosenRace)));
-        chosenRace = "NoRace";
-        dungeonRaceModel.Name = string.Empty;
-        dungeonRaceModel.Description = string.Empty;
-        dungeonRaceModel.Health = string.Empty;
-        dungeonRaceModel.Protection = string.Empty;
-        dungeonRaceModel.Damage = string.Empty;
-        dungeonRaceModel.Status = string.Empty;
+        var raceToDelete = dungeonRaces.Find(i => i.Name.Equals(chosenRace));
+        bool shouldFieldsBeEmptied = true;
+        if (!(raceToDelete is null))
+        {
+            if (!(raceToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await RaceService.DeleteRace(raceToDelete.Id, DungeonId);
+
+            if (shouldFieldsBeEmptied)
+            {
+                chosenRace = "NoRace";
+                dungeonRaceModel.Name = string.Empty;
+                dungeonRaceModel.Description = string.Empty;
+                dungeonRaceModel.Health = string.Empty;
+                dungeonRaceModel.Protection = string.Empty;
+                dungeonRaceModel.Damage = string.Empty;
+                dungeonRaceModel.Status = string.Empty;
+                dungeonRaces.Remove(raceToDelete);
+                StateHasChanged();
+            }
+            else
+            {
+
+            }
+        }
     }
     #endregion
 }
