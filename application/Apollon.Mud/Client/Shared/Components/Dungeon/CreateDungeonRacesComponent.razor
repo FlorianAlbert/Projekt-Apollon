@@ -357,7 +357,7 @@
         bool shouldFieldsBeEmptied = true;
         if (!(raceToDelete is null))
         {
-            if (!(raceToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await RaceService.DeleteRace(raceToDelete.Id, DungeonId);
+            if (!(raceToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await RaceService.DeleteRace(DungeonId, raceToDelete.Id);
 
             if (shouldFieldsBeEmptied)
             {

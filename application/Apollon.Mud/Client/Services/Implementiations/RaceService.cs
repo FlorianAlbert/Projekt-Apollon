@@ -77,7 +77,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="raceId"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public async Task<bool> DeleteRace(Guid raceId, Guid dungeonId)
+        public async Task<bool> DeleteRace(Guid dungeonId, Guid raceId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 

@@ -42,7 +42,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <param name="classDto"></param>
         /// <returns></returns>
         /// 
-        Task<bool> DeleteClass(Guid classId, Guid dungeonId);
+        Task<bool> DeleteClass(Guid dungeonId, Guid classId);
 
         /// <summary>
         /// TODO

@@ -300,7 +300,7 @@
         bool shouldFieldsBeEmptied = true;
         if (!(npcToDelete is null))
         {
-            if (!(npcToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await NpcService.DeleteNpc(npcToDelete.Id, DungeonId);
+            if (!(npcToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await NpcService.DeleteNpc(DungeonId, npcToDelete.Id);
 
             if (shouldFieldsBeEmptied)
             {

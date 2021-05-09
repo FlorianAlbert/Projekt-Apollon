@@ -744,7 +744,7 @@
 
         bool shouldFieldsBeEmptied = true;
 
-        if (!(classToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await ClassService.DeleteClass(classToDelete.Id, DungeonId);
+        if (!(classToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await ClassService.DeleteClass(DungeonId, classToDelete.Id);
 
         if (shouldFieldsBeEmptied)
         {

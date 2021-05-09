@@ -271,13 +271,17 @@
         dungeonActionModel.Status = string.Empty;
     }
 
+    /// <summary>
+    /// This Method removes a selected Requestable and clears all form input fields
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
     private async void RemoveActionButtonClicked(System.EventArgs args)
     {
         var requestableToDelete = dungeonRequestables.Find(i => i.PatternForPlayer.Equals(chosenAction));
         bool shouldFieldsBeEmptied = true;
         if (!(requestableToDelete is null))
         {
-            if (!(requestableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await SpecialActionService.DeleteRequestable(requestableToDelete.Id, DungeonId);
+            if (!(requestableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await SpecialActionService.DeleteRequestable(DungeonId, requestableToDelete.Id);
 
             if (shouldFieldsBeEmptied)
             {
