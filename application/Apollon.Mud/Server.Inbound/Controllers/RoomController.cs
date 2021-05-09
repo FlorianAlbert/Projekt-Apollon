@@ -7,6 +7,7 @@ using Apollon.Mud.Server.Domain.Implementations.UserManagement;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
@@ -14,6 +15,7 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.U
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
+using Apollon.Mud.Server.Model.ModelExtensions;
 using Apollon.Mud.Shared.Dungeon.Inspectable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
@@ -302,7 +304,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (dungeon.DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
+            if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
             Room neighborEast;
             Room neighborSouth;
@@ -445,35 +447,229 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 }
             }
 
-            bool neighborsSuccessful = false;
-            if (neighborNorth is not null)
+            //var neighborsSuccessful = true;
+            //if (neighborNorth is not null)
+            //{
+            //    neighborNorth.NeighborSouth = room;
+            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborNorth);
+            //}
+
+            //if (neighborsSuccessful && neighborEast is not null)
+            //{
+            //    neighborEast.NeighborWest = room;
+            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborEast);
+            //}
+
+            //if (neighborsSuccessful && neighborSouth is not null)
+            //{
+            //    neighborSouth.NeighborNorth = room;
+            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborSouth);
+            //}
+
+            //if (neighborsSuccessful && neighborWest is not null)
+            //{
+            //    neighborWest.NeighborEast = room;
+            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborWest);
+            //}
+
+            //if (!neighborsSuccessful) return BadRequest();
+
+            if (await GameConfigService.NewOrUpdate(room)) return Ok(room.Id);
+
+            return BadRequest();
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Player")]
+        [Route("{dungeonId}")]
+        public async Task<IActionResult> Update([FromRoute] Guid dungeonId, [FromBody] RoomDto roomDto)
+        {
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
+
+            if (dungeon is null) return BadRequest();
+
+            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
+
+            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
+
+            var user = await UserService.GetUser(userId);
+
+            if (user is null) return BadRequest();
+
+            if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
+
+            var room = await GameConfigService.Get<Room>(roomDto.Id);
+
+            Room neighborEast;
+            Room neighborSouth;
+            Room neighborWest;
+            Room neighborNorth;
+            try
             {
-                neighborNorth.NeighborSouth = room;
-                neighborsSuccessful = await GameConfigService.NewOrUpdate(neighborNorth);
+                neighborEast = roomDto.NeighborEastId == Guid.Empty
+                    ? null
+                    : dungeon.ConfiguredRooms.SingleOrDefault(x => x.Id == roomDto.NeighborEastId);
+
+                neighborSouth = roomDto.NeighborSouthId == Guid.Empty
+                    ? null
+                    : dungeon.ConfiguredRooms.SingleOrDefault(x => x.Id == roomDto.NeighborSouthId);
+
+                neighborWest = roomDto.NeighborWestId == Guid.Empty
+                    ? null
+                    : dungeon.ConfiguredRooms.SingleOrDefault(x => x.Id == roomDto.NeighborWestId);
+
+                neighborNorth = roomDto.NeighborNorthId == Guid.Empty
+                    ? null
+                    : dungeon.ConfiguredRooms.SingleOrDefault(x => x.Id == roomDto.NeighborNorthId);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "There are more than one room with this Id in the dungeon.");
+                return Conflict();
             }
 
-            if (neighborsSuccessful && neighborEast is not null)
+            if (neighborNorth?.NeighborSouth is not null && neighborNorth.NeighborSouth != room ||
+                neighborEast?.NeighborWest is not null && neighborEast.NeighborWest != room ||
+                neighborSouth?.NeighborNorth is not null && neighborSouth.NeighborNorth != room ||
+                neighborWest?.NeighborEast is not null && neighborWest.NeighborEast != room)
+                return Conflict();
+
+            room.Description = roomDto.Description;
+            room.Name = roomDto.Description;
+            room.Status = (Status) roomDto.Status;
+            room.NeighborEast = neighborEast;
+            room.NeighborSouth = neighborSouth;
+            room.NeighborWest = neighborWest;
+            room.NeighborNorth = neighborNorth;
+
+            room.Inspectables.RemoveAll(x => x is not Avatar);
+
+            foreach (var consumableDto in roomDto.Consumables)
             {
-                neighborEast.NeighborWest = room;
-                neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborEast);
+                try
+                {
+                    var consumable = dungeon.ConfiguredInspectables.OfType<Consumable>().SingleOrDefault(c => c.Id == consumableDto.Id);
+
+                    if (consumable is not null) room.Inspectables.Add(consumable);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.LogError(ex, $"There are more than one Consumable with the Id {consumableDto.Id} in the dungeon.");
+                }
             }
 
-            if (neighborsSuccessful && neighborSouth is not null)
+            foreach (var wearableDto in roomDto.Wearables)
             {
-                neighborSouth.NeighborNorth = room;
-                neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborSouth);
+                try
+                {
+                    var wearable = dungeon.ConfiguredInspectables.OfType<Wearable>().SingleOrDefault(c => c.Id == wearableDto.Id);
+
+                    if (wearable is not null) room.Inspectables.Add(wearable);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.LogError(ex, $"There are more than one Wearable with the Id {wearableDto.Id} in the dungeon.");
+                }
             }
 
-            if (neighborsSuccessful && neighborWest is not null)
+            foreach (var usableDto in roomDto.Usables)
             {
-                neighborWest.NeighborEast = room;
-                neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborWest);
+                try
+                {
+                    var usable = dungeon.ConfiguredInspectables.OfType<Usable>().SingleOrDefault(c => c.Id == usableDto.Id);
+
+                    if (usable is not null) room.Inspectables.Add(usable);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.LogError(ex, $"There are more than one Usable with the Id {usableDto.Id} in the dungeon.");
+                }
             }
 
-            if (neighborsSuccessful)
+            foreach (var takeableDto in roomDto.Takeables)
             {
-                if (await GameConfigService.NewOrUpdate(room)) return Ok(room.Id);
+                try
+                {
+                    var takeable = dungeon.ConfiguredInspectables.OfType<Takeable>().SingleOrDefault(c => c.Id == takeableDto.Id);
+
+                    if (takeable is not null) room.Inspectables.Add(takeable);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.LogError(ex, $"There are more than one Takeable with the Id {takeableDto.Id} in the dungeon.");
+                }
             }
+
+            foreach (var npcDto in roomDto.Npcs)
+            {
+                try
+                {
+                    var npc = dungeon.ConfiguredInspectables.OfType<Npc>().SingleOrDefault(c => c.Id == npcDto.Id);
+
+                    if (npc is not null) room.Inspectables.Add(npc);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.LogError(ex, $"There are more than one Npc with the Id {npcDto.Id} in the dungeon.");
+                }
+            }
+
+            foreach (var inspectableDto in roomDto.Inspectables)
+            {
+                try
+                {
+                    var inspectable = dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == inspectableDto.Id);
+
+                    if (inspectable is not null) room.Inspectables.Add(inspectable);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.LogError(ex, $"There are more than one Inspectable with the Id {inspectableDto.Id} in the dungeon.");
+                }
+            }
+
+            foreach (var requestableDto in roomDto.SpecialActions)
+            {
+                try
+                {
+                    var requestable = dungeon.ConfiguredRequestables.SingleOrDefault(r => r.Id == requestableDto.Id);
+
+                    if (requestable is not null) room.SpecialActions.Add(requestable);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.LogError(ex, $"There are more than one Requestable with the Id {requestableDto.Id} in the dungeon.");
+                }
+            }
+
+            //bool neighborsSuccessful = true;
+            //if (neighborNorth is not null)
+            //{
+            //    neighborNorth.NeighborSouth = room;
+            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborNorth);
+            //}
+
+            //if (neighborsSuccessful && neighborEast is not null)
+            //{
+            //    neighborEast.NeighborWest = room;
+            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborEast);
+            //}
+
+            //if (neighborsSuccessful && neighborSouth is not null)
+            //{
+            //    neighborSouth.NeighborNorth = room;
+            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborSouth);
+            //}
+
+            //if (neighborsSuccessful && neighborWest is not null)
+            //{
+            //    neighborWest.NeighborEast = room;
+            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborWest);
+            //}
+
+            //if (!neighborsSuccessful) return BadRequest();
+
+            if (await GameConfigService.NewOrUpdate(room)) return Ok(room.Id);
 
             return BadRequest();
         }
