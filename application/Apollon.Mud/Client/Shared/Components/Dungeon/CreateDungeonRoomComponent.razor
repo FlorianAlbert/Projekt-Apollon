@@ -1123,6 +1123,10 @@
         dungeonRequestables.Add(req3);
         #endregion
 
+        dungeonRoomModel.RoomNorth = "NoRoom";
+        dungeonRoomModel.RoomSouth = "NoRoom";
+        dungeonRoomModel.RoomWest = "NoRoom";
+        dungeonRoomModel.RoomEast = "NoRoom";
         roomContext = new EditContext(dungeonRoomModel);
         for (int i = 0; i < 8; i++)
         {
