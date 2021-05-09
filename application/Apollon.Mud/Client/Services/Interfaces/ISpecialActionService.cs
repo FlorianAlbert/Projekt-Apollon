@@ -43,7 +43,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <param name="actionId"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<bool> DeleteRequestable(Guid dungeonId, Guid actionId);
+        Task<bool> DeleteRequestable(Guid actionId, Guid dungeonId);
 
         /// <summary>
         /// TODO

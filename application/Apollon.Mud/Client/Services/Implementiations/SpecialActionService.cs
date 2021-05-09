@@ -1,4 +1,5 @@
-﻿using Apollon.Mud.Client.Services.Interfaces;
+﻿using Apollon.Mud.Client.Data;
+using Apollon.Mud.Client.Services.Interfaces;
 using Apollon.Mud.Shared.Dungeon.Requestable;
 using System;
 using System.Collections.Generic;
@@ -27,9 +28,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// TODO
         /// </summary>
         /// <param name="httpClient"></param>
-        public SpecialActionService(HttpClient httpClient)
+        public SpecialActionService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
-            HttpClient = httpClient;
+            HttpClient = httpClientFactory.CreateClient("RestHttpClient");
+            HttpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + userContext.Token);
             CancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -75,7 +77,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="dungeonId"></param>
         /// <param name="actionId"></param>
         /// <returns></returns>
-        public async Task<bool> DeleteRequestable(Guid dungeonId, Guid actionId)
+        public async Task<bool> DeleteRequestable(Guid actionId, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
