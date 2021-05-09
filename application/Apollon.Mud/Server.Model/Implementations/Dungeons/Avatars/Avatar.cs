@@ -165,34 +165,5 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
             { 
             }
         }
-
-        /**
-        public bool AddItemToInventory(ITakeable item)
-        {
-            if (item != null) Inventory.Add(item);
-            return Inventory.Contains(item);
-        }
-
-        public string ConsumeItem(string itemName)
-        {
-            var takeableItem = Inventory.FirstOrDefault(takeable => takeable.Name == itemName);
-
-            if (takeableItem == null) return "Dieses Item befindet sich nicht in deinem Inventar.";
-
-            if (takeableItem is not IConsumable item) return "Dieses Item kannst du nicht konsumieren.";
-
-            Inventory.Remove(item);
-
-            return item.EffectDescription;
-        }
-
-        public ITakeable ThrowAway(string itemName)
-        {
-            var item = Inventory.FirstOrDefault(takeable => takeable.Name == itemName);
-
-            if (item != null) Inventory.Remove(item);
-
-            return item;
-        } **/
     }
 }

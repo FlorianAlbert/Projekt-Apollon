@@ -71,7 +71,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 NeighborNorthId = x.NeighborNorth?.Id ?? Guid.Empty,
                 Status = (int)x.Status,
                 Consumables = x.Inspectables.OfType<Consumable>()
-                    .Where(c => !c.GetType().IsSubclassOf(typeof(Consumable)))
                     .Select(c => new ConsumableDto
                     {
                         Id = c.Id,
@@ -82,7 +81,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Status = (int)c.Status
                     }).ToList(),
                 Usables = x.Inspectables.OfType<Usable>()
-                    .Where(u => !u.GetType().IsSubclassOf(typeof(Usable)))
                     .Select(u => new UsableDto
                     {
                         Id = u.Id,
@@ -93,7 +91,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         DamageBoost = u.DamageBoost
                     }).ToList(),
                 Takeables = x.Inspectables.OfType<Takeable>()
-                    .Where(t => !t.GetType().IsSubclassOf(typeof(Takeable)))
+                    .Where(x => x is not Consumable and not Wearable and not Usable)
                     .Select(t => new TakeableDto
                     {
                         Id = t.Id,
@@ -103,7 +101,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Status = (int)t.Status
                     }).ToList(),
                 Wearables = x.Inspectables.OfType<Wearable>()
-                    .Where(w => !w.GetType().IsSubclassOf(typeof(Wearable)))
                     .Select(w => new WearableDto
                     {
                         Id = w.Id,
@@ -114,7 +111,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         ProtectionBoost = w.ProtectionBoost
                     }).ToList(),
                 Npcs = x.Inspectables.OfType<Npc>()
-                    .Where(n => !n.GetType().IsSubclassOf(typeof(Npc)))
                     .Select(n => new NpcDto
                     {
                         Id = n.Id,
@@ -124,7 +120,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Text = n.Text
                     }).ToList(),
                 Inspectables = x.Inspectables
-                    .Where(i => !i.GetType().IsSubclassOf(typeof(Inspectable)))
+                    .Where(x => x is not Takeable and not Npc and not Avatar)
                     .Select(i => new InspectableDto
                     {
                         Id = i.Id,
@@ -168,7 +164,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 NeighborNorthId = room.NeighborNorth?.Id ?? Guid.Empty,
                 Status = (int)room.Status,
                 Consumables = room.Inspectables.OfType<Consumable>()
-                    .Where(c => !c.GetType().IsSubclassOf(typeof(Consumable)))
                     .Select(c => new ConsumableDto
                     {
                         Id = c.Id,
@@ -179,7 +174,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Status = (int)c.Status
                     }).ToList(),
                 Usables = room.Inspectables.OfType<Usable>()
-                    .Where(u => !u.GetType().IsSubclassOf(typeof(Usable)))
                     .Select(u => new UsableDto
                     {
                         Id = u.Id,
@@ -190,7 +184,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         DamageBoost = u.DamageBoost
                     }).ToList(),
                 Takeables = room.Inspectables.OfType<Takeable>()
-                    .Where(t => !t.GetType().IsSubclassOf(typeof(Takeable)))
+                    .Where(t => t is not Consumable and not Wearable and not Usable)
                     .Select(t => new TakeableDto
                     {
                         Id = t.Id,
@@ -200,7 +194,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Status = (int)t.Status
                     }).ToList(),
                 Wearables = room.Inspectables.OfType<Wearable>()
-                    .Where(w => !w.GetType().IsSubclassOf(typeof(Wearable)))
                     .Select(w => new WearableDto
                     {
                         Id = w.Id,
@@ -211,7 +204,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         ProtectionBoost = w.ProtectionBoost
                     }).ToList(),
                 Npcs = room.Inspectables.OfType<Npc>()
-                    .Where(n => !n.GetType().IsSubclassOf(typeof(Npc)))
                     .Select(n => new NpcDto
                     {
                         Id = n.Id,
@@ -221,7 +213,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Text = n.Text
                     }).ToList(),
                 Inspectables = room.Inspectables
-                    .Where(i => !i.GetType().IsSubclassOf(typeof(Inspectable)))
+                    .Where(i => i is not Takeable and not Avatar and not Npc)
                     .Select(i => new InspectableDto
                     {
                         Id = i.Id,

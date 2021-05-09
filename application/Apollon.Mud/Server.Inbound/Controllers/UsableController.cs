@@ -156,8 +156,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             //Gets all pure type usables and no subclass object
             var usables = dungeon.ConfiguredInspectables
-                .OfType<Usable>()
-                .Where(i => !i.GetType().IsSubclassOf(typeof(Usable))).ToList();
+                .OfType<Usable>().ToList();
 
             var usableDtos = usables.Select(usable =>
                 new UsableDto()

@@ -11,6 +11,9 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 using Apollon.Mud.Shared.Dungeon.Inspectable;
 using Microsoft.AspNetCore.Authorization;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -151,7 +154,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             //Gets all pure type inspectables and no subclass object
             var inspectables = dungeon.ConfiguredInspectables
-                .Where(i => !i.GetType().IsSubclassOf(typeof(Inspectable))).ToList();
+                .Where(i => i is not Takeable and not Npc and not Avatar);
 
             var inspectableDtos = inspectables.Select(inspectable =>
                 new InspectableDto()

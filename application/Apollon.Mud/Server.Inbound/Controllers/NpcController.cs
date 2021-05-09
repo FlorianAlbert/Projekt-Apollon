@@ -98,14 +98,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             npcToUpdate.Text = npcDto.Text;
             npcToUpdate.Description = npcDto.Description;
 
-            npcDungeon.ConfiguredInspectables.Add(npcToUpdate);
+            //npcDungeon.ConfiguredInspectables.Add(npcToUpdate);
 
             if (await GameConfigService.NewOrUpdate(npcToUpdate))
             {
-                if (await GameConfigService.NewOrUpdate(npcDungeon))
-                {
+                //if (await GameConfigService.NewOrUpdate(npcDungeon))
+                //{
                     return Ok();
-                }
+                //}
                 GameConfigService.Delete<Npc>(npcToUpdate.Id);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
@@ -162,7 +162,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (npcDungeon is null) return BadRequest();
 
-            var npcs = npcDungeon.ConfiguredInspectables.OfType<Npc>();
+            var npcs = npcDungeon.ConfiguredInspectables.OfType<Npc>().ToList();
 
             if (!(npcs is null))
             {

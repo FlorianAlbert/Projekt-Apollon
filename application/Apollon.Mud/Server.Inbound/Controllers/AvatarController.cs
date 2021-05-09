@@ -9,6 +9,7 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
 using Apollon.Mud.Shared.Dungeon.Avatar;
 using Apollon.Mud.Shared.Dungeon.Class;
@@ -267,7 +268,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     DefaultProtection = avatar.ChosenClass.DefaultProtection,
                     DefaultDamage = avatar.ChosenClass.DefaultDamage,
                     InventoryTakeableDtos = avatar.Inventory.OfType<Takeable>().Where
-                    (x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select
+                    (x => x is not Consumable and not Wearable and not Usable).Select
                     (x => new TakeableDto
                     {
                         Id = x.Id,
@@ -332,14 +333,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Status = (int)avatar.CurrentRoom.Status,
                     Description = avatar.CurrentRoom.Description,
                     Name = avatar.CurrentRoom.Name,
-                    Inspectables = avatar.CurrentRoom.Inspectables.OfType<Inspectable>().Where(x => !x.GetType().IsSubclassOf(typeof(Inspectable))).Select(x => new InspectableDto
+                    Inspectables = avatar.CurrentRoom.Inspectables.OfType<Inspectable>().Where(x => x is not Takeable and not Npc and not Avatar).Select(x => new InspectableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
                         Name = x.Description,
                     }).ToList(),
-                    Takeables = avatar.CurrentRoom.Inspectables.OfType<Takeable>().Where(x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select(x => new TakeableDto
+                    Takeables = avatar.CurrentRoom.Inspectables.OfType<Takeable>().Where(x => x is not Consumable and not Wearable and not Usable).Select(x => new TakeableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
