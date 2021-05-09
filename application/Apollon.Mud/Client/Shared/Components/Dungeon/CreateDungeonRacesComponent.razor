@@ -165,19 +165,19 @@
     #region Dungeon Information
 
     /// <summary>
-    /// TODO
+    /// Represents wether a dungeon has at least 1: Class, Race and Room to enable its activitiy
     /// </summary>
     [Parameter]
     public bool IsDungeonMasterConfigurating { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The Guid of the dungeon
     /// </summary>
     [Parameter]
     public Guid DungeonId { get; set; }
 
     ///<summary>
-    /// TODO
+    /// Event fired when the first race of a dungeon is saved or loaded
     ///</summary>
     [Parameter]
     public EventCallback<Guid> OnRaceSavedOrLoaded { get; set; }
@@ -320,6 +320,10 @@
         dungeonRaceModel.Status = string.Empty;
     }
 
+    /// <summary>
+    /// Delegates the RaceService to delete the chosen race from the Db and if succesfull removes it locally aswell
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
     private void RemoveRaceButtonClicked(System.EventArgs args)
     {
         dungeonRaces.Remove(dungeonRaces.Find(i => i.Name.Equals(chosenRace)));

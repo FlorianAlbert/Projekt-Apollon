@@ -330,19 +330,19 @@
     #region Dungeon Information
 
     /// <summary>
-    /// TODO
+    /// Deactives all "Delete" Buttons when true
     /// </summary>
     [Parameter]
     public bool IsDungeonMasterConfigurating { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The ID of the dungeon being edited used in the components
     /// </summary>
     [Parameter]
     public Guid DungeonId { get; set; }
 
     ///<summary>
-    /// TODO
+    /// Event fired when the first class of a dungeon is saved or loaded
     ///</summary>
     [Parameter]
     public EventCallback<Guid> OnClassSavedOrLoaded { get; set; }
@@ -595,6 +595,11 @@
         return EventCallback.Empty;
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     private EventCallback RemoveConsumableButtonClicked(ConsumableDto item)
     {
         dungeonClassModel.InventoryConsumableDtos.Remove(item);
@@ -603,6 +608,11 @@
         return EventCallback.Empty;
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     private EventCallback RemoveUsableButtonClicked(UsableDto item)
     {
         dungeonClassModel.InventoryUsableDtos.Remove(item);
@@ -611,6 +621,11 @@
         return EventCallback.Empty;
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     private EventCallback RemoveWearableButtonClicked(WearableDto item)
     {
         dungeonClassModel.InventoryWearableDtos.Remove(item);
@@ -712,7 +727,6 @@
         }
     }
 
-
     /// <summary>
     /// To create a new class this Method clears all form input fields
     ///</summary>
@@ -732,7 +746,6 @@
         dungeonClassModel.InventoryUsableDtos = new List<UsableDto>();
         dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
     }
-
 
     /// <summary>
     /// To delete an existing class of the dungeon

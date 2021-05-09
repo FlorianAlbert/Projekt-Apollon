@@ -52,34 +52,34 @@
     public Guid DungeonId { get; set; }
 
     /// <summary>
-    /// 
+    /// Activates all Dungeon Creation Components when true
     /// </summary>
     bool dungeonCreated = false;
 
     /// <summary>
-    /// TODO
+    /// Stops user from activating dungeon when false
     /// </summary>
     bool dungeonMustBeInactive = true;
 
     /// <summary>
-    /// TODO
+    /// en/disables user to select dungeon default room and activating dungeon
     /// </summary>
     bool dungeonHasRoom = false;
 
     /// <summary>
-    /// TODO
+    /// while false dungeon can't be active
     /// </summary>
     bool dungeonHasClass = false;
 
     /// <summary>
-    /// TODO
+    /// while false dungeon can't be active
     /// </summary>
     bool dungeonHasRace = false;
 
     /// <summary>
-    /// TODO
+    /// Event called when a dungeon is initally saved / loaded
     /// </summary>
-    /// <param name="guid"></param>
+    /// <param name="guid">the Guid of the saved/loaded dungeon needed in other components</param>
     public void DungeonSavedOrLoaded(Guid guid)
     {
         dungeonCreated = true;
@@ -87,7 +87,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Event called when a dungeons first room is saved / loaded
     /// </summary>
     public void RoomSavedOrLoaded()
     {
@@ -96,7 +96,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Event called when a dungeons first class is saved / loaded
     /// </summary>
     public void ClassSavedOrLoaded()
     {
@@ -105,7 +105,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Event called when a dungeons first race is saved / loaded
     /// </summary>
     public void RaceSavedOrLoaded()
     {

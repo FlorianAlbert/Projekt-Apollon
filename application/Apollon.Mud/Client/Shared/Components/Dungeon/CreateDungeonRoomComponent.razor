@@ -1188,6 +1188,10 @@
         }
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
     private EventCallback RoomSelectionChanged()
     {
         if (!chosenRoom.Equals(dungeonRoomModel.Name) && !chosenRoom.Equals("NoRoom"))
@@ -1292,6 +1296,10 @@
         return EventCallback.Empty;
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="args"></param>
     private void NameFieldLostFocus(System.EventArgs args)
     {
         RoomDto checkRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.Name));
@@ -1401,6 +1409,10 @@
         }
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="args"></param>
     private void NewRoomButtonClicked(System.EventArgs args)
     {
         chosenRoom = "NoRoom";
@@ -1420,6 +1432,10 @@
         }
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="args"></param>
     private void RemoveRoomButtonClicked(System.EventArgs args)
     {
         dungeonRooms.Remove(dungeonRooms.Find(i => i.Name.Equals(chosenRoom)));
