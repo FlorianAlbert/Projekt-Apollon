@@ -15,6 +15,12 @@ namespace Apollon.Mud.Client.Data.Models
         public string Name { get; set; }
 
         /// <summary>
+        /// He has to give his Avatar a gender.
+        /// </summary>
+        [Required(ErrorMessage = "Bitte wähle ein Geschlecht!")]
+        public int Gender { get; set; }
+
+        /// <summary>
         /// He has to choose a class.
         /// </summary>
         [Required(ErrorMessage = "Bitte wähle eine Klasse!")]

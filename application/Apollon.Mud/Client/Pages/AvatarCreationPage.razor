@@ -36,31 +36,39 @@
                         <ValidationMessage For=@(() => avatarModel.Name) />
                     </div>
 
-                    <label class="mt-5" for="Input_Name">Wähle eine Klasse:</label>
-                    <select class="form-select" aria-label="Default select example" @bind="avatarModel.Class">
-                        <option value="NoClass" selected hidden></option>
-                        @if (!(dungeonClasses is null))
-                        {
-                            @foreach (ClassDto dungeonClass in dungeonClasses)
-                            {
-                                <option value="@dungeonClass.Name">@dungeonClass.Name</option>
-                            }
-                        }
+                    <label class="mt-5" for="Input_Name">Wähle ein Geschlecht:</label>
+                    <select class="form-select" aria-label="Default select example" @bind="avatarModel.Gender">
+                        <option value="0" selected hidden></option>
+                        <option value="1">Männlich</option>
+                        <option value="2">Weiblich</option>
+                        <option value="3">Divers</option>
                     </select>
 
-                    <label class="mt-5" for="Input_Name">Wähle eine Rasse:</label>
-                    <select class="form-select" aria-label="Default select example" @bind="avatarModel.Race">
-                        <option value="NoRace" selected hidden></option>
-                        @if (!(dungeonRaces is null))
-                        {
-                            @foreach (RaceDto dungeonRace in dungeonRaces)
+                        <label class="mt-5" for="Input_Name">Wähle eine Klasse:</label>
+                        <select class="form-select" aria-label="Default select example" @bind="avatarModel.Class">
+                            <option value="NoClass" selected hidden></option>
+                            @if (!(dungeonClasses is null))
                             {
-                                <option value="@dungeonRace.Name">@dungeonRace.Name</option>
+                                @foreach (ClassDto dungeonClass in dungeonClasses)
+                                {
+                                    <option value="@dungeonClass.Name">@dungeonClass.Name</option>
+                                }
                             }
-                        }
-                    </select>
+                        </select>
 
-                    <button class="btn btn-primary mt-5" type="submit">Erstellen</button>
+                        <label class="mt-5" for="Input_Name">Wähle eine Rasse:</label>
+                        <select class="form-select" aria-label="Default select example" @bind="avatarModel.Race">
+                            <option value="NoRace" selected hidden></option>
+                            @if (!(dungeonRaces is null))
+                            {
+                                @foreach (RaceDto dungeonRace in dungeonRaces)
+                                {
+                                    <option value="@dungeonRace.Name">@dungeonRace.Name</option>
+                                }
+                            }
+                        </select>
+
+                        <button class="btn btn-primary mt-5" type="submit">Erstellen</button>
                 </EditForm>
             </div>
         </div>

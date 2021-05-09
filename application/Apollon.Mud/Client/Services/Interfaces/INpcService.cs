@@ -27,6 +27,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// TODO
         /// </summary>
         /// <param name="npcDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
         Task<Guid> CreateNewNpc(NpcDto npcDto, Guid dungeonId);
 
@@ -34,6 +35,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// TODO
         /// </summary>
         /// <param name="npcDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
         Task<NpcDto> UpdateNpc(NpcDto npcDto, Guid dungeonId);
 
@@ -41,6 +43,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// TODO
         /// </summary>
         /// <param name="npcDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
         /// 
         Task<bool> DeleteNpc(Guid npcId, Guid dungeonId);
@@ -48,17 +51,16 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
         Task<ICollection<NpcDto>> GetAllNpcs(Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param></param>
+        /// <param name="dungeonId"></param>
+        /// <param name="npcId"></param>
         /// <returns></returns>
-        Task<NpcDto> GetNpc(Guid dungeonId, Guid actionId);
-
-
+        Task<NpcDto> GetNpc(Guid dungeonId, Guid npcId);
     }
 }

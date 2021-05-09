@@ -84,6 +84,17 @@ namespace Apollon.Mud.Client.Services.Implementiations
             return null;
         }
 
+        public async Task<ICollection<DungeonDto>> GetAllDungeonsForUser()
+        {
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.GetAsync("api/avatars/userdungeons", cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<DungeonDto>>();
+
+            return null;
+        }
+
         /// <summary>
         /// Gets the Dungeon of the ID
         /// </summary>

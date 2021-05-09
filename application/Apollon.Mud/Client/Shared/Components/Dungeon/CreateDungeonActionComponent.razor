@@ -1,12 +1,14 @@
 ﻿@using Apollon.Mud.Client.Data.Models.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Requestable
+
+
 <div class="card">
     <div class="card-header">
         <TooltipComponent Text="Erstelle Deine eigenen Befehle"><h2>Eigene Befehle</h2></TooltipComponent>
 </div>
     <div class="card-body">
 
-        <EditForm EditContext="@dungeonActionContext" OnSubmit="@AddAction" novalidate>
+        <EditForm EditContext="@dungeonActionContext" OnSubmit="@HandleActionSubmit" novalidate>
             <DataAnnotationsValidator />
 
             <div class="form-group mt-2">
@@ -18,9 +20,9 @@
                         <div class="d-flex justify-content-center">
                             <select class="form-select" aria-label="Default select example" @bind="chosenAction" @onselect="@ActionSelectionChanged()" @onselect:stopPropagation="true">
                                 <option value="NoAction" selected hidden>Neuer Befehl</option>
-                                @if (!(dungeonActionModel.RequestableList is null))
+                                @if (!(dungeonRequestables is null))
                                 {
-                                    @foreach (RequestableDto dungeonNpc in dungeonActionModel.RequestableList)
+                                    @foreach (RequestableDto dungeonNpc in dungeonRequestables)
                                     {
                                         <option value="@dungeonNpc.PatternForPlayer">@dungeonNpc.PatternForPlayer</option>
                                     }
@@ -90,20 +92,12 @@
                 </div>
             </div>
 
-            <div class="row d-flex justify-content-center mt-4">
-                <button class="btn btn-outline-primary" style="max-width:20rem" type="submit">
-                    <TooltipComponent Text="Anschließend kannst du weitere Befehle hinzufügen">Befehl hinzufügen</TooltipComponent>
-                </button>
-            </div>
-
             <hr class="featurette-divder" />
 
             <div class="row">
-                <div class="col-3">
-
-                </div>
+                <div class="col-3"></div>
                 <div class="col">
-                    <button class="btn btn-success" style="max-width:20rem" type="button" @onclick="HandleActionSubmit">Speichern</button>
+                    <button class="btn btn-success" style="width:20rem" type="button" @onclick="HandleActionSubmit">Speichern</button>
                 </div>
                 <div class="col">
                     @if (!(chosenAction == "NoAction"))
@@ -140,6 +134,12 @@
     /// </summary>
     DungeonActionModel dungeonActionModel = new DungeonActionModel();
 
+
+    /// <summary>
+    /// Contains all Requestables of a Dungeon
+    /// </summary>
+    public List<RequestableDto> dungeonRequestables = new List<RequestableDto>();
+
     /// <summary>
     /// The EditContext used by the form
     /// </summary>
@@ -162,13 +162,17 @@
         dungeonActionContext = new EditContext(dungeonActionModel);
     }
 
-    private void AddAction()
+    /// <summary>
+    /// Handles the submition of a created Action, validates the data and saves them locally and on the server
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleActionSubmit()
     {
         var validDungeon = dungeonActionContext.Validate();
         if (validDungeon && DungeonId != Guid.Empty)
         {
             bool newRequestable = false;
-            var requestableDto = dungeonActionModel.RequestableList.Find(r => r.PatternForPlayer.Equals(dungeonActionModel.PatternForPlayer));
+            var requestableDto = dungeonRequestables.Find(r => r.PatternForPlayer.Equals(dungeonActionModel.PatternForPlayer));
             if (requestableDto is null)
             {
                 requestableDto = new RequestableDto();
@@ -177,24 +181,16 @@
             requestableDto.PatternForPlayer = dungeonActionModel.PatternForPlayer;
             requestableDto.MessageRegex = dungeonActionModel.MessageRegex;
             requestableDto.Status = dungeonActionModel.Status == "Approved" ? 0 : 1;
-            chosenAction = dungeonActionModel.PatternForPlayer;
             if (newRequestable)
             {
-                dungeonActionModel.RequestableList.Add(requestableDto);
+                dungeonRequestables.Add(requestableDto);
             }
-            //TODO Daten ans Backend senden
-        }
-    }
+            else
+            {
 
-    /// <summary>
-    /// Handles the submition of a created Action, validates the data and saves them locally and on the server
-    /// </summary>
-    /// <returns></returns>
-    private async Task HandleActionSubmit()
-    {
-        foreach (RequestableDto requestable in dungeonActionModel.RequestableList)
-        {
-            //TODO Asynchron Daten absenden
+            }
+            chosenAction = dungeonActionModel.PatternForPlayer;
+            //TODO Daten ans Backend senden
         }
     }
 
@@ -206,10 +202,10 @@
     {
         if (!chosenAction.Equals(dungeonActionModel.PatternForPlayer) && !chosenAction.Equals("NoAction"))
         {
-            var newRequestable = dungeonActionModel.RequestableList.Find(i => i.PatternForPlayer.Equals(chosenAction));
+            var newRequestable = dungeonRequestables.Find(i => i.PatternForPlayer.Equals(chosenAction));
             if (!(newRequestable is null))
             {
-                chosenAction = dungeonActionModel.PatternForPlayer;
+                dungeonActionModel.PatternForPlayer = chosenAction;
                 dungeonActionModel.PatternForPlayer = newRequestable.PatternForPlayer;
                 dungeonActionModel.MessageRegex = newRequestable.MessageRegex;
                 dungeonActionModel.Status = newRequestable.Status == 0 ? "Approved" : "Pending";
@@ -224,7 +220,7 @@
     /// <param name="args">Event Arguments</param>
     private void NameFieldLostFocus(System.EventArgs args)
     {
-        RequestableDto checkRequestable = dungeonActionModel.RequestableList.Find(i => i.PatternForPlayer.Equals(dungeonActionModel.PatternForPlayer));
+        RequestableDto checkRequestable = dungeonRequestables.Find(i => i.PatternForPlayer.Equals(dungeonActionModel.PatternForPlayer));
         if (checkRequestable is null)
         {
             return;
@@ -252,7 +248,7 @@
 
     private void RemoveActionButtonClicked(System.EventArgs args)
     {
-        dungeonActionModel.RequestableList.Remove(dungeonActionModel.RequestableList.Find(i => i.PatternForPlayer.Equals(chosenAction)));
+        dungeonRequestables.Remove(dungeonRequestables.Find(i => i.PatternForPlayer.Equals(chosenAction)));
         chosenAction = "NoAction";
         dungeonActionModel.MessageRegex = string.Empty;
         dungeonActionModel.PatternForPlayer = string.Empty;

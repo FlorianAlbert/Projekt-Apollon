@@ -6,8 +6,16 @@
                 <h1 class="display-3 text-white">Willkommen!</h1>
                 <p class="text-white">Bist du Multi-User-Dungeon Enthusiast? Dann bist du hier genau richtig! </p>
                 <p class="text-white">Hier kannst du nicht nur an anderen Dungeons teilnehmen, sondern auch Master deines eigens erstellten Dungeons werden.</p>
-                <a class="btn btn-primary btn-lg" href="/Identity/Account/Register" role="button">Registrieren &raquo;</a>
-                <a class="btn btn-primary btn-lg ml-3" href="/Identity/Account/Login" role="button">Anmelden &raquo;</a>
+                <AuthorizeView>
+                    <Authorized>
+
+                    </Authorized>
+                    <NotAuthorized>
+                        <a class="btn btn-primary btn-lg" href="/Identity/Account/Register" role="button">Registrieren &raquo;</a>
+                        <a class="btn btn-primary btn-lg ml-3" href="/Identity/Account/Login" role="button">Anmelden &raquo;</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+
             </div>
         </div>
 

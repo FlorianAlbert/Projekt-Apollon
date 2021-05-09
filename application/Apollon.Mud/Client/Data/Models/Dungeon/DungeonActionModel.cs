@@ -28,9 +28,5 @@ namespace Apollon.Mud.Client.Data.Models.Dungeon
         [Required(ErrorMessage = "Du musst einen Status angeben")]
         public string Status { get; set; }
 
-        /// <summary>
-        /// Contains all Requestables of a Dungeon
-        /// </summary>
-        public List<RequestableDto> RequestableList { get; set; } = new List<RequestableDto>();
     }
 }

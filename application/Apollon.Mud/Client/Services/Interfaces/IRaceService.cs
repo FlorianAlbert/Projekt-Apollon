@@ -1,7 +1,6 @@
-﻿using Apollon.Mud.Shared.Dungeon;
+﻿using Apollon.Mud.Shared.Dungeon.Race;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,12 +10,12 @@ namespace Apollon.Mud.Client.Services.Interfaces
     /// <summary>
     /// TODO
     /// </summary>
-    public interface IDungeonService
+    public interface IRaceService
     {
         /// <summary>
         /// TODO
         /// </summary>
-        public HttpClient HttpClient { get;}
+        public HttpClient HttpClient { get; }
 
         /// <summary>
         /// TODO
@@ -26,41 +25,42 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="dungeonDto"></param>
+        /// <param name="raceDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<Guid> CreateNewDungeon(DungeonDto dungeonDto);
+        Task<Guid> CreateNewRace(RaceDto raceDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="dungeonDto"></param>
+        /// <param name="raceDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<DungeonDto> UpdateDungeon(DungeonDto dungeonDto);
+        Task<RaceDto> UpdateRace(RaceDto raceDto, Guid dungeonId);
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="raceId"></param>
+        /// <param name="dungeonId"></param>
+        /// <returns></returns>
+        /// 
+        Task<bool> DeleteRace(Guid dungeonId, Guid raceId);
 
         /// <summary>
         /// TODO
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<bool> DeleteDungeon(Guid dungeonId);
+        Task<ICollection<RaceDto>> GetAllRaces(Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <returns></returns>
-        Task<ICollection<DungeonDto>> GetAllDungeons();
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <returns></returns>
-        Task<ICollection<DungeonDto>> GetAllDungeonsForUser();
-
-        /// <summary>
-        /// TODO
-        /// </summary>
+        /// <param name="raceId"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<DungeonDto> GetDungeon(Guid dungeonId);
+        Task<RaceDto> GetRace(Guid dungeonId, Guid raceId);
+
     }
 }
