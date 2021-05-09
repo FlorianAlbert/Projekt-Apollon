@@ -9,6 +9,7 @@
 @using Apollon.Mud.Shared.Dungeon.Npc
 @inject Apollon.Mud.Client.Services.Interfaces.IRoomService RoomService
 @inject Apollon.Mud.Client.Services.Interfaces.INpcService NpcService
+@inject Apollon.Mud.Client.Services.Interfaces.ISpecialActionService ActionService
 
 <div class="card">
     <div class="card-header">
@@ -1539,6 +1540,18 @@
         if(!(npcList is null))
         {
             dungeonNpcs = npcList.ToList();
+        }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public async void ReloadSpecialActions()
+    {
+        var actionList = await ActionService.GetAllRequestables(DungeonId);
+        if(!(actionList is null))
+        {
+            dungeonRequestables = actionList.ToList();
         }
     }
 

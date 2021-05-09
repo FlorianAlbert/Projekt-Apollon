@@ -33,7 +33,7 @@
                             <CreateDungeonNpcsComponent DungeonId="DungeonId" NpcsChanged="ReloadNpcs" IsDungeonMasterConfigurating="false" />
                         </section>
                         <section class="Npcs mt-3" id="Actions">
-                            <CreateDungeonActionComponent DungeonId="DungeonId" IsDungeonMasterConfigurating="false" />
+                            <CreateDungeonActionComponent DungeonId="DungeonId" SpecialActionsChanged="ReloadSpecialActions" IsDungeonMasterConfigurating="false" />
                         </section>
                         <section class="Rooms mt-3" id="Rooms">
                             <CreateDungeonRoomComponent @ref="ChildRoomComponent" DungeonId="DungeonId" OnRoomSavedOrLoaded="RoomSavedOrLoaded" IsDungeonMasterConfigurating="false" />
@@ -133,5 +133,10 @@
     public void ReloadNpcs()
     {
         ChildRoomComponent.ReloadNpcs();
+    }
+
+    public void ReloadSpecialActions()
+    {
+        ChildRoomComponent.ReloadSpecialActions();
     }
 }
