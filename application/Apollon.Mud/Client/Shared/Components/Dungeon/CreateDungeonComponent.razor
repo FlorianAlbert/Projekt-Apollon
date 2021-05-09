@@ -188,7 +188,7 @@
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
-    protected async override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
         dungeonContext = new EditContext(dungeonModel);
 
