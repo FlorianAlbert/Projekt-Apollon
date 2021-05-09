@@ -273,7 +273,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpPost]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]           // TODO: Nachbarschaften checken ob korrekt?
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -470,6 +470,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpPut]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Update([FromRoute] Guid dungeonId, [FromBody] RoomDto roomDto)
         {
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
