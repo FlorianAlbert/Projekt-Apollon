@@ -1,6 +1,7 @@
-﻿using Apollon.Mud.Shared.Dungeon.Class;
+﻿using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
     /// <summary>
     /// TODO
     /// </summary>
-    public interface IClassService
+    public interface IConsumableService
     {
         /// <summary>
         /// TODO
@@ -25,39 +26,41 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="classDto"></param>
+        /// <param name="consumableDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<Guid> CreateNewClass(ClassDto classDto, Guid dungeonId);
+        Task<Guid> CreateNewConsumable(ConsumableDto consumableDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="classDto"></param>
+        /// <param name="consumableDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<ClassDto> UpdateClass(ClassDto classDto, Guid dungeonId);
+        Task<ConsumableDto> UpdateConsumable(ConsumableDto consumableDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="classDto"></param>
+        /// <param name="consumableId"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
         /// 
-        Task<bool> DeleteClass(Guid dungeonId, Guid classId);
+        Task<bool> DeleteConsumable(Guid dungeonId, Guid consumableId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<ICollection<ClassDto>> GetAllClasses(Guid dungeonId);
+        Task<ICollection<ConsumableDto>> GetAllConsumables(Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param></param>
+        /// <param name="dungeonId"></param>
+        /// <param name="consumableId"></param>
         /// <returns></returns>
-        Task<ClassDto> GetClass(Guid dungeonId, Guid classId);
-
-
+        Task<ConsumableDto> GetConsumable(Guid dungeonId, Guid consumableId);
     }
 }

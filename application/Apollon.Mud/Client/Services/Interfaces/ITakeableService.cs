@@ -1,6 +1,7 @@
-﻿using Apollon.Mud.Shared.Dungeon.Class;
+﻿using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
     /// <summary>
     /// TODO
     /// </summary>
-    public interface IClassService
+    public interface ITakeableService
     {
         /// <summary>
         /// TODO
@@ -25,39 +26,41 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="classDto"></param>
+        /// <param name="takeableDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<Guid> CreateNewClass(ClassDto classDto, Guid dungeonId);
+        Task<Guid> CreateNewTakeable(TakeableDto takeableDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="classDto"></param>
+        /// <param name="takeableDto"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<ClassDto> UpdateClass(ClassDto classDto, Guid dungeonId);
+        Task<TakeableDto> UpdateTakeable(TakeableDto takeableDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="classDto"></param>
+        /// <param name="takeableId"></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
         /// 
-        Task<bool> DeleteClass(Guid dungeonId, Guid classId);
+        Task<bool> DeleteTakeable(Guid dungeonId, Guid takeableId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param></param>
+        /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<ICollection<ClassDto>> GetAllClasses(Guid dungeonId);
+        Task<ICollection<TakeableDto>> GetAllTakeables(Guid dungeonId);
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param></param>
+        /// <param name="dungeonId"></param>
+        /// <param name="takeableId"></param>
         /// <returns></returns>
-        Task<ClassDto> GetClass(Guid dungeonId, Guid classId);
-
-
+        Task<TakeableDto> GetTakeable(Guid dungeonId, Guid takeableId);
     }
 }

@@ -1,11 +1,11 @@
 ﻿@using Apollon.Mud.Client.Data.Models.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Requestable
-
+@inject Apollon.Mud.Client.Services.Interfaces.ISpecialActionService SpecialActionService;
 
 <div class="card">
     <div class="card-header">
         <TooltipComponent Text="Erstelle Deine eigenen Befehle"><h2>Eigene Befehle</h2></TooltipComponent>
-</div>
+    </div>
     <div class="card-body">
 
         <EditForm EditContext="@dungeonActionContext" OnSubmit="@HandleActionSubmit" novalidate>
@@ -153,13 +153,22 @@
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
         #region to Delete
 
         #endregion
 
         dungeonActionContext = new EditContext(dungeonActionModel);
+        if (!(DungeonId == Guid.Empty))
+        {
+            var dungeonRequestableCollection = await SpecialActionService.GetAllRequestables(DungeonId);
+            if (!(dungeonRequestableCollection is null))
+            {
+                dungeonRequestables = dungeonRequestableCollection.ToList();
+            }
+        }
+        StateHasChanged();
     }
 
     /// <summary>
@@ -183,14 +192,39 @@
             requestableDto.Status = dungeonActionModel.Status == "Approved" ? 0 : 1;
             if (newRequestable)
             {
-                dungeonRequestables.Add(requestableDto);
+                var response = await SpecialActionService.CreateNewRequestable(requestableDto, DungeonId);
+                if (response != Guid.Empty)
+                {
+                    requestableDto.Id = response;
+                    dungeonRequestables.Add(requestableDto);
+                    chosenAction = dungeonActionModel.PatternForPlayer;
+                }
             }
             else
             {
-
+                var response = await SpecialActionService.UpdateRequestable(requestableDto, DungeonId);
+                if (!(response is null))
+                {
+                    WriteBackRequestable(response);
+                }
             }
             chosenAction = dungeonActionModel.PatternForPlayer;
             //TODO Daten ans Backend senden
+        }
+    }
+
+    /// <summary>
+    /// Refills the form when needed, according to the Requestable Pattern
+    /// </summary>
+    /// <param name="newRace"></param>
+    private void WriteBackRequestable(RequestableDto newRequestable)
+    {
+        if (!(newRequestable is null))
+        {
+            dungeonActionModel.PatternForPlayer = chosenAction;
+            dungeonActionModel.PatternForPlayer = newRequestable.PatternForPlayer;
+            dungeonActionModel.MessageRegex = newRequestable.MessageRegex;
+            dungeonActionModel.Status = newRequestable.Status == 0 ? "Approved" : "Pending";
         }
     }
 
@@ -203,13 +237,7 @@
         if (!chosenAction.Equals(dungeonActionModel.PatternForPlayer) && !chosenAction.Equals("NoAction"))
         {
             var newRequestable = dungeonRequestables.Find(i => i.PatternForPlayer.Equals(chosenAction));
-            if (!(newRequestable is null))
-            {
-                dungeonActionModel.PatternForPlayer = chosenAction;
-                dungeonActionModel.PatternForPlayer = newRequestable.PatternForPlayer;
-                dungeonActionModel.MessageRegex = newRequestable.MessageRegex;
-                dungeonActionModel.Status = newRequestable.Status == 0 ? "Approved" : "Pending";
-            }
+            WriteBackRequestable(newRequestable);
         }
         return EventCallback.Empty;
     }
@@ -227,10 +255,7 @@
         }
         else
         {
-            chosenAction = dungeonActionModel.PatternForPlayer;
-            dungeonActionModel.PatternForPlayer = checkRequestable.PatternForPlayer;
-            dungeonActionModel.MessageRegex = checkRequestable.MessageRegex;
-            dungeonActionModel.Status = checkRequestable.Status == 0 ? "Approved" : "Pending";
+            WriteBackRequestable(checkRequestable);
         }
     }
 
@@ -246,13 +271,32 @@
         dungeonActionModel.Status = string.Empty;
     }
 
-    private void RemoveActionButtonClicked(System.EventArgs args)
+    /// <summary>
+    /// This Method removes a selected Requestable and clears all form input fields
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private async void RemoveActionButtonClicked(System.EventArgs args)
     {
-        dungeonRequestables.Remove(dungeonRequestables.Find(i => i.PatternForPlayer.Equals(chosenAction)));
-        chosenAction = "NoAction";
-        dungeonActionModel.MessageRegex = string.Empty;
-        dungeonActionModel.PatternForPlayer = string.Empty;
-        dungeonActionModel.Status = string.Empty;
+        var requestableToDelete = dungeonRequestables.Find(i => i.PatternForPlayer.Equals(chosenAction));
+        bool shouldFieldsBeEmptied = true;
+        if (!(requestableToDelete is null))
+        {
+            if (!(requestableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await SpecialActionService.DeleteRequestable(DungeonId, requestableToDelete.Id);
+
+            if (shouldFieldsBeEmptied)
+            {
+                chosenAction = "NoAction";
+                dungeonActionModel.MessageRegex = string.Empty;
+                dungeonActionModel.PatternForPlayer = string.Empty;
+                dungeonActionModel.Status = string.Empty;
+                dungeonRequestables.Remove(requestableToDelete);
+                StateHasChanged();
+            }
+            else
+            {
+
+            }
+        }
     }
 
 }
