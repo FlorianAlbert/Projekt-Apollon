@@ -19,7 +19,6 @@ namespace Apollon.Mud.Client.Data.Models
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Raum einen Namen geben")]
         [RegularExpression("^(?!([Kk]ein [Nn]achbar|[Nn]euer [Rr]aum)).*$", ErrorMessage = "Dieser Name ist nicht zugelassen")]
-        //[RegularExpression("^(?!([Kk]ein [Nn]achbar|[Nn]euer [Rr]aum)$)", ErrorMessage = "Dieser Name ist nicht zugelassen")]
         public string Name { get; set; }
 
         /// <summary>
@@ -31,25 +30,25 @@ namespace Apollon.Mud.Client.Data.Models
         /// <summary>
         /// Every Room can have a neighbouring Room north of it
         /// </summary>
-        [Required(ErrorMessage = "Bitte gib einen Nachbarn an, oder wähle \"Kein Nachbar\" aus")]
+        //[Required(ErrorMessage = "Bitte gib einen Nachbarn an, oder wähle \"Kein Nachbar\" aus")]
         public string RoomNorth { get; set; }
 
         /// <summary>
         /// Every Room can have a neighbouring Room east of it
         /// </summary>
-        [Required(ErrorMessage = "Bitte gib einen Nachbarn an, oder wähle \"Kein Nachbar\" aus")]
+        //[Required(ErrorMessage = "Bitte gib einen Nachbarn an, oder wähle \"Kein Nachbar\" aus")]
         public string RoomEast { get; set; }
 
         /// <summary>
         /// Every Room can have a neighbouring Room south of it
         /// </summary>
-        [Required(ErrorMessage = "Bitte gib einen Nachbarn an, oder wähle \"Kein Nachbar\" aus")]
+        //[Required(ErrorMessage = "Bitte gib einen Nachbarn an, oder wähle \"Kein Nachbar\" aus")]
         public string RoomSouth { get; set; }
 
         /// <summary>
         /// Every Room can have a neighbouring Room west of it
         /// </summary>
-        [Required(ErrorMessage = "Bitte gib einen Nachbarn an, oder wähle \"Kein Nachbar\" aus")]
+        //[Required(ErrorMessage = "Bitte gib einen Nachbarn an, oder wähle \"Kein Nachbar\" aus")]
         public string RoomWest { get; set; }
 
         /// <summary>

@@ -614,19 +614,26 @@
                 <div class="row">
                     <div class="col"></div>
                     <div class="col">
-                        <select class="form-select" aria-label="Default select example" @bind="dungeonRoomModel.RoomNorth">
+                        <select class="form-select" @bind="dungeonRoomModel.RoomNorth">
                             @if (!(dungeonRooms is null))
                             {
                                 <option value="NoRoom" selected>Kein Nachbar</option>
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
-                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) && (dungeonRoom.NeighborSouthId == Guid.Empty))
+                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && 
+                                            !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && 
+                                            !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && 
+                                            !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) && 
+                                            (dungeonRoom.NeighborSouthId == Guid.Empty))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
                                 }
                             }
                         </select>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRoomModel.RoomNorth) />
+                        </div>
                     </div>
                     <div class="col"></div>
                 </div>
@@ -635,19 +642,26 @@
                 <div class="col">
                     <h5 class="mt-1">Westen</h5>
                     <div class="d-flex justify-content-center">
-                        <select class="form-select" aria-label="Default select example" @bind="dungeonRoomModel.RoomWest">
+                        <select class="form-select" @bind="dungeonRoomModel.RoomWest">
                             @if (!(dungeonRooms is null))
                             {
                                 <option value="NoRoom" selected>Kein Nachbar</option>
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
-                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) && (dungeonRoom.NeighborEastId == Guid.Empty))
+                                    @if (!dungeonRoom.Name.Equals(chosenRoom) &&
+                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
+                                           (dungeonRoom.NeighborEastId == Guid.Empty))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
                                 }
                             }
                         </select>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRoomModel.RoomWest) />
+                        </div>
                     </div>
                 </div>
                 <div class="col"></div>
@@ -656,34 +670,43 @@
                         <h5 class="mt-1">Osten</h5>
                     </div>
                     <div class="d-flex justify-content-end">
-                        <select class="form-select" aria-label="Default select example" @bind="dungeonRoomModel.RoomEast">
+                        <select class="form-select" @bind="dungeonRoomModel.RoomEast">
                             @if (!(dungeonRooms is null))
                             {
                                 <option value="NoRoom" selected>Kein Nachbar</option>
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
-                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) && (dungeonRoom.NeighborWestId == Guid.Empty))
+                                    @if (!dungeonRoom.Name.Equals(chosenRoom) &&
+                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
+                                           (dungeonRoom.NeighborWestId == Guid.Empty))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
                                 }
                             }
                         </select>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRoomModel.RoomEast) />
+                        </div>
                     </div>
                 </div>
             </div>
-
-
             <div class="row mt-3">
                 <div class="col"></div>
                 <div class="col">
-                    <select class="form-select" aria-label="Default select example" @bind="dungeonRoomModel.RoomSouth">
+                    <select class="form-select" @bind="dungeonRoomModel.RoomSouth">
                         @if (!(dungeonRooms is null))
                         {
                             <option value="NoRoom" selected>Kein Nachbar</option>
                             @foreach (RoomDto dungeonRoom in dungeonRooms)
                             {
-                                @if (!dungeonRoom.Name.Equals(chosenRoom) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) && (dungeonRoom.NeighborNorthId == Guid.Empty))
+                                @if (!dungeonRoom.Name.Equals(chosenRoom) &&
+                                       !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                                       !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                                       !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                                       (dungeonRoom.NeighborNorthId == Guid.Empty))
                                 {
                                     <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                 }
@@ -691,6 +714,9 @@
                         }
                     </select>
                     <h5 class="mt-1 text-center">Süden</h5>
+                    <div class="text-danger">
+                        <ValidationMessage For=@(() => dungeonRoomModel.RoomSouth) />
+                    </div>
                 </div>
                 <div class="col"></div>
             </div>
@@ -1420,10 +1446,10 @@
             }
             StateHasChanged();
         }
-            else
-            {
-                //TODO Nutzer hinweisen
-            }
+        else
+        {
+            //TODO Nutzer hinweisen
+        }
     }
 
     #region Add/Remove Buttons
