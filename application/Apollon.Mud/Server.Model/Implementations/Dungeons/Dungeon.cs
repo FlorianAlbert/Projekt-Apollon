@@ -144,41 +144,5 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// Name of the dungeon
         /// </summary>
         public string DungeonName { get; set; }
-
-        /** TODO: In PlayerService zu verlagern
-        public bool AddNeighborship(IRoom roomSource, Direction direction, IRoom roomSink)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IRoom AddRoom(bool defaultRoom = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ChangeRoom(Avatar avatar, Direction direction)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void EnterDungeon(Avatar avatar)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IRoom GetRoom(Guid roomId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool RemoveNeigborship(IRoom room1, IRoom room2)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool RemoveRoom(IRoom room)
-        {
-            throw new NotImplementedException();
-        } **/
     }
 }

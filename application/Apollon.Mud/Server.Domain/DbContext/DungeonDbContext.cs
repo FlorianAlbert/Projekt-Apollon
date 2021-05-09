@@ -225,7 +225,7 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithMany(x => x.Avatars)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Avatar>()
-                .HasOne(e => e.CurrentRoom);  // CHECK: könnte schief gehen - denke des ist nicht richtig -Etienne
+                .HasOne(e => e.CurrentRoom);
             builder.Entity<Avatar>()
                 .HasOne(e => e.HoldingItem)
                 .WithMany(x => x.HoldingItemAvatars)
