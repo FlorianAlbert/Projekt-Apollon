@@ -42,11 +42,11 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
+        /// <param name="npcId"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
         /// 
-        Task<bool> DeleteNpc(Guid npcId, Guid dungeonId);
+        Task<bool> DeleteNpc(Guid dungeonId, Guid npcId);
 
         /// <summary>
         /// TODO

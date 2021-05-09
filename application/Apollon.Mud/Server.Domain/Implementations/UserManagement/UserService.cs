@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.DbContext;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 using Apollon.Mud.Server.Model.Implementations.User;
 
 
@@ -59,7 +60,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
                 UserName = userEmail,
                 Email = userEmail
             };
-
+            
             var creationResult = await _userDbService.CreateUser(user, password, !_adminRegistered);
             if (!creationResult) return false;
 

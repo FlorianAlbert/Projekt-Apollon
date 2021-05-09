@@ -1,4 +1,5 @@
-﻿using Apollon.Mud.Client.Services.Interfaces;
+﻿using Apollon.Mud.Client.Data;
+using Apollon.Mud.Client.Services.Interfaces;
 using Apollon.Mud.Shared.Dungeon.Avatar;
 using System;
 using System.Collections.Generic;
@@ -26,10 +27,12 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="httpClient"></param>
-        public AvatarService(HttpClient httpClient)
+        /// <param name="httpClientFactory"></param>
+        /// <param name="userContext"></param>
+        public AvatarService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
-            HttpClient = httpClient;
+            HttpClient = httpClientFactory.CreateClient("RestHttpClient");
+            HttpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + userContext.Token);
             CancellationTokenSource = new CancellationTokenSource();
         }
 
