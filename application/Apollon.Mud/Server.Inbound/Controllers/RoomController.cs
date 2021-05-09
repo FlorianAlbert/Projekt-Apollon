@@ -65,10 +65,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 Id = x.Id,
                 Name = x.Name,
                 Description = x.Description,
-                NeighborEastId = x.NeighborEast.Id,
-                NeighborSouthId = x.NeighborSouth.Id,
-                NeighborWestId = x.NeighborWest.Id,
-                NeighborNorthId = x.NeighborNorth.Id,
+                NeighborEastId = x.NeighborEast?.Id ?? Guid.Empty,
+                NeighborSouthId = x.NeighborSouth?.Id ?? Guid.Empty,
+                NeighborWestId = x.NeighborWest?.Id ?? Guid.Empty,
+                NeighborNorthId = x.NeighborNorth?.Id ?? Guid.Empty,
                 Status = (int)x.Status,
                 Consumables = x.Inspectables.OfType<Consumable>()
                     .Where(c => !c.GetType().IsSubclassOf(typeof(Consumable)))
@@ -162,10 +162,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 Id = room.Id,
                 Name = room.Name,
                 Description = room.Description,
-                NeighborEastId = room.NeighborEast.Id,
-                NeighborSouthId = room.NeighborSouth.Id,
-                NeighborWestId = room.NeighborWest.Id,
-                NeighborNorthId = room.NeighborNorth.Id,
+                NeighborEastId = room.NeighborEast?.Id ?? Guid.Empty,
+                NeighborSouthId = room.NeighborSouth?.Id ?? Guid.Empty,
+                NeighborWestId = room.NeighborWest?.Id ?? Guid.Empty,
+                NeighborNorthId = room.NeighborNorth?.Id ?? Guid.Empty,
                 Status = (int)room.Status,
                 Consumables = room.Inspectables.OfType<Consumable>()
                     .Where(c => !c.GetType().IsSubclassOf(typeof(Consumable)))
@@ -273,7 +273,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpPost]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]           // TODO: Nachbarschaften checken ob korrekt?
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -470,6 +470,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpPut]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Update([FromRoute] Guid dungeonId, [FromBody] RoomDto roomDto)
         {
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);

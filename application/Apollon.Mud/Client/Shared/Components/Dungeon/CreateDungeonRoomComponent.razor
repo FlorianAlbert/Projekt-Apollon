@@ -1227,7 +1227,7 @@
                 if (response != Guid.Empty)
                 {
                     submitRoom.Id = response;
-                    await OnRoomSavedOrLoaded.InvokeAsync();
+                    await OnRoomSavedOrLoaded.InvokeAsync(response);
                     dungeonRooms.Add(submitRoom);
                     chosenRoom = dungeonRoomModel.Name;
                 }
