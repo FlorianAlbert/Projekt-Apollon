@@ -141,6 +141,12 @@
     [Parameter]
     public Guid DungeonId { get; set; }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public EventCallback NpcsChanged { get; set; }
+
     #endregion
 
     /// <summary>
@@ -217,20 +223,23 @@
                 {
                     submitNpc.Id = response;
                     dungeonNpcs.Add(submitNpc);
+                    await NpcsChanged.InvokeAsync();
                     chosenNpc = dungeonNpcModel.Name;
                 }
             }
             else
             {
                 var response = await NpcService.UpdateNpc(submitNpc, DungeonId);
-                if (!(response is null))
-                {
-                    WriteBackNpc(response);
-                }
+                if (!(response is null))  WriteBackNpc(response);
+                else await NpcsChanged.InvokeAsync();
             }
         }
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="npcDto"></param>
     private void WriteBackNpc(NpcDto npcDto)
     {
         if (!(npcDto is null))
@@ -306,6 +315,7 @@
                 dungeonNpcModel.Text = string.Empty;
                 dungeonNpcModel.Status = string.Empty;
                 dungeonNpcs.Remove(npcToDelete);
+                await NpcsChanged.InvokeAsync();
                 StateHasChanged();
             }
             else

@@ -30,13 +30,13 @@
                             <CreateDungeonItemComponent DungeonId="DungeonId" IsDungeonMasterConfigurating="false" />
                         </section>
                         <section class="Npcs mt-3" id="Npcs">
-                            <CreateDungeonNpcsComponent DungeonId="DungeonId" IsDungeonMasterConfigurating="false" />
+                            <CreateDungeonNpcsComponent DungeonId="DungeonId" NpcsChanged="ReloadNpcs" IsDungeonMasterConfigurating="false" />
                         </section>
                         <section class="Npcs mt-3" id="Actions">
                             <CreateDungeonActionComponent DungeonId="DungeonId" IsDungeonMasterConfigurating="false" />
                         </section>
                         <section class="Rooms mt-3" id="Rooms">
-                            <CreateDungeonRoomComponent DungeonId="DungeonId" OnRoomSavedOrLoaded="RoomSavedOrLoaded" IsDungeonMasterConfigurating="false" />
+                            <CreateDungeonRoomComponent @ref="ChildRoomComponent" DungeonId="DungeonId" OnRoomSavedOrLoaded="RoomSavedOrLoaded" IsDungeonMasterConfigurating="false" />
                         </section>
                     }
                 </div>
@@ -51,6 +51,11 @@
     /// TODO
     /// </summary>
     public CreateDungeonComponent ChildDungeonComponent { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public CreateDungeonRoomComponent ChildRoomComponent { get; set; }
 
     /// <summary>
     /// The ID of the Dungeon that is created / edited
@@ -122,5 +127,11 @@
         if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
     }
 
-
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void ReloadNpcs()
+    {
+        ChildRoomComponent.ReloadNpcs();
+    }
 }

@@ -8,6 +8,7 @@
 @using Apollon.Mud.Shared.Dungeon.Requestable
 @using Apollon.Mud.Shared.Dungeon.Npc
 @inject Apollon.Mud.Client.Services.Interfaces.IRoomService RoomService
+@inject Apollon.Mud.Client.Services.Interfaces.INpcService NpcService
 
 <div class="card">
     <div class="card-header">
@@ -620,11 +621,11 @@
                                 <option value="NoRoom" selected>Kein Nachbar</option>
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
-                                    @if (!dungeonRoom.Name.Equals(chosenRoom) && 
-                                            !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) && 
-                                            !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) && 
-                                            !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) && 
-                                            (dungeonRoom.NeighborSouthId == Guid.Empty))
+                                    @if (!dungeonRoom.Name.Equals(chosenRoom) &&
+                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
+                                           (dungeonRoom.NeighborSouthId == Guid.Empty))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -649,10 +650,10 @@
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
                                     @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
-                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
-                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
-                                           (dungeonRoom.NeighborEastId == Guid.Empty))
+                                          !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                                          !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                                          !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
+                                          (dungeonRoom.NeighborEastId == Guid.Empty))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -677,10 +678,10 @@
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
                                     @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
-                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
-                                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
-                                           (dungeonRoom.NeighborWestId == Guid.Empty))
+                                          !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                                          !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                                          !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
+                                          (dungeonRoom.NeighborWestId == Guid.Empty))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -703,10 +704,10 @@
                             @foreach (RoomDto dungeonRoom in dungeonRooms)
                             {
                                 @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                       !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
-                                       !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
-                                       !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
-                                       (dungeonRoom.NeighborNorthId == Guid.Empty))
+                                      !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                                      !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                                      !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                                      (dungeonRoom.NeighborNorthId == Guid.Empty))
                                 {
                                     <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                 }
@@ -1527,6 +1528,18 @@
             }
         }
         selectedNpc = "NoNpc";
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public async void ReloadNpcs()
+    {
+        var npcList = await NpcService.GetAllNpcs(DungeonId);
+        if(!(npcList is null))
+        {
+            dungeonNpcs = npcList.ToList();
+        }
     }
 
     #endregion
