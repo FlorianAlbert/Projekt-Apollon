@@ -212,17 +212,6 @@
     /// </summary>
     protected async override Task OnInitializedAsync()
     {
-        #region toDelete
-        RaceDto testRace = new RaceDto();
-        testRace.DefaultDamage = 10;
-        testRace.DefaultHealth = 10;
-        testRace.DefaultProtection = 10;
-        testRace.Description = "Test Beschreibung";
-        testRace.Name = "Leon";
-
-        dungeonRaces.Add(testRace);
-        #endregion
-
         raceContext = new EditContext(dungeonRaceModel);
         if (!(DungeonId == Guid.Empty))
         {

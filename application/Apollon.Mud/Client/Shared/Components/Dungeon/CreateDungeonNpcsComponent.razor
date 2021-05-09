@@ -184,15 +184,6 @@
                 dungeonNpcs = dungeonNpcCollection.ToList();
             }
         }
-
-        #region to Delete
-        NpcDto testNpc = new NpcDto();
-        testNpc.Description = "KLa";
-        testNpc.Name = "Leon";
-        testNpc.Text = "Test Text????";
-        dungeonNpcs.Add(testNpc);
-        #endregion
-
         StateHasChanged();
     }
 

@@ -22,13 +22,13 @@
                     @if (dungeonCreated)
                     {
                         <section class="Classes mt-3" id="Classes">
-                            <CreateDungeonClassesComponent DungeonId="DungeonId" OnClassSavedOrLoaded="ClassSavedOrLoaded" IsDungeonMasterConfigurating="false" />
+                            <CreateDungeonClassesComponent @ref="ChildClassComponent" DungeonId="DungeonId" OnClassSavedOrLoaded="ClassSavedOrLoaded" IsDungeonMasterConfigurating="false" />
                         </section>
                         <section class="Races mt-3" id="Races">
                             <CreateDungeonRacesComponent DungeonId="DungeonId" OnRaceSavedOrLoaded="RaceSavedOrLoaded" IsDungeonMasterConfigurating="false" />
                         </section>
                         <section class="Items mt-3" id="Items">
-                            <CreateDungeonItemComponent DungeonId="DungeonId" IsDungeonMasterConfigurating="false" />
+                            <CreateDungeonItemComponent DungeonId="DungeonId" ItemsChanged="ReloadItems" IsDungeonMasterConfigurating="false" />
                         </section>
                         <section class="Npcs mt-3" id="Npcs">
                             <CreateDungeonNpcsComponent DungeonId="DungeonId" NpcsChanged="ReloadNpcs" IsDungeonMasterConfigurating="false" />
@@ -57,6 +57,11 @@
     /// TODO
     /// </summary>
     public CreateDungeonRoomComponent ChildRoomComponent { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public CreateDungeonClassesComponent ChildClassComponent { get; set; }
 
     /// <summary>
     /// The ID of the Dungeon that is created / edited
@@ -97,7 +102,6 @@
     {
         dungeonCreated = true;
         DungeonId = guid;
-
     }
 
     /// <summary>
@@ -136,8 +140,21 @@
         ChildRoomComponent.ReloadNpcs();
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
     public void ReloadSpecialActions()
     {
         ChildRoomComponent.ReloadSpecialActions();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="type"></param>
+    public void ReloadItems(string typeName)
+    {
+        ChildClassComponent.ReloadItems(typeName);
+        ChildRoomComponent.ReloadItems(typeName);
     }
 }
