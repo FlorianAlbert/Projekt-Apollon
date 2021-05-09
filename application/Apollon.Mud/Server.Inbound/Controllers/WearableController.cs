@@ -8,21 +8,21 @@ using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
-using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
-using Apollon.Mud.Shared.Dungeon.Race;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
+using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
-    [Route("api/races")]
+    [Route("api/wearables")]
     [ApiController]
-    public class RaceController : ControllerBase
+    public class WearableController : ControllerBase
     {
         private IGameDbService GameConfigService { get; }
 
         private IUserService UserService { get; }
 
-        public RaceController(IGameDbService gameConfigService, IUserService userService)
+        public WearableController(IGameDbService gameConfigService, IUserService userService)
         {
             GameConfigService = gameConfigService;
             UserService = userService;
@@ -34,7 +34,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateNew([FromBody] RaceDto raceDto, [FromRoute] Guid dungeonId)
+        public async Task<IActionResult> CreateNew([FromBody] WearableDto wearableDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
@@ -46,20 +46,19 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (dungeon is null) return BadRequest();
             if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
-            if (raceDto is null) return BadRequest();
-            var newRace = new Race(
-                raceDto.Name,
-                raceDto.Description,
-                raceDto.DefaultHealth,
-                raceDto.DefaultProtection,
-                raceDto.DefaultDamage)
+            if (wearableDto is null) return BadRequest();
+            var newWearable = new Wearable(
+                wearableDto.Description,
+                wearableDto.Name,
+                wearableDto.Weight,
+                wearableDto.ProtectionBoost)
             {
-                Status = (Status) raceDto.Status,
+                Status = (Status)wearableDto.Status,
                 Dungeon = dungeon
             };
-            
-            var raceSaved = await GameConfigService.NewOrUpdate(newRace);
-            if (raceSaved) return Ok(newRace.Id);
+
+            var wearableSaved = await GameConfigService.NewOrUpdate(newWearable);
+            if (wearableSaved) return Ok(newWearable.Id);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
@@ -70,7 +69,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Update([FromBody] RaceDto raceDto, [FromRoute] Guid dungeonId)
+        public async Task<IActionResult> Update([FromBody] WearableDto wearableDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
@@ -82,45 +81,42 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (dungeon is null) return BadRequest();
             if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
-            if (raceDto is null) return BadRequest();
+            if (wearableDto is null) return BadRequest();
 
-            var raceToUpdate = await GameConfigService.Get<Race>(raceDto.Id);
-            if (raceToUpdate is null) return BadRequest();
+            var wearableToUpdate = await GameConfigService.Get<Wearable>(wearableDto.Id);
+            if (wearableToUpdate is null) return BadRequest();
 
-            raceToUpdate.Name = raceDto.Name;
-            raceToUpdate.Description = raceDto.Description;
-            raceToUpdate.DefaultHealth = raceDto.DefaultHealth;
-            raceToUpdate.DefaultProtection = raceDto.DefaultProtection;
-            raceToUpdate.DefaultDamage = raceDto.DefaultDamage;
-            raceToUpdate.Status = (Status) raceDto.Status;
+            wearableToUpdate.Name = wearableDto.Name;
+            wearableToUpdate.Description = wearableDto.Description;
+            wearableToUpdate.Status = (Status)wearableDto.Status;
 
-            var raceSaved = await GameConfigService.NewOrUpdate(raceToUpdate);
-            if (raceSaved) return Ok(raceToUpdate.Id);
+            var wearableSaved = await GameConfigService.NewOrUpdate(wearableToUpdate);
+            if (wearableSaved) return Ok(wearableToUpdate.Id);
 
-            raceToUpdate = await GameConfigService.Get<Race>(raceDto.Id);
-            var oldRaceDto = new RaceDto()
+            wearableToUpdate = await GameConfigService.Get<Wearable>(wearableDto.Id);
+
+            var oldWearableDto = new WearableDto()
             {
-                DefaultDamage = raceToUpdate.DefaultDamage,
-                DefaultHealth = raceToUpdate.DefaultHealth,
-                DefaultProtection = raceToUpdate.DefaultProtection,
-                Description = raceToUpdate.Description,
-                Id = raceToUpdate.Id,
-                Name = raceToUpdate.Name,
-                Status = (int)raceToUpdate.Status
+                Description = wearableToUpdate.Description,
+                Id = wearableToUpdate.Id,
+                Name = wearableToUpdate.Name,
+                Status = (int)wearableToUpdate.Status,
+                Weight = wearableToUpdate.Weight,
+                ProtectionBoost = wearableToUpdate.ProtectionBoost
             };
 
-            return BadRequest(oldRaceDto);
+            return BadRequest(oldWearableDto);
         }
 
         [HttpDelete]
         [Authorize(Roles = "Player")]
-        [Route("{dungeonId}/{raceId}")]
+        [Route("{dungeonId}/{wearableId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid raceId)
+        public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid wearableId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
@@ -133,15 +129,15 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
             if (dungeon.Status is Status.Approved) return Forbid();
 
-            var raceDeleted = await GameConfigService.Delete<Race>(raceId);
-            if (raceDeleted) return Ok();
+            var wearableDeleted = await GameConfigService.Delete<Wearable>(wearableId);
+            if (wearableDeleted) return Ok();
             return BadRequest();
         }
 
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(ICollection<RaceDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ICollection<WearableDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
@@ -155,29 +151,33 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
 
-            var races = dungeon.ConfiguredRaces;
-            if (races is null) return BadRequest();
+            if (dungeon.ConfiguredInspectables is null) return BadRequest();
 
-            var raceDtos = races.Select(race =>
-                new RaceDto() {
-                    DefaultDamage = race.DefaultDamage,
-                    DefaultHealth = race.DefaultHealth,
-                    DefaultProtection = race.DefaultProtection,
-                    Description = race.Description,
-                    Id = race.Id,
-                    Name = race.Name,
-                    Status = (int)race.Status
+            //Gets all pure type wearables and no subclass object
+            var wearables = dungeon.ConfiguredInspectables
+                .OfType<Wearable>()
+                .Where(i => !i.GetType().IsSubclassOf(typeof(Wearable))).ToList();
+
+            var wearableDtos = wearables.Select(wearable =>
+                new WearableDto()
+                {
+                    Description = wearable.Description,
+                    Id = wearable.Id,
+                    Name = wearable.Name,
+                    Status = (int)wearable.Status,
+                    Weight = wearable.Weight,
+                    ProtectionBoost = wearable.ProtectionBoost
                 });
-            return Ok(raceDtos);
+            return Ok(wearableDtos);
         }
 
         [HttpGet]
         [Authorize(Roles = "Player")]
-        [Route("{dungeonId}/{raceId}")]
-        [ProducesResponseType(typeof(RaceDto), StatusCodes.Status200OK)]
+        [Route("{dungeonId}/{wearableId}")]
+        [ProducesResponseType(typeof(WearableDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid raceId)
+        public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid wearableId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
@@ -188,21 +188,20 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
 
-            var race = await GameConfigService.Get<Race>(raceId);
-            if (race is null) return BadRequest();
+            var wearable = await GameConfigService.Get<Wearable>(wearableId);
+            if (wearable is null) return BadRequest();
 
-            var raceDto = new RaceDto()
+            var wearableDto = new WearableDto()
             {
-                DefaultDamage = race.DefaultDamage,
-                DefaultHealth = race.DefaultHealth,
-                DefaultProtection = race.DefaultProtection,
-                Description = race.Description,
-                Id = race.Id,
-                Name = race.Name,
-                Status = (int) race.Status
+                Description = wearable.Description,
+                Id = wearable.Id,
+                Name = wearable.Name,
+                Status = (int)wearable.Status,
+                Weight = wearable.Weight,
+                ProtectionBoost = wearable.ProtectionBoost
             };
 
-            return Ok(raceDto);
+            return Ok(wearableDto);
         }
     }
 }
