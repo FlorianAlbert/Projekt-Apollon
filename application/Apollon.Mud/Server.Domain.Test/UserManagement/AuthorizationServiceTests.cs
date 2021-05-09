@@ -68,13 +68,6 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var emailMock = _Fixture.Create<string>();
             var secretMock = _Fixture.Create<string>();
             var dungeonUserMock = _Fixture.Build<DungeonUser>()
-                .Without(x => x.DungeonMasterDungeons)
-                .Without(x => x.DungeonOwnerDungeons)
-                .Without(x => x.CurrentDungeonMasterDungeons)
-                .Without(x => x.BlackListDungeons)
-                .Without(x => x.WhiteListDungeons)
-                .Without(x => x.OpenRequestDungeons)
-                .Without(x => x.Avatars)
                 .Create();
 
             var userDbServiceMock = Substitute.For<IUserDbService>();
@@ -119,13 +112,6 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var emailMock = _Fixture.Create<string>();
             var secretMock = _Fixture.Create<string>();
             var dungeonUserMock = _Fixture.Build<DungeonUser>()
-                .Without(x => x.DungeonMasterDungeons)
-                .Without(x => x.DungeonOwnerDungeons)
-                .Without(x => x.CurrentDungeonMasterDungeons)
-                .Without(x => x.BlackListDungeons)
-                .Without(x => x.WhiteListDungeons)
-                .Without(x => x.OpenRequestDungeons)
-                .Without(x => x.Avatars)
                 .Create();
 
             var userDbServiceMock = Substitute.For<IUserDbService>();

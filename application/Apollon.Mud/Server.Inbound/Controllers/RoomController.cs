@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Apollon.Mud.Server.Domain.Implementations.UserManagement;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
@@ -154,22 +153,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid roomId)
         {
-            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
+            var room = await GameConfigService.Get<Room>(roomId);
 
-            if (dungeon is null) return BadRequest();
-
-            Room room;
-            try
-            {
-                room = dungeon.ConfiguredRooms.SingleOrDefault(x => x.Id == roomId);
-            }
-            catch (InvalidOperationException ex)
-            {
-                _logger.LogError(ex, "There are more than one room with this Id in the dungeon.");
-                return Conflict();
-            }
-
-            if (room is null) return BadRequest();
+            if (room is null || room.Dungeon.Id != dungeonId) return BadRequest();
 
             var roomDto = new RoomDto
             {
@@ -347,7 +333,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 NeighborEast = neighborEast,
                 NeighborSouth = neighborSouth,
                 NeighborWest = neighborWest,
-                NeighborNorth = neighborNorth
+                NeighborNorth = neighborNorth,
+                Dungeon = dungeon
             };
 
             foreach (var consumableDto in roomDto.Consumables)
@@ -500,6 +487,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
             var room = await GameConfigService.Get<Room>(roomDto.Id);
+
+            if (room is null || room.Dungeon != dungeon) return BadRequest();
 
             Room neighborEast;
             Room neighborSouth;
