@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Shared\ChatComponent.razor.css" />
+    <Content Include="Shared\Components\ChatComponent.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
