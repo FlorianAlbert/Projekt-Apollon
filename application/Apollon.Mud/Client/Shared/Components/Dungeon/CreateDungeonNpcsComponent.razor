@@ -190,7 +190,7 @@
     private async Task HandleNpcSubmit()
     {
         var validNpc = npcContext.Validate();
-        if (validNpc)
+        if (validNpc && DungeonId != Guid.Empty)
         {
             bool newNpc = false;
             NpcDto submitNpc = dungeonNpcs.Find(r => r.Name.Equals(dungeonNpcModel.Name));

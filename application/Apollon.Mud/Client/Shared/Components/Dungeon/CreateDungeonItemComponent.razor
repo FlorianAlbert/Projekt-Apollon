@@ -365,7 +365,7 @@
                 break;
         }
         var validItem = itemContext.Validate();
-        if (validItem)
+        if (validItem && DungeonId != Guid.Empty)
         {
             bool newItem = false;
             switch (chosenItemCategory)

@@ -232,7 +232,7 @@
     private async Task HandleRaceSubmit()
     {
         var validRace = raceContext.Validate();
-        if (validRace)
+        if (validRace && DungeonId != Guid.Empty)
         {
             bool newRace = false;
             RaceDto submitRace = dungeonRaces.Find(r => r.Name.Equals(dungeonRaceModel.Name));

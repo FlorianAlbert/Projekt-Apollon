@@ -165,7 +165,7 @@
     private void AddAction()
     {
         var validDungeon = dungeonActionContext.Validate();
-        if (validDungeon)
+        if (validDungeon && DungeonId != Guid.Empty)
         {
             bool newRequestable = false;
             var requestableDto = dungeonActionModel.RequestableList.Find(r => r.PatternForPlayer.Equals(dungeonActionModel.PatternForPlayer));

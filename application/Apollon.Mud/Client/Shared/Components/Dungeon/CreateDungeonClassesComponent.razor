@@ -508,7 +508,7 @@
     {
         ///TODO Als Task erstellen, damit es parallel läuft
         var validClass = classContext.Validate();
-        if (validClass)
+        if (validClass && DungeonId != Guid.Empty)
         {
             bool newClass = false;
             ClassDto submitClass = dungeonClasses.Find(i => i.Name.Equals(dungeonClassModel.Name));

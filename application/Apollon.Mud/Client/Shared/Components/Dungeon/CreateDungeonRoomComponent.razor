@@ -7,6 +7,7 @@
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
 @using Apollon.Mud.Shared.Dungeon.Requestable
 @using Apollon.Mud.Shared.Dungeon.Npc
+@inject Apollon.Mud.Client.Services.Interfaces.IRoomService RoomService 
 
 <div class="card">
     <div class="card-header">
@@ -890,138 +891,143 @@
 
 @code {
 
-    #region Dungeon Information
+        #region Dungeon Information
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    [Parameter]
-    public bool IsDungeonMasterConfigurating { get; set; }
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [Parameter]
+        public bool IsDungeonMasterConfigurating { get; set; }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    [Parameter]
-    public Guid DungeonId { get; set; }
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [Parameter]
+        public Guid DungeonId { get; set; }
 
-    ///<summary>
-    /// TODO
-    ///</summary>
-    [Parameter]
-    public EventCallback<Guid> OnRoomSavedOrLoaded { get; set; }
+        ///<summary>
+        /// TODO
+        ///</summary>
+        [Parameter]
+        public EventCallback<Guid> OnRoomSavedOrLoaded { get; set; }
+
+        #endregion
+
+        #region Dungeon Room Model
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        DungeonRoomModel dungeonRoomModel = new DungeonRoomModel();
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        EditContext roomContext;
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        List<RoomDto> dungeonRooms = new List<RoomDto>();
+
+        #endregion
+
+        #region Bound Variables
+
+        /// <summary>
+        /// Initializes the item category
+        /// </summary>
+        string[] itemCategory = new string[8];
+
+        /// <summary>
+        /// Initializes the item in the room
+        /// </summary>
+        string[] roomItems = new string[8];
+
+        /// <summary>
+        /// The room selected by default is the "NoRoom".
+        /// </summary>
+        string chosenRoom = "NoRoom";
+
+        /// <summary>
+        /// TODO Abhilfe
+        /// </summary>
+        List<RequestableDto> roomRequestables = new List<RequestableDto>();
+
+        /// <summary>
+        /// The context of the room is customizable
+        /// </summary>
+        string selectedRequestable = "NoAction";
+
+        /// <summary>
+        /// Lists the data to be managed in the room
+        /// </summary>
+        List<NpcDto> roomNpcs = new List<NpcDto>();
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        string selectedNpc = "NoNpc";
+
+        #endregion
+
+        #region Item Lists
+
+        /// <summary>
+        /// Lists the inspectable items in the room
+        /// </summary>
+        List<InspectableDto> dungeonInspectables = new List<InspectableDto>();
+
+        /// <summary>
+        /// Lists the items that can be picked up in the room
+        /// </summary>
+        List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
+
+        /// <summary>
+        /// Lists the consumable items in the room
+        /// </summary>
+        List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
+
+        /// <summary>
+        /// Lists the wearing items in the room
+        /// </summary>
+        List<WearableDto> dungeonWearables = new List<WearableDto>();
+
+        /// <summary>
+        /// Lists the items that can be used in the room
+        /// </summary>
+        List<UsableDto> dungeonUsables = new List<UsableDto>();
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        List<RequestableDto> dungeonRequestables = new List<RequestableDto>();
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        List<NpcDto> dungeonNpcs = new List<NpcDto>();
+
+        #endregion
+
+        #region Item Dropdown Counters
+
+        /// <summary>
+        /// When an item is kicked out of the inventory,
+        /// the number of items in the room changes
+        /// </summary>
+        int roomItemCount = 1;
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        int specialActionCount = 0;
 
     #endregion
 
-    #region Dungeon Room Model
-    /// <summary>
-    /// TODO
-    /// </summary>
-    DungeonRoomModel dungeonRoomModel = new DungeonRoomModel();
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    EditContext roomContext;
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    List<RoomDto> dungeonRooms = new List<RoomDto>();
-    #endregion
-
-    #region Bound Variables
-    /// <summary>
-    /// Initializes the item category
-    /// </summary>
-    string[] itemCategory = new string[8];
-
-    /// <summary>
-    /// Initializes the item in the room
-    /// </summary>
-    string[] roomItems = new string[8];
-
-    /// <summary>
-    /// The room selected by default is the "NoRoom".
-    /// </summary>
-    string chosenRoom = "NoRoom";
-
-    /// <summary>
-    /// TODO Abhilfe
-    /// </summary>
-    List<RequestableDto> roomRequestables = new List<RequestableDto>();
-
-    /// <summary>
-    /// The context of the room is customizable
-    /// </summary>
-    string selectedRequestable = "NoAction";
-
-    /// <summary>
-    /// Lists the data to be managed in the room
-    /// </summary>
-    List<NpcDto> roomNpcs = new List<NpcDto>();
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    string selectedNpc = "NoNpc";
-    #endregion
-
-    #region Item Lists
-
-    /// <summary>
-    /// Lists the inspectable items in the room
-    /// </summary>
-    List<InspectableDto> dungeonInspectables = new List<InspectableDto>();
-
-    /// <summary>
-    /// Lists the items that can be picked up in the room
-    /// </summary>
-    List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
-
-    /// <summary>
-    /// Lists the consumable items in the room
-    /// </summary>
-    List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
-
-    /// <summary>
-    /// Lists the wearing items in the room
-    /// </summary>
-    List<WearableDto> dungeonWearables = new List<WearableDto>();
-
-    /// <summary>
-    /// Lists the items that can be used in the room
-    /// </summary>
-    List<UsableDto> dungeonUsables = new List<UsableDto>();
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    List<RequestableDto> dungeonRequestables = new List<RequestableDto>();
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    List<NpcDto> dungeonNpcs = new List<NpcDto>();
-    #endregion
-
-    #region Item Dropdown Counters
-
-    /// <summary>
-    /// When an item is kicked out of the inventory,
-    /// the number of items in the room changes
-    /// </summary>
-    int roomItemCount = 1;
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    int specialActionCount = 0;
-
-    #endregion
-
-    /// <summary>
-    /// TODO Abhilfe
-    /// </summary>
+        /// <summary>
+        /// TODO Abhilfe
+        /// </summary>
     protected override void OnInitialized()
     {
         #region toDelete
@@ -1096,6 +1102,8 @@
         {
             itemCategory[i] = string.Empty;
         }
+
+        //TODO Räume aus Backendholen und Event feuern
     }
 
     /// <summary>
@@ -1105,7 +1113,7 @@
     private async Task HandleRoomSubmit()
     {
         var validRoom = roomContext.Validate();
-        if (validRoom)
+        if (validRoom && DungeonId != Guid.Empty)
         {
             bool newRoom = false;
             RoomDto submitRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.Name));
@@ -1148,43 +1156,63 @@
             if (!dungeonRoomModel.RoomNorth.Equals("NoRoom"))
             {
                 submitRoom.NeighborNorthId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomNorth)).Id;
+                ReloadNeighbour(submitRoom.NeighborNorthId);
             }
-            else
-            {
-                submitRoom.NeighborNorthId = Guid.Empty;
-            }
+            else submitRoom.NeighborNorthId = Guid.Empty;
+
             if (!dungeonRoomModel.RoomEast.Equals("NoRoom"))
             {
                 submitRoom.NeighborEastId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomEast)).Id;
+                ReloadNeighbour(submitRoom.NeighborEastId);
             }
-            else
-            {
-                submitRoom.NeighborEastId = Guid.Empty;
-            }
+            else submitRoom.NeighborEastId = Guid.Empty;
+
             if (!dungeonRoomModel.RoomSouth.Equals("NoRoom"))
             {
                 submitRoom.NeighborSouthId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomSouth)).Id;
+                ReloadNeighbour(submitRoom.NeighborSouthId);
             }
-            else
-            {
-                submitRoom.NeighborSouthId = Guid.Empty;
-            }
-            if (!dungeonRoomModel.RoomWest.Equals("NoRoom"))
-            {
+            else submitRoom.NeighborSouthId = Guid.Empty;
+
+            if (!dungeonRoomModel.RoomWest.Equals("NoRoom")) 
+            { 
                 submitRoom.NeighborWestId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomWest)).Id;
+                ReloadNeighbour(submitRoom.NeighborWestId);
             }
-            else
-            {
-                submitRoom.NeighborWestId = Guid.Empty;
-            }
+            else submitRoom.NeighborWestId = Guid.Empty;
+
             if (newRoom)
             {
-                dungeonRooms.Add(submitRoom);
-            }
-            chosenRoom = dungeonRoomModel.Name;
+                var response = await RoomService.CreateNewRoom(submitRoom, DungeonId);
+                if(response != Guid.Empty)
+                {
+                    submitRoom.Id = response;
+                    await OnRoomSavedOrLoaded.InvokeAsync();
+                    dungeonRooms.Add(submitRoom);
+                    chosenRoom = dungeonRoomModel.Name;
 
+                }
+
+                dungeonRooms.Add(submitRoom);
+                chosenRoom = dungeonRoomModel.Name;
+
+            }
+            StateHasChanged();
             //TODO: OnRoomSavedOrLoaded Event wenn erster Room erstellt
 
+        }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private async void ReloadNeighbour(Guid roomId)
+    {
+        var updatedRoom = await RoomService.GetRoom(roomId, DungeonId);
+        if(!(updatedRoom is null))
+        {
+            dungeonRooms.Remove(dungeonRooms.Find(r => r.Id == roomId));
+            dungeonRooms.Add(updatedRoom);
         }
     }
 
@@ -1197,101 +1225,7 @@
         if (!chosenRoom.Equals(dungeonRoomModel.Name) && !chosenRoom.Equals("NoRoom"))
         {
             var newRoom = dungeonRooms.Find(r => r.Name.Equals(chosenRoom));
-            if (!(newRoom is null))
-            {
-                dungeonRoomModel.Name = newRoom.Name;
-                dungeonRoomModel.Description = newRoom.Description;
-                dungeonRoomModel.Status = newRoom.Status == 0 ? "Approved" : "Pending";
-                dungeonRoomModel.RoomNorth = "NoRoom";
-                dungeonRoomModel.RoomEast = "NoRoom";
-                dungeonRoomModel.RoomSouth = "NoRoom";
-                dungeonRoomModel.RoomWest = "NoRoom";
-                roomRequestables = newRoom.SpecialActions is null ? new List<RequestableDto>() : newRoom.SpecialActions.ToList();
-                roomNpcs = newRoom.Npcs is null ? new List<NpcDto>() : newRoom.Npcs.ToList();
-                roomItemCount = 0;
-                int counter = 0;
-                if (!(newRoom.Inspectables is null))
-                {
-                    newRoom.Inspectables.ToList().ForEach(i =>
-                    {
-                        if (!(i is null) && (!i.Name.Equals(string.Empty)))
-                        {
-                            itemCategory[counter] = "Inspectable";
-                            roomItems[counter] = i.Name;
-                            counter++;
-                            roomItemCount++;
-                        }
-                    });
-                }
-                if (!(newRoom.Takeables is null))
-                {
-                    newRoom.Takeables.ToList().ForEach(i =>
-                    {
-                        if (!(i is null) && (!i.Name.Equals(string.Empty)))
-                        {
-                            itemCategory[counter] = "Takeable";
-                            roomItems[counter] = i.Name;
-                            counter++;
-                            roomItemCount++;
-                        }
-                    });
-                }
-                if (!(newRoom.Consumables is null))
-                {
-                    newRoom.Consumables.ToList().ForEach(i =>
-                    {
-                        if (!(i is null) && (!i.Name.Equals(string.Empty)))
-                        {
-                            itemCategory[counter] = "Consumable";
-                            roomItems[counter] = i.Name;
-                            counter++;
-                            roomItemCount++;
-                        }
-                    });
-                }
-                if (!(newRoom.Usables is null))
-                {
-                    newRoom.Usables.ToList().ForEach(i =>
-                    {
-                        if (!(i is null) && (!i.Name.Equals(string.Empty)))
-                        {
-                            itemCategory[counter] = "Usable";
-                            roomItems[counter] = i.Name;
-                            counter++;
-                            roomItemCount++;
-                        }
-                    });
-                }
-                if (!(newRoom.Wearables is null))
-                {
-                    newRoom.Wearables.ToList().ForEach(i =>
-                    {
-                        if (!(i is null) && (!i.Name.Equals(string.Empty)))
-                        {
-                            itemCategory[counter] = "Wearable";
-                            roomItems[counter] = i.Name;
-                            counter++;
-                            roomItemCount++;
-                        }
-                    });
-                }
-                if (!(newRoom.NeighborNorthId.Equals(Guid.Empty)))
-                {
-                    dungeonRoomModel.RoomNorth = dungeonRooms.Find(r => r.Id.Equals(newRoom.NeighborNorthId)).Name;
-                }
-                if (!(newRoom.NeighborEastId.Equals(Guid.Empty)))
-                {
-                    dungeonRoomModel.RoomEast = dungeonRooms.Find(r => r.Id.Equals(newRoom.NeighborEastId)).Name;
-                }
-                if (!(newRoom.NeighborSouthId.Equals(Guid.Empty)))
-                {
-                    dungeonRoomModel.RoomSouth = dungeonRooms.Find(r => r.Id.Equals(newRoom.NeighborSouthId)).Name;
-                }
-                if (!(newRoom.NeighborWestId.Equals(Guid.Empty)))
-                {
-                    dungeonRoomModel.RoomWest = dungeonRooms.Find(r => r.Id.Equals(newRoom.NeighborWestId)).Name;
-                }
-            }
+            WriteBackRoom(newRoom);
         }
         return EventCallback.Empty;
     }
@@ -1302,32 +1236,38 @@
     /// <param name="args"></param>
     private void NameFieldLostFocus(System.EventArgs args)
     {
-        RoomDto checkRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.Name));
+        var checkRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.Name));
         if (checkRoom is null)
         {
             return;
         }
         else
         {
+            chosenRoom = checkRoom.Name;
+            WriteBackRoom(checkRoom);
+        }
+    }
+
+    private void WriteBackRoom(RoomDto newRoom)
+    {
+        if (!(newRoom is null))
+        {
+            dungeonRoomModel.Name = newRoom.Name;
+            dungeonRoomModel.Description = newRoom.Description;
+
+            #region Room Items
+
+            roomItemCount = 0;
+            int counter = 0;
             for (int i = 0; i < 8; i++)
             {
                 roomItems[i] = "NoItem";
                 itemCategory[i] = "NoCategory";
             }
-            dungeonRoomModel.RoomNorth = "NoRoom";
-            dungeonRoomModel.RoomEast = "NoRoom";
-            dungeonRoomModel.RoomSouth = "NoRoom";
-            dungeonRoomModel.RoomWest = "NoRoom";
-            dungeonRoomModel.Status = checkRoom.Status == 0 ? "Approved" : "Pending";
-            chosenRoom = dungeonRoomModel.Name;
-            dungeonRoomModel.Name = checkRoom.Name;
-            dungeonRoomModel.Description = checkRoom.Description;
-            roomRequestables = checkRoom.SpecialActions is null ? new List<RequestableDto>() : checkRoom.SpecialActions.ToList();
-            roomNpcs = checkRoom.Npcs is null ? new List<NpcDto>() : checkRoom.Npcs.ToList();
-            int counter = 0;
-            if (!(checkRoom.Inspectables is null))
+
+            if (!(newRoom.Inspectables is null))
             {
-                checkRoom.Inspectables.ToList().ForEach(i =>
+                newRoom.Inspectables.ToList().ForEach(i =>
                 {
                     if (!(i is null) && (!i.Name.Equals(string.Empty)))
                     {
@@ -1338,9 +1278,9 @@
                     }
                 });
             }
-            if (!(checkRoom.Takeables is null))
+            if (!(newRoom.Takeables is null))
             {
-                checkRoom.Takeables.ToList().ForEach(i =>
+                newRoom.Takeables.ToList().ForEach(i =>
                 {
                     if (!(i is null) && (!i.Name.Equals(string.Empty)))
                     {
@@ -1351,9 +1291,9 @@
                     }
                 });
             }
-            if (!(checkRoom.Consumables is null))
+            if (!(newRoom.Consumables is null))
             {
-                checkRoom.Consumables.ToList().ForEach(i =>
+                newRoom.Consumables.ToList().ForEach(i =>
                 {
                     if (!(i is null) && (!i.Name.Equals(string.Empty)))
                     {
@@ -1364,9 +1304,9 @@
                     }
                 });
             }
-            if (!(checkRoom.Usables is null))
+            if (!(newRoom.Usables is null))
             {
-                checkRoom.Usables.ToList().ForEach(i =>
+                newRoom.Usables.ToList().ForEach(i =>
                 {
                     if (!(i is null) && (!i.Name.Equals(string.Empty)))
                     {
@@ -1377,9 +1317,9 @@
                     }
                 });
             }
-            if (!(checkRoom.Wearables is null))
+            if (!(newRoom.Wearables is null))
             {
-                checkRoom.Wearables.ToList().ForEach(i =>
+                newRoom.Wearables.ToList().ForEach(i =>
                 {
                     if (!(i is null) && (!i.Name.Equals(string.Empty)))
                     {
@@ -1390,22 +1330,27 @@
                     }
                 });
             }
-            if (!(checkRoom.NeighborNorthId.Equals(Guid.Empty)))
-            {
-                dungeonRoomModel.RoomNorth = dungeonRooms.Find(r => r.Id.Equals(checkRoom.NeighborNorthId)).Name;
-            }
-            if (!(checkRoom.NeighborEastId.Equals(Guid.Empty)))
-            {
-                dungeonRoomModel.RoomEast = dungeonRooms.Find(r => r.Id.Equals(checkRoom.NeighborEastId)).Name;
-            }
-            if (!(checkRoom.NeighborSouthId.Equals(Guid.Empty)))
-            {
-                dungeonRoomModel.RoomSouth = dungeonRooms.Find(r => r.Id.Equals(checkRoom.NeighborSouthId)).Name;
-            }
-            if (!(checkRoom.NeighborWestId.Equals(Guid.Empty)))
-            {
-                dungeonRoomModel.RoomWest = dungeonRooms.Find(r => r.Id.Equals(checkRoom.NeighborWestId)).Name;
-            }
+            #endregion
+
+            #region Neighbours
+
+            dungeonRoomModel.RoomNorth = newRoom.NeighborNorthId.Equals(Guid.Empty) ? "NoRoom" : dungeonRooms.Find(r => r.Id.Equals(newRoom.NeighborNorthId)).Name;
+
+            dungeonRoomModel.RoomEast = newRoom.NeighborEastId.Equals(Guid.Empty) ? "NoRoom" : dungeonRooms.Find(r => r.Id.Equals(newRoom.NeighborEastId)).Name;
+
+            dungeonRoomModel.RoomSouth = newRoom.NeighborSouthId.Equals(Guid.Empty) ? "NoRoom" : dungeonRooms.Find(r => r.Id.Equals(newRoom.NeighborSouthId)).Name;
+
+            dungeonRoomModel.RoomWest = newRoom.NeighborWestId.Equals(Guid.Empty) ? "NoRoom" : dungeonRooms.Find(r => r.Id.Equals(newRoom.NeighborWestId)).Name;
+
+            #endregion
+
+            roomRequestables = newRoom.SpecialActions is null ? new List<RequestableDto>() : newRoom.SpecialActions.ToList();
+
+            roomNpcs = newRoom.Npcs is null ? new List<NpcDto>() : newRoom.Npcs.ToList();
+
+            dungeonRoomModel.Status = newRoom.Status == 0 ? "Approved" : "Pending";
+
+            StateHasChanged();
         }
     }
 
