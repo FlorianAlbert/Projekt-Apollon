@@ -83,7 +83,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Udpate([FromBody] ClassDto classDto, [FromRoute] Guid dungeonId)
+        public async Task<IActionResult> Update([FromBody] ClassDto classDto, [FromRoute] Guid dungeonId)
         {
 
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
