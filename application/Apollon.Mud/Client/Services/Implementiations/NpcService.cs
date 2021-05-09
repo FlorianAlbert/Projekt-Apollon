@@ -26,7 +26,8 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="httpClient"></param>
+        /// <param name="httpClientFactory"></param>
+        /// <param name="userContext"></param>
         public NpcService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
@@ -88,7 +89,6 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="npcDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
         public async Task<ICollection<NpcDto>> GetAllNpcs(Guid dungeonId)

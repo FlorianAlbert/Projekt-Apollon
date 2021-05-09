@@ -1,9 +1,8 @@
 ﻿using Apollon.Mud.Client.Data;
 using Apollon.Mud.Client.Services.Interfaces;
-using Apollon.Mud.Shared.Dungeon.Avatar;
+using Apollon.Mud.Shared.Dungeon.Inspectable;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Apollon.Mud.Client.Services.Implementiations
 {
-    public class AvatarService : IAvatarService
+    public class InspectableService : IInspectableService
     {
         /// <summary>
         /// TODO
@@ -29,7 +28,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="userContext"></param>
-        public AvatarService(IHttpClientFactory httpClientFactory, UserContext userContext)
+        public InspectableService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
             HttpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + userContext.Token);
@@ -39,14 +38,14 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="avatarDto"></param>
+        /// <param name="inspectableDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public async Task<Guid> CreateNewAvatar(AvatarDto avatarDto, Guid dungeonId)
+        public async Task<Guid> CreateNewInspectable(InspectableDto inspectableDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PostAsJsonAsync("api/avatars/" + dungeonId, avatarDto, cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("api/inspectables/" + dungeonId, inspectableDto, cancellationToken);
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var responseGuid = await response.Content.ReadFromJsonAsync<Guid>();
@@ -58,31 +57,31 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="avatarDto"></param>
+        /// <param name="inspectableDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        //public async Task<AvatarDto> UpdateAvatar(AvatarDto avatarDto, Guid dungeonId)
-        //{
-        //    CancellationToken cancellationToken = CancellationTokenSource.Token;
+        public async Task<InspectableDto> UpdateInspectable(InspectableDto inspectableDto, Guid dungeonId)
+        {
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-        //    var response = await HttpClient.PutAsJsonAsync("api/avatars/" + dungeonId, avatarDto, cancellationToken);
+            var response = await HttpClient.PutAsJsonAsync("api/inspectables/" + dungeonId, inspectableDto, cancellationToken);
 
-        //    if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<AvatarDto>();
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<InspectableDto>();
 
-        //    return null;
-        //}
+            return null;
+        }
 
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="avatarId"></param>
+        /// <param name="inspectableId"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public async Task<bool> DeleteAvatar(Guid dungeonId, Guid avatarId)
+        public async Task<bool> DeleteInspectable(Guid dungeonId, Guid inspectableId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.DeleteAsync("api/avatars/" + dungeonId + "/" + avatarId, cancellationToken);
+            var response = await HttpClient.DeleteAsync("api/inspectables/" + dungeonId + "/" + inspectableId, cancellationToken);
 
             return response.StatusCode == HttpStatusCode.OK;
         }
@@ -90,15 +89,16 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <summary>
         /// TODO
         /// </summary>
+        /// <param name="inspectableDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        public async Task<ICollection<AvatarDto>> GetAllAvatars(Guid dungeonId)
+        public async Task<ICollection<InspectableDto>> GetAllInspectables(Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/avatars/" + dungeonId, cancellationToken);
+            var response = await HttpClient.GetAsync("api/inspectables" + dungeonId, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<AvatarDto>>();
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<InspectableDto>>();
 
             return null;
         }
@@ -107,31 +107,15 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// TODO
         /// </summary>
         /// <param name="dungeonId"></param>
+        /// <param name="inspectableId"></param>
         /// <returns></returns>
-        public async Task<ICollection<AvatarDto>> GetAllAvatarsForUser(Guid dungeonId)
+        public async Task<InspectableDto> GetInspectable(Guid dungeonId, Guid inspectableId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/avatars/" + dungeonId + "/user", cancellationToken);
+            var response = await HttpClient.GetAsync("api/inspectables/" + dungeonId + "/" + inspectableId, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<AvatarDto>>();
-
-            return null;
-        }
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <param name="avatarId"></param>
-        /// <returns></returns>
-        public async Task<AvatarDto> GetAvatar(Guid dungeonId, Guid avatarId)
-        {
-            CancellationToken cancellationToken = CancellationTokenSource.Token;
-
-            var response = await HttpClient.GetAsync("api/avatars/" + dungeonId + "/" + avatarId, cancellationToken);
-
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<AvatarDto>();
+            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<InspectableDto>();
 
             return null;
         }
