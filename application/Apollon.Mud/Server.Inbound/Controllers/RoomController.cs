@@ -274,11 +274,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (dungeon.DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
+            if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
-            GameConfigService.Delete<Room>(roomId);     // TODO: Nicht fertig!
+            if (await GameConfigService.Delete<Room>(roomId)) return Ok();
 
-            return Ok();
+            return BadRequest();
         }
 
         [HttpPost]
@@ -445,7 +445,35 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 }
             }
 
-            if (await GameConfigService.NewOrUpdate(room)) return Ok(room.Id);
+            bool neighborsSuccessful = false;
+            if (neighborNorth is not null)
+            {
+                neighborNorth.NeighborSouth = room;
+                neighborsSuccessful = await GameConfigService.NewOrUpdate(neighborNorth);
+            }
+
+            if (neighborsSuccessful && neighborEast is not null)
+            {
+                neighborEast.NeighborWest = room;
+                neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborEast);
+            }
+
+            if (neighborsSuccessful && neighborSouth is not null)
+            {
+                neighborSouth.NeighborNorth = room;
+                neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborSouth);
+            }
+
+            if (neighborsSuccessful && neighborWest is not null)
+            {
+                neighborWest.NeighborEast = room;
+                neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborWest);
+            }
+
+            if (neighborsSuccessful)
+            {
+                if (await GameConfigService.NewOrUpdate(room)) return Ok(room.Id);
+            }
 
             return BadRequest();
         }

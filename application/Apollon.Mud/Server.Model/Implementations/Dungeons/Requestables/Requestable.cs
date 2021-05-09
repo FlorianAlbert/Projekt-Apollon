@@ -49,9 +49,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables
         /// </summary>
         public virtual Dungeon Dungeon { get; set; }
 
+        private ICollection<Room> _Rooms;
+
         /// <summary>
         /// Rooms with this requestable
         /// </summary>
-        public virtual ICollection<Room> Rooms { get; set; }
+        public virtual ICollection<Room> Rooms => _Rooms ??= new List<Room>();
     }
 }

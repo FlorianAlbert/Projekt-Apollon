@@ -43,10 +43,12 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables
         /// <inheritdoc cref="IApprovable.Status"/>
         public Status Status { get; set; }
 
+        private ICollection<Room> _Rooms;
+
         /// <summary>
         /// The Rooms this inspectable is placed in
         /// </summary>
-        public virtual ICollection<Room> Rooms { get; set; }
+        public virtual ICollection<Room> Rooms => _Rooms ??= new List<Room>();
 
         /// <summary>
         /// The dungeon the inspectable is configured in
