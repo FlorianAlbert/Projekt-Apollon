@@ -26,10 +26,6 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         {
             var takeableMock = _Fixture.Build<Takeable>()
                 .Without(x => x.Dungeon)
-                .Without(x => x.Rooms)
-                .Without(x => x.HoldingItemAvatars)
-                .Without(x => x.InventoryAvatars)
-                .Without(x => x.Classes)
                 .With(x => x.Weight, newWeight)
                 .Create();
             var inventory = _Fixture.Create<Inventory>();
@@ -47,19 +43,11 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         {
             var takeableMock = _Fixture.Build<Takeable>()
                 .Without(x => x.Dungeon)
-                .Without(x => x.Rooms)
-                .Without(x => x.HoldingItemAvatars)
-                .Without(x => x.InventoryAvatars)
-                .Without(x => x.Classes)
                 .With(x => x.Weight, newWeight)
                 .Create();
 
             var inventoryItemMock = _Fixture.Build<Takeable>()
                 .Without(x => x.Dungeon)
-                .Without(x => x.Rooms)
-                .Without(x => x.HoldingItemAvatars)
-                .Without(x => x.InventoryAvatars)
-                .Without(x => x.Classes)
                 .With(x => x.Weight, alreadyContainingWeight)
                 .Create();
 

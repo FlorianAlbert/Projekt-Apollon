@@ -62,6 +62,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var result = await userController.RegistrateUser(registrationRequestDtoMock);
 
 
+            await userServiceMock.Received().RequestUserRegistration(emailMock, passwordMock);
             result.Should().BeOfType<BadRequestResult>();
         }
 
@@ -84,6 +85,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var result = await userController.RegistrateUser(registrationRequestDtoMock);
 
 
+            await userServiceMock.Received().RequestUserRegistration(emailMock, passwordMock);
             result.Should().BeOfType<OkResult>();
         }
 
@@ -117,6 +119,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var result = await userController.ConfirmUserRegistration(userIdMock, tokenMock);
 
 
+            await userServiceMock.Received().ConfirmUserRegistration(userIdMock, tokenMock);
             result.Should().BeOfType<BadRequestResult>();
         }
 
@@ -134,6 +137,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var result = await userController.ConfirmUserRegistration(userIdMock, tokenMock);
 
 
+            await userServiceMock.Received().ConfirmUserRegistration(userIdMock, tokenMock);
             result.Should().BeOfType<OkResult>();
         }
 
@@ -166,6 +170,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var result = await userController.DeleteUser(userIdMock);
 
 
+            await userServiceMock.Received().DeleteUser(userIdMock);
             result.Should().BeOfType<OkResult>();
         }
 
@@ -198,6 +203,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var result = await userController.GetAllUsers();
 
 
+            await userServiceMock.Received().GetAllUsers();
             result.Should().BeOfType<BadRequestResult>();
         }
 
@@ -214,13 +220,6 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
                 .With(x => x.EmailConfirmed, emailConfirmedMock)
                 .With(x => x.LastActive, lastActiveMock)
                 .With(x => x.Id, userIdMock.ToString)
-                .Without(x => x.DungeonMasterDungeons)
-                .Without(x => x.DungeonOwnerDungeons)
-                .Without(x => x.CurrentDungeonMasterDungeons)
-                .Without(x => x.BlackListDungeons)
-                .Without(x => x.WhiteListDungeons)
-                .Without(x => x.OpenRequestDungeons)
-                .Without(x => x.Avatars)
                 .Create();
 
             var userListMock = new List<DungeonUser>() {userMock};
@@ -242,6 +241,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var result = await userController.GetAllUsers();
 
 
+            await userServiceMock.Received().GetAllUsers();
             result.Should().BeOfType<OkObjectResult>();
 
             var okResult = result as OkObjectResult;
@@ -253,7 +253,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
         }
 
         [Fact]
-        public async Task GetAllUsers_UserNull_Fails()
+        public async Task GetAllUser_UserNull_Fails()
         {
             var userIdMock = Guid.NewGuid();
             var userMock = (DungeonUser) null;
@@ -266,6 +266,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var result = await userController.GetUser(userIdMock);
 
 
+            await userServiceMock.Received().GetUser(userIdMock);
             result.Should().BeOfType<BadRequestResult>();
         }
 
@@ -282,13 +283,6 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
                 .With(x => x.EmailConfirmed, emailConfirmedMock)
                 .With(x => x.LastActive, lastActiveMock)
                 .With(x => x.Id, userIdMock.ToString)
-                .Without(x => x.DungeonMasterDungeons)
-                .Without(x => x.DungeonOwnerDungeons)
-                .Without(x => x.CurrentDungeonMasterDungeons)
-                .Without(x => x.BlackListDungeons)
-                .Without(x => x.WhiteListDungeons)
-                .Without(x => x.OpenRequestDungeons)
-                .Without(x => x.Avatars)
                 .Create();
 
             var userDtoMock = _Fixture.Build<DungeonUserDto>()
@@ -306,6 +300,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var result = await userController.GetUser(userIdMock);
 
 
+            await userServiceMock.Received().GetUser(userIdMock);
             result.Should().BeOfType<OkObjectResult>();
 
             var okResult = result as OkObjectResult;
@@ -320,8 +315,10 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
 
             var userServiceMock = Substitute.For<IUserService>();
 
+
             var userController = new UserController(userServiceMock);
             var result = await userController.RequestPasswordReset(requestPasswordResetDto);
+
 
             result.Should().BeOfType<BadRequestResult>();
         }
@@ -337,9 +334,12 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var userServiceMock = Substitute.For<IUserService>();
             userServiceMock.RequestPasswordReset(emaiMock).Returns(false);
 
+
             var userController = new UserController(userServiceMock);
             var result = await userController.RequestPasswordReset(requestPasswordResetDto);
 
+
+            await userServiceMock.Received().RequestPasswordReset(emaiMock);
             result.Should().BeOfType<BadRequestResult>();
         }
 
@@ -354,9 +354,12 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var userServiceMock = Substitute.For<IUserService>();
             userServiceMock.RequestPasswordReset(emaiMock).Returns(true);
 
+
             var userController = new UserController(userServiceMock);
             var result = await userController.RequestPasswordReset(requestPasswordResetDto);
 
+
+            await userServiceMock.Received().RequestPasswordReset(emaiMock);
             result.Should().BeOfType<OkResult>();
         }
 
@@ -368,8 +371,10 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
 
             var userServiceMock = Substitute.For<IUserService>();
 
+
             var userController = new UserController(userServiceMock);
             var result = await userController.ConfirmPasswordReset(passwortResetConfirmationDto, userIdMock);
+
 
             result.Should().BeOfType<BadRequestResult>();
         }
@@ -389,9 +394,12 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var userServiceMock = Substitute.For<IUserService>();
             userServiceMock.ConfirmPasswordReset(userIdMock, tokenMock.ToString(), newPasswordMock).Returns(false);
 
+
             var userController = new UserController(userServiceMock);
             var result = await userController.ConfirmPasswordReset(passwortResetConfirmationDto, userIdMock);
 
+
+            await userServiceMock.Received().ConfirmPasswordReset(userIdMock, tokenMock.ToString(), newPasswordMock);
             result.Should().BeOfType<BadRequestResult>();
         }
 
@@ -410,9 +418,12 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var userServiceMock = Substitute.For<IUserService>();
             userServiceMock.ConfirmPasswordReset(userIdMock, tokenMock.ToString(), newPasswordMock).Returns(true);
 
+
             var userController = new UserController(userServiceMock);
             var result = await userController.ConfirmPasswordReset(passwortResetConfirmationDto, userIdMock);
 
+
+            await userServiceMock.Received().ConfirmPasswordReset(userIdMock, tokenMock.ToString(), newPasswordMock);
             result.Should().BeOfType<OkResult>();
         }
 
@@ -424,8 +435,10 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
 
             var userServiceMock = Substitute.For<IUserService>();
 
+
             var userController = new UserController(userServiceMock);
             var result = await userController.ChangePassword(changePasswordDto, userIdMock);
+
 
             result.Should().BeOfType<BadRequestResult>();
         }
@@ -446,9 +459,12 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var userServiceMock = Substitute.For<IUserService>();
             userServiceMock.ChangePassword(userIdMock, oldPasswordMock, newPasswordMock).Returns(false);
 
+
             var userController = new UserController(userServiceMock);
             var result = await userController.ChangePassword(changePasswordDto, userIdMock);
 
+
+            await userServiceMock.Received().ChangePassword(userIdMock, oldPasswordMock, newPasswordMock);
             result.Should().BeOfType<BadRequestResult>();
         }
 
@@ -468,9 +484,12 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             var userServiceMock = Substitute.For<IUserService>();
             userServiceMock.ChangePassword(userIdMock, oldPasswordMock, newPasswordMock).Returns(true);
 
+
             var userController = new UserController(userServiceMock);
             var result = await userController.ChangePassword(changePasswordDto, userIdMock);
 
+
+            await userServiceMock.Received().ChangePassword(userIdMock, oldPasswordMock, newPasswordMock);
             result.Should().BeOfType<OkResult>();
         }
     }

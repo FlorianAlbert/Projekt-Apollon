@@ -28,7 +28,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// <summary>
         /// Service to check if the current request is valid.
         /// </summary>
-        private readonly TokenService _tokenService;
+        private readonly ITokenService _tokenService;
 
         /// <summary>
         /// Service to modify the dungeon-db content.
@@ -41,7 +41,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         private readonly bool _adminRegistered;
         #endregion
 
-        public UserService(IEmailService emailService, IUserDbService userDbService, IGameDbService gameDbService, TokenService tokenService)
+        public UserService(IEmailService emailService, IUserDbService userDbService, IGameDbService gameDbService, ITokenService tokenService)
         {
             _emailService = emailService;
             _userDbService = userDbService;
@@ -90,9 +90,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         /// <inheritdoc cref="IUserService.DeleteUser"/>
         public async Task<bool> DeleteUser(Guid userId)
         {
-            var deletedData = await _gameDbService.DeleteAllFromUser(userId);
-            if (deletedData) return await _userDbService.DeleteUser(userId);
-            return false;
+            return await _userDbService.DeleteUser(userId);
         }
         
         /// <inheritdoc cref="IUserService.GetAllUsers"/>

@@ -14,7 +14,6 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
     
     public class UserDbServiceTests
     {
-        //ToDo Tests
         private readonly IFixture _Fixture;
 
         public UserDbServiceTests()
@@ -89,13 +88,6 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var dungeonUserMock = _Fixture
                 .Build<DungeonUser>()
                 .With(x => x.UserName, userName)
-                .Without(x => x.DungeonMasterDungeons)
-                .Without(x => x.DungeonOwnerDungeons)
-                .Without(x => x.CurrentDungeonMasterDungeons)
-                .Without(x => x.BlackListDungeons)
-                .Without(x => x.WhiteListDungeons)
-                .Without(x => x.OpenRequestDungeons)
-                .Without(x => x.Avatars)
                 .Create();
             var identInResult = IdentityResult.Failed();
 
@@ -127,13 +119,6 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var dungeonUserMock = _Fixture
                 .Build<DungeonUser>()
                 .With(x => x.UserName, userName)
-                .Without(x => x.DungeonMasterDungeons)
-                .Without(x => x.DungeonOwnerDungeons)
-                .Without(x => x.CurrentDungeonMasterDungeons)
-                .Without(x => x.BlackListDungeons)
-                .Without(x => x.WhiteListDungeons)
-                .Without(x => x.OpenRequestDungeons)
-                .Without(x => x.Avatars)
                 .Create();
 
             var userManagerMock = Substitute.For<UserManager<DungeonUser>>(
@@ -168,13 +153,6 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var dungeonUserMock = _Fixture
                 .Build<DungeonUser>()
                 .With(x => x.UserName, userName)
-                .Without(x => x.DungeonMasterDungeons)
-                .Without(x => x.DungeonOwnerDungeons)
-                .Without(x => x.CurrentDungeonMasterDungeons)
-                .Without(x => x.BlackListDungeons)
-                .Without(x => x.WhiteListDungeons)
-                .Without(x => x.OpenRequestDungeons)
-                .Without(x => x.Avatars)
                 .Create();
 
             var userManagerMock = Substitute.For<UserManager<DungeonUser>>(
@@ -211,13 +189,6 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var dungeonUserMock = _Fixture
                 .Build<DungeonUser>()
                 .With(x => x.UserName, userName)
-                .Without(x => x.DungeonMasterDungeons)
-                .Without(x => x.DungeonOwnerDungeons)
-                .Without(x => x.CurrentDungeonMasterDungeons)
-                .Without(x => x.BlackListDungeons)
-                .Without(x => x.WhiteListDungeons)
-                .Without(x => x.OpenRequestDungeons)
-                .Without(x => x.Avatars)
                 .Create();
 
             var userManagerMock = Substitute.For<UserManager<DungeonUser>>(
@@ -250,13 +221,6 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             var dungeonUserMock = _Fixture
                 .Build<DungeonUser>()
                 .With(x => x.UserName, userName)
-                .Without(x => x.DungeonMasterDungeons)
-                .Without(x => x.DungeonOwnerDungeons)
-                .Without(x => x.CurrentDungeonMasterDungeons)
-                .Without(x => x.BlackListDungeons)
-                .Without(x => x.WhiteListDungeons)
-                .Without(x => x.OpenRequestDungeons)
-                .Without(x => x.Avatars)
                 .Create();
 
             var userManagerMock = Substitute.For<UserManager<DungeonUser>>(
