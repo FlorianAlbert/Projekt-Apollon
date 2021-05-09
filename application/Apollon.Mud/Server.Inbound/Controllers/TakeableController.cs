@@ -11,6 +11,11 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 using Microsoft.AspNetCore.Authorization;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -154,7 +159,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             //Gets all pure type takeables and no subclass object
             var takeables = dungeon.ConfiguredInspectables
                 .OfType<Takeable>()
-                .Where(i => !i.GetType().IsSubclassOf(typeof(Takeable))).ToList();
+                .Where(i => i is not Consumable and not Wearable and not Usable).ToList();
 
             var takeableDtos = takeables.Select(takeable =>
                 new TakeableDto()

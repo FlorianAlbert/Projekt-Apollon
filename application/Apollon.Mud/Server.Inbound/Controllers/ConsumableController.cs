@@ -155,8 +155,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             //Gets all pure type consumables and no subclass object
             var consumables = dungeon.ConfiguredInspectables
-                .OfType<Consumable>()
-                .Where(i => !i.GetType().IsSubclassOf(typeof(Consumable))).ToList();
+                .OfType<Consumable>().ToList();
 
             var consumableDtos = consumables.Select(consumable =>
                 new ConsumableDto()

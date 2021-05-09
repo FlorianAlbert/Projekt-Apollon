@@ -158,7 +158,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 DefaultDamage = oldClass.DefaultDamage,
                 DefaultProtection = oldClass.DefaultProtection,
                 InventoryTakeableDtos = oldClass.StartInventory.OfType<Takeable>().Where
-                (x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select(x => new TakeableDto
+                (x => x is not Consumable and not Wearable and not Usable).Select(x => new TakeableDto
                 {
                     Id = x.Id,
                     Status = (int)x.Status,
@@ -255,7 +255,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     DefaultHealth = c.DefaultHealth,
                     DefaultProtection = c.DefaultProtection,
                     InventoryTakeableDtos = c.StartInventory.OfType<Takeable>().Where
-                    (x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select
+                    (x => x is not Consumable and not Wearable and not Usable).Select
                     (x => new TakeableDto
                     {
                         Id = x.Id,
@@ -326,7 +326,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     DefaultHealth = classToSend.DefaultHealth,
                     DefaultProtection = classToSend.DefaultProtection,
                     InventoryTakeableDtos = classToSend.StartInventory.OfType<Takeable>().Where
-                    (x => !x.GetType().IsSubclassOf(typeof(Takeable))).Select
+                    (x => x is not Consumable and not Wearable and not Usable).Select
                     (x => new TakeableDto
                     {
                         Id = x.Id,

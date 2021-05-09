@@ -96,7 +96,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/wearables" + dungeonId, cancellationToken);
+            var response = await HttpClient.GetAsync("api/wearables/" + dungeonId, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<WearableDto>>();
 

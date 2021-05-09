@@ -155,8 +155,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             //Gets all pure type wearables and no subclass object
             var wearables = dungeon.ConfiguredInspectables
-                .OfType<Wearable>()
-                .Where(i => !i.GetType().IsSubclassOf(typeof(Wearable))).ToList();
+                .OfType<Wearable>().ToList();
 
             var wearableDtos = wearables.Select(wearable =>
                 new WearableDto()
