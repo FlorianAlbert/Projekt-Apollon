@@ -8,24 +8,24 @@ using Newtonsoft.Json;
 namespace Apollon.Mud.Shared.Dungeon.User
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents the data representation of IDungeonUser.
     /// </summary>
     public class DungeonUserDto
     {
         /// <summary>
-        /// ToDo serializes DateTime as ISO 8601 standard
+        /// The time when the user was last seen.
         /// </summary>
         [JsonProperty("LastActive")]
         public DateTime LastActive { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The users email-address.
         /// </summary>
         [JsonProperty("Email")]
         public string Email { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// If the user confirmed his/her email-address.
         /// </summary>
         [JsonProperty("EmailConfirmed")]
         public bool EmailConfirmed { get; set; }

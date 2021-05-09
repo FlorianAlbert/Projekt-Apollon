@@ -9,15 +9,27 @@ using Apollon.Mud.Server.Model.Interfaces.Dungeon.Race;
 using Apollon.Mud.Server.Model.Interfaces.Dungeon.Room;
 using Apollon.Mud.Server.Model.ModelExtensions;
 using System;
+using Apollon.Mud.Server.Model.Interfaces;
+using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
 {
+    /// <inheritdoc cref="IAvatar"/>
     public class Avatar : IAvatar
     {
         private IInventory _Inventory;
 
         private int _HealthDifference = 0;
 
+        /// <summary>
+        /// Creates a new instance of Avatar
+        /// </summary>
+        /// <param name="name">Name of the new avatar</param>
+        /// <param name="chosenRace">Race of the new avatar</param>
+        /// <param name="chosenClass">Class of the new avatar</param>
+        /// <param name="chosenGender">Gender of the new avatar</param>
+        /// <param name="dungeon">Dungeon the new avatar is part of</param>
+        /// <param name="owner">Owner of the new avatar</param>
         public Avatar(string name, IRace chosenRace, IClass chosenClass, Gender chosenGender, IDungeon dungeon, DungeonUser owner)
         {
             Id = Guid.NewGuid();
@@ -35,15 +47,25 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
             Inventory = chosenClass.StartInventory;
         }
 
+        /// <inheritdoc cref="IAvatar.Race"/>
         public IRace Race { get; set; }
+
+        /// <inheritdoc cref="IAvatar.Class"/>
         public IClass Class { get; set; }
+
+        /// <inheritdoc cref="IAvatar.Gender"/>
         public Gender Gender { get; set; }
+
+        /// <inheritdoc cref="IAvatar.Dungeon"/>
         public IDungeon Dungeon { get; set; }
+
+        /// <inheritdoc cref="IAvatar.MaxHealth"/>
         public int MaxHealth 
         {
             get => Race.DefaultHealth + Class.DefaultHealth;
         }
-        // TODO: Tests schreiben
+
+        /// <inheritdoc cref="IAvatar.CurrentHealth"/>
         public int CurrentHealth 
         {
             get => MaxHealth - _HealthDifference;
@@ -54,6 +76,8 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
                 else _HealthDifference = MaxHealth - value;
             }
         }
+
+        /// <inheritdoc cref="IAvatar.Damage"/>
         public int Damage 
         {
             get 
@@ -65,6 +89,8 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
                 return result;
             }
         }
+
+        /// <inheritdoc cref="IAvatar.Protection"/>
         public int Protection 
         { 
             get
@@ -76,15 +102,27 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
                 return result;
             }
         }
+
+        /// <inheritdoc cref="IAvatar.Inventory"/>
         public IInventory Inventory 
         { 
             get => _Inventory ??= new Inventory();
             init => _Inventory = value;
         }
+
+        /// <inheritdoc cref="IAvatar.HoldingItem"/>
         public ITakeable HoldingItem { get; set; }
+
+        /// <inheritdoc cref="IAvatar.Armor"/>
         public IWearable Armor { get; set; }
+
+        /// <inheritdoc cref="IAvatar.CurrentRoom"/>
         public IRoom CurrentRoom { get; set; }
+
+        /// <inheritdoc cref="IAvatar.Owner"/>
         public DungeonUser Owner { get; set; }
+
+        /// <inheritdoc cref="IInspectable.Description"/>
         public string Description 
         {
             get => $"{ Name } ist von der Rasse { Race.Name } vom Geschlecht { Gender.GetGermanGender() }.\n" +
@@ -96,8 +134,14 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar
             { 
             }
         }
+
+        /// <inheritdoc cref="IInspectable.Name"/>
         public string Name { get; set; }
+
+        /// <inheritdoc cref="IApprovable.Id"/>
         public Guid Id { get; }
+
+        /// <inheritdoc cref="IApprovable.Status"/>
         public Status Status { get; set; }
 
         /**

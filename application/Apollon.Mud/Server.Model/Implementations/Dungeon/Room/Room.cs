@@ -7,8 +7,14 @@ using System.Collections.Generic;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Room
 {
+    /// <inheritdoc cref="IRoom"/>
     public class Room : IRoom
     {
+        /// <summary>
+        /// Creates a new instance Room
+        /// </summary>
+        /// <param name="description">Description of the new room</param>
+        /// <param name="name">Name of the new room</param>
         public Room(string description, string name)
         {
             Id = Guid.NewGuid();
@@ -18,9 +24,16 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Room
 
             Status = Status.Pending;
         }
+
+        /// <inheritdoc cref="IRoom.Description"/>
         public string Description { get; set; }
+
+        /// <inheritdoc cref="IRoom.Name"/>
         public string Name { get; set; }
+
         private ICollection<IInspectable> _Inspectables;
+
+        /// <inheritdoc cref="IRoom.Inspectables"/>
         public ICollection<IInspectable> Inspectables
         {
             get
@@ -28,11 +41,22 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Room
                 return _Inspectables ??= new List<IInspectable>();
             }
         }
+
+        /// <inheritdoc cref="IRoom.NeighborNorth"/>
         public IRoom NeighborNorth { get; set; }
+
+        /// <inheritdoc cref="IRoom.NeighborEast"/>
         public IRoom NeighborEast { get; set; }
+
+        /// <inheritdoc cref="IRoom.NeighborSouth"/>
         public IRoom NeighborSouth { get; set; }
+
+        /// <inheritdoc cref="IRoom.NeighborWest"/>
         public IRoom NeighborWest { get; set; }
+
         private ICollection<IRequestable> _SpecialActions;
+
+        /// <inheritdoc cref="IRoom.SpecialActions"/>
         public ICollection<IRequestable> SpecialActions
         {
             get
@@ -41,8 +65,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeon.Room
             }
         }
 
+        /// <inheritdoc cref="IApprovable.Id"/>
         public Guid Id { get; }
 
+        /// <inheritdoc cref="IApprovable.Status"/>
         public Status Status { get; set; }
 
         /**

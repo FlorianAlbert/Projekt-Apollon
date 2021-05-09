@@ -1,0 +1,103 @@
+﻿@page "/Identity/Account/Register"
+@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
+@inject NavigationManager NavManager
+
+@using Apollon.Mud.Client.Data.Models
+
+
+<div class="container d-flex justify-content-center">
+    <div class="card mt-5" style="width:45rem">
+        <div class="card-body text-center">
+            <h1 class="display-2">Registrieren</h1>
+
+            <section>
+                <h4 class="ml-2">Hier kannst du einen neuen Account anlegen</h4>
+                <hr />
+                <EditForm EditContext="@registerContext" OnSubmit="@HandleRegisterSubmit" novalidate>
+                    <DataAnnotationsValidator />
+
+                    <div class="form-group mt-5">
+                        <label for="Input_Email">E-Mail</label>
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" style="width:25rem" type="email" placeholder="E-Mail" id="Email" @bind-Value="registerModel.Email" />
+                        </div>
+                    </div>
+                    <div class="text-danger">
+                        <ValidationMessage For=@(() => registerModel.Email) />
+                    </div>
+                    <div class="form-group mt-4">
+                        <label for="Input_Password">Passwort</label>
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" style="width:25rem" type="password" placeholder="Passwort" id="Passwort" @bind-Value="registerModel.Password" />
+                        </div>
+                    </div>
+                    <div class="text-danger">
+                        <ValidationMessage For=@(() => registerModel.Password) />
+                    </div>
+                    <div class="form-group mt-4">
+                        <label for="Input_Password">Passwort wiederholen</label>
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" style="width:25rem" type="password" placeholder="Passwort" id="PasswortVerification" @bind-Value="registerModel.PasswordVerification" />
+                        </div>
+                    </div>
+                    <div class="text-danger">
+                        <ValidationMessage For=@(() => registerModel.PasswordVerification) />
+                    </div>
+                    <button class="btn btn-primary mt-5" type="submit">Registrieren</button>
+                </EditForm>
+                <p></p>
+                <p class="mt-5">
+                    <label class="text-muted">Du hast bereits einen Account?</label>
+                    <a class="text-muted" href="/Identity/Account/Login"> Jetzt anmelden</a>
+                </p>
+            </section>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    /// <summary>
+    /// The Model to validate the "Register" Form
+    /// </summary>
+    private RegisterModel registerModel = new RegisterModel();
+
+    /// <summary>
+    /// The Context for the "Register" Form
+    /// </summary>
+    private EditContext registerContext;
+
+    /// <summary>
+    /// When the component is initialized this Method instantiates the EditContext
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        registerContext = new EditContext(registerModel);
+    }
+
+    /// <summary>
+    /// This Method, called when the user wants to sign up, validates the form and reacts accordingly
+    /// </summary>
+    /// <returns>The Task that writes the user credentials into the DB</returns>
+    private async Task HandleRegisterSubmit()
+    {
+        var validLogin = registerContext.Validate();
+        if (validLogin)
+        {
+            bool response = await authorizationService.Register(registerModel.Email, registerModel.Password);
+            if (response)
+            {
+                NavManager.NavigateTo("/Identity/Account/Register/VerifyEmail");
+            }
+            else
+            {
+                //User darauf hinweisen, dass iwas nicht geklappt hat
+            }
+        }
+        else
+        {
+            //TODO User Benachrichtigen
+        }
+    }
+
+}

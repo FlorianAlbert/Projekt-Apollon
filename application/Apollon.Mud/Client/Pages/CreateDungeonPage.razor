@@ -1,25 +1,36 @@
 ﻿@page "/CreateDungeon"
+@using Apollon.Mud.Client.Shared.Components.Dungeon
 
 <div class="container-fluid">
-    <div class="row min-vh-100">
-            <SideBarComponent />
-        <div class="col bg-white">
-            <div class="d-flex justify-content-start float-start">
-                <div class="container justify-content-start" style="width: 65rem;">
+    <div class="row">
+        <div class="col-3" style="padding:0">
+                <SideBarComponent />
+        </div>
+        <div class="col-6 bg-white">
+            <div class="d-flex justify-content-start float-start" style="display: flex; flex-direction: column; height: 93vh">
+                <div class="container justify-content-start" style="overflow-y:auto ;height:100%">
                     <h1 class="display-2">Dungeon erstellen</h1>
                     <h4>Hier kannst du einen neuen Dungeon erstellen!</h4>
                     <h4>Benötigst du Hilfe? Alle Infos zum Erstellen eines Dungeon findest du <a href="/">hier</a></h4> @*TODO Link einfügen*@
                     <hr class="featurette-divider" />
+                    <section class="Classes mt-3" id="Classes">
+                        <CreateDungeonComponent />
+                    </section>
                     <section class="Classes mt-3" id="Classes">
                         <CreateDungeonClassesComponent />
                     </section>
                     <section class="Races mt-3" id="Races">
                         <CreateDungeonRacesComponent />
                     </section>
-                    <section class="Races mt-3" id="Races">
+                    <section class="Items mt-3" id="Items">
                         <CreateDungeonItemComponent />
                     </section>
-
+                    <section class="Npcs mt-3" id="Npcs">
+                        <CreateDungeonNpcsComponent />
+                    </section>
+                    <section class="Rooms mt-3" id="Rooms">
+                        <CreateDungeonRoomComponent />
+                    </section>
                 </div>
             </div>
         </div>

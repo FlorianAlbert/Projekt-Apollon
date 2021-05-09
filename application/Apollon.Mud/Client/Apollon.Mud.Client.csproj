@@ -2,7 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>72928872-f6e4-4495-a221-8701c9131bcd</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Shared\ChatComponent.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Shared\ChatComponent.razor.css" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-preview2.20160.5" />

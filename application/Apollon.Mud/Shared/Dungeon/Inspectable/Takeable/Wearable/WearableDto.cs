@@ -8,42 +8,42 @@ using Newtonsoft.Json;
 namespace Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
 {
     /// <summary>
-    /// ToDo
+    /// Class which represents the data representation of IWearable.
     /// </summary>
     public class WearableDto
     {
         /// <summary>
-        /// ToDo
+        /// The unique id of the wearable.
         /// </summary>
         [JsonProperty("Id")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The status which represents, if the wearable is currently available in the dungeon.
         /// </summary>
         [JsonProperty("Status")]
         public int Status { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The description of the wearable.
         /// </summary>
         [JsonProperty("Description")]
         public string Description { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The name of the wearable.
         /// </summary>
         [JsonProperty("Name")]
         public string Name { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The weight of the wearable.
         /// </summary>
         [JsonProperty("Weight")]
         public int Weight { get; set; }
 
         /// <summary>
-        /// ToDo
+        /// The protection boost of the wearable.
         /// </summary>
         [JsonProperty("ProtectionBoost")]
         public int ProtectionBoost { get; set; }

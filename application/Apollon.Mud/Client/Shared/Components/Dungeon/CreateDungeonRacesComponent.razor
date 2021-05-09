@@ -1,0 +1,293 @@
+﻿@using Apollon.Mud.Client.Data.Models
+@using Apollon.Mud.Shared.Dungeon.Race
+
+<div class="card">
+    <div class="card-header">
+        <h2>Rassen</h2>
+    </div>
+    <div class="card-body">
+
+        <EditForm EditContext="@raceContext" OnSubmit="@HandleRaceSubmit" novalidate>
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Rassenauswahl</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" aria-label="Default select example" @bind="chosenRace" @onselect="@RaceSelectionChanged()" @onselect:stopPropagation="true">
+                                <option value="NoRace" selected hidden>Neue Rasse</option>
+                                @if (!(dungeonRaces is null))
+                                {
+                                    @foreach (RaceDto dungeonRace in dungeonRaces)
+                                    {
+                                        <option value="@dungeonRace.Name">@dungeonRace.Name</option>
+                                    }
+                                }
+                            </select>
+
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="NewRaceButtonClicked"><TooltipComponent Text="Neue Rasse erstellen"><strong>+</strong></TooltipComponent></button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-2">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Name</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonRaceModel.Name" @onfocusout="NameFieldLostFocus" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRaceModel.Name) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Beschreibung</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <InputTextArea class="form-control" placeholder="Beschreibung" @bind-Value="dungeonRaceModel.Description" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRaceModel.Description) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Lebenspunkte</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" placeholder="Lebenspunkte" type="number<Int64>" @bind-Value="dungeonRaceModel.Health" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRaceModel.Health) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Schaden</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" placeholder="Schaden" type="number" @bind-Value="dungeonRaceModel.Damage" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRaceModel.Damage) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Verteidigung</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <InputText class="form-control" placeholder="Verteidigung" type="number" @bind-Value="dungeonRaceModel.Protection" />
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRaceModel.Protection) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="featurette-divider" />
+
+            <div class="form-group mt-5">
+                <div class="row">
+                    <div class="col-3">
+                        <h5 class="mt-1">Status</h5>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <select class="form-select" @bind="dungeonRaceModel.Status">
+                                <option selected hidden value=""></option>
+                                <option value="Approved">Aktiv</option>
+                                <option value="Pending">Inaktiv</option>
+                            </select>
+                        </div>
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => dungeonRaceModel.Status) />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col">
+                    <button class="btn btn-success mt-5" type="submit">Speichern</button>
+                </div>
+            </div>
+        </EditForm>
+
+    </div>
+</div>
+
+@code {
+
+    /// <summary>
+    /// The attribute of the validation model when creating a new Race
+    /// </summary>
+    DungeonRaceModel dungeonRaceModel = new DungeonRaceModel();
+
+    /// <summary>
+    /// The EditContext used by the form
+    /// </summary>
+    EditContext raceContext;
+
+    /// <summary>
+    /// The List containing the Races of the Dungeon
+    /// </summary>
+    List<RaceDto> dungeonRaces = new List<RaceDto>();
+
+    /// <summary>
+    /// The string bound to the class selection, NoClass means no class is selected
+    /// </summary>
+    string chosenRace = "NoRace";
+
+    #region Methods
+
+    /// <summary>
+    /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        #region toDelete
+        RaceDto testRace = new RaceDto();
+        testRace.DefaultDamage = 10;
+        testRace.DefaultHealth = 10;
+        testRace.DefaultProtection = 10;
+        testRace.Description = "Test Beschreibung";
+        testRace.Name = "Leon";
+
+        dungeonRaces.Add(testRace);
+        #endregion
+
+        raceContext = new EditContext(dungeonRaceModel);
+
+    }
+
+    /// <summary>
+    /// Handles the submition of a created race, validates the data and saves them locally and on the server
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleRaceSubmit()
+    {
+        var validRace = raceContext.Validate();
+        if (validRace)
+        {
+            bool newRace = false;
+            RaceDto submitRace = dungeonRaces.Find(r => r.Name.Equals(dungeonRaceModel.Name));
+            if (submitRace is null)
+            {
+                submitRace = new RaceDto();
+                newRace = true;
+            }
+            submitRace.Name = dungeonRaceModel.Name;
+            submitRace.Description = dungeonRaceModel.Description;
+            submitRace.DefaultHealth = int.Parse(dungeonRaceModel.Health);
+            submitRace.DefaultDamage = int.Parse(dungeonRaceModel.Damage);
+            submitRace.DefaultProtection = int.Parse(dungeonRaceModel.Protection);
+            submitRace.Status = dungeonRaceModel.Status.Equals("Approved") ? 0 : 1;
+            if (newRace)
+            {
+                dungeonRaces.Add(submitRace);
+            }
+            chosenRace = dungeonRaceModel.Name;
+            //TODO Klasse ans Backend senden
+        }
+        else
+        {
+            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
+        }
+    }
+
+    /// <summary>
+    /// Called when the user selects a new race, this method fills out the form according to the selected race
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private EventCallback RaceSelectionChanged()
+    {
+        if (!chosenRace.Equals(dungeonRaceModel.Name) && !chosenRace.Equals("NoRace"))
+        {
+            var newRace = dungeonRaces.Find(i => i.Name.Equals(chosenRace));
+            if (!(newRace is null))
+            {
+
+                dungeonRaceModel.Name = chosenRace;
+                dungeonRaceModel.Description = newRace.Description;
+                dungeonRaceModel.Health = newRace.DefaultHealth.ToString();
+                dungeonRaceModel.Protection = newRace.DefaultProtection.ToString();
+                dungeonRaceModel.Damage = newRace.DefaultDamage.ToString();
+                dungeonRaceModel.Status = newRace.Status == 0 ? "Approved" : "Pending";
+            }
+        }
+        return EventCallback.Empty;
+    }
+
+    /// <summary>
+    /// When the Name field loses its focus, this Method checks wether a race with this name already exists and if so fills out the form accordingly
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private void NameFieldLostFocus(System.EventArgs args)
+    {
+        RaceDto checkRace = dungeonRaces.Find(i => i.Name.Equals(dungeonRaceModel.Name));
+        if (checkRace is null)
+        {
+            return;
+        }
+        else
+        {
+            chosenRace = dungeonRaceModel.Name;
+            dungeonRaceModel.Description = checkRace.Description;
+            dungeonRaceModel.Health = checkRace.DefaultHealth.ToString();
+            dungeonRaceModel.Protection = checkRace.DefaultProtection.ToString();
+            dungeonRaceModel.Damage = checkRace.DefaultDamage.ToString();
+            dungeonRaceModel.Status = checkRace.Status == 0 ? "Approved" : "Pending";
+        }
+    }
+
+    /// <summary>
+    /// To create a new race this Method clears all form input fields
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private void NewRaceButtonClicked(System.EventArgs args)
+    {
+        chosenRace = "NoRace";
+        dungeonRaceModel.Name = string.Empty;
+        dungeonRaceModel.Description = string.Empty;
+        dungeonRaceModel.Health = string.Empty;
+        dungeonRaceModel.Protection = string.Empty;
+        dungeonRaceModel.Damage = string.Empty;
+        dungeonRaceModel.Status = string.Empty;
+    }
+
+    #endregion
+}
