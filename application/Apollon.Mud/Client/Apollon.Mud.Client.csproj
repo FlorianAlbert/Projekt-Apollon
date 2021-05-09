@@ -6,11 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Shared\ChatComponent.razor.css" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Shared\Components\ChatComponent.razor.css" />
+    <!--<Content Include="Shared\ChatComponent.razor.css" />-->
   </ItemGroup>
 
   <ItemGroup>

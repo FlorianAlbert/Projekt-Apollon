@@ -1,5 +1,4 @@
 ﻿@page "/YourDungeons"
-
 @using Apollon.Mud.Shared.Dungeon
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 
@@ -69,9 +68,16 @@
     /// <summary>
     /// When initialized the Method requests all Dungeons belonging to user from the Server and saves them locally
     /// </summary>
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
         //userDungeons = DungeonService.GetAllUserDungeons();
+
+        var userDungeonCollection = await DungeonService.GetAllDungeonsForUser();
+        if(!(userDungeonCollection is null))
+        {
+            userDungeons = userDungeonCollection.ToList();
+        }
+        StateHasChanged();
 
         DungeonDto quciktest = new DungeonDto();
         quciktest.DungeonName = "TestDungeon";

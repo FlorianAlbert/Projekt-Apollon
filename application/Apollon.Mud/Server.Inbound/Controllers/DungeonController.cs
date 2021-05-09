@@ -226,7 +226,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// <returns>A list of DungeonDtos containing informations about all existing dungeons</returns>
         [HttpGet]
         [Authorize(Roles = "Player")]
-        [ProducesResponseType(typeof(DungeonDto[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ICollection<DungeonDto>), StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<IActionResult> GetAll()
         {
@@ -255,9 +255,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// </summary>
         /// <returns>A list of DungeonDtos containing informations about all existing dungeons that belong to the requesting user</returns>
         [HttpGet]
-        [Route("/userdungeons")]
+        [Route("userdungeons")]
         [Authorize(Roles = "Player")]
-        [ProducesResponseType(typeof(DungeonDto[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ICollection<DungeonDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllForUser()
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
