@@ -48,12 +48,5 @@ namespace Apollon.Mud.Server.Domain.Interfaces.Shared
         /// <param name="item"></param>
         /// <returns></returns>
         Task<bool> NewOrUpdate<T>(T item) where T : class, IApprovable;
-
-        /// <summary>
-        /// Deletes all avatars and dungeons of the user with the given userId.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        Task<bool> DeleteAllFromUser(Guid userId);
     }
 }

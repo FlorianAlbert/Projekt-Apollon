@@ -176,40 +176,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Shared
                 return false;
             }
         }
-
-        /// <inheritdoc cref="IGameDbService.DeleteAllFromUser"/>
-        public async Task<bool> DeleteAllFromUser(Guid userId)
-        {
-            await using var transaction = await _dungeonDbContext.Database.BeginTransactionAsync();
-
-            try
-            {
-                var dungeonDbSet = GetDbSet<Dungeon>();
-                var avatarDbSet = GetDbSet<Avatar>();
-
-                if (dungeonDbSet is null || avatarDbSet is null)
-                {
-                    await transaction.RollbackAsync();
-                    return false;
-                }
-
-                var userDungeons = dungeonDbSet.AsQueryable().Where(x => x.DungeonOwner.Id == userId.ToString());
-                var usersAvatars = avatarDbSet.AsQueryable().Where(x => x.Owner.Id == userId.ToString());
-
-                dungeonDbSet.RemoveRange(userDungeons);
-                avatarDbSet.RemoveRange(usersAvatars);
-
-                await _dungeonDbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                await transaction.RollbackAsync();
-                return false;
-            }
-        }
-
+        
         /// <summary>
         /// Returns the right dbSet based on the generic E or null if no dbSet is suitable.
         /// </summary>
