@@ -27,8 +27,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Server.Domain\Apollon.Mud.Server.Domain.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Shared\" />
-  </ItemGroup>
 </Project>

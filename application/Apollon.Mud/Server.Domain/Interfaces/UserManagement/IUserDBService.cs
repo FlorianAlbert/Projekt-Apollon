@@ -6,90 +6,90 @@ using Apollon.Mud.Server.Model.Implementations.User;
 namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
 {
     /// <summary>
-    /// ToDO
+    /// Service which is used for database-changing methods.
     /// </summary>
     public interface IUserDbService
     {
         /// <summary>
-        /// 
+        /// Creates the user with the given password. If there is no admin currently registered, this user gets the admin role.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="password"></param>
         /// <param name="asAdmin"></param>
         /// <returns></returns>
-        Task<bool> CreateUser(DungeonUser user, string password, bool asAdmin = false); //ToDo in UML anpassen und absprechen
+        Task<bool> CreateUser(DungeonUser user, string password, bool asAdmin = false);
 
         /// <summary>
-        /// ToDo
+        /// Returns the user with the given userId.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<DungeonUser> GetUser(Guid userId); //ToDo in UML anpassen und absprechen
+        Task<DungeonUser> GetUser(Guid userId);
 
         /// <summary>
-        /// ToDo
+        /// Returns all registered users.
         /// </summary>
         /// <returns></returns>
-        Task<ICollection<DungeonUser>> GetUsers(); //ToDo in UML anpassen und absprechen
+        Task<ICollection<DungeonUser>> GetUsers();
 
         /// <summary>
-        /// 
+        /// Updates the user and sets the password to the new password.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="oldPassword"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
-        Task<bool> UpdateUser(DungeonUser user, string oldPassword, string newPassword); //ToDo in UML anpassen und absprechen
+        Task<bool> UpdateUser(DungeonUser user, string oldPassword, string newPassword);
 
         /// <summary>
-        /// ToDo
+        /// Deletes the user with the given id and all dungeons and avatars which he/her owns.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<bool> DeleteUser(Guid userId); //ToDo in UML anpassen und absprechen
+        Task<bool> DeleteUser(Guid userId);
 
         /// <summary>
-        /// ToDO
+        /// Returns the user with the given email.
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        Task<DungeonUser> GetUserByEmail(string userEmail); //ToDo in UML anpassen und absprechen
+        Task<DungeonUser> GetUserByEmail(string userEmail);
 
         /// <summary>
-        /// 
+        /// Resets the password of the user with the given token and sets the password the the new password.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="token"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        Task<bool> ResetPassword(DungeonUser user, string token, string password); //ToDo in UML hinzufügen
+        Task<bool> ResetPassword(DungeonUser user, string token, string password);
 
         /// <summary>
-        /// ToDo
+        /// Generates a token for the given user to reset his/her password.
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<string> GetResetToken(DungeonUser user); //ToDo in UML hinzufügen
+        Task<string> GetResetToken(DungeonUser user);
 
         /// <summary>
-        /// ToDo
+        /// Confirms the email of the user with the token.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<bool> ConfirmEmail(DungeonUser user, string token); //ToDo in UML hinzufügen
+        Task<bool> ConfirmEmail(DungeonUser user, string token);
 
         /// <summary>
-        /// ToDo
+        /// Returns an email confirmation token for the given user.
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<string> GetEmailConfirmationToken(DungeonUser user); //ToDo in UML hinzufügen
+        Task<string> GetEmailConfirmationToken(DungeonUser user);
 
         /// <summary>
-        /// ToDo
+        /// Checks if an admin is currently registered.
         /// </summary>
         /// <returns></returns>
-        Task<bool> IsAdminLoggedIn(); //ToDo in UML hinzufügen
+        Task<bool> IsAdminRegistered();
     }
 }

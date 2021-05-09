@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Shared.Dungeon.Class;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
-using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
-using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Shared.Dungeon.Race;
 using Apollon.Mud.Shared.Dungeon.Room;
-using Apollon.Mud.Shared.Dungeon.User;
 using Newtonsoft.Json;
 
 namespace Apollon.Mud.Shared.Dungeon.Avatar
 {
     /// <summary>
-    /// Class which represents the data representation of IAvatar.
+    /// Class which represents the data representation of Avatar.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class AvatarDto
     {
         /// <summary>

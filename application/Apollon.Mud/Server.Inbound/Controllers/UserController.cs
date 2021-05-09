@@ -15,36 +15,40 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
     /// <summary>
-    /// ToDo
+    /// Controller which offers routes for all changes which are connected to an user, like registration, password-resets and so on.
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
     public class UserController : ControllerBase
     {
+        #region member
         /// <summary>
-        /// ToDo
+        /// The service to execute the requested changes.
         /// </summary>
         private readonly IUserService _userService;
+        #endregion
+
 
         public UserController(IUserService userService)
         {
             _userService = userService;
         }
 
+        #region methods
         /// <summary>
-        /// ToDo
+        /// Tries to register a use with the email and password from the RegistrationRequestDto.
         /// </summary>
         /// <param name="registrationRequestDto"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/registration/request")]
+        [Route("registration/request")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Player, Admin")]
         public async Task<IActionResult> RegistrateUser([FromBody] RegistrationRequestDto registrationRequestDto)
         {
+            if (registrationRequestDto is null) return BadRequest();
             var succeeded = await _userService.RequestUserRegistration(registrationRequestDto.UserEmail,
                 registrationRequestDto.Password);
             if (succeeded) return Ok();
@@ -52,31 +56,31 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         }
 
         /// <summary>
-        /// ToDo
+        /// Tries to confirm the user with the given userId and token.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/registration/confirmation/{userId}/{token}")]
+        [Route("registration/confirmation/{userId}/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Admin, Player")]
         public async Task<IActionResult> ConfirmUserRegistration([FromRoute] Guid userId, [FromRoute] string token)
         {
+            if (token is null) return BadRequest();
             var succeeded = await _userService.ConfirmUserRegistration(userId, token);
             if (succeeded) return Ok();
             return BadRequest();
         }
 
         /// <summary>
-        /// ToDo
+        /// Deletes the user with the given userId. Can only be called from Admins.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/delete/{userId}")]
+        [Route("delete/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -89,11 +93,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         }
 
         /// <summary>
-        /// ToDo
+        /// Returns all registered users. Can only be called from Admins.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("/users")]
+        [Route("users")]
         [ProducesResponseType(typeof(ICollection<DungeonUserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -106,18 +110,19 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 Email = x.Email,
                 EmailConfirmed = x.EmailConfirmed,
-                LastActive = x.LastActive
+                LastActive = x.LastActive,
+                Id = Guid.Parse(x.Id)
             });
             return Ok(usersDto);
         }
 
         /// <summary>
-        /// ToDo
+        /// Returns the user with the given userId. Can only be called from Admins.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/user/{userId}")]
+        [Route("user/{userId}")]
         [ProducesResponseType(typeof(DungeonUserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -130,65 +135,67 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 Email = user.Email,
                 EmailConfirmed = user.EmailConfirmed,
-                LastActive = user.LastActive
+                LastActive = user.LastActive,
+                Id = Guid.Parse(user.Id)
             };
             return Ok(userDto);
         }
 
         /// <summary>
-        /// ToDo
+        /// Requests a password-reset for the user with the given email in the RequestPasswordResetDto.
         /// </summary>
         /// <param name="requestPasswordResetDto"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/password/reset")]
+        [Route("password/reset")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[Authorize(Roles = "Admin, Player")]
-        public async Task<IActionResult> RequestPasswordResetDto([FromBody] RequestPasswordResetDto requestPasswordResetDto)
+        public async Task<IActionResult> RequestPasswordReset([FromBody] RequestPasswordResetDto requestPasswordResetDto)
         {
+            if (requestPasswordResetDto is null) return BadRequest();
             var succeeded = await _userService.RequestPasswordReset(requestPasswordResetDto.UserEmail);
             if (succeeded) return Ok();
             return BadRequest();
         }
 
         /// <summary>
-        /// ToDo
+        /// Confirms the password-reset from the user with the given userId.
         /// </summary>
         /// <param name="passwordResetConfirmationDto"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/password/confirm/{userId}")]
+        [Route("password/confirm/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[Authorize(Roles = "Admin, Player")]
         public async Task<IActionResult> ConfirmPasswordReset([FromBody] PasswortResetConfirmationDto passwordResetConfirmationDto, [FromRoute] Guid userId)
         {
+            if (passwordResetConfirmationDto is null) return BadRequest();
             var succeeded = await _userService.ConfirmPasswordReset(userId, passwordResetConfirmationDto.Token, passwordResetConfirmationDto.NewPassword);
             if (succeeded) return Ok();
             return BadRequest();
         }
 
         /// <summary>
-        /// ToDo
+        /// Changes the password from the user with the given userId.
         /// </summary>
         /// <param name="changePasswordDto"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/password/reset/{userId}")]
+        [Route("password/reset/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = "Admin, Player")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto, [FromRoute] Guid userId)
         {
+            if (changePasswordDto is null) return BadRequest(); 
             var succeeded = await _userService.ChangePassword(userId, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
             if (succeeded) return Ok();
             return BadRequest();
         }
+        #endregion
     }
 }

@@ -11,9 +11,9 @@ using IAuthorizationService = Apollon.Mud.Server.Domain.Interfaces.UserManagemen
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
     /// <summary>
-    /// Controller which is responsable for the authorization.
+    /// Controller which is responsible for the authorization.
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/authorization")]
     [ApiController]
     public class AuthorizationController : ControllerBase
     {
@@ -33,7 +33,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// <param name="authorizationRequestDto"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/login")]
+        [Route("login")]
         [ProducesResponseType(typeof(AuthorizationResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -53,7 +53,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     {
                         Email = loginResult.User.Email,
                         EmailConfirmed = loginResult.User.EmailConfirmed,
-                        LastActive = loginResult.User.LastActive
+                        LastActive = loginResult.User.LastActive,
+                        Id = Guid.Parse(loginResult.User.Id)
                     }
                 });
             }

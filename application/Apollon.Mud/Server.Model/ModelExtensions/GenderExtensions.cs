@@ -1,4 +1,5 @@
-﻿using Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar;
+﻿using System.Diagnostics.CodeAnalysis;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 
 namespace Apollon.Mud.Server.Model.ModelExtensions
 {
@@ -12,6 +13,7 @@ namespace Apollon.Mud.Server.Model.ModelExtensions
         /// </summary>
         /// <param name="gender">The <see cref="Gender"/> value</param>
         /// <returns>The german value string</returns>
+        [ExcludeFromCodeCoverage]
         public static string GetGermanGender(this Gender gender)
         {
             return gender switch

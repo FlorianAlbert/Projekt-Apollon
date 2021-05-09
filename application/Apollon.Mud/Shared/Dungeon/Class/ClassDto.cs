@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
@@ -14,6 +12,7 @@ namespace Apollon.Mud.Shared.Dungeon.Class
     /// <summary>
     /// Class which represents the data representation of IClass.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ClassDto
     {
         /// <summary>

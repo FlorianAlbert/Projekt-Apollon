@@ -33,11 +33,24 @@ namespace Apollon.Mud.Client
             services.AddServerSideBlazor();
             services.AddHttpClient("RestHttpClient", httpClient =>
             {
-                httpClient.BaseAddress = new Uri(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + ":" + Configuration.GetSection("LoginConfiguration").GetSection("Port").Value);
-                // Appsettings.json Config Sachen festlegen und dar�ber Base URI und Port festlegen
+                httpClient.BaseAddress = new Uri(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + ":" 
+                    + Configuration.GetSection("LoginConfiguration").GetSection("Port").Value);
+                
+                // Appsettings.json Config Sachen festlegen und darüber Base URI und Port festlegen
 
             });
             services.AddTransient<IAuthorizationService, AuthorizationService>();
+            services.AddTransient<IDungeonService, DungeonService>();
+            services.AddTransient<INpcService, NpcService>();
+            services.AddTransient<IClassService, ClassService>();
+            services.AddTransient<IRaceService, RaceService>();
+            services.AddTransient<IRoomService, RoomService>();
+            services.AddTransient<ISpecialActionService, SpecialActionService>();
+            services.AddTransient<IInspectableService, InspectableService>();
+            services.AddTransient<ITakeableService, TakeableService>();
+            services.AddTransient<IConsumableService, ConsumableService>();
+            services.AddTransient<IUsableService, UsableService>();
+            services.AddTransient<IWearableService, WearableService>();
             services.AddScoped<UserContext>();
             services.AddScoped<CustomAuthenticationStateProvider>();
             services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomAuthenticationStateProvider>());

@@ -9,14 +9,18 @@ namespace Apollon.Mud.Client.Data.Models
     public class ResetPasswordModel
     {
         /// <summary>
-        /// TODO
+        /// A error message will appear,
+        /// if the set password
+        /// is shorter than five characters long.
         /// </summary>
         [Required]
-        [MinLength(5, ErrorMessage = "Dein Passwort muss mindestens 5 Zeichen lang sein")]
+        [MinLength(8, ErrorMessage = "Dein Passwort muss mindestens 8 Zeichen lang sein")]
         public string NewPassword { get; set; }
 
         /// <summary>
-        /// TODO
+        /// A error message will appear,
+        /// if the two set passwords
+        /// aren't identical.
         /// </summary>
         [Required]
         [CompareProperty("NewPassword", ErrorMessage = "Die Passwörter stimmen nicht überein")]

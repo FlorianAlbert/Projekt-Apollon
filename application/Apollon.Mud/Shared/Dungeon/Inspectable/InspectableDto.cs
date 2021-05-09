@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace Apollon.Mud.Shared.Dungeon.Inspectable
 {
     /// <summary>
-    /// Class which represents the data representation of IInspectable.
+    /// Class which represents the data representation of Inspectable.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class InspectableDto
     {
         /// <summary>

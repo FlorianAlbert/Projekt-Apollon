@@ -4,6 +4,12 @@
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
+@inject Apollon.Mud.Client.Services.Interfaces.IClassService ClassService
+@inject Apollon.Mud.Client.Services.Interfaces.ITakeableService TakeableService
+@inject Apollon.Mud.Client.Services.Interfaces.IConsumableService ConsumableService;
+@inject Apollon.Mud.Client.Services.Interfaces.IUsableService UsableService;
+@inject Apollon.Mud.Client.Services.Interfaces.IWearableService WearableService;
+
 
 <div class="card">
     <div class="card-header">
@@ -119,191 +125,173 @@
                 </div>
             </div>
 
-            @if (defaultItemCount == 5)
-            {
-                <div class="form-group mt-5">
-                    <div class="row">
-                        <div class="col-3">
-                            <h5 class="mt-1">Startausrüstung</h5>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex justify-content-center">
-                                <select class="form-select" @bind="classItems[4]">
-                                    <option selected value="NoItem"></option>
-                                    @foreach (TakeableDto takeable in dungeonTakeables)
-                                    {
-                                        <option value="@takeable.Name 1">@takeable.Name</option>
-                                    }
-                                    @foreach (ConsumableDto consumable in dungeonConsumables)
-                                    {
-                                        <option value="@consumable.Name 2">@consumable.Name</option>
-                                    }
-                                    @foreach (UsableDto usable in dungeonUsables)
-                                    {
-                                        <option value="@usable.Name 3">@usable.Name</option>
-                                    }
-                                    @foreach (WearableDto wearable in dungeonWearables)
-                                    {
-                                        <option value="@wearable.Name 4">@wearable.Name</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+            <div class="row mt-5">
+                <div class="col-3">
+                    <h5 class="mt-1">Startitems</h5>
                 </div>
-            }
+                <div class="col">
+                    <select class="form-select" @bind="chosenItem">
+                        <option value="null" selected hidden></option>
 
-            @if (defaultItemCount >= 4)
-            {
-                <div class="form-group mt-5">
-                    <div class="row">
-                        <div class="col-3">
-                            <h5 class="mt-1">Startausrüstung</h5>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex justify-content-center">
-                                <select class="form-select" @bind="classItems[3]">
-                                    <option selected value="NoItem"></option>
-                                    @foreach (TakeableDto takeable in dungeonTakeables)
-                                    {
-                                        <option value="@takeable.Name 1">@takeable.Name</option>
-                                    }
-                                    @foreach (ConsumableDto consumable in dungeonConsumables)
-                                    {
-                                        <option value="@consumable.Name 2">@consumable.Name</option>
-                                    }
-                                    @foreach (UsableDto usable in dungeonUsables)
-                                    {
-                                        <option value="@usable.Name 3">@usable.Name</option>
-                                    }
-                                    @foreach (WearableDto wearable in dungeonWearables)
-                                    {
-                                        <option value="@wearable.Name 4">@wearable.Name</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                        @foreach (TakeableDto takeable in dungeonTakeables)
+                        {
+                            <option value="@takeable.Name">@takeable.Name</option>
+                        }
+                        @foreach (ConsumableDto consumable in dungeonConsumables)
+                        {
+                            <option value="@consumable.Name">@consumable.Name</option>
+                        }
+                        @foreach (UsableDto usable in dungeonUsables)
+                        {
+                            <option value="@usable.Name">@usable.Name</option>
+                        }
+                        @foreach (WearableDto wearable in dungeonWearables)
+                        {
+                            <option value="@wearable.Name">@wearable.Name</option>
+                        }
+                    </select>
                 </div>
-            }
-
-            @if (defaultItemCount >= 3)
-            {
-                <div class="form-group mt-5">
-                    <div class="row">
-                        <div class="col-3">
-                            <h5 class="mt-1">Startausrüstung</h5>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex justify-content-center">
-                                <select class="form-select" @bind="classItems[2]">
-                                    <option selected value="NoItem"></option>
-                                    @foreach (TakeableDto takeable in dungeonTakeables)
-                                    {
-                                        <option value="@takeable.Name 1">@takeable.Name</option>
-                                    }
-                                    @foreach (ConsumableDto consumable in dungeonConsumables)
-                                    {
-                                        <option value="@consumable.Name 2">@consumable.Name</option>
-                                    }
-                                    @foreach (UsableDto usable in dungeonUsables)
-                                    {
-                                        <option value="@usable.Name 3">@usable.Name</option>
-                                    }
-                                    @foreach (WearableDto wearable in dungeonWearables)
-                                    {
-                                        <option value="@wearable.Name 4">@wearable.Name</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-md-auto">
+                    @if (defaultItemCount <= 5 && chosenItem != "NoItem")
+                    {
+                        <button class="btn btn-outline-secondary float-end" type="button" @onclick="AddDefaultItemButtonClicked">Item hinzufügen</button>
+                    }
+                    else
+                    {
+                        if (chosenItem == "NoItem")
+                        {
+                            <TooltipComponent Text="Wähle ein Item aus">
+                                <button class="btn btn-outline-secondary float-end" type="button" disabled>Item hinzufügen</button>
+                            </TooltipComponent>
+                        }
+                        else
+                        {
+                            <TooltipComponent Text="Maximum erreicht">
+                                <button class="btn btn-outline-secondary float-end" type="button" disabled>Item hinzufügen</button>
+                            </TooltipComponent>
+                        }
+                    }
                 </div>
-            }
-
-            @if (defaultItemCount >= 2)
-            {
-                <div class="form-group mt-5">
-                    <div class="row">
-                        <div class="col-3">
-                            <h5 class="mt-1">Startausrüstung</h5>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex justify-content-center">
-                                <select class="form-select" @bind="classItems[1]">
-                                    <option selected value="NoItem"></option>
-                                    @foreach (TakeableDto takeable in dungeonTakeables)
-                                    {
-                                        <option value="@takeable.Name 1">@takeable.Name</option>
-                                    }
-                                    @foreach (ConsumableDto consumable in dungeonConsumables)
-                                    {
-                                        <option value="@consumable.Name 2">@consumable.Name</option>
-                                    }
-                                    @foreach (UsableDto usable in dungeonUsables)
-                                    {
-                                        <option value="@usable.Name 3">@usable.Name</option>
-                                    }
-                                    @foreach (WearableDto wearable in dungeonWearables)
-                                    {
-                                        <option value="@wearable.Name 4">@wearable.Name</option>
-                                    }
-                                </select>
-                                <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="RemoveDefaultItemButtonClicked"><TooltipComponent Text="Startitem entfernen"><strong>-</strong></TooltipComponent></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            <div class="form-group mt-5">
-                <div class="row">
-                    <div class="col-3">
-                        <h5 class="mt-1">Startausrüstung</h5>
-                    </div>
-                    <div class="col">
-                        <div class="d-flex justify-content-center">
-                            <select class="form-select" @bind="classItems[0]">
-                                <option selected value="" hidden></option>
-                                <option value="NoItem">Kein Item</option>
-                                @foreach (TakeableDto takeable in dungeonTakeables)
-                                {
-                                    <option value="@takeable.Name 1">@takeable.Name</option>
-                                }
-                                @foreach (ConsumableDto consumable in dungeonConsumables)
-                                {
-                                    <option value="@consumable.Name 2">@consumable.Name</option>
-                                }
-                                @foreach (UsableDto usable in dungeonUsables)
-                                {
-                                    <option value="@usable.Name 3">@usable.Name</option>
-                                }
-                                @foreach (WearableDto wearable in dungeonWearables)
-                                {
-                                    <option value="@wearable.Name 4">@wearable.Name</option>
-                                }
-                            </select>
-                            @if (defaultItemCount == 5)
-                            {
-                                <TooltipComponent Text="Maximum erreicht">
-                                    <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" disabled>
-                                        <strong>+</strong>
+            </div>
+            <div class="table table-bordered mt-3">
+                @{int itemIndex = 1;}
+                @if (!(dungeonClassModel.InventoryTakeableDtos is null))
+                {
+                    @foreach (TakeableDto takeable in dungeonClassModel.InventoryTakeableDtos)
+                    {
+                        <div class="card p-0">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div style="vertical-align:middle; text-align:center">
+                                        <span><strong>Item @itemIndex</strong></span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div style="vertical-align:middle">
+                                        <span>@takeable.Name</span>
+                                    </div>
+                                </div>
+                                <div class="col-1">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveTakeableButtonClicked(takeable))">
+                                        <TooltipComponent Text="Item entfernen">
+                                            <span style="vertical-align:middle"><strong>-</strong></span>
+                                        </TooltipComponent>
                                     </button>
-                                </TooltipComponent>
-                            }
-                            else
-                            {
-
-                                <button class="btn btn-outline-secondary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="AddDefaultItemButtonClicked"><TooltipComponent Text="Weiteres Startitem hinzufügen"><strong>+</strong></TooltipComponent></button>
-                            }
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
+                        itemIndex++;
+                    }
+                }
+                @if (!(dungeonClassModel.InventoryConsumableDtos is null))
+                {
+                    @foreach (ConsumableDto consumable in dungeonClassModel.InventoryConsumableDtos)
+                    {
+                        <div class="card p-0">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div style="vertical-align:middle; text-align:center">
+                                        <span><strong>Item @itemIndex</strong></span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div style="vertical-align:middle">
+                                        <span>@consumable.Name</span>
+                                    </div>
+                                </div>
+                                <div class="col-1">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveConsumableButtonClicked(consumable))">
+                                        <TooltipComponent Text="Item entfernen">
+                                            <span style="vertical-align:middle"><strong>-</strong></span>
+                                        </TooltipComponent>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        itemIndex++;
+                    }
+                }
+                @if (!(dungeonClassModel.InventoryUsableDtos is null))
+                {
+                    @foreach (UsableDto usable in dungeonClassModel.InventoryUsableDtos)
+                    {
+                        <div class="card p-0">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div style="vertical-align:middle; text-align:center">
+                                        <span><strong>Item @itemIndex</strong></span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div style="vertical-align:middle">
+                                        <span>@usable.Name</span>
+                                    </div>
+                                </div>
+                                <div class="col-1">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveUsableButtonClicked(usable))">
+                                        <TooltipComponent Text="Item entfernen">
+                                            <span style="vertical-align:middle"><strong>-</strong></span>
+                                        </TooltipComponent>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        itemIndex++;
+                    }
+                }
+                @if (!(dungeonClassModel.InventoryWearableDtos is null))
+                {
+                    @foreach (WearableDto wearable in dungeonClassModel.InventoryWearableDtos)
+                    {
+                        <div class="card p-0">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div style="vertical-align:middle; text-align:center">
+                                        <span><strong>Item @itemIndex</strong></span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div style="vertical-align:middle">
+                                        <span>@wearable.Name</span>
+                                    </div>
+                                </div>
+                                <div class="col-1">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveWearableButtonClicked(wearable))">
+                                        <TooltipComponent Text="Item entfernen">
+                                            <span style="vertical-align:middle"><strong>-</strong></span>
+                                        </TooltipComponent>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        itemIndex++;
+                    }
+                }
             </div>
 
             <hr class="featurette-divider" />
 
-            <div class="form-group mt-5">
+            <div class="form-group mt-3">
                 <div class="row">
                     <div class="col-3">
                         <h5 class="mt-1">Status</h5>
@@ -323,19 +311,48 @@
                 </div>
             </div>
 
-            <div class="row">
+            <hr class="featurette-divder" />
+
+            <div class="row  d-flex justify-content-center">
                 <div class="col-3"></div>
                 <div class="col">
-                    <button class="btn btn-success mt-5" type="submit">Speichern</button>
+                    <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
+                </div>
+                <div class="col">
+                    @if (!(chosenClass == "NoClass"))
+                    {
+                        <button class="btn btn-danger float-end" type="button" @onclick="RemoveClassButtonClicked">Entfernen</button>
+                    }
                 </div>
             </div>
-
         </EditForm>
 
     </div>
 </div>
 
 @code {
+
+    #region Dungeon Information
+
+    /// <summary>
+    /// Deactives all "Delete" Buttons when true
+    /// </summary>
+    [Parameter]
+    public bool IsDungeonMasterConfigurating { get; set; }
+
+    /// <summary>
+    /// The ID of the dungeon being edited used in the components
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    ///<summary>
+    /// Event fired when the first class of a dungeon is saved or loaded
+    ///</summary>
+    [Parameter]
+    public EventCallback<Guid> OnClassSavedOrLoaded { get; set; }
+
+    #endregion
 
     #region validation Attributes
 
@@ -401,76 +418,30 @@
     /// </summary>
     string[] classItems = new string[5];
 
+    /// <summary>
+    /// The string bound to the item selection, NoItem means no item is selected
+    /// </summary>
+    private string chosenItem = "NoItem";
+
     #endregion
 
     #region Methods
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        #region toDelete
-
-        ClassDto testClass = new ClassDto();
-        testClass.DefaultDamage = 10;
-        testClass.DefaultHealth = 10;
-        testClass.DefaultProtection = 10;
-        testClass.Description = "KLa";
-        testClass.Name = "Leon";
-
-        ClassDto testClass2 = new ClassDto();
-        testClass2.DefaultDamage = 5;
-        testClass2.DefaultHealth = 5;
-        testClass2.DefaultProtection = 5;
-        testClass2.Description = "Kdwadaa";
-        testClass2.Name = "Leon2";
-
-        dungeonClasses.Add(testClass);
-        dungeonClasses.Add(testClass2);
-
-        TakeableDto newTakeable1 = new TakeableDto();
-        newTakeable1.Name = "newTakeable1";
-        TakeableDto newTakeable2 = new TakeableDto();
-        newTakeable2.Name = "newTakeable2";
-        TakeableDto newTakeable3 = new TakeableDto();
-        newTakeable3.Name = "newTakeable3";
-        dungeonTakeables.Add(newTakeable1);
-        dungeonTakeables.Add(newTakeable2);
-        dungeonTakeables.Add(newTakeable3);
-
-        UsableDto newUsable1 = new UsableDto();
-        newUsable1.Name = "newUsable1";
-        UsableDto newUsable2 = new UsableDto();
-        newUsable2.Name = "newUsable2";
-        UsableDto newUsable3 = new UsableDto();
-        newUsable3.Name = "newUsable3";
-        dungeonUsables.Add(newUsable1);
-        dungeonUsables.Add(newUsable2);
-        dungeonUsables.Add(newUsable3);
-
-        ConsumableDto newConsumable1 = new ConsumableDto();
-        newConsumable1.Name = "newConsumable1";
-        ConsumableDto newConsumable2 = new ConsumableDto();
-        newConsumable2.Name = "newConsumable2";
-        ConsumableDto newConsumable3 = new ConsumableDto();
-        newConsumable3.Name = "newConsumable3";
-        dungeonConsumables.Add(newConsumable1);
-        dungeonConsumables.Add(newConsumable2);
-        dungeonConsumables.Add(newConsumable3);
-
-        WearableDto newWearable1 = new WearableDto();
-        newWearable1.Name = "newWearable1";
-        WearableDto newWearable2 = new WearableDto();
-        newWearable2.Name = "newWearable2";
-        WearableDto newWearable3 = new WearableDto();
-        newWearable3.Name = "newWearable3";
-        dungeonWearables.Add(newWearable1);
-        dungeonWearables.Add(newWearable2);
-        dungeonWearables.Add(newWearable3);
-
-        #endregion
-        ///TODO Daten aus dem Backend lokal ablegen
         classContext = new EditContext(dungeonClassModel);
+        if (DungeonId != Guid.Empty)
+        {
+            var dungeonClassCollection = await ClassService.GetAllClasses(DungeonId);
+            if (!(dungeonClassCollection is null))
+            {
+                dungeonClasses = dungeonClassCollection.ToList();
+                await OnClassSavedOrLoaded.InvokeAsync();
+            }
+        }
+        StateHasChanged();
     }
 
     /// <summary>
@@ -481,7 +452,7 @@
     {
         ///TODO Als Task erstellen, damit es parallel läuft
         var validClass = classContext.Validate();
-        if (validClass)
+        if (validClass && DungeonId != Guid.Empty)
         {
             bool newClass = false;
             ClassDto submitClass = dungeonClasses.Find(i => i.Name.Equals(dungeonClassModel.Name));
@@ -495,44 +466,28 @@
             submitClass.DefaultHealth = int.Parse(dungeonClassModel.Health);
             submitClass.DefaultDamage = int.Parse(dungeonClassModel.Damage);
             submitClass.DefaultProtection = int.Parse(dungeonClassModel.Protection);
-            submitClass.InventoryTakeableDtos = new List<TakeableDto>();
-            submitClass.InventoryConsumableDtos = new List<ConsumableDto>();
-            submitClass.InventoryUsableDtos = new List<UsableDto>();
-            submitClass.InventoryWearableDtos = new List<WearableDto>();
+            submitClass.InventoryTakeableDtos = dungeonClassModel.InventoryTakeableDtos;
+            submitClass.InventoryConsumableDtos = dungeonClassModel.InventoryConsumableDtos;
+            submitClass.InventoryUsableDtos = dungeonClassModel.InventoryUsableDtos;
+            submitClass.InventoryWearableDtos = dungeonClassModel.InventoryWearableDtos;
             submitClass.Status = dungeonClassModel.Status.Equals("Approved") ? 0 : 1;
-            for (int i = 0; i < defaultItemCount; i++)
-            {
-                if (!(classItems[i].Equals("NoItem")))
-                {
-                    int itemType = int.Parse(classItems[i].Substring(classItems[i].Length - 1));
-
-                    switch (itemType)
-                    {
-                        case 1:
-                            submitClass.InventoryTakeableDtos.Add(dungeonTakeables.Find(t => t.Name.Equals(classItems[i].Substring(0, classItems[i].Length - 2))));
-                            break;
-                        case 2:
-                            submitClass.InventoryConsumableDtos.Add(dungeonConsumables.Find(t => t.Name.Equals(classItems[i].Substring(0, classItems[i].Length - 2))));
-                            break;
-                        case 3:
-                            submitClass.InventoryUsableDtos.Add(dungeonUsables.Find(t => t.Name.Equals(classItems[i].Substring(0, classItems[i].Length - 2))));
-                            break;
-                        case 4:
-                            submitClass.InventoryWearableDtos.Add(dungeonWearables.Find(t => t.Name.Equals(classItems[i].Substring(0, classItems[i].Length - 2))));
-                            break;
-                    }
-                }
-            }
             if (newClass)
             {
-                dungeonClasses.Add(submitClass);
+                var response = await ClassService.CreateNewClass(submitClass, DungeonId);
+                if (response != Guid.Empty)
+                {
+                    submitClass.Id = response;
+                    await OnClassSavedOrLoaded.InvokeAsync();
+                    dungeonClasses.Add(submitClass);
+                    chosenClass = dungeonClassModel.Name;
+                }
             }
-            chosenClass = dungeonClassModel.Name;
-            //TODO Klasse ans Backend senden
-        }
-        else
-        {
-            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
+            else
+            {
+                var response = await ClassService.UpdateClass(submitClass, DungeonId);
+                if (!(response is null)) WriteBackClass(response);
+            }
+            StateHasChanged();
         }
     }
 
@@ -541,17 +496,84 @@
     /// </summary>
     private void AddDefaultItemButtonClicked()
     {
-        if (defaultItemCount < 5)
-            defaultItemCount++;
+        if (chosenItem != "NoItem")
+        {
+            var newTakeable = dungeonTakeables.Find(i => i.Name.Equals(chosenItem));
+            var newConsumable = dungeonConsumables.Find(i => i.Name.Equals(chosenItem));
+            var newUsable = dungeonUsables.Find(i => i.Name.Equals(chosenItem));
+            var newWearable = dungeonWearables.Find(i => i.Name.Equals(chosenItem));
+
+            if (!(newTakeable is null))
+            {
+                dungeonClassModel.InventoryTakeableDtos.Add(newTakeable);
+            }
+            if (!(newConsumable is null))
+            {
+                dungeonClassModel.InventoryConsumableDtos.Add(newConsumable);
+            }
+            if (!(newUsable is null))
+            {
+                dungeonClassModel.InventoryUsableDtos.Add(newUsable);
+            }
+            if (!(newWearable is null))
+            {
+                dungeonClassModel.InventoryWearableDtos.Add(newWearable);
+            }
+            if (defaultItemCount < 5)
+            {
+                defaultItemCount++;
+            }
+        }
     }
 
     /// <summary>
-    /// Removes a default class item
+    /// TODO
     /// </summary>
-    private void RemoveDefaultItemButtonClicked()
+    private EventCallback RemoveTakeableButtonClicked(TakeableDto item)
     {
+        dungeonClassModel.InventoryTakeableDtos.Remove(item);
         if (defaultItemCount > 1)
             defaultItemCount--;
+        return EventCallback.Empty;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    private EventCallback RemoveConsumableButtonClicked(ConsumableDto item)
+    {
+        dungeonClassModel.InventoryConsumableDtos.Remove(item);
+        if (defaultItemCount > 1)
+            defaultItemCount--;
+        return EventCallback.Empty;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    private EventCallback RemoveUsableButtonClicked(UsableDto item)
+    {
+        dungeonClassModel.InventoryUsableDtos.Remove(item);
+        if (defaultItemCount > 1)
+            defaultItemCount--;
+        return EventCallback.Empty;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    private EventCallback RemoveWearableButtonClicked(WearableDto item)
+    {
+        dungeonClassModel.InventoryWearableDtos.Remove(item);
+        if (defaultItemCount > 1)
+            defaultItemCount--;
+        return EventCallback.Empty;
     }
 
     /// <summary>
@@ -562,84 +584,77 @@
     {
         if (!chosenClass.Equals(dungeonClassModel.Name) && !chosenClass.Equals("NoClass"))
         {
-            defaultItemCount = 1;
-            var newClass = dungeonClasses.Find(i => i.Name.Equals(chosenClass));
-            if (!(newClass is null))
-            {
-                for (int i = 0; i < 5; i++)
-                {
-                    classItems[i] = "NoItem";
-                }
-                dungeonClassModel.Name = chosenClass;
-                dungeonClassModel.Description = newClass.Description;
-                dungeonClassModel.Health = newClass.DefaultHealth.ToString();
-                dungeonClassModel.Protection = newClass.DefaultProtection.ToString();
-                dungeonClassModel.Damage = newClass.DefaultDamage.ToString();
-                dungeonClassModel.Status = newClass.Status == 0 ? "Approved" : "Pending";
-                defaultItemCount = 0;
-                int counter = 0;
-                if (!(newClass.InventoryTakeableDtos is null))
-                {
-                    newClass.InventoryTakeableDtos.ToList().ForEach(t =>
-                    {
-                        if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
-                        {
-                            classItems[counter] = t.Name + " 1";
-                            counter++;
-                            defaultItemCount++;
-                        }
-                    });
-
-                }
-                if (!(newClass.InventoryConsumableDtos is null))
-                {
-                    newClass.InventoryConsumableDtos.ToList().ForEach(t =>
-                    {
-                        if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
-                        {
-                            classItems[counter] = t.Name + " 2";
-                            counter++;
-                            defaultItemCount++;
-                        }
-                    });
-                }
-                if (!(newClass.InventoryUsableDtos is null))
-                {
-                    newClass.InventoryUsableDtos.ToList().ForEach(t =>
-                    {
-                        if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
-                        {
-                            classItems[counter] = t.Name + " 3";
-                            counter++;
-                            defaultItemCount++;
-                        }
-                    });
-                }
-                if (!(newClass.InventoryWearableDtos is null))
-                {
-                    newClass.InventoryWearableDtos.ToList().ForEach(t =>
-                    {
-                        if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
-                        {
-                            classItems[counter] = t.Name + " 4";
-                            counter++;
-                            defaultItemCount++;
-                        }
-                    });
-                }
-                if (defaultItemCount == 0)
-                {
-                    defaultItemCount = 1;
-                }
-            }
+            var selectedClass = dungeonClasses.Find(i => i.Name.Equals(chosenClass));
+            WriteBackClass(selectedClass);
         }
         return EventCallback.Empty;
     }
 
     /// <summary>
-    /// When the Name field loses its focus, this Method checks wether a class with this name already exists and if so fills out the form accordingly
+    /// Refills the form when needed, according to the classname
     /// </summary>
-    /// <param name="args">Event Arguments</param>
+    /// <param name="className"></param>
+    private void WriteBackClass(ClassDto newClass)
+    {
+        if (!(newClass is null))
+        {
+            dungeonClassModel.InventoryTakeableDtos = new List<TakeableDto>();
+            dungeonClassModel.InventoryConsumableDtos = new List<ConsumableDto>();
+            dungeonClassModel.InventoryUsableDtos = new List<UsableDto>();
+            dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
+            dungeonClassModel.Name = newClass.Name;
+            dungeonClassModel.Description = newClass.Description;
+            dungeonClassModel.Health = newClass.DefaultHealth.ToString();
+            dungeonClassModel.Protection = newClass.DefaultProtection.ToString();
+            dungeonClassModel.Damage = newClass.DefaultDamage.ToString();
+            dungeonClassModel.Status = newClass.Status == 0 ? "Approved" : "Pending";
+            if (!(newClass.InventoryTakeableDtos is null))
+            {
+                newClass.InventoryTakeableDtos.ToList().ForEach(t =>
+                {
+                    if (!(t is null))
+                    {
+                        dungeonClassModel.InventoryTakeableDtos.Add(t);
+                    }
+                });
+            }
+            if (!(newClass.InventoryConsumableDtos is null))
+            {
+                newClass.InventoryConsumableDtos.ToList().ForEach(t =>
+                {
+                    if (!(t is null))
+                    {
+                        dungeonClassModel.InventoryConsumableDtos.Add(t);
+                    }
+                });
+            }
+            if (!(newClass.InventoryUsableDtos is null))
+            {
+                newClass.InventoryUsableDtos.ToList().ForEach(t =>
+                {
+                    if (!(t is null))
+                    {
+                        dungeonClassModel.InventoryUsableDtos.Add(t);
+                    }
+                });
+            }
+            if (!(newClass.InventoryWearableDtos is null))
+            {
+                newClass.InventoryWearableDtos.ToList().ForEach(t =>
+                {
+                    if (!(t is null))
+                    {
+                        dungeonClassModel.InventoryWearableDtos.Add(t);
+                    }
+                });
+            }
+        }
+    }
+
+    /// <summary>
+    /// When the Name field loses its focus, this Method checks wether a class with this name already exists and if so fills out the form accordingly
+    ///</summary>
+    ///<param name="args">Event Arguments</param>
     private void NameFieldLostFocus(FocusEventArgs args)
     {
         ClassDto checkClass = dungeonClasses.Find(i => i.Name.Equals(dungeonClassModel.Name));
@@ -649,74 +664,10 @@
         }
         else
         {
-            for (int i = 0; i < 5; i++)
-            {
-                classItems[i] = "NoItem";
-            }
-            chosenClass = dungeonClassModel.Name;
-            dungeonClassModel.Description = checkClass.Description;
-            dungeonClassModel.Health = checkClass.DefaultHealth.ToString();
-            dungeonClassModel.Protection = checkClass.DefaultProtection.ToString();
-            dungeonClassModel.Damage = checkClass.DefaultDamage.ToString();
-            dungeonClassModel.Status = checkClass.Status == 0 ? "Approved" : "Pending";
-            defaultItemCount = 0;
-            int counter = 0;
-            if (!(checkClass.InventoryTakeableDtos is null))
-            {
-                checkClass.InventoryTakeableDtos.ToList().ForEach(t =>
-                {
-                    if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
-                    {
-                        classItems[counter] = t.Name + " 1";
-                        counter++;
-                        defaultItemCount++;
-                    }
-                });
-
-            }
-            if (!(checkClass.InventoryConsumableDtos is null))
-            {
-                checkClass.InventoryConsumableDtos.ToList().ForEach(t =>
-                {
-                    if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
-                    {
-                        classItems[counter] = t.Name + " 2";
-                        counter++;
-                        defaultItemCount++;
-                    }
-                });
-            }
-            if (!(checkClass.InventoryUsableDtos is null))
-            {
-                checkClass.InventoryUsableDtos.ToList().ForEach(t =>
-                {
-                    if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
-                    {
-                        classItems[counter] = t.Name + " 3";
-                        counter++;
-                        defaultItemCount++;
-                    }
-                });
-            }
-            if (!(checkClass.InventoryWearableDtos is null))
-            {
-                checkClass.InventoryWearableDtos.ToList().ForEach(t =>
-                {
-                    if ((!(t is null)) && (!t.Name.Equals(string.Empty)))
-                    {
-                        classItems[counter] = t.Name + " 4";
-                        counter++;
-                        defaultItemCount++;
-                    }
-                });
-            }
-            if (defaultItemCount == 0)
-            {
-                defaultItemCount = 1;
-            }
+            chosenClass = checkClass.Name;
+            WriteBackClass(checkClass);
         }
     }
-
 
     /// <summary>
     /// To create a new class this Method clears all form input fields
@@ -732,10 +683,74 @@
         dungeonClassModel.Damage = string.Empty;
         dungeonClassModel.Status = string.Empty;
         defaultItemCount = 1;
-        for (int i = 0; i < 5; i++)
+        dungeonClassModel.InventoryTakeableDtos = new List<TakeableDto>();
+        dungeonClassModel.InventoryConsumableDtos = new List<ConsumableDto>();
+        dungeonClassModel.InventoryUsableDtos = new List<UsableDto>();
+        dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
+    }
+
+    /// <summary>
+    /// To delete an existing class of the dungeon
+    ///</summary>
+    ///<param name="args">Event Arguments</param>
+    private async void RemoveClassButtonClicked(System.EventArgs args)
+    {
+        var classToDelete = dungeonClasses.Find(c => c.Name == chosenClass);
+
+        bool shouldFieldsBeEmptied = true;
+
+        if (!(classToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await ClassService.DeleteClass(classToDelete.Id, DungeonId);
+
+        if (shouldFieldsBeEmptied)
         {
-            classItems[i] = "NoItem";
+            dungeonClasses.Remove(classToDelete);
+            chosenClass = "NoClass";
+            dungeonClassModel.Name = string.Empty;
+            dungeonClassModel.Description = string.Empty;
+            dungeonClassModel.Health = string.Empty;
+            dungeonClassModel.Protection = string.Empty;
+            dungeonClassModel.Damage = string.Empty;
+            dungeonClassModel.Status = string.Empty;
+            defaultItemCount = 1;
+            dungeonClassModel.InventoryTakeableDtos = new List<TakeableDto>();
+            dungeonClassModel.InventoryConsumableDtos = new List<ConsumableDto>();
+            dungeonClassModel.InventoryUsableDtos = new List<UsableDto>();
+            dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
+            StateHasChanged();
         }
+        else
+        {
+            //TODO Maybe Nutzer hinweisen
+        }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="typeName"></param>
+    public async void ReloadItems(string typeName)
+    {
+        switch (typeName)
+        {
+            case "Takeable":
+                var takeableList = await TakeableService.GetAllTakeables(DungeonId);
+                if (takeableList != null) dungeonTakeables = takeableList.ToList();
+                break;
+            case "Usable":
+                var usableList = await UsableService.GetAllUsables(DungeonId);
+                if (usableList != null) dungeonUsables = usableList.ToList();
+                break;
+            case "Wearable":
+                var wearableList = await WearableService.GetAllWearables(DungeonId);
+                if (wearableList != null) dungeonWearables = wearableList.ToList();
+                break;
+            case "Consumable":
+                var consumableList = await ConsumableService.GetAllConsumables(DungeonId);
+                if (consumableList != null) dungeonConsumables = consumableList.ToList();
+                break;
+        }
+        StateHasChanged();
+
     }
     #endregion
 }
