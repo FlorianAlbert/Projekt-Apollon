@@ -488,7 +488,7 @@
         #endregion
 
         classContext = new EditContext(dungeonClassModel);
-        if (!(DungeonId == Guid.Empty))
+        if (DungeonId != Guid.Empty)
         {
             var dungeonClassCollection = await ClassService.GetAllClasses(DungeonId);
             if (!(dungeonClassCollection is null))
@@ -541,11 +541,9 @@
             else
             {
                 var response = await ClassService.UpdateClass(submitClass, DungeonId);
-                if (!(response is null))
-                {
-                    WriteBackClass(response);
-                }
+                if (!(response is null))  WriteBackClass(response);
             }
+        StateHasChanged();
         }
     }
 
@@ -585,7 +583,7 @@
     }
 
     /// <summary>
-    /// Removes a default class item
+    /// TODO
     /// </summary>
     private EventCallback RemoveTakeableButtonClicked(TakeableDto item)
     {
@@ -753,7 +751,7 @@
     ///<param name="args">Event Arguments</param>
     private async void RemoveClassButtonClicked(System.EventArgs args)
     {
-        var classToDelete = dungeonClasses.Find(c => c.Name.Equals(chosenClass));
+        var classToDelete = dungeonClasses.Find(c => c.Name == chosenClass);
 
         bool shouldFieldsBeEmptied = true;
 

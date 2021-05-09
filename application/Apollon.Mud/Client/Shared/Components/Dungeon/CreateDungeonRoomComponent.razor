@@ -7,7 +7,7 @@
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
 @using Apollon.Mud.Shared.Dungeon.Requestable
 @using Apollon.Mud.Shared.Dungeon.Npc
-@inject Apollon.Mud.Client.Services.Interfaces.IRoomService RoomService 
+@inject Apollon.Mud.Client.Services.Interfaces.IRoomService RoomService
 
 <div class="card">
     <div class="card-header">
@@ -891,144 +891,144 @@
 
 @code {
 
-        #region Dungeon Information
+    #region Dungeon Information
 
-        /// <summary>
-        /// TODO
-        /// </summary>
-        [Parameter]
-        public bool IsDungeonMasterConfigurating { get; set; }
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public bool IsDungeonMasterConfigurating { get; set; }
 
-        /// <summary>
-        /// TODO
-        /// </summary>
-        [Parameter]
-        public Guid DungeonId { get; set; }
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
 
-        ///<summary>
-        /// TODO
-        ///</summary>
-        [Parameter]
-        public EventCallback<Guid> OnRoomSavedOrLoaded { get; set; }
-
-        #endregion
-
-        #region Dungeon Room Model
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        DungeonRoomModel dungeonRoomModel = new DungeonRoomModel();
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        EditContext roomContext;
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        List<RoomDto> dungeonRooms = new List<RoomDto>();
-
-        #endregion
-
-        #region Bound Variables
-
-        /// <summary>
-        /// Initializes the item category
-        /// </summary>
-        string[] itemCategory = new string[8];
-
-        /// <summary>
-        /// Initializes the item in the room
-        /// </summary>
-        string[] roomItems = new string[8];
-
-        /// <summary>
-        /// The room selected by default is the "NoRoom".
-        /// </summary>
-        string chosenRoom = "NoRoom";
-
-        /// <summary>
-        /// TODO Abhilfe
-        /// </summary>
-        List<RequestableDto> roomRequestables = new List<RequestableDto>();
-
-        /// <summary>
-        /// The context of the room is customizable
-        /// </summary>
-        string selectedRequestable = "NoAction";
-
-        /// <summary>
-        /// Lists the data to be managed in the room
-        /// </summary>
-        List<NpcDto> roomNpcs = new List<NpcDto>();
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        string selectedNpc = "NoNpc";
-
-        #endregion
-
-        #region Item Lists
-
-        /// <summary>
-        /// Lists the inspectable items in the room
-        /// </summary>
-        List<InspectableDto> dungeonInspectables = new List<InspectableDto>();
-
-        /// <summary>
-        /// Lists the items that can be picked up in the room
-        /// </summary>
-        List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
-
-        /// <summary>
-        /// Lists the consumable items in the room
-        /// </summary>
-        List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
-
-        /// <summary>
-        /// Lists the wearing items in the room
-        /// </summary>
-        List<WearableDto> dungeonWearables = new List<WearableDto>();
-
-        /// <summary>
-        /// Lists the items that can be used in the room
-        /// </summary>
-        List<UsableDto> dungeonUsables = new List<UsableDto>();
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        List<RequestableDto> dungeonRequestables = new List<RequestableDto>();
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        List<NpcDto> dungeonNpcs = new List<NpcDto>();
-
-        #endregion
-
-        #region Item Dropdown Counters
-
-        /// <summary>
-        /// When an item is kicked out of the inventory,
-        /// the number of items in the room changes
-        /// </summary>
-        int roomItemCount = 1;
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        int specialActionCount = 0;
+    ///<summary>
+    /// TODO
+    ///</summary>
+    [Parameter]
+    public EventCallback<Guid> OnRoomSavedOrLoaded { get; set; }
 
     #endregion
 
-        /// <summary>
-        /// TODO Abhilfe
-        /// </summary>
-    protected override void OnInitialized()
+    #region Dungeon Room Model
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    DungeonRoomModel dungeonRoomModel = new DungeonRoomModel();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    EditContext roomContext;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<RoomDto> dungeonRooms = new List<RoomDto>();
+
+    #endregion
+
+    #region Bound Variables
+
+    /// <summary>
+    /// Initializes the item category
+    /// </summary>
+    string[] itemCategory = new string[8];
+
+    /// <summary>
+    /// Initializes the item in the room
+    /// </summary>
+    string[] roomItems = new string[8];
+
+    /// <summary>
+    /// The room selected by default is the "NoRoom".
+    /// </summary>
+    string chosenRoom = "NoRoom";
+
+    /// <summary>
+    /// TODO Abhilfe
+    /// </summary>
+    List<RequestableDto> roomRequestables = new List<RequestableDto>();
+
+    /// <summary>
+    /// The context of the room is customizable
+    /// </summary>
+    string selectedRequestable = "NoAction";
+
+    /// <summary>
+    /// Lists the data to be managed in the room
+    /// </summary>
+    List<NpcDto> roomNpcs = new List<NpcDto>();
+
+    /// <summary>
+    /// The Name of the NPC selected in the "Add Npc" Dropdown
+    /// </summary>
+    string selectedNpc = "NoNpc";
+
+    #endregion
+
+    #region Item Lists
+
+    /// <summary>
+    /// Lists the inspectable items in the room
+    /// </summary>
+    List<InspectableDto> dungeonInspectables = new List<InspectableDto>();
+
+    /// <summary>
+    /// Lists the items that can be picked up in the room
+    /// </summary>
+    List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
+
+    /// <summary>
+    /// Lists the consumable items in the room
+    /// </summary>
+    List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
+
+    /// <summary>
+    /// Lists the wearing items in the room
+    /// </summary>
+    List<WearableDto> dungeonWearables = new List<WearableDto>();
+
+    /// <summary>
+    /// Lists the items that can be used in the room
+    /// </summary>
+    List<UsableDto> dungeonUsables = new List<UsableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<RequestableDto> dungeonRequestables = new List<RequestableDto>();
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    List<NpcDto> dungeonNpcs = new List<NpcDto>();
+
+    #endregion
+
+    #region Item Dropdown Counters
+
+    /// <summary>
+    /// When an item is kicked out of the inventory,
+    /// the number of items in the room changes
+    /// </summary>
+    int roomItemCount = 1;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    int specialActionCount = 0;
+
+    #endregion
+
+    /// <summary>
+    /// TODO Abhilfe
+    /// </summary>
+    protected async override void OnInitialized()
     {
         #region toDelete
 
@@ -1102,8 +1102,16 @@
         {
             itemCategory[i] = string.Empty;
         }
-
-        //TODO Räume aus Backendholen und Event feuern
+        if (DungeonId != Guid.Empty)
+        {
+            var dungeonRoomCollection = await RoomService.GetAllRooms(DungeonId);
+            if (!(dungeonRoomCollection is null))
+            {
+                dungeonRooms = dungeonRoomCollection.ToList();
+                await OnRoomSavedOrLoaded.InvokeAsync();
+            }
+        }
+        StateHasChanged();
     }
 
     /// <summary>
@@ -1174,8 +1182,8 @@
             }
             else submitRoom.NeighborSouthId = Guid.Empty;
 
-            if (!dungeonRoomModel.RoomWest.Equals("NoRoom")) 
-            { 
+            if (!dungeonRoomModel.RoomWest.Equals("NoRoom"))
+            {
                 submitRoom.NeighborWestId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomWest)).Id;
                 ReloadNeighbour(submitRoom.NeighborWestId);
             }
@@ -1184,22 +1192,20 @@
             if (newRoom)
             {
                 var response = await RoomService.CreateNewRoom(submitRoom, DungeonId);
-                if(response != Guid.Empty)
+                if (response != Guid.Empty)
                 {
                     submitRoom.Id = response;
                     await OnRoomSavedOrLoaded.InvokeAsync();
                     dungeonRooms.Add(submitRoom);
                     chosenRoom = dungeonRoomModel.Name;
-
                 }
-
-                dungeonRooms.Add(submitRoom);
-                chosenRoom = dungeonRoomModel.Name;
-
+            }
+            else
+            {
+                var response = await RoomService.UpdateRoom(submitRoom, DungeonId);
+                if (!(response is null)) WriteBackRoom(response);
             }
             StateHasChanged();
-            //TODO: OnRoomSavedOrLoaded Event wenn erster Room erstellt
-
         }
     }
 
@@ -1209,7 +1215,7 @@
     private async void ReloadNeighbour(Guid roomId)
     {
         var updatedRoom = await RoomService.GetRoom(roomId, DungeonId);
-        if(!(updatedRoom is null))
+        if (!(updatedRoom is null))
         {
             dungeonRooms.Remove(dungeonRooms.Find(r => r.Id == roomId));
             dungeonRooms.Add(updatedRoom);
@@ -1248,6 +1254,10 @@
         }
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="newRoom"></param>
     private void WriteBackRoom(RoomDto newRoom)
     {
         if (!(newRoom is null))
@@ -1381,24 +1391,39 @@
     /// TODO
     /// </summary>
     /// <param name="args"></param>
-    private void RemoveRoomButtonClicked(System.EventArgs args)
+    private async void RemoveRoomButtonClicked(System.EventArgs args)
     {
-        dungeonRooms.Remove(dungeonRooms.Find(i => i.Name.Equals(chosenRoom)));
-        chosenRoom = "NoRoom";
-        dungeonRoomModel.Name = string.Empty;
-        dungeonRoomModel.Description = string.Empty;
-        dungeonRoomModel.RoomNorth = "NoRoom";
-        dungeonRoomModel.RoomEast = "NoRoom";
-        dungeonRoomModel.RoomWest = "NoRoom";
-        dungeonRoomModel.RoomSouth = "NoRoom";
-        dungeonRoomModel.Status = string.Empty;
-        roomRequestables.Clear();
-        roomNpcs.Clear();
-        roomItemCount = 0;
-        for (int i = 0; i < 8; i++)
+        var roomToDelete = dungeonRooms.Find(r => r.Name == chosenRoom);
+
+        bool shouldFieldsBeEmptied = true;
+
+        if (!(roomToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await RoomService.DeleteRoom(roomToDelete.Id, DungeonId);
+
+        if (shouldFieldsBeEmptied)
         {
-            roomItems[i] = "NoItem";
+            dungeonRooms.Remove(roomToDelete);
+            chosenRoom = "NoRoom";
+            dungeonRoomModel.Name = string.Empty;
+            dungeonRoomModel.Description = string.Empty;
+            dungeonRoomModel.RoomNorth = "NoRoom";
+            dungeonRoomModel.RoomEast = "NoRoom";
+            dungeonRoomModel.RoomWest = "NoRoom";
+            dungeonRoomModel.RoomSouth = "NoRoom";
+            dungeonRoomModel.Status = string.Empty;
+            roomRequestables.Clear();
+            roomNpcs.Clear();
+            roomItemCount = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                roomItems[i] = "NoItem";
+                itemCategory[i] = "NoCategory";
+            }
+            StateHasChanged();
         }
+            else
+            {
+                //TODO Nutzer hinweisen
+            }
     }
 
     #region Add/Remove Buttons
