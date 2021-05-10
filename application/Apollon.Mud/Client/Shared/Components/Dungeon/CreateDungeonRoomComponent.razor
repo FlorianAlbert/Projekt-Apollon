@@ -628,10 +628,10 @@
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
                                     @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
-                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
-                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth))
-                                         //(dungeonRoom.NeighborSouthId == Guid.Empty))
+                                         !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                                         !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                                         !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
+                                          (dungeonRoom.NeighborSouthId == Guid.Empty || dungeonRoom.NeighborSouthId == dungeonRooms.Find(x => x.Name == chosenRoom).Id))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -656,9 +656,10 @@
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
                                     @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
-                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
-                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth))
+                                      !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                                      !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                                      !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
+                                      (dungeonRoom.NeighborEastId == Guid.Empty || dungeonRoom.NeighborEastId == dungeonRooms.Find(x => x.Name == chosenRoom).Id))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -683,9 +684,10 @@
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
                                     @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
-                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
-                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth))
+                                      !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                                      !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                                      !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth)&&
+                                      (dungeonRoom.NeighborWestId == Guid.Empty || dungeonRoom.NeighborWestId == dungeonRooms.Find(x => x.Name == chosenRoom).Id))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -708,9 +710,10 @@
                             @foreach (RoomDto dungeonRoom in dungeonRooms)
                             {
                                 @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                    !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
-                                    !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
-                                    !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth))
+                                  !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                                  !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                                  !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth)&&
+                                  (dungeonRoom.NeighborNorthId == Guid.Empty || dungeonRoom.NeighborNorthId == dungeonRooms.Find(x => x.Name == chosenRoom).Id))
                                 {
                                     <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                 }
@@ -1533,7 +1536,7 @@
         //    StateHasChanged();
         //}
         var updatedRooms = await RoomService.GetAllRooms(DungeonId);
-        if(updatedRooms is not null)
+        if (updatedRooms is not null)
         {
             dungeonRooms = updatedRooms.ToList();
         }
