@@ -317,6 +317,7 @@
 
     #endregion
 
+
     #region Methods
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
@@ -325,13 +326,6 @@
     {
         #region toDelete
 
-
-        InspectableDto testItem = new InspectableDto();
-
-        testItem.Name = "TestItem";
-        testItem.Description = "Beschreibung";
-
-        dungeonInspectables.Add(testItem);
         #endregion
 
         itemContext = new EditContext(dungeonItemModel);
@@ -760,7 +754,11 @@
             var inspectableToDelete = dungeonInspectables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if(!(inspectableToDelete is null))
             {
-                if (!(inspectableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await InspectableService.DeleteInspectable(DungeonId, inspectableToDelete.Id);
+                if (!(inspectableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await InspectableService.DeleteInspectable(DungeonId, inspectableToDelete.Id);
+                    dungeonInspectables.Remove(inspectableToDelete);
+                }
             }
         }
         if (chosenItemCategory == "Takeable")
@@ -768,7 +766,11 @@
             var takeableToDelete = dungeonTakeables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if (!(takeableToDelete is null))
             {
-                if (!(takeableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await TakeableService.DeleteTakeable(DungeonId, takeableToDelete.Id);
+                if (!(takeableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await TakeableService.DeleteTakeable(DungeonId, takeableToDelete.Id);
+                    dungeonTakeables.Remove(takeableToDelete);
+                }
             }
         }
         if (chosenItemCategory == "Consumable")
@@ -776,7 +778,11 @@
             var consumableToDelete = dungeonConsumables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if (!(consumableToDelete is null))
             {
-                if (!(consumableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await ConsumableService.DeleteConsumable(DungeonId, consumableToDelete.Id);
+                if (!(consumableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await ConsumableService.DeleteConsumable(DungeonId, consumableToDelete.Id);
+                    dungeonConsumables.Remove(consumableToDelete);
+                }
             }
         }
         if (chosenItemCategory == "Usable")
@@ -784,7 +790,11 @@
             var usableToDelete = dungeonUsables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if (!(usableToDelete is null))
             {
-                if (!(usableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await UsableService.DeleteUsable(DungeonId, usableToDelete.Id);
+                if (!(usableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await UsableService.DeleteUsable(DungeonId, usableToDelete.Id);
+                    dungeonUsables.Remove(usableToDelete);
+                }
             }
         }
         if (chosenItemCategory == "Wearable")
@@ -792,7 +802,11 @@
             var wearableToDelete = dungeonWearables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if (!(wearableToDelete is null))
             {
-                if (!(wearableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await WearableService.DeleteWearable(DungeonId, wearableToDelete.Id);
+                if (!(wearableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await WearableService.DeleteWearable(DungeonId, wearableToDelete.Id);
+                    dungeonWearables.Remove(wearableToDelete);
+                }
             }
         }
         if(shouldFieldsBeEmptied)
@@ -810,4 +824,5 @@
         }
     }
     #endregion
+
 }
