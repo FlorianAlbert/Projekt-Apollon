@@ -53,9 +53,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var connection = _ConnectionService.GetConnection(userId, sessionId);
 
+            if (connection is null) return BadRequest();
+
             if (connection.IsDungeonMaster) return Forbid();
 
-            _ChatService.PostRoomMessage(connection.DungeonId, connection.AvatarId.Value, chatMessageDto.Message);
+            if (chatMessageDto is null) return BadRequest();
+
+            await _ChatService.PostRoomMessage(connection.DungeonId, connection.AvatarId.Value, chatMessageDto.Message);
 
             return Ok();
         }
@@ -81,7 +85,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var connection = _ConnectionService.GetConnection(userId, sessionId);
 
-            _ChatService.PostWhisperMessage(connection.DungeonId, connection.AvatarId, chatMessageDto.RecipientName, chatMessageDto.Message);
+            if (connection is null) return BadRequest();
+
+            if (chatMessageDto is null) return BadRequest();
+
+            await _ChatService.PostWhisperMessage(connection.DungeonId, connection.AvatarId, chatMessageDto.RecipientName, chatMessageDto.Message);
 
             return Ok();
         }
@@ -96,6 +104,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Route("global")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> PostGlobalMessage([FromBody] ChatMessageDto chatMessageDto)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -107,9 +116,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var connection = _ConnectionService.GetConnection(userId, sessionId);
 
+            if (connection is null) return BadRequest();
+
             if (!connection.IsDungeonMaster) return Forbid();
 
-            _ChatService.PostGlobalMessage(connection.DungeonId, chatMessageDto.Message);
+            if (chatMessageDto is null) return BadRequest();
+
+            await _ChatService.PostGlobalMessage(connection.DungeonId, chatMessageDto.Message);
 
             return Ok();
         }

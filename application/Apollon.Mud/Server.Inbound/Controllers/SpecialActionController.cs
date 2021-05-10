@@ -34,7 +34,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateNew([FromRoute] Guid dungeonId, [FromBody] RequestableDto specialActionDto)
         {
             var userIdClaim = User.Claims.FirstOrDefault(u => u.Type == "UserId");
@@ -45,26 +44,21 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (!(await GameConfigService.Get<Dungeon>(dungeonId)).DungeonMasters.Contains(user)) return Unauthorized();
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
+
+            if (dungeon is null) return BadRequest();
+
+            if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
+
+            if (specialActionDto is null) return BadRequest();
 
             var newSpecialAction = new Requestable(specialActionDto.MessageRegex, specialActionDto.PatternForPlayer)
             {
-                Status = (Status)specialActionDto.Status
+                Status = (Status)specialActionDto.Status,
+                Dungeon = dungeon
             };
 
-            var actionDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
-
-            actionDungeon.ConfiguredRequestables.Add(newSpecialAction);
-
-            if (await GameConfigService.NewOrUpdate(newSpecialAction))
-            {
-                if (await GameConfigService.NewOrUpdate(actionDungeon))
-                {
-                    return Ok(newSpecialAction.Id);
-                }
-                GameConfigService.Delete<Requestable>(newSpecialAction.Id);
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            }
+            if (await GameConfigService.NewOrUpdate(newSpecialAction)) return Ok(newSpecialAction.Id);
 
             return BadRequest();
         }
@@ -85,30 +79,25 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (!( await GameConfigService.Get<Dungeon>(dungeonId)).DungeonMasters.Contains(user)) return Unauthorized();
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
-            var actionToUpdate = await GameConfigService.Get<Requestable>(specialActionDto.Id);
+            if (dungeon is null) return BadRequest();
+
+            if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
+
+            if (specialActionDto is null) return BadRequest();
+
+            var actionToUpdate = dungeon.ConfiguredRequestables.FirstOrDefault(x => x.Id == specialActionDto.Id);
 
             if (actionToUpdate is null) return BadRequest();
-
-            var actionDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
-            actionDungeon.ConfiguredRequestables.Remove(actionToUpdate);
 
             actionToUpdate.Status = (Status)specialActionDto.Status;
             actionToUpdate.MessageRegex = specialActionDto.MessageRegex;
             actionToUpdate.PatternForPlayer = specialActionDto.PatternForPlayer;
 
-            if (await GameConfigService.NewOrUpdate(actionToUpdate))
-            {
-                if (await GameConfigService .NewOrUpdate(actionDungeon))
-                {
-                    return Ok();
-                }
-                GameConfigService.Delete<Requestable>(actionToUpdate.Id);
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            }
+            if (await GameConfigService.NewOrUpdate(actionToUpdate)) return Ok();
 
-            var oldAction = await GameConfigService .Get<Requestable>(specialActionDto.Id);
+            var oldAction = await GameConfigService.Get<Requestable>(specialActionDto.Id);
 
             var oldActionDto = new RequestableDto
             {
@@ -137,11 +126,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (!(await GameConfigService.Get<Dungeon>(dungeonId)).DungeonMasters.Contains(user)) return Unauthorized();
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
-            var actionToDelete = GameConfigService.Get<Requestable>(actionId);
+            if (dungeon is null) return BadRequest();
 
-            if (actionToDelete is null) return BadRequest();
+            if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
             if (await GameConfigService.Delete<Requestable>(actionId)) return Ok();
 
@@ -151,26 +140,23 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(ICollection<RequestableDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RequestableDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
-            var specialActions = (await GameConfigService.Get<Dungeon>(dungeonId)).ConfiguredRequestables;
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
-            if (!(specialActions is null))
+            if (dungeon is null) return BadRequest();
+
+            var specialActionDtos = dungeon.ConfiguredRequestables.Select(s => new RequestableDto()
             {
-                var specialActionDtos = specialActions.Select(s => new RequestableDto()
-                {
-                    Id = s.Id,
-                    MessageRegex = s.MessageRegex,
-                    PatternForPlayer = s.PatternForPlayer,
-                    Status = (int)s.Status
-                }).ToList();
+                Id = s.Id,
+                MessageRegex = s.MessageRegex,
+                PatternForPlayer = s.PatternForPlayer,
+                Status = (int)s.Status
+            }).ToArray();
 
-                return Ok(specialActionDtos);
-            }
-
-            return BadRequest();
+            return Ok(specialActionDtos);
         }
 
         [HttpGet]
@@ -180,7 +166,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid actionId)
         {
-            var action = (await GameConfigService.Get<Dungeon>(dungeonId)).ConfiguredRequestables.FirstOrDefault(r => r.Id == actionId);
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
+
+            if (dungeon is null) return BadRequest();
+
+            var action = dungeon.ConfiguredRequestables.FirstOrDefault(r => r.Id == actionId);
 
             if (action is null) return BadRequest();
 

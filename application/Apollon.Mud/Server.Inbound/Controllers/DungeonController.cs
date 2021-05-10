@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
@@ -58,6 +57,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
+            if (dungeonDto is null) return BadRequest();
+
             var newDungeon = new Dungeon(dungeonDto.DungeonEpoch, dungeonDto.DungeonDescription, dungeonDto.DungeonName)
             {
                 Status = (Status) dungeonDto.Status,
@@ -84,7 +85,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(typeof(DungeonDto), StatusCodes.Status400BadRequest)]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Update([FromBody]DungeonDto dungeonDto)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -95,21 +95,38 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
+            if (dungeonDto is null) return BadRequest();
+
             var dungeonToUpdate = await GameConfigService.Get<Dungeon>(dungeonDto.Id);
 
             if (dungeonToUpdate is null) return BadRequest();
 
-            if (dungeonToUpdate.DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
+            if (!dungeonToUpdate.DungeonMasters.Contains(user)) return Unauthorized();
 
             var newDungeonOwner = await UserService.GetUser(dungeonDto.DungeonOwner.Id);
+
+            if (newDungeonOwner is null) return BadRequest();
+
             if (dungeonToUpdate.DungeonOwner.Id != newDungeonOwner.Id && dungeonToUpdate.DungeonOwner.Id != user.Id)
                 return Unauthorized();
 
-            dungeonToUpdate.Status = (Status) dungeonDto.Status;
+            Room newDefaultRoom;
+            if (dungeonDto.DefaultRoom is not null)
+            {
+                newDefaultRoom = await GameConfigService.Get<Room>(dungeonDto.DefaultRoom.Id);
+
+                if (newDefaultRoom is null) return BadRequest();
+            }
+            else
+            {
+                newDefaultRoom = null;
+            }
+
+            dungeonToUpdate.Status = (Status) dungeonDto.Status;                        // TODO: Wenn auf Pending wechselt, alle Avatare kicken
             dungeonToUpdate.Visibility = (Visibility) dungeonDto.Visibility;
             dungeonToUpdate.DungeonName = dungeonDto.DungeonName;
             dungeonToUpdate.DungeonDescription = dungeonDto.DungeonDescription;
-            dungeonToUpdate.DefaultRoom = await GameConfigService.Get<Room>(dungeonDto.DefaultRoom.Id);
+            dungeonToUpdate.DefaultRoom = newDefaultRoom;
             dungeonToUpdate.DungeonEpoch = dungeonDto.DungeonEpoch;
             dungeonToUpdate.DungeonOwner = newDungeonOwner;
 
@@ -119,7 +136,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             dungeonToUpdate.DungeonMasters.Clear();
             foreach (var dungeonMaster in dungeonMasters)
             {
-                dungeonToUpdate.DungeonMasters.Add(dungeonMaster);
+                if (dungeonMaster is not null) dungeonToUpdate.DungeonMasters.Add(dungeonMaster);
             }
 
             var whiteListTasks = dungeonDto.WhiteList.Select(async x => await UserService.GetUser(x.Id));
@@ -127,7 +144,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             dungeonToUpdate.WhiteList.Clear();
             foreach (var dungeonUser in dungeonWhiteList)
             {
-                dungeonToUpdate.WhiteList.Add(dungeonUser);
+                if (dungeonUser is not null) dungeonToUpdate.WhiteList.Add(dungeonUser);
             }
 
             var blackListTasks = dungeonDto.BlackList.Select(async x => await UserService.GetUser(x.Id));
@@ -135,7 +152,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             dungeonToUpdate.BlackList.Clear();
             foreach (var dungeonUser in dungeonBlackList)
             {
-                dungeonToUpdate.BlackList.Add(dungeonUser);
+                if (dungeonUser is not null) dungeonToUpdate.BlackList.Add(dungeonUser);
             }
 
             if (await GameConfigService.NewOrUpdate(dungeonToUpdate)) return Ok();
@@ -213,7 +230,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (dungeonToDelete.DungeonOwner.Id != user.Id) return Unauthorized();
+            if (dungeonToDelete.DungeonOwner != user) return Unauthorized();
 
             if (await GameConfigService.Delete<Dungeon>(dungeonId)) return Ok();
 
@@ -226,7 +243,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// <returns>A list of DungeonDtos containing informations about all existing dungeons</returns>
         [HttpGet]
         [Authorize(Roles = "Player")]
-        [ProducesResponseType(typeof(ICollection<DungeonDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DungeonDto[]), StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<IActionResult> GetAll()
         {
@@ -257,7 +274,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpGet]
         [Route("userdungeons")]
         [Authorize(Roles = "Player")]
-        [ProducesResponseType(typeof(ICollection<DungeonDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DungeonDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllForUser()
         {
@@ -350,11 +367,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (dungeon.BlackList.Any(x => x.Id == user.Id)) return Forbid();
+            if (dungeon.BlackList.Contains(user)) return Forbid();
 
-            if (dungeon.WhiteList.Any(x => x.Id == user.Id)) return Conflict();
+            if (dungeon.WhiteList.Contains(user)) return Conflict();
 
-            if (dungeon.OpenRequests.Any(x => x.Id == user.Id)) return Conflict();
+            if (dungeon.OpenRequests.Contains(user)) return Conflict();
 
             if (dungeon.Visibility == Visibility.Private)
             {
@@ -365,9 +382,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 dungeon.WhiteList.Add(user);
             }
 
-            GameConfigService.NewOrUpdate(dungeon);
-            
-            return Ok();
+            if (await GameConfigService.NewOrUpdate(dungeon)) return Ok();
+
+            return BadRequest();
         }
 
         /// <summary>
@@ -394,7 +411,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
-            if (dungeon.DungeonMasters.All(x => x.Id != user.Id)) return Unauthorized();
+            if (dungeon is null) return BadRequest();
+
+            if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
+
+            if (submitDungeonEnterRequestDto is null) return BadRequest();
 
             var requestingUser = await UserService.GetUser(submitDungeonEnterRequestDto.RequestUserId);
 
@@ -402,14 +423,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (submitDungeonEnterRequestDto.GrantAccess)
             {
-                if (dungeon.WhiteList.All(x => x.Id != requestingUser.Id))
+                if (!dungeon.WhiteList.Contains(requestingUser))
                 {
                     dungeon.WhiteList.Add(requestingUser);
                 }
             }
             else
             {
-                if (dungeon.BlackList.All(x => x.Id != requestingUser.Id))
+                if (!dungeon.BlackList.Contains(requestingUser))
                 {
                     dungeon.BlackList.Add(requestingUser);
                 }

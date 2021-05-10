@@ -34,6 +34,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateNew([FromBody] WearableDto wearableDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -48,17 +49,16 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (wearableDto is null) return BadRequest();
             var newWearable = new Wearable(
-                wearableDto.Description,
                 wearableDto.Name,
+                wearableDto.Description,
                 wearableDto.Weight,
                 wearableDto.ProtectionBoost)
             {
                 Status = (Status)wearableDto.Status,
                 Dungeon = dungeon
             };
-
-            var wearableSaved = await GameConfigService.NewOrUpdate(newWearable);
-            if (wearableSaved) return Ok(newWearable.Id);
+            
+            if (await GameConfigService.NewOrUpdate(newWearable)) return Ok(newWearable.Id);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
@@ -68,7 +68,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Update([FromBody] WearableDto wearableDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -83,15 +82,15 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (wearableDto is null) return BadRequest();
 
-            var wearableToUpdate = await GameConfigService.Get<Wearable>(wearableDto.Id);
-            if (wearableToUpdate is null) return BadRequest();
+            if (dungeon.ConfiguredInspectables.FirstOrDefault(x => x.Id == wearableDto.Id) is not Wearable wearableToUpdate) return BadRequest();
 
             wearableToUpdate.Name = wearableDto.Name;
             wearableToUpdate.Description = wearableDto.Description;
             wearableToUpdate.Status = (Status)wearableDto.Status;
-
-            var wearableSaved = await GameConfigService.NewOrUpdate(wearableToUpdate);
-            if (wearableSaved) return Ok(wearableToUpdate.Id);
+            wearableToUpdate.ProtectionBoost = wearableDto.ProtectionBoost;
+            wearableToUpdate.Weight = wearableDto.Weight;
+            
+            if (await GameConfigService.NewOrUpdate(wearableToUpdate)) return Ok(wearableToUpdate.Id);
 
             wearableToUpdate = await GameConfigService.Get<Wearable>(wearableDto.Id);
 
@@ -114,8 +113,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid wearableId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -127,38 +124,27 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
             if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
-            if (dungeon.Status is Status.Approved) return Forbid();
-
-            var wearableDeleted = await GameConfigService.Delete<Wearable>(wearableId);
-            if (wearableDeleted) return Ok();
+            
+            if (await GameConfigService.Delete<Wearable>(wearableId)) return Ok();
             return BadRequest();
         }
 
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(ICollection<WearableDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(WearableDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
-            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
-            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
-
-            var user = await UserService.GetUser(userId);
-            if (user is null) return BadRequest();
-
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
 
-            if (dungeon.ConfiguredInspectables is null) return BadRequest();
-
             //Gets all pure type wearables and no subclass object
             var wearables = dungeon.ConfiguredInspectables
-                .OfType<Wearable>().ToList();
+                .OfType<Wearable>();
 
             var wearableDtos = wearables.Select(wearable =>
-                new WearableDto()
+                new WearableDto
                 {
                     Description = wearable.Description,
                     Id = wearable.Id,
@@ -166,7 +152,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Status = (int)wearable.Status,
                     Weight = wearable.Weight,
                     ProtectionBoost = wearable.ProtectionBoost
-                });
+                }).ToArray();
             return Ok(wearableDtos);
         }
 
@@ -175,22 +161,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Route("{dungeonId}/{wearableId}")]
         [ProducesResponseType(typeof(WearableDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid wearableId)
         {
-            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
-            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
-
-            var user = await UserService.GetUser(userId);
-            if (user is null) return BadRequest();
-
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
 
-            var wearable = await GameConfigService.Get<Wearable>(wearableId);
-            if (wearable is null) return BadRequest();
+            if (dungeon.ConfiguredInspectables.FirstOrDefault(x => x.Id == wearableId) is not Wearable wearable) return BadRequest();
 
-            var wearableDto = new WearableDto()
+            var wearableDto = new WearableDto
             {
                 Description = wearable.Description,
                 Id = wearable.Id,
