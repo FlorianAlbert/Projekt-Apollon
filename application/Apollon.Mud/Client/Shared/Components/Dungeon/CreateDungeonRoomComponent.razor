@@ -1170,10 +1170,10 @@
                 if (response != Guid.Empty)
                 {
                     submitRoom.Id = response;
-                    await FirstRoomSavedOrLoaded.InvokeAsync(response);
                     await OnRoomSavedOrLoaded.InvokeAsync();
                     dungeonRooms.Add(submitRoom);
                     chosenRoom = dungeonRoomModel.Name;
+                    if(submitRoom.Status != 1) await FirstRoomSavedOrLoaded.InvokeAsync(response);
                 }
             }
             else

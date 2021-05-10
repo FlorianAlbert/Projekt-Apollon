@@ -72,7 +72,11 @@
                                 <select class="form-select" @bind="dungeonModel.DefaultRoom">
                                     @foreach (RoomDto room in dungeonRooms)
                                     {
-                                        <option value="@room.Name">@room.Name</option>
+                                        @if (room.Status == 0)
+                                        {
+                                            <option value="@room.Name">@room.Name</option>
+
+                                        }
                                     }
                                 </select>
                             </div>
