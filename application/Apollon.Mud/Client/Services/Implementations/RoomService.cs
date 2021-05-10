@@ -1,7 +1,5 @@
-﻿using Apollon.Mud.Client.Data;
-using Apollon.Mud.Client.Services.Interfaces;
+﻿using Apollon.Mud.Client.Services.Interfaces;
 using Apollon.Mud.Shared.Dungeon.Room;
-using Apollon.Mud.Shared.Dungeon.Npc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Apollon.Mud.Client.Data.Account;
 
 namespace Apollon.Mud.Client.Services.Implementiations
 {

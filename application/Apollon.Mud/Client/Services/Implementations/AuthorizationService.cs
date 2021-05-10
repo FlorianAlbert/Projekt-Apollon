@@ -6,9 +6,9 @@ using Apollon.Mud.Shared.UserManagement.Authorization;
 using System.Threading;
 using System.Net;
 using System.Threading.Tasks;
-using Apollon.Mud.Client.Data;
 using Apollon.Mud.Shared.UserManagement.Registration;
 using Apollon.Mud.Shared.UserManagement.Password;
+using Apollon.Mud.Client.Data.Account;
 
 namespace Apollon.Mud.Client.Services.Implementiations
 {

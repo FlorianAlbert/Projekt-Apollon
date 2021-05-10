@@ -1,4 +1,4 @@
-﻿@using Apollon.Mud.Client.Data.Models
+﻿@using Apollon.Mud.Client.Data.Models.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Class
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
@@ -27,7 +27,10 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" @bind="chosenClass" @onselect="@ClassSelectionChanged()" @onselect:stopPropagation="true">
+                            <select class="form-select" aria-label="Default select example" 
+                                    @bind="chosenClass" 
+                                    @onselect="@ClassSelectionChanged()" 
+                                    @onselect:stopPropagation="true">
                                 <option value="NoClass" selected hidden>Neue Klasse</option>
                                 @if (!(dungeonClasses is null))
                                 {
@@ -37,7 +40,12 @@
                                     }
                                 }
                             </select>
-                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="NewClassButtonClicked"><TooltipComponent Text="Neue Klasse erstellen"><strong>+</strong></TooltipComponent></button>
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" 
+                                    @onclick="NewClassButtonClicked">
+                                    <TooltipComponent Text="Neue Klasse erstellen">
+                                    <strong>+</strong>
+                                    </TooltipComponent>
+                            </button>
                         </div>
                     </div>
                 </div>
