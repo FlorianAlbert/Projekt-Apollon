@@ -84,6 +84,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
             return null;
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <returns></returns>
         public async Task<ICollection<DungeonDto>> GetAllDungeonsForUser()
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;

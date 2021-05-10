@@ -61,15 +61,13 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="roomDto">The class with updated information</param>
         /// <param name="dungeonId">The Dungeon that contains the class</param>
         /// <returns>The old Room in case the Database transaction failed, otherwise null</returns>
-        public async Task<RoomDto> UpdateRoom(RoomDto roomDto, Guid dungeonId)
+        public async Task<bool> UpdateRoom(RoomDto roomDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PutAsJsonAsync("api/rooms", roomDto, cancellationToken);
+            var response = await HttpClient.PutAsJsonAsync("api/rooms/" + dungeonId, roomDto, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<RoomDto>();
-
-            return null;
+            return response.StatusCode == HttpStatusCode.BadRequest;
         }
 
         /// <summary>
@@ -96,7 +94,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/rooms" + dungeonId, cancellationToken);
+            var response = await HttpClient.GetAsync("api/rooms/" + dungeonId, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<RoomDto>>();
 

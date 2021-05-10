@@ -72,7 +72,11 @@
                                 <select class="form-select" @bind="dungeonModel.DefaultRoom">
                                     @foreach (RoomDto room in dungeonRooms)
                                     {
-                                        <option value="@room.Name">@room.Name</option>
+                                        @if (room.Status == 0)
+                                        {
+                                            <option value="@room.Name">@room.Name</option>
+
+                                        }
                                     }
                                 </select>
                             </div>
@@ -203,7 +207,16 @@
             dungeonModel.Visibility = dungeonDto.Visibility == 0 ? "Private" : "Public";
             DungeonId = dungeonDto.Id;
             await OnDungeonSavedOrLoaded.InvokeAsync(DungeonId);
-            if (!(dungeonDto.DefaultRoom is null)) dungeonModel.DefaultRoom = dungeonDto.DefaultRoom.Name;
+            if (!(dungeonDto.DefaultRoom is null))
+            {
+                var roomCollection = await RoomService.GetAllRooms(DungeonId);
+                if (roomCollection is not null)
+                {
+                    dungeonRooms = roomCollection.ToList();
+                    DungeonHasRooms = true;
+                    dungeonModel.DefaultRoom = dungeonDto.DefaultRoom.Name;
+                }
+            }
         }
         StateHasChanged();
     }
@@ -217,14 +230,25 @@
         if (dungeonModel.DefaultRoom is null)
         {
             var defaultRoom = await RoomService.GetRoom(DungeonId, roomGuid);
-            if (!(defaultRoom is null))
+            if (defaultRoom is not null)
             {
                 dungeonRooms.Add(defaultRoom);
                 dungeonModel.DefaultRoom = defaultRoom.Name;
+                HandleDungeonSubmit();
                 await HandleDungeonSubmit();
             }
             StateHasChanged();
         }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public async void ReloadDungeonRooms()
+    {
+        var dungeonList = await RoomService.GetAllRooms(DungeonId);
+        if (dungeonList is not null) dungeonRooms = dungeonList.ToList();
+        StateHasChanged();
     }
 
     /// <summary>
