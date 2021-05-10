@@ -41,10 +41,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
         /// </summary>
         public virtual Inventory StartInventory => _StartInventory ??= new Inventory();
 
-        /// <inheritdoc cref="Inspectable.Name"/>
+        /// <inheritdoc cref="IChoosable.Name"/>
         public string Name { get; set; }
 
-        /// <inheritdoc cref="Inspectable.Description"/>
+        /// <inheritdoc cref="IChoosable.Description"/>
         public string Description { get; set; }
 
         /// <inheritdoc cref="IChoosable.DefaultHealth"/>

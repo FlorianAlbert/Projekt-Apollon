@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Apollon.Mud.Client.Data.Models
+namespace Apollon.Mud.Client.Data.Models.Game
 {
     public class MasterRequestModel
     {

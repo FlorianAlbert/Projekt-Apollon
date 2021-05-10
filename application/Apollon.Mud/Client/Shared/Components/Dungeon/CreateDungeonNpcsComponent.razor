@@ -1,4 +1,4 @@
-﻿@using Apollon.Mud.Client.Data.Models
+﻿@using Apollon.Mud.Client.Data.Models.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Npc
 @inject Apollon.Mud.Client.Services.Interfaces.INpcService NpcService
 
@@ -184,15 +184,6 @@
                 dungeonNpcs = dungeonNpcCollection.ToList();
             }
         }
-
-        #region to Delete
-        NpcDto testNpc = new NpcDto();
-        testNpc.Description = "KLa";
-        testNpc.Name = "Leon";
-        testNpc.Text = "Test Text????";
-        dungeonNpcs.Add(testNpc);
-        #endregion
-
         StateHasChanged();
     }
 

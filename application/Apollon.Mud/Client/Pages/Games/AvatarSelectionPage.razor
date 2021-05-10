@@ -1,7 +1,9 @@
 ﻿@page "/Avatar/Selection"
+@page "/Avatar/Selection/{DungeonId:guid}"
 
 @using Apollon.Mud.Shared.Dungeon.Avatar
-@*@inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService*@
+@inject NavigationManager NavManager
+@inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
 
 <div style="height:93vh">
     <div class="container d-flex justify-content-center">
@@ -12,10 +14,10 @@
                         <h5>Avatar Auswahl</h5>
                     </div>
                     <div class="col">
-                        <a class="btn btn-danger btn-sm" href="/MasterView/Requests" role="button">Masteransicht</a>
+                        <button class="btn btn-danger btn-sm" @onclick="MasterViewButtonClicked" role="button">Masteransicht</button>
                     </div>
                     <div class="col">
-                        <a class="btn btn-sm btn-primary" href="/Avatar/Creation">Neuer Avatar</a>
+                        <button class="btn btn-sm btn-primary" @onclick="AvatarCreationButtonClicked">Neuer Avatar</button>
                     </div>
                 </div>
             </div>
@@ -69,16 +71,36 @@
     [Parameter]
     public Guid DungeonId { get; set; }
 
-    protected override void OnInitialized()
-    {
-        //userAvatars = AvatarService.GetAllAvatarsForUser(DungeonId).Result.ToList();
 
+    /// <summary>
+    /// When initialized the Method requests all Avatars belonging to user on this dungeon and saves them locally
+    /// </summary>
+    protected async override void OnInitialized()
+    {
         #region toDelete
         AvatarDto testAvatar = new AvatarDto();
         testAvatar.Name = "Paul";
         userAvatars.Add(testAvatar);
         #endregion
+
+        var response = await AvatarService.GetAllAvatarsForUser(DungeonId);
+        if (response is not null) userAvatars = response.ToList();
+        StateHasChanged();
     }
 
+    /// <summary>
+    /// This function navigates the User to the avatar selection Page
+    /// </summary>
+    public void AvatarCreationButtonClicked()
+    {
+        NavManager.NavigateTo("/Avatar/Creation/" + DungeonId);
+    }
 
+    /// <summary>
+    /// This function navigates the User to the MasterView Page
+    /// </summary>
+    public void MasterViewButtonClicked()
+    {
+        NavManager.NavigateTo("/MasterView/Requests/" + DungeonId);
+    }
 }

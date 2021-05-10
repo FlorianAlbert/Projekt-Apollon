@@ -82,52 +82,5 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
         /// The dungeon this room belongs to
         /// </summary>
         public virtual Dungeon Dungeon { get; set; }
-
-        /**
-        public bool SupportsSpecialAction(string action)
-        {
-            return SpecialActions.Any(x => x.Message.NormalizeString() == action.NormalizeString());
-        }
-
-        public void EnterRoom(Avatar avatar)
-        {
-            avatar.CurrentRoom = this;
-            if (!Inspectables.Contains(avatar)) Inspectables.Add(avatar);
-        }
-
-        public string GetDescription(string objectName)
-        {
-            var inspectable = Inspectables.Where(x => x.Name.NormalizeString() == objectName.NormalizeString()).FirstOrDefault();
-            return inspectable is not null ? inspectable.Description : $"Es befindet sich kein untersuchbares Objekt mit Namen {objectName} in diesem Raum.";
-        }
-
-        public string GetRoomDescription()
-        {
-            return Description;
-        }
-
-        public void Leave(Avatar avatar)
-        {
-            Inspectables.Remove(avatar);
-        }
-
-        public void PlaceItem(ITakeable item)
-        {
-            Inspectables.Add(item);
-        }
-
-         TODO: Logik in PlayerService auslagern, damit Unterscheidung möglich zwischen existiert nicht versus kein takeable
-        public ITakeable TakeItem(string itemName)
-        {
-            var inspectable = Inspectables.Where(x => x.Name.NormalizeString() == itemName.NormalizeString()).FirstOrDefault();
-            
-            if (inspectable is not null && inspectable is ITakeable takeable)
-            {
-                Inspectables.Remove(takeable);
-                return takeable;
-            }
-            return null;
-        }
-        **/
     }
 }

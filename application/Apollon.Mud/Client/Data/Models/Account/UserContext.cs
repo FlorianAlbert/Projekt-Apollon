@@ -1,6 +1,6 @@
 ﻿using Apollon.Mud.Shared.Dungeon.User;
 
-namespace Apollon.Mud.Client.Data
+namespace Apollon.Mud.Client.Data.Account
 {
     /// <summary>
     /// The Context to save user-Information and keep him logged in

@@ -37,7 +37,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <param name="roomDto"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<RoomDto> UpdateRoom(RoomDto roomDto, Guid dungeonId);
+        Task<bool> UpdateRoom(RoomDto roomDto, Guid dungeonId);
 
         /// <summary>
         /// TODO
@@ -60,7 +60,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <param name="roomId"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<RoomDto> GetRoom(Guid roomId, Guid dungeonId);
+        Task<RoomDto> GetRoom(Guid dungeonId, Guid roomId);
 
 
     }

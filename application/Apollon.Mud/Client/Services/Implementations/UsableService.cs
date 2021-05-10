@@ -1,4 +1,4 @@
-﻿using Apollon.Mud.Client.Data;
+﻿using Apollon.Mud.Client.Data.Account;
 using Apollon.Mud.Client.Services.Interfaces;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
 using System;
@@ -96,7 +96,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/usables" + dungeonId, cancellationToken);
+            var response = await HttpClient.GetAsync("api/usables/" + dungeonId, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<UsableDto>>();
 

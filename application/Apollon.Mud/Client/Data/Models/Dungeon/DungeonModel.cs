@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace Apollon.Mud.Client.Data.Models
+namespace Apollon.Mud.Client.Data.Models.Dungeon
 {
     /// <summary>
     /// This is the model to validate the form a user has to fill out when creating or changing a NPC of a dungeon

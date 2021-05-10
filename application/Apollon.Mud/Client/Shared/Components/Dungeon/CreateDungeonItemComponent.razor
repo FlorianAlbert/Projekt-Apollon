@@ -1,4 +1,4 @@
-﻿@using Apollon.Mud.Client.Data.Models
+﻿@using Apollon.Mud.Client.Data.Models.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Inspectable
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable
@@ -262,6 +262,12 @@
     [Parameter]
     public Guid DungeonId { get; set; }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> ItemsChanged { get; set; }
+
     #endregion
 
     #region Bound variables
@@ -324,10 +330,6 @@
     /// </summary>
     protected async override Task OnInitializedAsync()
     {
-        #region toDelete
-
-        #endregion
-
         itemContext = new EditContext(dungeonItemModel);
         if (!(DungeonId == Guid.Empty))
         {
@@ -417,6 +419,7 @@
                             submitInspectable.Id = response;
                             dungeonInspectables.Add(submitInspectable);
                             chosenItem = dungeonItemModel.Name + " 1";
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
                     else
@@ -427,10 +430,9 @@
                             dungeonItemModel.Name = response.Name;
                             dungeonItemModel.Description = response.Description;
                             dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
-
-                    //TODO Klasse ans Backend senden
                     break;
                 case "Takeable":
                     TakeableDto submitTakeable = dungeonTakeables.Find(i => i.Name.Equals(dungeonItemModel.Name));
@@ -451,6 +453,7 @@
                             submitTakeable.Id = response;
                             dungeonTakeables.Add(submitTakeable);
                             chosenItem = dungeonItemModel.Name + " 2";
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
                     else
@@ -462,9 +465,9 @@
                             dungeonItemModel.Description = response.Description;
                             dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
                             dungeonItemModel.Weight = response.Weight.ToString();
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
-                    //TODO Klasse ans Backend senden
                     break;
                 case "Consumable":
                     ConsumableDto submitConsumable = dungeonConsumables.Find(i => i.Name.Equals(dungeonItemModel.Name));
@@ -486,6 +489,7 @@
                             submitConsumable.Id = response;
                             dungeonConsumables.Add(submitConsumable);
                             chosenItem = dungeonItemModel.Name + " 3";
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
                     else
@@ -498,9 +502,9 @@
                             dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
                             dungeonItemModel.Weight = response.Weight.ToString();
                             dungeonItemModel.EffectDescription = response.EffectDescription;
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
-                    //TODO Klasse ans Backend senden
                     break;
                 case "Usable":
                     UsableDto submitUsable = dungeonUsables.Find(i => i.Name.Equals(dungeonItemModel.Name));
@@ -522,6 +526,7 @@
                             submitUsable.Id = response;
                             dungeonUsables.Add(submitUsable);
                             chosenItem = dungeonItemModel.Name + " 4";
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
                     else
@@ -534,9 +539,9 @@
                             dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
                             dungeonItemModel.Weight = response.Weight.ToString();
                             dungeonItemModel.DamageBoost = response.DamageBoost.ToString();
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
-                    //TODO Klasse ans Backend senden
                     break;
                 case "Wearable":
                     WearableDto submitWearable = dungeonWearables.Find(i => i.Name.Equals(dungeonItemModel.Name));
@@ -558,6 +563,7 @@
                             submitWearable.Id = response;
                             dungeonWearables.Add(submitWearable);
                             chosenItem = dungeonItemModel.Name + " 5";
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
                     else
@@ -570,9 +576,9 @@
                             dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
                             dungeonItemModel.Weight = response.Weight.ToString();
                             dungeonItemModel.ProtectionBoost = response.ProtectionBoost.ToString();
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
-                    //TODO Klasse ans Backend senden
                     break;
             }
 
@@ -811,6 +817,7 @@
         }
         if(shouldFieldsBeEmptied)
         {
+            ItemsChanged.InvokeAsync(chosenItemCategory);
             chosenItem = "NoItem";
             chosenItemCategory = string.Empty;
             dungeonItemModel.Name = string.Empty;
@@ -823,6 +830,8 @@
             StateHasChanged();
         }
     }
+
+
     #endregion
 
 }

@@ -161,10 +161,6 @@
     /// </summary>
     protected async override Task OnInitializedAsync()
     {
-        #region to Delete
-
-        #endregion
-
         dungeonActionContext = new EditContext(dungeonActionModel);
         if (!(DungeonId == Guid.Empty))
         {
@@ -203,6 +199,7 @@
                 {
                     requestableDto.Id = response;
                     dungeonRequestables.Add(requestableDto);
+                    await SpecialActionsChanged.InvokeAsync();
                     chosenAction = dungeonActionModel.PatternForPlayer;
                 }
             }
@@ -212,6 +209,7 @@
                 if (!(response is null))
                 {
                     WriteBackRequestable(response);
+                    await SpecialActionsChanged.InvokeAsync();
                 }
             }
             chosenAction = dungeonActionModel.PatternForPlayer;
@@ -295,6 +293,7 @@
                 dungeonActionModel.PatternForPlayer = string.Empty;
                 dungeonActionModel.Status = string.Empty;
                 dungeonRequestables.Remove(requestableToDelete);
+                await SpecialActionsChanged.InvokeAsync();
                 StateHasChanged();
             }
             else

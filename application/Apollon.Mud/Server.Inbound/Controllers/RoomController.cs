@@ -7,7 +7,6 @@ using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
-using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables;
@@ -58,9 +57,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (dungeon is null) return BadRequest();
 
-            var rooms = dungeon.ConfiguredRooms;
-
-            var roomDtos = rooms.Select(x => new RoomDto
+            var roomDtos = dungeon.ConfiguredRooms.Select(x => new RoomDto
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -71,7 +68,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 NeighborNorthId = x.NeighborNorth?.Id ?? Guid.Empty,
                 Status = (int)x.Status,
                 Consumables = x.Inspectables.OfType<Consumable>()
-                    .Where(c => !c.GetType().IsSubclassOf(typeof(Consumable)))
                     .Select(c => new ConsumableDto
                     {
                         Id = c.Id,
@@ -82,7 +78,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Status = (int)c.Status
                     }).ToList(),
                 Usables = x.Inspectables.OfType<Usable>()
-                    .Where(u => !u.GetType().IsSubclassOf(typeof(Usable)))
                     .Select(u => new UsableDto
                     {
                         Id = u.Id,
@@ -93,7 +88,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         DamageBoost = u.DamageBoost
                     }).ToList(),
                 Takeables = x.Inspectables.OfType<Takeable>()
-                    .Where(t => !t.GetType().IsSubclassOf(typeof(Takeable)))
+                    .Where(t => t is not Consumable and not Wearable and not Usable)
                     .Select(t => new TakeableDto
                     {
                         Id = t.Id,
@@ -103,7 +98,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Status = (int)t.Status
                     }).ToList(),
                 Wearables = x.Inspectables.OfType<Wearable>()
-                    .Where(w => !w.GetType().IsSubclassOf(typeof(Wearable)))
                     .Select(w => new WearableDto
                     {
                         Id = w.Id,
@@ -114,7 +108,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         ProtectionBoost = w.ProtectionBoost
                     }).ToList(),
                 Npcs = x.Inspectables.OfType<Npc>()
-                    .Where(n => !n.GetType().IsSubclassOf(typeof(Npc)))
                     .Select(n => new NpcDto
                     {
                         Id = n.Id,
@@ -124,7 +117,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Text = n.Text
                     }).ToList(),
                 Inspectables = x.Inspectables
-                    .Where(i => !i.GetType().IsSubclassOf(typeof(Inspectable)))
+                    .Where(i => i is not Takeable and not Npc and not Avatar)
                     .Select(i => new InspectableDto
                     {
                         Id = i.Id,
@@ -147,15 +140,18 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpGet]
         [Authorize(Roles = "Player, Admin")]
         [Route("{dungeonId}/{roomId}")]
-        [ProducesResponseType(typeof(RoomDto[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RoomDto), StatusCodes.Status200OK)]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid roomId)
         {
-            var room = await GameConfigService.Get<Room>(roomId);
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
-            if (room is null || room.Dungeon.Id != dungeonId) return BadRequest();
+            if (dungeon is null) return BadRequest();
+
+            var room = dungeon.ConfiguredRooms.FirstOrDefault(x => x.Id == roomId);
+
+            if (room is null) return BadRequest();
 
             var roomDto = new RoomDto
             {
@@ -168,7 +164,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 NeighborNorthId = room.NeighborNorth?.Id ?? Guid.Empty,
                 Status = (int)room.Status,
                 Consumables = room.Inspectables.OfType<Consumable>()
-                    .Where(c => !c.GetType().IsSubclassOf(typeof(Consumable)))
                     .Select(c => new ConsumableDto
                     {
                         Id = c.Id,
@@ -179,7 +174,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Status = (int)c.Status
                     }).ToList(),
                 Usables = room.Inspectables.OfType<Usable>()
-                    .Where(u => !u.GetType().IsSubclassOf(typeof(Usable)))
                     .Select(u => new UsableDto
                     {
                         Id = u.Id,
@@ -190,7 +184,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         DamageBoost = u.DamageBoost
                     }).ToList(),
                 Takeables = room.Inspectables.OfType<Takeable>()
-                    .Where(t => !t.GetType().IsSubclassOf(typeof(Takeable)))
+                    .Where(t => t is not Consumable and not Wearable and not Usable)
                     .Select(t => new TakeableDto
                     {
                         Id = t.Id,
@@ -200,7 +194,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Status = (int)t.Status
                     }).ToList(),
                 Wearables = room.Inspectables.OfType<Wearable>()
-                    .Where(w => !w.GetType().IsSubclassOf(typeof(Wearable)))
                     .Select(w => new WearableDto
                     {
                         Id = w.Id,
@@ -211,7 +204,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         ProtectionBoost = w.ProtectionBoost
                     }).ToList(),
                 Npcs = room.Inspectables.OfType<Npc>()
-                    .Where(n => !n.GetType().IsSubclassOf(typeof(Npc)))
                     .Select(n => new NpcDto
                     {
                         Id = n.Id,
@@ -221,7 +213,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Text = n.Text
                     }).ToList(),
                 Inspectables = room.Inspectables
-                    .Where(i => !i.GetType().IsSubclassOf(typeof(Inspectable)))
+                    .Where(i => i is not Takeable and not Avatar and not Npc)
                     .Select(i => new InspectableDto
                     {
                         Id = i.Id,
@@ -247,6 +239,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> DeleteRoom([FromRoute] Guid dungeonId, [FromRoute] Guid roomId)
         {
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
@@ -341,9 +334,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    var consumable = dungeon.ConfiguredInspectables.OfType<Consumable>().SingleOrDefault(c => c.Id == consumableDto.Id);
-
-                    if (consumable is not null) room.Inspectables.Add(consumable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == consumableDto.Id) is Consumable consumable) room.Inspectables.Add(consumable);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -355,9 +346,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    var wearable = dungeon.ConfiguredInspectables.OfType<Wearable>().SingleOrDefault(c => c.Id == wearableDto.Id);
-
-                    if (wearable is not null) room.Inspectables.Add(wearable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == wearableDto.Id) is Wearable wearable) room.Inspectables.Add(wearable);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -369,9 +358,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    var usable = dungeon.ConfiguredInspectables.OfType<Usable>().SingleOrDefault(c => c.Id == usableDto.Id);
-
-                    if (usable is not null) room.Inspectables.Add(usable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == usableDto.Id) is Usable usable) room.Inspectables.Add(usable);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -383,9 +370,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    var takeable = dungeon.ConfiguredInspectables.OfType<Takeable>().SingleOrDefault(c => c.Id == takeableDto.Id);
-
-                    if (takeable is not null) room.Inspectables.Add(takeable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == takeableDto.Id) is Takeable takeable) room.Inspectables.Add(takeable);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -397,9 +382,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    var npc = dungeon.ConfiguredInspectables.OfType<Npc>().SingleOrDefault(c => c.Id == npcDto.Id);
-
-                    if (npc is not null) room.Inspectables.Add(npc);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == npcDto.Id) is Npc npc) room.Inspectables.Add(npc);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -435,33 +418,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 }
             }
 
-            //var neighborsSuccessful = true;
-            //if (neighborNorth is not null)
-            //{
-            //    neighborNorth.NeighborSouth = room;
-            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborNorth);
-            //}
-
-            //if (neighborsSuccessful && neighborEast is not null)
-            //{
-            //    neighborEast.NeighborWest = room;
-            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborEast);
-            //}
-
-            //if (neighborsSuccessful && neighborSouth is not null)
-            //{
-            //    neighborSouth.NeighborNorth = room;
-            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborSouth);
-            //}
-
-            //if (neighborsSuccessful && neighborWest is not null)
-            //{
-            //    neighborWest.NeighborEast = room;
-            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborWest);
-            //}
-
-            //if (!neighborsSuccessful) return BadRequest();
-
             if (await GameConfigService.NewOrUpdate(room)) return Ok(room.Id);
 
             return BadRequest();
@@ -470,7 +426,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpPut]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -490,9 +446,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
-            var room = await GameConfigService.Get<Room>(roomDto.Id);
+            var room = dungeon.ConfiguredRooms.FirstOrDefault(x => x.Id == roomDto.Id);
 
-            if (room is null || room.Dungeon != dungeon) return BadRequest();
+            if (room is null) return BadRequest();
 
             Room neighborEast;
             Room neighborSouth;
@@ -529,8 +485,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 return Conflict();
 
             room.Description = roomDto.Description;
-            room.Name = roomDto.Description;
-            room.Status = (Status) roomDto.Status;
+            room.Name = roomDto.Name;
+            room.Status = (Status)roomDto.Status;
             room.NeighborEast = neighborEast;
             room.NeighborSouth = neighborSouth;
             room.NeighborWest = neighborWest;
@@ -542,9 +498,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    var consumable = dungeon.ConfiguredInspectables.OfType<Consumable>().SingleOrDefault(c => c.Id == consumableDto.Id);
-
-                    if (consumable is not null) room.Inspectables.Add(consumable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == consumableDto.Id) is Consumable consumable) room.Inspectables.Add(consumable);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -556,9 +510,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    var wearable = dungeon.ConfiguredInspectables.OfType<Wearable>().SingleOrDefault(c => c.Id == wearableDto.Id);
-
-                    if (wearable is not null) room.Inspectables.Add(wearable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == wearableDto.Id) is Wearable wearable) room.Inspectables.Add(wearable);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -570,9 +522,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    var usable = dungeon.ConfiguredInspectables.OfType<Usable>().SingleOrDefault(c => c.Id == usableDto.Id);
-
-                    if (usable is not null) room.Inspectables.Add(usable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == usableDto.Id) is Usable usable) room.Inspectables.Add(usable);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -584,9 +534,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    var takeable = dungeon.ConfiguredInspectables.OfType<Takeable>().SingleOrDefault(c => c.Id == takeableDto.Id);
-
-                    if (takeable is not null) room.Inspectables.Add(takeable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == takeableDto.Id) is Takeable takeable) room.Inspectables.Add(takeable);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -598,9 +546,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    var npc = dungeon.ConfiguredInspectables.OfType<Npc>().SingleOrDefault(c => c.Id == npcDto.Id);
-
-                    if (npc is not null) room.Inspectables.Add(npc);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == npcDto.Id) is Npc npc) room.Inspectables.Add(npc);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -622,6 +568,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 }
             }
 
+            room.SpecialActions.RemoveAll();
+
             foreach (var requestableDto in roomDto.SpecialActions)
             {
                 try
@@ -636,34 +584,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 }
             }
 
-            //bool neighborsSuccessful = true;
-            //if (neighborNorth is not null)
-            //{
-            //    neighborNorth.NeighborSouth = room;
-            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborNorth);
-            //}
-
-            //if (neighborsSuccessful && neighborEast is not null)
-            //{
-            //    neighborEast.NeighborWest = room;
-            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborEast);
-            //}
-
-            //if (neighborsSuccessful && neighborSouth is not null)
-            //{
-            //    neighborSouth.NeighborNorth = room;
-            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborSouth);
-            //}
-
-            //if (neighborsSuccessful && neighborWest is not null)
-            //{
-            //    neighborWest.NeighborEast = room;
-            //    neighborsSuccessful &= await GameConfigService.NewOrUpdate(neighborWest);
-            //}
-
-            //if (!neighborsSuccessful) return BadRequest();
-
-            if (await GameConfigService.NewOrUpdate(room)) return Ok(room.Id);
+            if (await GameConfigService.NewOrUpdate(room)) return Ok();
 
             return BadRequest();
         }

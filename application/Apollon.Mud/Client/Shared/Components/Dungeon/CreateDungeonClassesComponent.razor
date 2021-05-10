@@ -1,10 +1,15 @@
-﻿@using Apollon.Mud.Client.Data.Models
+﻿@using Apollon.Mud.Client.Data.Models.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Class
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
-@inject Apollon.Mud.Client.Services.Interfaces.IClassService ClassService;
+@inject Apollon.Mud.Client.Services.Interfaces.IClassService ClassService
+@inject Apollon.Mud.Client.Services.Interfaces.ITakeableService TakeableService
+@inject Apollon.Mud.Client.Services.Interfaces.IConsumableService ConsumableService;
+@inject Apollon.Mud.Client.Services.Interfaces.IUsableService UsableService;
+@inject Apollon.Mud.Client.Services.Interfaces.IWearableService WearableService;
+
 
 <div class="card">
     <div class="card-header">
@@ -22,7 +27,10 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" @bind="chosenClass" @onselect="@ClassSelectionChanged()" @onselect:stopPropagation="true">
+                            <select class="form-select" aria-label="Default select example" 
+                                    @bind="chosenClass" 
+                                    @onselect="@ClassSelectionChanged()" 
+                                    @onselect:stopPropagation="true">
                                 <option value="NoClass" selected hidden>Neue Klasse</option>
                                 @if (!(dungeonClasses is null))
                                 {
@@ -32,7 +40,12 @@
                                     }
                                 }
                             </select>
-                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="NewClassButtonClicked"><TooltipComponent Text="Neue Klasse erstellen"><strong>+</strong></TooltipComponent></button>
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" 
+                                    @onclick="NewClassButtonClicked">
+                                    <TooltipComponent Text="Neue Klasse erstellen">
+                                    <strong>+</strong>
+                                    </TooltipComponent>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -426,67 +439,6 @@
     /// </summary>
     protected async override Task OnInitializedAsync()
     {
-        #region toDelete
-
-        ClassDto testClass = new ClassDto();
-        testClass.DefaultDamage = 10;
-        testClass.DefaultHealth = 10;
-        testClass.DefaultProtection = 10;
-        testClass.Description = "KLa";
-        testClass.Name = "Leon";
-
-        ClassDto testClass2 = new ClassDto();
-        testClass2.DefaultDamage = 5;
-        testClass2.DefaultHealth = 5;
-        testClass2.DefaultProtection = 5;
-        testClass2.Description = "Kdwadaa";
-        testClass2.Name = "Leon2";
-
-        dungeonClasses.Add(testClass);
-        dungeonClasses.Add(testClass2);
-
-        TakeableDto newTakeable1 = new TakeableDto();
-        newTakeable1.Name = "newTakeable1";
-        TakeableDto newTakeable2 = new TakeableDto();
-        newTakeable2.Name = "newTakeable2";
-        TakeableDto newTakeable3 = new TakeableDto();
-        newTakeable3.Name = "newTakeable3";
-        dungeonTakeables.Add(newTakeable1);
-        dungeonTakeables.Add(newTakeable2);
-        dungeonTakeables.Add(newTakeable3);
-
-        UsableDto newUsable1 = new UsableDto();
-        newUsable1.Name = "newUsable1";
-        UsableDto newUsable2 = new UsableDto();
-        newUsable2.Name = "newUsable2";
-        UsableDto newUsable3 = new UsableDto();
-        newUsable3.Name = "newUsable3";
-        dungeonUsables.Add(newUsable1);
-        dungeonUsables.Add(newUsable2);
-        dungeonUsables.Add(newUsable3);
-
-        ConsumableDto newConsumable1 = new ConsumableDto();
-        newConsumable1.Name = "newConsumable1";
-        ConsumableDto newConsumable2 = new ConsumableDto();
-        newConsumable2.Name = "newConsumable2";
-        ConsumableDto newConsumable3 = new ConsumableDto();
-        newConsumable3.Name = "newConsumable3";
-        dungeonConsumables.Add(newConsumable1);
-        dungeonConsumables.Add(newConsumable2);
-        dungeonConsumables.Add(newConsumable3);
-
-        WearableDto newWearable1 = new WearableDto();
-        newWearable1.Name = "newWearable1";
-        WearableDto newWearable2 = new WearableDto();
-        newWearable2.Name = "newWearable2";
-        WearableDto newWearable3 = new WearableDto();
-        newWearable3.Name = "newWearable3";
-        dungeonWearables.Add(newWearable1);
-        dungeonWearables.Add(newWearable2);
-        dungeonWearables.Add(newWearable3);
-
-        #endregion
-
         classContext = new EditContext(dungeonClassModel);
         if (DungeonId != Guid.Empty)
         {
@@ -541,9 +493,9 @@
             else
             {
                 var response = await ClassService.UpdateClass(submitClass, DungeonId);
-                if (!(response is null))  WriteBackClass(response);
+                if (!(response is null)) WriteBackClass(response);
             }
-        StateHasChanged();
+            StateHasChanged();
         }
     }
 
@@ -778,6 +730,35 @@
         {
             //TODO Maybe Nutzer hinweisen
         }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="typeName"></param>
+    public async void ReloadItems(string typeName)
+    {
+        switch (typeName)
+        {
+            case "Takeable":
+                var takeableList = await TakeableService.GetAllTakeables(DungeonId);
+                if (takeableList != null) dungeonTakeables = takeableList.ToList();
+                break;
+            case "Usable":
+                var usableList = await UsableService.GetAllUsables(DungeonId);
+                if (usableList != null) dungeonUsables = usableList.ToList();
+                break;
+            case "Wearable":
+                var wearableList = await WearableService.GetAllWearables(DungeonId);
+                if (wearableList != null) dungeonWearables = wearableList.ToList();
+                break;
+            case "Consumable":
+                var consumableList = await ConsumableService.GetAllConsumables(DungeonId);
+                if (consumableList != null) dungeonConsumables = consumableList.ToList();
+                break;
+        }
+        StateHasChanged();
+
     }
     #endregion
 }

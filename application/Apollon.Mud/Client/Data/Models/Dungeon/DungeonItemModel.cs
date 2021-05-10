@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Apollon.Mud.Client.Data.Models
+namespace Apollon.Mud.Client.Data.Models.Dungeon
 {
     /// <summary>
     /// The Model to validate the form a user has to fill out when creating or changing an Item of a dungeon

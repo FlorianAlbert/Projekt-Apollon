@@ -35,12 +35,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpPost]
         [Route("login")]
         [ProducesResponseType(typeof(AuthorizationResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] AuthorizationRequestDto authorizationRequestDto)
         {
+            if (authorizationRequestDto is null) return BadRequest();
+
             var loginResult = await _authorizationService.Login(authorizationRequestDto.UserEmail, authorizationRequestDto.Password);
 
             if (loginResult.Status == LoginResultStatus.Unauthorized) return Unauthorized();

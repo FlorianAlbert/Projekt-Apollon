@@ -614,7 +614,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Dungeons_DefaultRoomId",
                 table: "Dungeons",
-                column: "DefaultRoomId");
+                column: "DefaultRoomId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Dungeons_DungeonOwnerId",
