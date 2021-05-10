@@ -113,7 +113,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             Room newDefaultRoom;
             if (dungeonDto.DefaultRoom is not null)
             {
-                newDefaultRoom = dungeonToUpdate.ConfiguredRooms.FirstOrDefault(x => x.Id == dungeonDto.DefaultRoom.Id);
+                newDefaultRoom = await GameConfigService.Get<Room>(dungeonDto.DefaultRoom.Id);//dungeonToUpdate.ConfiguredRooms.FirstOrDefault(x => x.Id == dungeonDto.DefaultRoom.Id);
 
                 if (newDefaultRoom is null) return BadRequest();
             }
@@ -130,29 +130,38 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             dungeonToUpdate.DungeonEpoch = dungeonDto.DungeonEpoch;
             dungeonToUpdate.DungeonOwner = newDungeonOwner;
 
-            var dungeonMasterTasks =
-                dungeonDto.DungeonMasters.Select(async x => await UserService.GetUser(x.Id));
-            var dungeonMasters = await Task.WhenAll(dungeonMasterTasks);
-            dungeonToUpdate.DungeonMasters.Clear();
-            foreach (var dungeonMaster in dungeonMasters)
+            if (dungeonDto.DungeonMasters is not null)
             {
-                if (dungeonMaster is not null) dungeonToUpdate.DungeonMasters.Add(dungeonMaster);
+                var dungeonMasterTasks =
+                    dungeonDto.DungeonMasters.Select(async x => await UserService.GetUser(x.Id));
+                var dungeonMasters = await Task.WhenAll(dungeonMasterTasks);
+                dungeonToUpdate.DungeonMasters.Clear();
+                foreach (var dungeonMaster in dungeonMasters)
+                {
+                    if (dungeonMaster is not null) dungeonToUpdate.DungeonMasters.Add(dungeonMaster);
+                }
             }
 
-            var whiteListTasks = dungeonDto.WhiteList.Select(async x => await UserService.GetUser(x.Id));
-            var dungeonWhiteList = await Task.WhenAll(whiteListTasks);
-            dungeonToUpdate.WhiteList.Clear();
-            foreach (var dungeonUser in dungeonWhiteList)
+            if (dungeonDto.WhiteList is not null)
             {
-                if (dungeonUser is not null) dungeonToUpdate.WhiteList.Add(dungeonUser);
+                var whiteListTasks = dungeonDto.WhiteList.Select(async x => await UserService.GetUser(x.Id));
+                var dungeonWhiteList = await Task.WhenAll(whiteListTasks);
+                dungeonToUpdate.WhiteList.Clear();
+                foreach (var dungeonUser in dungeonWhiteList)
+                {
+                    if (dungeonUser is not null) dungeonToUpdate.WhiteList.Add(dungeonUser);
+                }
             }
 
-            var blackListTasks = dungeonDto.BlackList.Select(async x => await UserService.GetUser(x.Id));
-            var dungeonBlackList = await Task.WhenAll(blackListTasks);
-            dungeonToUpdate.BlackList.Clear();
-            foreach (var dungeonUser in dungeonBlackList)
+            if (dungeonDto.BlackList is not null)
             {
-                if (dungeonUser is not null) dungeonToUpdate.BlackList.Add(dungeonUser);
+                var blackListTasks = dungeonDto.BlackList.Select(async x => await UserService.GetUser(x.Id));
+                var dungeonBlackList = await Task.WhenAll(blackListTasks);
+                dungeonToUpdate.BlackList.Clear();
+                foreach (var dungeonUser in dungeonBlackList)
+                {
+                    if (dungeonUser is not null) dungeonToUpdate.BlackList.Add(dungeonUser);
+                }
             }
 
             if (await GameConfigService.NewOrUpdate(dungeonToUpdate)) return Ok();
