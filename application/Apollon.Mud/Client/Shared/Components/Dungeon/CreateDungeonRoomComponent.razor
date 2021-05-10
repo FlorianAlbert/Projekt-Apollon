@@ -1084,7 +1084,6 @@
             if (!(dungeonRoomCollection is null))
             {
                 dungeonRooms = dungeonRoomCollection.ToList();
-                await OnRoomSavedOrLoaded.InvokeAsync();
             }
         }
         StateHasChanged();
