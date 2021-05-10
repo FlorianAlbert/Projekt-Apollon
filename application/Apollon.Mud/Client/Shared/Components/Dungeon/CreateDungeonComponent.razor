@@ -191,6 +191,11 @@
     public EventCallback<Guid> OnDungeonSavedOrLoaded { get; set; }
 
     /// <summary>
+    /// TODO
+    /// </summary>
+    public DungeonDto CurrentDungeon { get; set; }
+
+    /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
     protected async override Task OnInitializedAsync()
@@ -199,22 +204,22 @@
 
         if (DungeonId != Guid.Empty)
         {
-            var dungeonDto = await DungeonService.GetDungeon(DungeonId);
-            dungeonModel.Name = dungeonDto.DungeonName;
-            dungeonModel.Description = dungeonDto.DungeonDescription;
-            dungeonModel.Epoch = dungeonDto.DungeonEpoch;
-            dungeonModel.Status = dungeonDto.Status == 0 ? "Approved" : "Pending";
-            dungeonModel.Visibility = dungeonDto.Visibility == 0 ? "Private" : "Public";
-            DungeonId = dungeonDto.Id;
+            CurrentDungeon = await DungeonService.GetDungeon(DungeonId);
+            dungeonModel.Name = CurrentDungeon.DungeonName;
+            dungeonModel.Description = CurrentDungeon.DungeonDescription;
+            dungeonModel.Epoch = CurrentDungeon.DungeonEpoch;
+            dungeonModel.Status = CurrentDungeon.Status == 0 ? "Approved" : "Pending";
+            dungeonModel.Visibility = CurrentDungeon.Visibility == 0 ? "Private" : "Public";
+            DungeonId = CurrentDungeon.Id;
             await OnDungeonSavedOrLoaded.InvokeAsync(DungeonId);
-            if (!(dungeonDto.DefaultRoom is null))
+            if (!(CurrentDungeon.DefaultRoom is null))
             {
                 var roomCollection = await RoomService.GetAllRooms(DungeonId);
                 if (roomCollection is not null)
                 {
                     dungeonRooms = roomCollection.ToList();
                     DungeonHasRooms = true;
-                    dungeonModel.DefaultRoom = dungeonDto.DefaultRoom.Name;
+                    dungeonModel.DefaultRoom = CurrentDungeon.DefaultRoom.Name;
                 }
             }
         }
@@ -260,7 +265,9 @@
         var validDungeon = dungeonContext.Validate();
         if (validDungeon)
         {
-            DungeonDto submitDungeon = new DungeonDto();
+            DungeonDto submitDungeon;
+            if (DungeonId != Guid.Empty) submitDungeon = CurrentDungeon;
+            else submitDungeon = new DungeonDto();
             submitDungeon.DungeonName = dungeonModel.Name;
             submitDungeon.DungeonDescription = dungeonModel.Description;
             submitDungeon.DungeonEpoch = dungeonModel.Epoch;
