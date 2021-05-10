@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Apollon.Mud.Client.Data.Models
+namespace Apollon.Mud.Client.Data.Models.Account
 {
     /// <summary>
     /// This is the Model to validate the form a user has to fill out when logging in

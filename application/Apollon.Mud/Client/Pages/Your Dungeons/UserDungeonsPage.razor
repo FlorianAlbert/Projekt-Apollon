@@ -1,5 +1,6 @@
 ﻿@page "/YourDungeons"
 @using Apollon.Mud.Shared.Dungeon
+@inject NavigationManager NavManager 
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 
 <div class="container-fluid">
@@ -30,10 +31,10 @@
                             <p class="card-text" style="height:7.5rem">@dungeon.DungeonDescription</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ViewDungeonButtonClicked(dungeon)">View</button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ViewDungeonButtonClicked(dungeon)">Anzeigen</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => EditDungeonButtonClicked(dungeon)">Bearbeiten</button>
                                 </div>
-                                <small class="text-muted">9 mins</small>
+                                @*<small class="text-muted">@dungeon.LastActive</small>*@
                             </div>
                         </div>
                     </div>
@@ -77,11 +78,6 @@
             userDungeons = userDungeonCollection.ToList();
         }
         StateHasChanged();
-
-        DungeonDto quciktest = new DungeonDto();
-        quciktest.DungeonName = "TestDungeon";
-        quciktest.DungeonDescription = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,";
-        userDungeons.Add(quciktest);
     }
 
     /// <summary>
@@ -90,8 +86,16 @@
     /// <param name="dungeon"> The dungeon the user wants to view </param>
     private void ViewDungeonButtonClicked(DungeonDto dungeon)
     {
-        //TODO Anhand des Dungeon die entsprechenden Daten aus Backend holen und korrekte Seite aufrufen (Frage an Flo)
+        //NavManager.NavigateTo("/CreateDungeon/" + dungeon.Id);
+        //TODO Masteransicht des Dungeon öffnen?
     }
 
-
+    /// <summary>
+    /// When the "Edit" Button of a Dungeon-Card is clicked, this Method opens the corresponding dungeon configuration page
+    /// </summary>
+    /// <param name="dungeon"> The dungeon the user wants to view </param>
+    private void EditDungeonButtonClicked(DungeonDto dungeon)
+    {
+        NavManager.NavigateTo("/CreateDungeon/" + dungeon.Id);
+    }
 }

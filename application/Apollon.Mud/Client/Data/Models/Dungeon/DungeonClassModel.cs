@@ -6,7 +6,7 @@ using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 
-namespace Apollon.Mud.Client.Data.Models
+namespace Apollon.Mud.Client.Data.Models.Dungeon
 {
     /// <summary>
     /// This is the Model to validate the form a user has to fill out when creating or changing a class of a dungeon
