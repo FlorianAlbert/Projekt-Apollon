@@ -181,7 +181,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("password/change")]
+        [Route("password/reset")]
         [Authorize(Roles = "Player, Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
