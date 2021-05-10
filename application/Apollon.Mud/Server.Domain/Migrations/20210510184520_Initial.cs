@@ -232,7 +232,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     Id = table.Column<string>(type: "TEXT", nullable: false),
                     DungeonEpoch = table.Column<string>(type: "TEXT", nullable: true),
                     DungeonDescription = table.Column<string>(type: "TEXT", nullable: true),
-                    DefaultRoomId = table.Column<string>(type: "TEXT", nullable: false),
+                    DefaultRoomId = table.Column<string>(type: "TEXT", nullable: true),
                     CurrentDungeonMasterId = table.Column<string>(type: "TEXT", nullable: true),
                     DungeonOwnerId = table.Column<string>(type: "TEXT", nullable: true),
                     Visibility = table.Column<int>(type: "INTEGER", nullable: false),

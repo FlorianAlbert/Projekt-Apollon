@@ -62,7 +62,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DefaultRoomId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DungeonDescription")
@@ -655,8 +654,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "DefaultRoom")
                         .WithOne()
                         .HasForeignKey("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "DefaultRoomId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", "DungeonOwner")
                         .WithMany("DungeonOwnerDungeons")
