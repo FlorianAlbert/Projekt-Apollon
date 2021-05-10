@@ -37,7 +37,7 @@
                             <CreateDungeonActionComponent DungeonId="DungeonId" SpecialActionsChanged="ReloadSpecialActions" IsDungeonMasterConfigurating="false" />
                         </section>
                         <section class="Rooms mt-3" id="Rooms">
-                            <CreateDungeonRoomComponent @ref="ChildRoomComponent" DungeonId="DungeonId" OnRoomSavedOrLoaded="RoomSavedOrLoaded" IsDungeonMasterConfigurating="false" />
+                            <CreateDungeonRoomComponent @ref="ChildRoomComponent" DungeonId="DungeonId" OnRoomSavedOrLoaded="ReloadRooms" FirstRoomSavedOrLoaded="RoomSavedOrLoaded" IsDungeonMasterConfigurating="false" />
                         </section>
                     }
                 </div>
@@ -109,8 +109,8 @@
     /// </summary>
     public void RoomSavedOrLoaded(Guid roomGuid)
     {
-        ChildDungeonComponent.SetDefaultRoom(roomGuid);
         dungeonHasRoom = true;
+        ChildDungeonComponent.SetDefaultRoom(roomGuid);
         if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
     }
 
@@ -138,6 +138,16 @@
     public void ReloadNpcs()
     {
         ChildRoomComponent.ReloadNpcs();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void ReloadRooms()
+    {
+        ChildDungeonComponent.ReloadDungeonRooms();
+        dungeonHasRoom = true;
+        if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
     }
 
     /// <summary>

@@ -942,7 +942,13 @@
     /// TODO
     ///</summary>
     [Parameter]
-    public EventCallback<Guid> OnRoomSavedOrLoaded { get; set; }
+    public EventCallback OnRoomSavedOrLoaded { get; set; }
+
+    ///<summary>
+    /// TODO
+    ///</summary>
+    [Parameter]
+    public EventCallback<Guid> FirstRoomSavedOrLoaded { get; set; }
 
     #endregion
 
@@ -1165,7 +1171,8 @@
                 if (response != Guid.Empty)
                 {
                     submitRoom.Id = response;
-                    await OnRoomSavedOrLoaded.InvokeAsync(response);
+                    await FirstRoomSavedOrLoaded.InvokeAsync(response);
+                    await OnRoomSavedOrLoaded.InvokeAsync();
                     dungeonRooms.Add(submitRoom);
                     chosenRoom = dungeonRoomModel.Name;
                 }
@@ -1173,22 +1180,14 @@
             else
             {
                 var response = await RoomService.UpdateRoom(submitRoom, DungeonId);
-                if (!(response is null)) WriteBackRoom(response);
+                if (!response)
+                {
+                    var oldRoom = await RoomService.GetRoom(submitRoom.Id, DungeonId);
+                    if(oldRoom is not null) WriteBackRoom(oldRoom);
+                }
+                else await OnRoomSavedOrLoaded.InvokeAsync();
             }
             StateHasChanged();
-        }
-    }
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    private async void ReloadNeighbour(Guid roomId)
-    {
-        var updatedRoom = await RoomService.GetRoom(roomId, DungeonId);
-        if (!(updatedRoom is null))
-        {
-            dungeonRooms.Remove(dungeonRooms.Find(r => r.Id == roomId));
-            dungeonRooms.Add(updatedRoom);
         }
     }
 
@@ -1388,6 +1387,7 @@
                 roomItems[i] = "NoItem";
                 itemCategory[i] = "NoCategory";
             }
+            await OnRoomSavedOrLoaded.InvokeAsync();
             StateHasChanged();
         }
         else
@@ -1525,6 +1525,20 @@
                 break;
         }
         StateHasChanged();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private async void ReloadNeighbour(Guid roomId)
+    {
+        var updatedRoom = await RoomService.GetRoom(DungeonId, roomId);
+        if (!(updatedRoom is null))
+        {
+            dungeonRooms.Remove(dungeonRooms.Find(r => r.Id == roomId));
+            dungeonRooms.Add(updatedRoom);
+            StateHasChanged();
+        }
     }
 
     #endregion

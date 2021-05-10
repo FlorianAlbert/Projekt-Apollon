@@ -228,6 +228,16 @@
     }
 
     /// <summary>
+    /// TODO
+    /// </summary>
+    public async void ReloadDungeonRooms()
+    {
+        var dungeonList = await RoomService.GetAllRooms(DungeonId);
+        if(dungeonList is not null) dungeonRooms = dungeonList.ToList();
+        StateHasChanged();
+    }
+
+    /// <summary>
     /// Handles the submition of a created Npc, validates the data and saves them locally and on the server
     /// </summary>
     /// <returns></returns>
