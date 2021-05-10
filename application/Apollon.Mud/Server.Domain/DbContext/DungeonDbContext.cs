@@ -118,10 +118,6 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithMany(x => x.CurrentDungeonMasterDungeons)
                 .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<Dungeon>()
-                .HasOne(e => e.DefaultRoom)
-                .WithOne()
-                .HasForeignKey<Dungeon>(x => x.DefaultRoomId);
-            builder.Entity<Dungeon>()
                 .HasOne(e => e.DungeonOwner)
                 .WithMany(x => x.DungeonOwnerDungeons)
                 .OnDelete(DeleteBehavior.Cascade);

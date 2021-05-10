@@ -11,7 +11,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
 {
     [ExcludeFromCodeCoverage]
     [DbContext(typeof(DungeonDbContext))]
-    [Migration("20210510184520_Initial")]
+    [Migration("20210510204052_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
