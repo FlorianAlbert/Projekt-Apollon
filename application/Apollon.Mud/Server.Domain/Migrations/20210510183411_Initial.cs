@@ -232,7 +232,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     Id = table.Column<string>(type: "TEXT", nullable: false),
                     DungeonEpoch = table.Column<string>(type: "TEXT", nullable: true),
                     DungeonDescription = table.Column<string>(type: "TEXT", nullable: true),
-                    DefaultRoomId = table.Column<string>(type: "TEXT", nullable: true),
+                    DefaultRoomId = table.Column<string>(type: "TEXT", nullable: false),
                     CurrentDungeonMasterId = table.Column<string>(type: "TEXT", nullable: true),
                     DungeonOwnerId = table.Column<string>(type: "TEXT", nullable: true),
                     Visibility = table.Column<int>(type: "INTEGER", nullable: false),
@@ -614,7 +614,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Dungeons_DefaultRoomId",
                 table: "Dungeons",
-                column: "DefaultRoomId");
+                column: "DefaultRoomId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Dungeons_DungeonOwnerId",

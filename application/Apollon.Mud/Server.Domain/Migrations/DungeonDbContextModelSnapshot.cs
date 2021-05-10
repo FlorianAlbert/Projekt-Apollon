@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Apollon.Mud.Server.Domain.Migrations
 {
-    [DbContext(typeof(DungeonDbContext))]
     [ExcludeFromCodeCoverage]
+    [DbContext(typeof(DungeonDbContext))]
     partial class DungeonDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -62,6 +62,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DefaultRoomId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DungeonDescription")
@@ -86,7 +87,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
                     b.HasIndex("CurrentDungeonMasterId");
 
-                    b.HasIndex("DefaultRoomId");
+                    b.HasIndex("DefaultRoomId")
+                        .IsUnique();
 
                     b.HasIndex("DungeonOwnerId");
 
@@ -651,8 +653,10 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "DefaultRoom")
-                        .WithMany()
-                        .HasForeignKey("DefaultRoomId");
+                        .WithOne()
+                        .HasForeignKey("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "DefaultRoomId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", "DungeonOwner")
                         .WithMany("DungeonOwnerDungeons")
