@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
@@ -10,6 +7,7 @@ namespace Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
     /// <summary>
     /// Class which represents the data representation of IWearable.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class WearableDto
     {
         /// <summary>

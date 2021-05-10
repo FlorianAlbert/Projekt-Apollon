@@ -1,0 +1,160 @@
+﻿@page "/CreateDungeon"
+@page "/CreateDungeon/{DungeonId:guid}"
+
+@using Apollon.Mud.Client.Shared.Components
+@using Apollon.Mud.Client.Shared.Components.Dungeon
+
+<div class="container-fluid" style="height:93vh">
+    <div class="row">
+        <div class="col-3" style="padding:0">
+            <SideBarComponent />
+        </div>
+        <div class="col-6 bg-white">
+            <div class="d-flex justify-content-start float-start" style="display: flex; flex-direction: column; height: 93vh">
+                <div class="container justify-content-start" style="overflow-y:auto; height:100%">
+                    <h1 class="display-2">Dungeon erstellen</h1>
+                    <h4>Hier kannst du einen neuen Dungeon erstellen!</h4>
+                    <h4>Benötigst du Hilfe? Alle Infos zum Erstellen eines Dungeon findest du <a href="/">hier</a></h4> @*TODO Link einfügen*@
+                    <hr class="featurette-divider" />
+                    <section class="Classes mt-3" id="Classes">
+                        <CreateDungeonComponent @ref="ChildDungeonComponent" DungeonId="DungeonId" OnDungeonSavedOrLoaded="@DungeonSavedOrLoaded" DungeonMustBeInactive="dungeonMustBeInactive" DungeonHasRooms="dungeonHasRoom" />
+                    </section>
+                    @if (dungeonCreated)
+                    {
+                        <section class="Classes mt-3" id="Classes">
+                            <CreateDungeonClassesComponent @ref="ChildClassComponent" DungeonId="DungeonId" OnClassSavedOrLoaded="ClassSavedOrLoaded" IsDungeonMasterConfigurating="false" />
+                        </section>
+                        <section class="Races mt-3" id="Races">
+                            <CreateDungeonRacesComponent DungeonId="DungeonId" OnRaceSavedOrLoaded="RaceSavedOrLoaded" IsDungeonMasterConfigurating="false" />
+                        </section>
+                        <section class="Items mt-3" id="Items">
+                            <CreateDungeonItemComponent DungeonId="DungeonId" ItemsChanged="ReloadItems" IsDungeonMasterConfigurating="false" />
+                        </section>
+                        <section class="Npcs mt-3" id="Npcs">
+                            <CreateDungeonNpcsComponent DungeonId="DungeonId" NpcsChanged="ReloadNpcs" IsDungeonMasterConfigurating="false" />
+                        </section>
+                        <section class="Npcs mt-3" id="Actions">
+                            <CreateDungeonActionComponent DungeonId="DungeonId" SpecialActionsChanged="ReloadSpecialActions" IsDungeonMasterConfigurating="false" />
+                        </section>
+                        <section class="Rooms mt-3" id="Rooms">
+                            <CreateDungeonRoomComponent @ref="ChildRoomComponent" DungeonId="DungeonId" OnRoomSavedOrLoaded="RoomSavedOrLoaded" IsDungeonMasterConfigurating="false" />
+                        </section>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public CreateDungeonComponent ChildDungeonComponent { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public CreateDungeonRoomComponent ChildRoomComponent { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public CreateDungeonClassesComponent ChildClassComponent { get; set; }
+
+    /// <summary>
+    /// The ID of the Dungeon that is created / edited
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// Activates all Dungeon Creation Components when true
+    /// </summary>
+    bool dungeonCreated = false;
+
+    /// <summary>
+    /// Stops user from activating dungeon when false
+    /// </summary>
+    bool dungeonMustBeInactive = true;
+
+    /// <summary>
+    /// en/disables user to select dungeon default room and activating dungeon
+    /// </summary>
+    bool dungeonHasRoom = false;
+
+    /// <summary>
+    /// while false dungeon can't be active
+    /// </summary>
+    bool dungeonHasClass = false;
+
+    /// <summary>
+    /// while false dungeon can't be active
+    /// </summary>
+    bool dungeonHasRace = false;
+
+    /// <summary>
+    /// Event called when a dungeon is initally saved / loaded
+    /// </summary>
+    /// <param name="guid">the Guid of the saved/loaded dungeon needed in other components</param>
+    public void DungeonSavedOrLoaded(Guid guid)
+    {
+        dungeonCreated = true;
+        DungeonId = guid;
+    }
+
+    /// <summary>
+    /// Event called when a dungeons first room is saved / loaded
+    /// </summary>
+    public void RoomSavedOrLoaded(Guid roomGuid)
+    {
+        ChildDungeonComponent.SetDefaultRoom(roomGuid);
+        dungeonHasRoom = true;
+        if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
+    }
+
+    /// <summary>
+    /// Event called when a dungeons first class is saved / loaded
+    /// </summary>
+    public void ClassSavedOrLoaded()
+    {
+        dungeonHasClass = true;
+        if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
+    }
+
+    /// <summary>
+    /// Event called when a dungeons first race is saved / loaded
+    /// </summary>
+    public void RaceSavedOrLoaded()
+    {
+        dungeonHasRace = true;
+        if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void ReloadNpcs()
+    {
+        ChildRoomComponent.ReloadNpcs();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void ReloadSpecialActions()
+    {
+        ChildRoomComponent.ReloadSpecialActions();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="type"></param>
+    public void ReloadItems(string typeName)
+    {
+        ChildClassComponent.ReloadItems(typeName);
+        ChildRoomComponent.ReloadItems(typeName);
+    }
+}

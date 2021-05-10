@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Apollon.Mud.Server.Model.ModelExtensions
 {
@@ -12,6 +13,7 @@ namespace Apollon.Mud.Server.Model.ModelExtensions
         /// </summary>
         /// <param name="input">String that should get normalized</param>
         /// <returns>Normalized string</returns>
+        [ExcludeFromCodeCoverage]
         public static string NormalizeString(this string input)
         {
             return string.Join(" ", input.ToLower().Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Apollon.Mud.Server.Model.Implementations
 {
     /// <summary>
     /// Describes a connection that exists during playing in a dungeon
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Connection
     {
         /// <summary>
@@ -26,5 +28,10 @@ namespace Apollon.Mud.Server.Model.Implementations
         /// AvatarId of the avatar the client is playing
         /// </summary>
         public Guid? AvatarId { get; set; }
+
+        /// <summary>
+        /// Checks wether the connection belongs to a Dungeon Master
+        /// </summary>
+        public bool IsDungeonMaster => AvatarId is null;
     }
 }

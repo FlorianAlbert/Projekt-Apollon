@@ -1,5 +1,5 @@
-using System.Net;
-using System.Net.Mail;
+using System;
+using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Apollon.Mud.Server.Domain.Implementations.UserManagement;
+using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 
 namespace Apollon.Mud.Server.Inbound
 {
@@ -39,11 +40,40 @@ namespace Apollon.Mud.Server.Inbound
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Apollon.Mud API", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme."
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+
+                    }
+                });
             });
 
             services.AddDbContext<DungeonDbContext>(options =>
+            {
+                options.UseLazyLoadingProxies();
                 options.UseSqlite(
-                    Configuration.GetConnectionString("DungeonDbConnection")));
+                    Configuration.GetConnectionString("DungeonDbConnection"),
+                    optionsBuilder => optionsBuilder.MigrationsAssembly("Apollon.Mud.Server.Domain"));
+            });
+
             services.AddIdentityCore<DungeonUser>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = true;
@@ -52,7 +82,7 @@ namespace Apollon.Mud.Server.Inbound
                     options.Password.RequireLowercase = true;
                     options.Password.RequireUppercase = true;
                     options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultProvider;
-                    options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultProvider;
+                    options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
                 })
                 .AddRoles<IdentityRole>()
                 .AddSignInManager<SignInManager<DungeonUser>>()
@@ -61,11 +91,18 @@ namespace Apollon.Mud.Server.Inbound
 
             services.AddSingleton<IConnectionService, ConnectionService>();
             services.AddScoped<IChatService, ChatService>();
+            services.AddScoped<IAuthorizationService, AuthorizationService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IUserDbService, UserDbService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IGameDbService, GameDbService>();
+            services.AddSingleton<ITokenService, TokenService>();
 
             services.AddAuthentication(auth =>
             {
                 auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                auth.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
@@ -73,7 +110,7 @@ namespace Apollon.Mud.Server.Inbound
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("JwtBearer").GetValue<string>("TokenSecret"))),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JwtBearer:TokenSecret"])),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
@@ -87,10 +124,12 @@ namespace Apollon.Mud.Server.Inbound
                 .AddFluentEmail(email)
                 .AddRazorRenderer()
                 .AddSmtpSender(host, port);
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -98,12 +137,16 @@ namespace Apollon.Mud.Server.Inbound
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Apollon.Mud API"));
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Apollon.Mud API");
+            });
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -112,7 +155,15 @@ namespace Apollon.Mud.Server.Inbound
                 endpoints.MapHub<ChatHub>("/hubs/chat");
             });
 
-            app.AddDefaultUserRoles();
+            using var dbContext = serviceProvider.GetService<DungeonDbContext>();
+            dbContext.Database.EnsureCreated();
+
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            foreach (var role in Enum.GetNames<Roles>())
+            {
+                if (!roleManager.RoleExistsAsync(role).Result) roleManager.CreateAsync(new IdentityRole(role)).Wait();
+            }
         }
     }
 }

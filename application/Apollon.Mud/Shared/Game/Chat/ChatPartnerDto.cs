@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace Apollon.Mud.Shared.Game.Chat
@@ -6,6 +7,7 @@ namespace Apollon.Mud.Shared.Game.Chat
     /// <summary>
     /// Class which represents the available avatars to chat with.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ChatPartnerDto
     {
         /// <summary>

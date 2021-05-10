@@ -1,6 +1,7 @@
-﻿using Apollon.Mud.Server.Model.Implementations.Dungeon.Avatar;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Avatar;
-using Apollon.Mud.Server.Model.Interfaces.Dungeon.Inspectable.Takeable;
+﻿
+using System.Collections.Generic;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using AutoFixture;
 using FluentAssertions;
 using NSubstitute;
@@ -23,8 +24,10 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         [InlineData(0)]
         public void Add_WeightSumUnderMaximum_Success(int newWeight)
         {
-            var takeableMock = Substitute.For<ITakeable>();
-            takeableMock.Weight.Returns(newWeight);
+            var takeableMock = _Fixture.Build<Takeable>()
+                .Without(x => x.Dungeon)
+                .With(x => x.Weight, newWeight)
+                .Create();
             var inventory = _Fixture.Create<Inventory>();
 
             inventory.Add(takeableMock);
@@ -38,14 +41,23 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
         [InlineData(100, 4)]
         public void Add_WeightSumOverMaximum_Fail(int alreadyContainingWeight, int newWeight)
         {
-            var takeableMock = Substitute.For<ITakeable>();
-            takeableMock.Weight.Returns(newWeight);
-            var inventory = Substitute.For<IInventory>();
-            inventory.WeightSum.Returns(alreadyContainingWeight);
+            var takeableMock = _Fixture.Build<Takeable>()
+                .Without(x => x.Dungeon)
+                .With(x => x.Weight, newWeight)
+                .Create();
+
+            var inventoryItemMock = _Fixture.Build<Takeable>()
+                .Without(x => x.Dungeon)
+                .With(x => x.Weight, alreadyContainingWeight)
+                .Create();
+
+            var inventory = new Inventory(new List<Takeable>() {inventoryItemMock});
+
 
             inventory.Add(takeableMock);
 
-            inventory.Should().BeEmpty();
+            
+            inventory.WeightSum.Should().Be(alreadyContainingWeight);
         }
 
         [Fact]

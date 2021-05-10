@@ -1,7 +1,7 @@
 ﻿namespace Apollon.Mud.Server.Domain.Interfaces.Game
 {
     /// <summary>
-    /// ToDo
+    /// ToDo Muss noch Implementiert werden
     /// </summary>
     public interface IPlayerService
     {

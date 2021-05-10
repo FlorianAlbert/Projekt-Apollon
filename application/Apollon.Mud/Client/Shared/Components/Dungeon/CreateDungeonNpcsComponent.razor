@@ -1,5 +1,7 @@
 ﻿@using Apollon.Mud.Client.Data.Models
 @using Apollon.Mud.Shared.Dungeon.Npc
+@inject Apollon.Mud.Client.Services.Interfaces.INpcService NpcService
+
 <div class="card">
     <div class="card-header">
         <h2>NPCs</h2>
@@ -82,7 +84,7 @@
 
             <hr class="featurette-divider" />
 
-            <div class="form-group mt-5">
+            <div class="form-group mt-3">
                 <div class="row">
                     <div class="col-3">
                         <h5 class="mt-1">Status</h5>
@@ -102,10 +104,20 @@
                 </div>
             </div>
 
+            <hr class="featurette-divder" />
+
             <div class="row">
-                <div class="col-3"></div>
+                <div class="col-3">
+
+                </div>
                 <div class="col">
-                    <button class="btn btn-success mt-5" type="submit">Speichern</button>
+                    <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
+                </div>
+                <div class="col">
+                    @if (!(chosenNpc == "NoNpc"))
+                    {
+                        <button class="btn btn-danger float-end" type="button" @onclick="RemoveNpcButtonClicked">Entfernen</button>
+                    }
                 </div>
             </div>
         </EditForm>
@@ -115,13 +127,35 @@
 
 @code {
 
+    #region Dungeon Information
+
+    /// <summary>
+    /// Represents wether a dungeon has at least 1: Class, Race and Room to enable its activitiy
+    /// </summary>
+    [Parameter]
+    public bool IsDungeonMasterConfigurating { get; set; }
+
+    /// <summary>
+    /// The Guid of the dungeon
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public EventCallback NpcsChanged { get; set; }
+
+    #endregion
+
     /// <summary>
     /// The string bound to the class selectio, NoClass means no class is selected
     /// </summary>
     string chosenNpc = "NoNpc";
 
     /// <summary>
-    /// The attribute of the validation model when creating a new Race
+    /// The attribute of the validation model when creating a new Npc
     /// </summary>
     DungeonNpcModel dungeonNpcModel = new DungeonNpcModel();
 
@@ -138,19 +172,19 @@
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
-        #region to Delete
         npcContext = new EditContext(dungeonNpcModel);
 
-        NpcDto testNpc = new NpcDto();
-        testNpc.Description = "KLa";
-        testNpc.Name = "Leon";
-        testNpc.Text = "Test Text????";
-
-        #endregion
-
-        dungeonNpcs.Add(testNpc);
+        if (!(DungeonId == Guid.Empty))
+        {
+            var dungeonNpcCollection = await NpcService.GetAllNpcs(DungeonId);
+            if (!(dungeonNpcCollection is null))
+            {
+                dungeonNpcs = dungeonNpcCollection.ToList();
+            }
+        }
+        StateHasChanged();
     }
 
     /// <summary>
@@ -160,7 +194,7 @@
     private async Task HandleNpcSubmit()
     {
         var validNpc = npcContext.Validate();
-        if (validNpc)
+        if (validNpc && DungeonId != Guid.Empty)
         {
             bool newNpc = false;
             NpcDto submitNpc = dungeonNpcs.Find(r => r.Name.Equals(dungeonNpcModel.Name));
@@ -175,14 +209,36 @@
             submitNpc.Status = dungeonNpcModel.Status.Equals("Approved") ? 0 : 1;
             if (newNpc)
             {
-                dungeonNpcs.Add(submitNpc);
+                var response = await NpcService.CreateNewNpc(submitNpc, DungeonId);
+                if (response != Guid.Empty)
+                {
+                    submitNpc.Id = response;
+                    dungeonNpcs.Add(submitNpc);
+                    await NpcsChanged.InvokeAsync();
+                    chosenNpc = dungeonNpcModel.Name;
+                }
             }
-            chosenNpc = dungeonNpcModel.Name;
-            //TODO Daten ans Backend senden
+            else
+            {
+                var response = await NpcService.UpdateNpc(submitNpc, DungeonId);
+                if (!(response is null))  WriteBackNpc(response);
+                else await NpcsChanged.InvokeAsync();
+            }
         }
-        else
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="npcDto"></param>
+    private void WriteBackNpc(NpcDto npcDto)
+    {
+        if (!(npcDto is null))
         {
-            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
+            dungeonNpcModel.Name = npcDto.Name;
+            dungeonNpcModel.Description = npcDto.Description;
+            dungeonNpcModel.Text = npcDto.Text;
+            dungeonNpcModel.Status = npcDto.Status == 0 ? "Approved" : "Pending";
         }
     }
 
@@ -195,13 +251,7 @@
         if (!chosenNpc.Equals(dungeonNpcModel.Name) && !chosenNpc.Equals("NoNpc"))
         {
             var newNpc = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
-            if (!(newNpc is null))
-            {
-                dungeonNpcModel.Name = chosenNpc;
-                dungeonNpcModel.Description = newNpc.Description;
-                dungeonNpcModel.Text = newNpc.Text;
-                dungeonNpcModel.Status = newNpc.Status == 0 ? "Approved" : "Pending";
-            }
+            WriteBackNpc(newNpc);
         }
         return EventCallback.Empty;
     }
@@ -219,10 +269,8 @@
         }
         else
         {
-            chosenNpc = dungeonNpcModel.Name;
-            dungeonNpcModel.Description = checkNpc.Description;
-            dungeonNpcModel.Text = checkNpc.Text;
-            dungeonNpcModel.Status = checkNpc.Status == 0 ? "Approved" : "Pending";
+            chosenNpc = checkNpc.Name;
+            WriteBackNpc(checkNpc);
         }
     }
 
@@ -237,5 +285,36 @@
         dungeonNpcModel.Description = string.Empty;
         dungeonNpcModel.Text = string.Empty;
         dungeonNpcModel.Status = string.Empty;
+    }
+
+    /// <summary>
+    /// This Method removes a selected Npc and clears all form input fields
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private async void RemoveNpcButtonClicked(System.EventArgs args)
+    {
+        var npcToDelete = dungeonNpcs.Find(i => i.Name.Equals(chosenNpc));
+        bool shouldFieldsBeEmptied = true;
+        if (!(npcToDelete is null))
+        {
+            if (!(npcToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await NpcService.DeleteNpc(npcToDelete.Id, DungeonId);
+
+            if (shouldFieldsBeEmptied)
+            {
+                chosenNpc = "NoNpc";
+                dungeonNpcModel.Name = string.Empty;
+                dungeonNpcModel.Description = string.Empty;
+                dungeonNpcModel.Text = string.Empty;
+                dungeonNpcModel.Status = string.Empty;
+                dungeonNpcs.Remove(npcToDelete);
+                await NpcsChanged.InvokeAsync();
+                StateHasChanged();
+            }
+            else
+            {
+
+            }
+        }
+
     }
 }

@@ -1,5 +1,5 @@
 ﻿@page "/Identity/Account/Login"
-@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
+@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService AuthorizationService
 @inject NavigationManager NavManager
 
 @using Apollon.Mud.Client.Data.Models
@@ -56,7 +56,7 @@
 
 @code {
     /// <summary>
-    /// TODO
+    /// TODO Wie davor
     /// </summary>
     bool loginFailure = false;
 
@@ -88,7 +88,7 @@
         var validLogin = loginContext.Validate();
         if (validLogin)
         {
-            bool response = await authorizationService.Login(loginModel.Email, loginModel.Password);
+            bool response = await AuthorizationService.Login(loginModel.Email, loginModel.Password);
             if (response)
             {
                 NavManager.NavigateTo("/");
@@ -99,5 +99,4 @@
             }
         }
     }
-
 }

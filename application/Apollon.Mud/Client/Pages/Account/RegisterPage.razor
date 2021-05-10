@@ -13,6 +13,14 @@
             <section>
                 <h4 class="ml-2">Hier kannst du einen neuen Account anlegen</h4>
                 <hr />
+
+                @if (showErrorMessage)
+                {
+                    <div class="text-danger">
+                        <h4>Bei der Verbindung zum Server ist etwas schiefgegangen</h4>
+                        <h5>Dies tut uns sehr leid, wir arbeiten daran es zu beheben</h5>
+                    </div>
+                }
                 <EditForm EditContext="@registerContext" OnSubmit="@HandleRegisterSubmit" novalidate>
                     <DataAnnotationsValidator />
 
@@ -58,6 +66,11 @@
 @code {
 
     /// <summary>
+    /// Shows the User an Error Message when true
+    /// </summary>
+    bool showErrorMessage = false;
+
+    /// <summary>
     /// The Model to validate the "Register" Form
     /// </summary>
     private RegisterModel registerModel = new RegisterModel();
@@ -84,6 +97,7 @@
         var validLogin = registerContext.Validate();
         if (validLogin)
         {
+            showErrorMessage = false;
             bool response = await authorizationService.Register(registerModel.Email, registerModel.Password);
             if (response)
             {
@@ -91,7 +105,7 @@
             }
             else
             {
-                //User darauf hinweisen, dass iwas nicht geklappt hat
+                showErrorMessage = true;
             }
         }
         else

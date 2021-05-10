@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace Apollon.Mud.Shared.UserManagement.Password
 {
     /// <summary>
     /// Class which represents a request to change the password of an user.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ChangePasswordDto
     {
         /// <summary>

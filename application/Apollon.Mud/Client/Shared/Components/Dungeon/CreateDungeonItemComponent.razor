@@ -5,6 +5,12 @@
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
 
+@inject Apollon.Mud.Client.Services.Interfaces.IInspectableService InspectableService;
+@inject Apollon.Mud.Client.Services.Interfaces.ITakeableService TakeableService;
+@inject Apollon.Mud.Client.Services.Interfaces.IConsumableService ConsumableService;
+@inject Apollon.Mud.Client.Services.Interfaces.IUsableService UsableService;
+@inject Apollon.Mud.Client.Services.Interfaces.IWearableService WearableService;
+
 <div class="card">
     <div class="card-header">
         <h2>Items</h2>
@@ -198,7 +204,7 @@
 
             <hr class="featurette-divider" />
 
-            <div class="form-group mt-5">
+            <div class="form-group mt-3">
                 <div class="row">
                     <div class="col-3">
                         <h5 class="mt-1">Status</h5>
@@ -218,11 +224,22 @@
                 </div>
             </div>
 
+            <hr class="featurette-divder" />
+
             <div class="row">
-                <div class="col-3"></div>
-                <div class="col">
-                    <button class="btn btn-success mt-5" type="submit">Speichern</button>
+                <div class="col-3">
+
                 </div>
+                <div class="col">
+                    <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
+                </div>
+                <div class="col">
+                    @if (!(chosenItem == "NoItem"))
+                    {
+                        <button class="btn btn-danger float-end" type="button" @onclick="RemoveItemButtonClicked">Entfernen</button>
+                    }
+                </div>
+
             </div>
         </EditForm>
 
@@ -230,6 +247,28 @@
 </div>
 
 @code {
+
+    #region Dungeon Information
+
+    /// <summary>
+    /// Represents wether a dungeon has at least 1: Class, Race and Room to enable its activitiy
+    /// </summary>
+    [Parameter]
+    public bool IsDungeonMasterConfigurating { get; set; }
+
+    /// <summary>
+    /// The Guid of the dungeon
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> ItemsChanged { get; set; }
+
+    #endregion
 
     #region Bound variables
     /// <summary>
@@ -288,20 +327,38 @@
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
     /// </summary>
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        #region toDelete
-
-
-        InspectableDto testItem = new InspectableDto();
-
-        testItem.Name = "TestItem";
-        testItem.Description = "Beschreibung";
-
-        dungeonInspectables.Add(testItem);
-        #endregion
-
         itemContext = new EditContext(dungeonItemModel);
+        if (!(DungeonId == Guid.Empty))
+        {
+            var dungeonInspectableCollection = await InspectableService.GetAllInspectables(DungeonId);
+            var dungeonTakeableCollection = await TakeableService.GetAllTakeables(DungeonId);
+            var dungeonConsumableCollection = await ConsumableService.GetAllConsumables(DungeonId);
+            var dungeonUsableCollection = await UsableService.GetAllUsables(DungeonId);
+            var dungeonWearableCollection = await WearableService.GetAllWearables(DungeonId);
+            if (!(dungeonInspectableCollection is null))
+            {
+                dungeonInspectables = dungeonInspectableCollection.ToList();
+            }
+            if (!(dungeonTakeableCollection is null))
+            {
+                dungeonTakeables = dungeonTakeableCollection.ToList();
+            }
+            if (!(dungeonConsumableCollection is null))
+            {
+                dungeonConsumables = dungeonConsumableCollection.ToList();
+            }
+            if (!(dungeonUsableCollection is null))
+            {
+                dungeonUsables = dungeonUsableCollection.ToList();
+            }
+            if (!(dungeonWearableCollection is null))
+            {
+                dungeonWearables = dungeonWearableCollection.ToList();
+            }
+        }
+        StateHasChanged();
     }
 
     /// <summary>
@@ -338,7 +395,7 @@
                 break;
         }
         var validItem = itemContext.Validate();
-        if (validItem)
+        if (validItem && DungeonId != Guid.Empty)
         {
             bool newItem = false;
             switch (chosenItemCategory)
@@ -355,10 +412,26 @@
                     submitInspectable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
-                        dungeonInspectables.Add(submitInspectable);
+                        var response = await InspectableService.CreateNewInspectable(submitInspectable, DungeonId);
+                        if (response != Guid.Empty)
+                        {
+                            submitInspectable.Id = response;
+                            dungeonInspectables.Add(submitInspectable);
+                            chosenItem = dungeonItemModel.Name + " 1";
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
+                        }
                     }
-                    chosenItem = dungeonItemModel.Name + " 1";
-                    //TODO Klasse ans Backend senden
+                    else
+                    {
+                        var response = await InspectableService.UpdateInspectable(submitInspectable, DungeonId);
+                        if (!(response is null))
+                        {
+                            dungeonItemModel.Name = response.Name;
+                            dungeonItemModel.Description = response.Description;
+                            dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
+                        }
+                    }
                     break;
                 case "Takeable":
                     TakeableDto submitTakeable = dungeonTakeables.Find(i => i.Name.Equals(dungeonItemModel.Name));
@@ -373,10 +446,27 @@
                     submitTakeable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
-                        dungeonTakeables.Add(submitTakeable);
+                        var response = await TakeableService.CreateNewTakeable(submitTakeable, DungeonId);
+                        if (response != Guid.Empty)
+                        {
+                            submitTakeable.Id = response;
+                            dungeonTakeables.Add(submitTakeable);
+                            chosenItem = dungeonItemModel.Name + " 2";
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
+                        }
                     }
-                    chosenItem = dungeonItemModel.Name + " 2";
-                    //TODO Klasse ans Backend senden
+                    else
+                    {
+                        var response = await TakeableService.UpdateTakeable(submitTakeable, DungeonId);
+                        if (!(response is null))
+                        {
+                            dungeonItemModel.Name = response.Name;
+                            dungeonItemModel.Description = response.Description;
+                            dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
+                            dungeonItemModel.Weight = response.Weight.ToString();
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
+                        }
+                    }
                     break;
                 case "Consumable":
                     ConsumableDto submitConsumable = dungeonConsumables.Find(i => i.Name.Equals(dungeonItemModel.Name));
@@ -392,10 +482,28 @@
                     submitConsumable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
-                        dungeonConsumables.Add(submitConsumable);
+                        var response = await ConsumableService.CreateNewConsumable(submitConsumable, DungeonId);
+                        if (response != Guid.Empty)
+                        {
+                            submitConsumable.Id = response;
+                            dungeonConsumables.Add(submitConsumable);
+                            chosenItem = dungeonItemModel.Name + " 3";
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
+                        }
                     }
-                    chosenItem = dungeonItemModel.Name + " 3";
-                    //TODO Klasse ans Backend senden
+                    else
+                    {
+                        var response = await ConsumableService.UpdateConsumable(submitConsumable, DungeonId);
+                        if (!(response is null))
+                        {
+                            dungeonItemModel.Name = response.Name;
+                            dungeonItemModel.Description = response.Description;
+                            dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
+                            dungeonItemModel.Weight = response.Weight.ToString();
+                            dungeonItemModel.EffectDescription = response.EffectDescription;
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
+                        }
+                    }
                     break;
                 case "Usable":
                     UsableDto submitUsable = dungeonUsables.Find(i => i.Name.Equals(dungeonItemModel.Name));
@@ -411,10 +519,28 @@
                     submitUsable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
-                        dungeonUsables.Add(submitUsable);
+                        var response = await UsableService.CreateNewUsable(submitUsable, DungeonId);
+                        if (response != Guid.Empty)
+                        {
+                            submitUsable.Id = response;
+                            dungeonUsables.Add(submitUsable);
+                            chosenItem = dungeonItemModel.Name + " 4";
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
+                        }
                     }
-                    chosenItem = dungeonItemModel.Name + " 4";
-                    //TODO Klasse ans Backend senden
+                    else
+                    {
+                        var response = await UsableService.UpdateUsable(submitUsable, DungeonId);
+                        if (!(response is null))
+                        {
+                            dungeonItemModel.Name = response.Name;
+                            dungeonItemModel.Description = response.Description;
+                            dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
+                            dungeonItemModel.Weight = response.Weight.ToString();
+                            dungeonItemModel.DamageBoost = response.DamageBoost.ToString();
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
+                        }
+                    }
                     break;
                 case "Wearable":
                     WearableDto submitWearable = dungeonWearables.Find(i => i.Name.Equals(dungeonItemModel.Name));
@@ -430,17 +556,31 @@
                     submitWearable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
-                        dungeonWearables.Add(submitWearable);
+                        var response = await WearableService.CreateNewWearable(submitWearable, DungeonId);
+                        if (response != Guid.Empty)
+                        {
+                            submitWearable.Id = response;
+                            dungeonWearables.Add(submitWearable);
+                            chosenItem = dungeonItemModel.Name + " 5";
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
+                        }
                     }
-                    chosenItem = dungeonItemModel.Name + " 5";
-                    //TODO Klasse ans Backend senden
+                    else
+                    {
+                        var response = await WearableService.UpdateWearable(submitWearable, DungeonId);
+                        if (!(response is null))
+                        {
+                            dungeonItemModel.Name = response.Name;
+                            dungeonItemModel.Description = response.Description;
+                            dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
+                            dungeonItemModel.Weight = response.Weight.ToString();
+                            dungeonItemModel.ProtectionBoost = response.ProtectionBoost.ToString();
+                            await ItemsChanged.InvokeAsync(chosenItemCategory);
+                        }
+                    }
                     break;
             }
 
-        }
-        else
-        {
-            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
         }
     }
 
@@ -588,7 +728,6 @@
             dungeonItemModel.Description = checkInspectable.Description;
             dungeonItemModel.Status = checkInspectable.Status == 0 ? "Approved" : "Pending";
         }
-
     }
 
     /// <summary>
@@ -607,5 +746,70 @@
         dungeonItemModel.EffectDescription = string.Empty;
         dungeonItemModel.Status = string.Empty;
     }
+
+    /// <summary>
+    /// This Method removes a selected Item and clears all form input fields
+    /// </summary>
+    /// <param name="args">Event Arguments</param>
+    private async void RemoveItemButtonClicked(System.EventArgs args)
+    {
+        bool shouldFieldsBeEmptied = true;
+        if (chosenItemCategory == "Inspectable")
+        {
+            var inspectableToDelete = dungeonInspectables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+            if(!(inspectableToDelete is null))
+            {
+                if (!(inspectableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await InspectableService.DeleteInspectable(DungeonId, inspectableToDelete.Id);
+            }
+        }
+        if (chosenItemCategory == "Takeable")
+        {
+            var takeableToDelete = dungeonTakeables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+            if (!(takeableToDelete is null))
+            {
+                if (!(takeableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await TakeableService.DeleteTakeable(DungeonId, takeableToDelete.Id);
+            }
+        }
+        if (chosenItemCategory == "Consumable")
+        {
+            var consumableToDelete = dungeonConsumables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+            if (!(consumableToDelete is null))
+            {
+                if (!(consumableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await ConsumableService.DeleteConsumable(DungeonId, consumableToDelete.Id);
+            }
+        }
+        if (chosenItemCategory == "Usable")
+        {
+            var usableToDelete = dungeonUsables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+            if (!(usableToDelete is null))
+            {
+                if (!(usableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await UsableService.DeleteUsable(DungeonId, usableToDelete.Id);
+            }
+        }
+        if (chosenItemCategory == "Wearable")
+        {
+            var wearableToDelete = dungeonWearables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
+            if (!(wearableToDelete is null))
+            {
+                if (!(wearableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await WearableService.DeleteWearable(DungeonId, wearableToDelete.Id);
+            }
+        }
+        if(shouldFieldsBeEmptied)
+        {
+            ItemsChanged.InvokeAsync(chosenItemCategory);
+            chosenItem = "NoItem";
+            chosenItemCategory = string.Empty;
+            dungeonItemModel.Name = string.Empty;
+            dungeonItemModel.Description = string.Empty;
+            dungeonItemModel.Weight = string.Empty;
+            dungeonItemModel.DamageBoost = string.Empty;
+            dungeonItemModel.ProtectionBoost = string.Empty;
+            dungeonItemModel.EffectDescription = string.Empty;
+            dungeonItemModel.Status = string.Empty;
+            StateHasChanged();
+        }
+    }
+
+
     #endregion
 }

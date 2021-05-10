@@ -1,0 +1,86 @@
+﻿@page "/Dungeons"
+
+@using Apollon.Mud.Shared.Dungeon
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+
+<div class="container shadow d-flex bg-white min-vh-100">
+    <div class="row container-fluid">
+        <div class="col-md-auto mt-3">
+            <h2>Filter</h2>
+            <div class="card shadow-sm" style="width: 18rem;">
+                <div class="card-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="SearchName">Name</label>
+                            <input type="search" class="form-control" id="searchName" placeholder="Search for a name">
+                        </div>
+                        <div class="form-check mt-2">
+                            <input type="checkbox" class="form-check-input" id="CheckOnline">
+                            <label class="form-check-label" for="exampleCheck1">Only show Online</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2 disabled">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9 mt-3">
+            <div class="container ">
+                <h1>Games</h1>
+                @if (allDungeons.Count == 0)
+                {
+                    <h2 class="text-muted">Momentan gibt es keine aktiven Dungeons</h2>
+                }
+                @foreach (DungeonDto dungeon in allDungeons)
+                {
+                    @if (dungeon.Status == 1)
+                    {
+                        <div class="card mt-2 shadow">
+                            <h5 class="card-header">@dungeon.DungeonName</h5>
+                            <div class="card-body">
+                                <div class="row">
+                                    <p class="card-text">@dungeon.DungeonDescription</p>
+                                </div>
+                                @if (dungeon.Visibility == 1)
+                                {
+                                    <a href="/Avatar/Selection" class="btn btn-success float-end">Beitreten</a>
+                                }
+                                else
+                                {
+                                    <a href="/Avatar/Selection" class="btn btn-primary float-end">Anfrage stellen</a>
+                                }
+                            </div>
+                            <div class="card-footer">Erstellt von @dungeon.DungeonOwner</div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    /// <summary>
+    /// This list contains all dungeons belonging to the user
+    /// </summary>
+    private List<DungeonDto> allDungeons = new List<DungeonDto>();
+
+    /// <summary>
+    /// When initialized the Method requests all Dungeons belonging to user from the Server and saves them locally
+    /// </summary>
+    protected async override void OnInitialized()
+    {
+        #region ToDelete
+        DungeonDto quciktest = new DungeonDto();
+        quciktest.DungeonName = "TestDungeon";
+        quciktest.DungeonDescription = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,";
+        allDungeons.Add(quciktest);
+        #endregion
+
+        var response = await DungeonService.GetAllDungeons();
+        if (!(response is null)) allDungeons = response.ToList();
+
+        StateHasChanged();
+
+    }
+}
