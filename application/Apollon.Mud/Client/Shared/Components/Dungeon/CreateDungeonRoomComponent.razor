@@ -628,10 +628,10 @@
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
                                     @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                          !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
-                                          !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
-                                          !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
-                                          (dungeonRoom.NeighborSouthId == Guid.Empty))
+                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth))
+                                         //(dungeonRoom.NeighborSouthId == Guid.Empty))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -656,10 +656,9 @@
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
                                     @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                         !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
-                                         !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
-                                         !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
-                                         (dungeonRoom.NeighborEastId == Guid.Empty))
+                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -684,10 +683,9 @@
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
                                     @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                         !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
-                                         !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
-                                         !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
-                                         (dungeonRoom.NeighborWestId == Guid.Empty))
+                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                                        !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -710,10 +708,9 @@
                             @foreach (RoomDto dungeonRoom in dungeonRooms)
                             {
                                 @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                     !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
-                                     !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
-                                     !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
-                                     (dungeonRoom.NeighborNorthId == Guid.Empty))
+                                    !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                                    !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                                    !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth))
                                 {
                                     <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                 }
@@ -1139,28 +1136,24 @@
             if (!dungeonRoomModel.RoomNorth.Equals("NoRoom"))
             {
                 submitRoom.NeighborNorthId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomNorth)).Id;
-                ReloadNeighbour(submitRoom.NeighborNorthId);
             }
             else submitRoom.NeighborNorthId = Guid.Empty;
 
             if (!dungeonRoomModel.RoomEast.Equals("NoRoom"))
             {
                 submitRoom.NeighborEastId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomEast)).Id;
-                ReloadNeighbour(submitRoom.NeighborEastId);
             }
             else submitRoom.NeighborEastId = Guid.Empty;
 
             if (!dungeonRoomModel.RoomSouth.Equals("NoRoom"))
             {
                 submitRoom.NeighborSouthId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomSouth)).Id;
-                ReloadNeighbour(submitRoom.NeighborSouthId);
             }
             else submitRoom.NeighborSouthId = Guid.Empty;
 
             if (!dungeonRoomModel.RoomWest.Equals("NoRoom"))
             {
                 submitRoom.NeighborWestId = dungeonRooms.Find(r => r.Name.Equals(dungeonRoomModel.RoomWest)).Id;
-                ReloadNeighbour(submitRoom.NeighborWestId);
             }
             else submitRoom.NeighborWestId = Guid.Empty;
 
@@ -1173,7 +1166,7 @@
                     await OnRoomSavedOrLoaded.InvokeAsync();
                     dungeonRooms.Add(submitRoom);
                     chosenRoom = dungeonRoomModel.Name;
-                    if(submitRoom.Status != 1) await FirstRoomSavedOrLoaded.InvokeAsync(response);
+                    if (submitRoom.Status != 1) await FirstRoomSavedOrLoaded.InvokeAsync(response);
                 }
             }
             else
@@ -1182,10 +1175,11 @@
                 if (!response)
                 {
                     var oldRoom = await RoomService.GetRoom(submitRoom.Id, DungeonId);
-                    if(oldRoom is not null) WriteBackRoom(oldRoom);
+                    if (oldRoom is not null) WriteBackRoom(oldRoom);
                 }
                 else await OnRoomSavedOrLoaded.InvokeAsync();
             }
+            ReloadNeighbour();
             StateHasChanged();
         }
     }
@@ -1529,14 +1523,19 @@
     /// <summary>
     /// TODO
     /// </summary>
-    private async void ReloadNeighbour(Guid roomId)
+    private async void ReloadNeighbour()
     {
-        var updatedRoom = await RoomService.GetRoom(DungeonId, roomId);
-        if (!(updatedRoom is null))
+        //var updatedRoom = await RoomService.GetRoom(DungeonId, roomId);
+        //if (!(updatedRoom is null))
+        //{
+        //    dungeonRooms.Remove(dungeonRooms.Find(r => r.Id == roomId));
+        //    dungeonRooms.Add(updatedRoom);
+        //    StateHasChanged();
+        //}
+        var updatedRooms = await RoomService.GetAllRooms(DungeonId);
+        if(updatedRooms is not null)
         {
-            dungeonRooms.Remove(dungeonRooms.Find(r => r.Id == roomId));
-            dungeonRooms.Add(updatedRoom);
-            StateHasChanged();
+            dungeonRooms = updatedRooms.ToList();
         }
     }
 

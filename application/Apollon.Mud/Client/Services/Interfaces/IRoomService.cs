@@ -60,7 +60,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <param name="roomId"></param>
         /// <param name="dungeonId"></param>
         /// <returns></returns>
-        Task<RoomDto> GetRoom(Guid roomId, Guid dungeonId);
+        Task<RoomDto> GetRoom(Guid dungeonId, Guid roomId);
 
 
     }
