@@ -437,7 +437,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
 
 
             var userController = new UserController(userServiceMock);
-            var result = await userController.ChangePassword(changePasswordDto, userIdMock);
+            var result = await userController.ChangePassword(changePasswordDto);
 
 
             result.Should().BeOfType<BadRequestResult>();
@@ -461,7 +461,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
 
 
             var userController = new UserController(userServiceMock);
-            var result = await userController.ChangePassword(changePasswordDto, userIdMock);
+            var result = await userController.ChangePassword(changePasswordDto);
 
 
             await userServiceMock.Received().ChangePassword(userIdMock, oldPasswordMock, newPasswordMock);
@@ -486,7 +486,7 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
 
 
             var userController = new UserController(userServiceMock);
-            var result = await userController.ChangePassword(changePasswordDto, userIdMock);
+            var result = await userController.ChangePassword(changePasswordDto);
 
 
             await userServiceMock.Received().ChangePassword(userIdMock, oldPasswordMock, newPasswordMock);
