@@ -85,9 +85,9 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets all Dungeons for a certain user
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A collection of the users dungeons if successfull, otherwise null</returns>
         public async Task<ICollection<DungeonDto>> GetAllDungeonsForUser()
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;

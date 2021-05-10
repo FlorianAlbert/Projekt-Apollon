@@ -49,17 +49,17 @@
 @code {
 
     /// <summary>
-    /// TODO
+    /// The create Dungeon Component used in the page
     /// </summary>
     public CreateDungeonComponent ChildDungeonComponent { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The create Room component used in the page
     /// </summary>
     public CreateDungeonRoomComponent ChildRoomComponent { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The create Class component used in the page
     /// </summary>
     public CreateDungeonClassesComponent ChildClassComponent { get; set; }
 
@@ -133,7 +133,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Calls the Room Component to Reload its NPC List
     /// </summary>
     public void ReloadNpcs()
     {
@@ -141,7 +141,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Calls the Dungeon Component to Reload its Room List
     /// </summary>
     public void ReloadRooms()
     {
@@ -151,7 +151,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Calls the Room Component to reload its Special Action List
     /// </summary>
     public void ReloadSpecialActions()
     {
@@ -159,9 +159,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Calls the Room and Class Component to reload their item list
     /// </summary>
-    /// <param name="type"></param>
+    /// <param name="typeName">The Name of the category that need reloading</param>
     public void ReloadItems(string typeName)
     {
         ChildClassComponent.ReloadItems(typeName);

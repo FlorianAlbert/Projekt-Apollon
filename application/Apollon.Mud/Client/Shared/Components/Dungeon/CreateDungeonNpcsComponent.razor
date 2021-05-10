@@ -142,7 +142,7 @@
     public Guid DungeonId { get; set; }
 
     /// <summary>
-    /// TODO
+    /// Event fired when NPCs were created, added or removed
     /// </summary>
     [Parameter]
     public EventCallback NpcsChanged { get; set; }
@@ -221,14 +221,14 @@
             else
             {
                 var response = await NpcService.UpdateNpc(submitNpc, DungeonId);
-                if (!(response is null))  WriteBackNpc(response);
+                if (!(response is null)) WriteBackNpc(response);
                 else await NpcsChanged.InvokeAsync();
             }
         }
     }
 
     /// <summary>
-    /// TODO
+    /// Fills the form according to the giving npc
     /// </summary>
     /// <param name="npcDto"></param>
     private void WriteBackNpc(NpcDto npcDto)

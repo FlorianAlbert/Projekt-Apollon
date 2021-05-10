@@ -15,20 +15,20 @@ namespace Apollon.Mud.Client.Services.Implementiations
     public class AvatarService : IAvatarService
     {
         /// <summary>
-        /// TODO
+        /// The HttpClient injected into the Service
         /// </summary>
         public HttpClient HttpClient { get; }
 
         /// <summary>
-        /// TODO
+        /// The Cancellation Token Source used by the Service
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
-        /// TODO
+        /// This class contains all logic for handling Avatars between Front- and Backend
         /// </summary>
-        /// <param name="httpClientFactory"></param>
-        /// <param name="userContext"></param>
+        /// <param name="httpClientFactory">The HttpClientFactory injected into the service</param>
+        /// <param name="userContext">The scoped UserContext of the current connection</param>
         public AvatarService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
@@ -37,11 +37,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Sends the given AvatarDto to the AvatarController with the associated Dungeon and persists it in the Database
         /// </summary>
-        /// <param name="avatarDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="avatarDto">The Avatar to persist</param>
+        /// <param name="dungeonId">The ID of the Dungeon associated with the Avatar</param>
+        /// <returns>The Guid of the created Avatar if successfull, otherwise an empty Guid</returns>
         public async Task<Guid> CreateNewAvatar(AvatarDto avatarDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -56,7 +56,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// 
         /// </summary>
         /// <param name="avatarDto"></param>
         /// <param name="dungeonId"></param>
@@ -73,11 +73,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         //}
 
         /// <summary>
-        /// TODO
+        /// Calls the AvatarController to delete the Avatar of the Dungeon from the Database
         /// </summary>
-        /// <param name="avatarId"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="avatarId">The ID of the Avatar to delete</param>
+        /// <param name="dungeonId">The ID of the Dungeon associated with the avatar</param>
+        /// <returns>True if successfull, otherwise false</returns>
         public async Task<bool> DeleteAvatar(Guid dungeonId, Guid avatarId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -88,10 +88,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Receives all Avatars associated with the Dungeon from the Database as AvatarDtos
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The Dungeon thats avatars are wanted</param>
+        /// <returns>A collection of Dungeon-Avatars if successfull, otherwise null</returns>
         public async Task<ICollection<AvatarDto>> GetAllAvatars(Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -104,10 +104,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets all Avatars for a single User of the associated Dungeon
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">THe Dungeon thats avatars are wanted</param>
+        /// <returns>A collection fot Dungeon-Avatars if successfull, otherwise null</returns>
         public async Task<ICollection<AvatarDto>> GetAllAvatarsForUser(Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -120,11 +120,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets a single Avatar from the Database
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <param name="avatarId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the Dungeon associated with the Dungeon</param>
+        /// <param name="avatarId">The ID of the wanted Dungeon</param>
+        /// <returns>An AvatarDto if succesfull, otherwise null</returns>
         public async Task<AvatarDto> GetAvatar(Guid dungeonId, Guid avatarId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;

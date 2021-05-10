@@ -15,19 +15,20 @@ namespace Apollon.Mud.Client.Services.Implementiations
     public class RaceService : IRaceService
     {
         /// <summary>
-        /// TODO
+        /// The Rest Http Client injected into the class
         /// </summary>
         public HttpClient HttpClient { get; }
 
         /// <summary>
-        /// TODO
+        /// Creates Cancellation Tokens for each Http Request
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
-        /// TODO
+        /// This service contains all logic for sending races to the backend and persist them
         /// </summary>
-        /// <param name="httpClient"></param>
+        /// <param name="httpClientFactory">The HttpClient injected into this class</param>
+        /// <param name="userContext">The usercontext needed for authorization</param>
         public RaceService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
@@ -36,11 +37,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Sends the given dungeon to the backend and persists it in the Database
         /// </summary>
-        /// <param name="raceDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="raceDto">The Dungeon to create</param>
+        /// <param name="dungeonId">The Dungeon that contains the race</param>
+        /// <returns>The Guid if the DB Transaction was successfull, otherwise an empty Guid</returns>
         public async Task<Guid> CreateNewRace(RaceDto raceDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -55,11 +56,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Updates the given race in the Database
         /// </summary>
-        /// <param name="raceDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="raceDto">The race with updated information</param>
+        /// <param name="dungeonId">The Dungeon that contains the race</param>
+        /// <returns>The old race in case the Database transaction failed, otherwise null</returns>
         public async Task<RaceDto> UpdateRace(RaceDto raceDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -72,11 +73,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Deletes the given race in the Database
         /// </summary>
-        /// <param name="raceId"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="raceId">The id of the race to delete</param>
+        /// <param name="dungeonId">The Dungeon that contains the race</param>
+        /// <returns>Wether the DB transaction was successfull</returns>
         public async Task<bool> DeleteRace(Guid dungeonId, Guid raceId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -87,10 +88,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets all races of a dungeon
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the dungeon containing the requested races</param>
+        /// <returns>A Collection of the requested races, otherwise null</returns>
         public async Task<ICollection<RaceDto>> GetAllRaces(Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -103,11 +104,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets one race of a dungeon
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <param name="raceId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the dungeon containing the requested race</param>
+        /// <param name="raceId">The ID of the requested class</param>
+        /// <returns>The requested class, otherwise null</returns>
         public async Task<RaceDto> GetRace(Guid dungeonId, Guid raceId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;

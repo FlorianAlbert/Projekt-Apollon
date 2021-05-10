@@ -9,58 +9,58 @@ using System.Threading.Tasks;
 namespace Apollon.Mud.Client.Services.Interfaces
 {
     /// <summary>
-    /// TODO
+    /// Interface to provide CRUD Functions for Dungeon Consumables
     /// </summary>
     public interface IDungeonService
     {
         /// <summary>
-        /// TODO
+        /// The Rest Http Client injected into the class
         /// </summary>
         public HttpClient HttpClient { get;}
 
         /// <summary>
-        /// TODO
+        /// Creates Cancellation Tokens for each Http Request
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
-        /// TODO
+        /// Sends the given dungeon to the backend and persists it in the Database
         /// </summary>
-        /// <param name="dungeonDto"></param>
-        /// <returns></returns>
+        /// <param name="dungeonDto">The Dungeon to create</param>
+        /// <returns>The Guid if the DB Transaction was successfull, otherwise an empty Guid</returns>
         Task<Guid> CreateNewDungeon(DungeonDto dungeonDto);
 
         /// <summary>
-        /// TODO
+        /// Updates the given Dungeon in the Database
         /// </summary>
-        /// <param name="dungeonDto"></param>
-        /// <returns></returns>
+        /// <param name="dungeonDto">The dungeon with updated information</param>
+        /// <returns>The old dungeon in case the Database transaction failed, otherwise null</returns>
         Task<DungeonDto> UpdateDungeon(DungeonDto dungeonDto);
 
         /// <summary>
-        /// TODO
+        /// Deletes the Dungeon of the given ID from the database
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The Dungeon that contains the class</param>
+        /// <returns>Wether the DB transaction was successfull</returns>
         Task<bool> DeleteDungeon(Guid dungeonId);
 
         /// <summary>
-        /// TODO
+        /// Gets all Dungeons
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A Collection of DungeonDtos, otherwise null</returns>
         Task<ICollection<DungeonDto>> GetAllDungeons();
 
         /// <summary>
-        /// TODO
+        /// Gets all Dungeons for a certain user
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A collection of the users dungeons if successfull, otherwise null</returns>
         Task<ICollection<DungeonDto>> GetAllDungeonsForUser();
 
         /// <summary>
-        /// TODO
+        /// Gets the Dungeon of the ID
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the requested dungeon</param>
+        /// <returns>The requested dungeon, otherwise null</returns>
         Task<DungeonDto> GetDungeon(Guid dungeonId);
     }
 }

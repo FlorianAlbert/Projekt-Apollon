@@ -14,20 +14,20 @@ namespace Apollon.Mud.Client.Services.Implementiations
     public class UsableService : IUsableService
     {
         /// <summary>
-        /// TODO
+        /// The Rest Http Client injected into the class
         /// </summary>
         public HttpClient HttpClient { get; }
 
         /// <summary>
-        /// TODO
+        /// Creates Cancellation Tokens for each Http Request
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
-        /// TODO
+        /// This service contains all logic for sending usables to the backend and persist them
         /// </summary>
-        /// <param name="httpClientFactory"></param>
-        /// <param name="userContext"></param>
+        /// <param name="httpClientFactory">The HttpClient injected into this class</param>
+        /// <param name="userContext">The usercontext needed for authorization</param>
         public UsableService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
@@ -36,11 +36,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Sends the given dungeon to the backend and persists it in the Database
         /// </summary>
-        /// <param name="usableDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="usableDto">The Dungeon to create</param>
+        /// <param name="dungeonId">The Dungeon that contains the usable</param>
+        /// <returns>The Guid if the DB Transaction was successfull, otherwise an empty Guid</returns>
         public async Task<Guid> CreateNewUsable(UsableDto usableDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -55,28 +55,28 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Updates the given usable in the Database
         /// </summary>
-        /// <param name="usableDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="usableDto">The usable with updated information</param>
+        /// <param name="dungeonId">The Dungeon that contains the usable</param>
+        /// <returns>The old usable in case the Database transaction failed, otherwise null</returns>
         public async Task<UsableDto> UpdateUsable(UsableDto usableDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
             var response = await HttpClient.PutAsJsonAsync("api/usables/" + dungeonId, usableDto, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<UsableDto>();
+            if (response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<UsableDto>();
 
             return null;
         }
 
         /// <summary>
-        /// TODO
+        /// Deletes the given usable in the Database
         /// </summary>
-        /// <param name="usableId"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="usableId">The id of the usable to delete</param>
+        /// <param name="dungeonId">The Dungeon that contains the usable</param>
+        /// <returns>Wether the DB transaction was successfull</returns>
         public async Task<bool> DeleteUsable(Guid dungeonId, Guid usableId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -87,11 +87,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets all usables of a dungeon
         /// </summary>
-        /// <param name="usableDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the dungeon containing the requested usables</param>
+        /// <returns>A Collection of the requested usables, otherwise null</returns>
         public async Task<ICollection<UsableDto>> GetAllUsables(Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -104,11 +103,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets one usable of a dungeon
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <param name="usableId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the dungeon containing the requested usable</param>
+        /// <param name="usableId">The ID of the requested class</param>
+        /// <returns>The requested class, otherwise null</returns>
         public async Task<UsableDto> GetUsable(Guid dungeonId, Guid usableId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;

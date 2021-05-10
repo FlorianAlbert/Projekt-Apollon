@@ -263,7 +263,7 @@
     public Guid DungeonId { get; set; }
 
     /// <summary>
-    /// TODO
+    /// Called when Items where created, updated or deleted, given the category of the Items that were changed
     /// </summary>
     [Parameter]
     public EventCallback<string> ItemsChanged { get; set; }
@@ -340,22 +340,27 @@
             if (!(dungeonInspectableCollection is null))
             {
                 dungeonInspectables = dungeonInspectableCollection.ToList();
+                await ItemsChanged.InvokeAsync("Inspectables");
             }
             if (!(dungeonTakeableCollection is null))
             {
                 dungeonTakeables = dungeonTakeableCollection.ToList();
+                await ItemsChanged.InvokeAsync("Inspectables");
             }
             if (!(dungeonConsumableCollection is null))
             {
                 dungeonConsumables = dungeonConsumableCollection.ToList();
+                await ItemsChanged.InvokeAsync("Inspectables");
             }
             if (!(dungeonUsableCollection is null))
             {
                 dungeonUsables = dungeonUsableCollection.ToList();
+                await ItemsChanged.InvokeAsync("Inspectables");
             }
             if (!(dungeonWearableCollection is null))
             {
                 dungeonWearables = dungeonWearableCollection.ToList();
+                await ItemsChanged.InvokeAsync("Inspectables");
             }
         }
         StateHasChanged();
