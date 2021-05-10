@@ -44,7 +44,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// </summary>
         public string DungeonDescription { get; set; }
 
-        public Guid DefaultRoomId { get; set; }
+        public Guid? DefaultRoomId { get; set; }
 
         /// <summary>
         /// Start room of the dungeon
