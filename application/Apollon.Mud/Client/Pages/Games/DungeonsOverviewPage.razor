@@ -69,14 +69,8 @@
     /// <summary>
     /// When initialized the Method requests all Dungeons belonging to user from the Server and saves them locally
     /// </summary>
-    protected async override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        #region ToDelete
-        DungeonDto quciktest = new DungeonDto();
-        quciktest.DungeonName = "TestDungeon";
-        quciktest.DungeonDescription = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,";
-        allDungeons.Add(quciktest);
-        #endregion
 
         var response = await DungeonService.GetAllDungeons();
         if (!(response is null)) allDungeons = response.ToList();
