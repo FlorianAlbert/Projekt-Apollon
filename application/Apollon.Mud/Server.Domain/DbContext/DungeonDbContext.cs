@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
@@ -124,6 +125,10 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithMany(x => x.DungeonOwnerDungeons)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Dungeon>()
+                .HasMany(x => x.RegisteredAvatars)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Dungeon>()
                 .Property(x => x.Id)
                 .HasConversion(
                     x => x.ToString(),
@@ -242,7 +247,7 @@ namespace Apollon.Mud.Server.Domain.DbContext
             builder.Entity<Avatar>()
                 .HasOne(e => e.ChosenRace)
                 .WithMany(x => x.Avatars)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade); 
             builder.Entity<Avatar>()
                 .HasOne<Dungeon>()
                 .WithMany(x => x.RegisteredAvatars)

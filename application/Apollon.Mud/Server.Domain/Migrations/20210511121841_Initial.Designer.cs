@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Apollon.Mud.Server.Domain.Migrations
 {
     [DbContext(typeof(DungeonDbContext))]
-    [Migration("20210511115307_Initial")]
+    [Migration("20210511121841_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
