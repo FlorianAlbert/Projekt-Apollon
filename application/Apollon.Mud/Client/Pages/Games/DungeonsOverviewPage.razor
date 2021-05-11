@@ -49,7 +49,7 @@
                                 {
                                     <button class="btn btn-outline-success float-end" disabled>Ausstehend</button>
                                 }
-                                else if (dungeon.Visibility == 1 /*|| (dungeon.WhiteList is not null && dungeon.WhiteList.Contains(UserContext.DungeonUserContext))*/)
+                                else if (dungeon.Visibility == 1 || (dungeon.WhiteList is not null && dungeon.WhiteList.Contains(UserContext.DungeonUserContext)))
                                 {
                                     <button class="btn btn-success float-end" @onclick="() => JoinDungeonButtonClicked(dungeon)">Beitreten</button>
                                 }
