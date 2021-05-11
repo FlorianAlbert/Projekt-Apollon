@@ -451,6 +451,10 @@
                 dungeonClasses = dungeonClassCollection.ToList();
                 await OnClassSavedOrLoaded.InvokeAsync();
             }
+            dungeonTakeables = (await TakeableService.GetAllTakeables(DungeonId))?.ToList() ?? new List<TakeableDto>();
+            dungeonWearables = (await WearableService.GetAllWearables(DungeonId))?.ToList() ?? new List<WearableDto>();
+            dungeonUsables = (await UsableService.GetAllUsables(DungeonId))?.ToList() ?? new List<UsableDto>();
+            dungeonConsumables = (await ConsumableService.GetAllConsumables(DungeonId))?.ToList() ?? new List<ConsumableDto>();
         }
         StateHasChanged();
     }

@@ -1,0 +1,70 @@
+﻿@page "/Avatar/RequestDungeon"
+@page "/Avatar/RequestDungeon/{DungeonId:guid}"
+
+@using Apollon.Mud.Shared.Dungeon
+@inject NavigationManager NavManager
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+
+<div style="height:93vh">
+    <div class="container d-flex justify-content-center">
+        <div class="card mt-5" style="width:40rem">
+            <div class="card-header">
+                <div class="row">
+                    <h3>@RequestedDungeon.DungeonName</h3>
+                </div>
+            </div>
+            <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
+                <div class="list-group" style="overflow-y:auto; height:100%">
+
+                    <h4>Beschreibung:</h4>
+                    <p>@RequestedDungeon.DungeonDescription</p>
+                    <hr class="featurette-divider" />
+                    <h4>Epoche:</h4>
+                    <p>@RequestedDungeon.DungeonEpoch</p>
+                    <hr class="featurette-divider" />
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-danger" href="/Dungeons">Abbrechen</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary" @onclick="SendRequest">Anfragen</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// The selected Dungeons ID
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public DungeonDto RequestedDungeon { get; set; }
+
+
+    /// <summary>
+    /// When initialized the Method requests all Avatars belonging to user on this dungeon and saves them locally
+    /// </summary>
+    protected async override Task OnInitializedAsync()
+    {
+        var dungeon = await DungeonService.GetDungeon(DungeonId);
+        if (dungeon is not null) RequestedDungeon = dungeon;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Sends a request to the dungeon master to join this dungeon
+    /// </summary>
+    private void SendRequest()
+    {
+        //TODO Anfrage absenden, nur wie?
+    }
+}
