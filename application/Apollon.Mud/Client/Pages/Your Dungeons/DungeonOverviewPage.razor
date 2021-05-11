@@ -31,7 +31,7 @@
 
 
 
-<div class="container bg-white" style="min-height: 93vh">
+<div class="container bg-white" style="min-height: 93vh; text-align:center">
     <h3>Dungeon Übersicht</h3>
     <div class="card mt-2">
         <div class="card-header">Dungeon Infos</div>
@@ -122,31 +122,270 @@
     <div class="card mt-2">
         <div class="card-header">Rassen</div>
         <div class="card-body">
-
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Leben</th>
+                        <th scope="col">Verteidigung</th>
+                        <th scope="col">Schaden</th>
+                        <th scope="col">Beschreibung</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int raceIndex = 0;}
+                    @foreach (RaceDto raceDto in dungeonRaces)
+                    {
+                        <tr>
+                            <th scope="row">@raceIndex</th>
+                            <td>@raceDto.Name</td>
+                            <td>@raceDto.DefaultHealth</td>
+                            <td>@raceDto.DefaultProtection</td>
+                            <td>@raceDto.DefaultDamage</td>
+                            <td>@raceDto.Description</td>
+                            <td>@raceDto.Status</td>
+                        </tr>
+                        raceIndex++;
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="card mt-2">
         <div class="card-header">Items</div>
         <div class="card-body">
-
+            <div class="mt-2">
+                <h6>Untersuchbare Items</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Beschreibung</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int inspectableIndex = 0;}
+                        @foreach (InspectableDto inspectableDto in dungeonInspectables)
+                        {
+                            <tr>
+                                <th scope="row">@inspectableIndex</th>
+                                <td>@inspectableDto.Name</td>
+                                <td>@inspectableDto.Description</td>
+                                <td>@inspectableDto.Status</td>
+                            </tr>
+                            inspectableIndex++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-2">
+                <h6>Aufnehmbare Items</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Beschreibung</th>
+                            <th scope="col">Gewicht</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int takeableIndex = 0;}
+                        @foreach (TakeableDto takeableDto in dungeonTakeables)
+                        {
+                            <tr>
+                                <th scope="row">@takeableIndex</th>
+                                <td>@takeableDto.Name</td>
+                                <td>@takeableDto.Description</td>
+                                <th>@takeableDto.Weight</th>
+                                <td>@takeableDto.Status</td>
+                            </tr>
+                            takeableIndex++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-2">
+                <h6>Konsumierbare Items</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Beschreibung</th>
+                            <th scope="col">Gewicht</th>
+                            <th scope="col">Effekt</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int consumableIndex = 0;}
+                        @foreach (ConsumableDto consumableDto in dungeonConsumables)
+                        {
+                            <tr>
+                                <th scope="row">@consumableIndex</th>
+                                <td>@consumableDto.Name</td>
+                                <td>@consumableDto.Description</td>
+                                <th>@consumableDto.Weight</th>
+                                <th>@consumableDto.EffectDescription</th>
+                                <td>@consumableDto.Status</td>
+                            </tr>
+                            consumableIndex++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-2">
+                <h6>Verwendbare Items</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Beschreibung</th>
+                            <th scope="col">Gewicht</th>
+                            <th scope="col">Schadensboost</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int usableIndex = 0;}
+                        @foreach (UsableDto usableDto in dungeonUsables)
+                        {
+                            <tr>
+                                <th scope="row">@usableIndex</th>
+                                <td>@usableDto.Name</td>
+                                <td>@usableDto.Description</td>
+                                <th>@usableDto.Weight</th>
+                                <th>@usableDto.DamageBoost</th>
+                                <td>@usableDto.Status</td>
+                            </tr>
+                            usableIndex++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-2">
+                <h6>Tragbare Items</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Beschreibung</th>
+                            <th scope="col">Gewicht</th>
+                            <th scope="col">Verteidigungsboost</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int wearableIndex = 0;}
+                        @foreach (WearableDto wearableDto in dungeonWearables)
+                        {
+                            <tr>
+                                <th scope="row">@wearableIndex</th>
+                                <td>@wearableDto.Name</td>
+                                <td>@wearableDto.Description</td>
+                                <th>@wearableDto.Weight</th>
+                                <th>@wearableDto.ProtectionBoost</th>
+                                <td>@wearableDto.Status</td>
+                            </tr>
+                            wearableIndex++;
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <div class="card mt-2">
         <div class="card-header">Npcs</div>
         <div class="card-body">
-
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Text</th>
+                        <th scope="col">Beschreibung</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int npcIndex = 0;}
+                    @foreach (NpcDto npcDto in dungeonNpcs)
+                    {
+                        <tr>
+                            <th scope="row">@npcIndex</th>
+                            <td>@npcDto.Name</td>
+                            <td>@npcDto.Text</td>
+                            <td>@npcDto.Description</td>
+                            <td>@npcDto.Status</td>
+                        </tr>
+                        npcIndex++;
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="card mt-2">
         <div class="card-header">Befehle</div>
         <div class="card-body">
-
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Befehl</th>
+                        <th scope="col">Regex</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int requestableIndex = 0;}
+                    @foreach (RequestableDto requestableDto in dungeonRequestables)
+                    {
+                        <tr>
+                            <th scope="row">@requestableIndex</th>
+                            <td>@requestableDto.PatternForPlayer</td>
+                            <td>@requestableDto.MessageRegex</td>
+                            <td>@requestableDto.Status</td>
+                        </tr>
+                        requestableIndex++;
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="card mt-2">
         <div class="card-header">Räume</div>
         <div class="card-body">
-
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Beschreibung</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int roomIndex = 0;}
+                    @foreach (RoomDto roomDto in dungeonRooms)
+                    {
+                        <tr>
+                            <th scope="row">@roomIndex</th>
+                            <td>@roomDto.Name</td>
+                            <td>@roomDto.Description</td>
+                            <td>@roomDto.Status</td>
+                        </tr>
+                        roomIndex++;
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
