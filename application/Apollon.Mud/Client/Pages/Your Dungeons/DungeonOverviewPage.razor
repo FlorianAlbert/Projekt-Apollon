@@ -1,6 +1,21 @@
 ﻿@page "/dungeon/overview"
 @page "/dungeon/overview/{DungeonId:guid}"
 
+@using Apollon.Mud.Client.Data.Models.Game
+@using Apollon.Mud.Shared.Dungeon
+@using Apollon.Mud.Shared.Dungeon.Avatar
+@using Apollon.Mud.Shared.Dungeon.Class
+@using Apollon.Mud.Shared.Dungeon.Inspectable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable
+@using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable
+@using Apollon.Mud.Shared.Dungeon.Race
+@using Apollon.Mud.Shared.Dungeon.Npc
+@using Apollon.Mud.Shared.Dungeon.Requestable
+@using Apollon.Mud.Shared.Dungeon.Room
+@using Apollon.Mud.Shared.Dungeon.User
+
 @inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
 @inject Apollon.Mud.Client.Services.Interfaces.IClassService ClassService
 @inject Apollon.Mud.Client.Services.Interfaces.IConsumableService ConsumableService
@@ -16,15 +31,181 @@
 
 
 
+<div class="container bg-white" style="min-height: 93vh">
+    <h3>Dungeon Übersicht</h3>
+    <div class="card mt-2">
+        <div class="card-header">Dungeon Infos</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-3">
+                    <h6>Name: </h6>
+                </div>
+                <div class="col">
+                    <span>@dungeon.DungeonName</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <h6>Beschreibung: </h6>
+                </div>
+                <div class="col">
+                    <span>@dungeon.DungeonDescription</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <h6>Epoche:</h6>
+                </div>
+                <div class="col">
+                    <span>@dungeon.DungeonEpoch</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <h6>Status:</h6>
+                </div>
+                <div class="col">
+                    @if (dungeon.Status == 0)
+                    {
+                        <span>Aktiv</span>
+                        <div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div>
+                    }
+                    else
+                    {
+                        <span>Inaktiv</span>
+                        <div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mt-2">
+        <div class="card-header">Klassen</div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Leben</th>
+                        <th scope="col">Verteidigung</th>
+                        <th scope="col">Schaden</th>
+                        <th scope="col">Beschreibung</th>
+                        <th scope="col">Items</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int classIndex = 0;}
+                    @foreach (ClassDto classDto in dungeonClasses)
+                    {
+                        int itemCount = classDto.InventoryTakeableDtos.Count() 
+                                        + classDto.InventoryConsumableDtos.Count()
+                                        + classDto.InventoryUsableDtos.Count()
+                                        + classDto.InventoryWearableDtos.Count();
+                        <tr>
+                            <th scope="row">@classIndex</th>
+                            <td>@classDto.Name</td>
+                            <td>@classDto.DefaultHealth</td>
+                            <td>@classDto.DefaultProtection</td>
+                            <td>@classDto.DefaultDamage</td>
+                            <td>@classDto.Description</td>
+                            <td>@itemCount</td>
+                            <td>@classDto.Status</td>
+                        </tr>
+                        classIndex++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card mt-2">
+        <div class="card-header">Rassen</div>
+        <div class="card-body">
 
-<h3>DungeonOverviewPage</h3>
+        </div>
+    </div>
+    <div class="card mt-2">
+        <div class="card-header">Items</div>
+        <div class="card-body">
+
+        </div>
+    </div>
+    <div class="card mt-2">
+        <div class="card-header">Npcs</div>
+        <div class="card-body">
+
+        </div>
+    </div>
+    <div class="card mt-2">
+        <div class="card-header">Befehle</div>
+        <div class="card-body">
+
+        </div>
+    </div>
+    <div class="card mt-2">
+        <div class="card-header">Räume</div>
+        <div class="card-body">
+
+        </div>
+    </div>
+</div>
+
 
 @code {
     /// <summary>
-    /// TODO
+    /// The Id of the current dungeon
     /// </summary>
     [Parameter]
     public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// Contains all Infos of the dungeon
+    /// </summary>
+    #region Dungeon Information
+
+    DungeonDto dungeon = new DungeonDto();
+
+    List<ClassDto> dungeonClasses = new List<ClassDto>();
+
+    List<RaceDto> dungeonRaces = new List<RaceDto>();
+
+    List<InspectableDto> dungeonInspectables = new List<InspectableDto>();
+
+    List<TakeableDto> dungeonTakeables = new List<TakeableDto>();
+
+    List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
+
+    List<UsableDto> dungeonUsables = new List<UsableDto>();
+
+    List<WearableDto> dungeonWearables = new List<WearableDto>();
+
+    List<NpcDto> dungeonNpcs = new List<NpcDto>();
+
+    List<RequestableDto> dungeonRequestables = new List<RequestableDto>();
+
+    List<RoomDto> dungeonRooms = new List<RoomDto>();
+
+    #endregion
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (DungeonId != Guid.Empty)
+        {
+            dungeon = (await DungeonService.GetDungeon(DungeonId)) ?? new DungeonDto();
+            dungeonClasses = (await ClassService.GetAllClasses(DungeonId))?.ToList() ?? new List<ClassDto>();
+            dungeonRaces = (await RaceService.GetAllRaces(DungeonId))?.ToList() ?? new List<RaceDto>();
+            dungeonInspectables = (await InspectableService.GetAllInspectables(DungeonId))?.ToList() ?? new List<InspectableDto>();
+            dungeonTakeables = (await TakeableService.GetAllTakeables(DungeonId))?.ToList() ?? new List<TakeableDto>();
+            dungeonWearables = (await WearableService.GetAllWearables(DungeonId))?.ToList() ?? new List<WearableDto>();
+            dungeonUsables = (await UsableService.GetAllUsables(DungeonId))?.ToList() ?? new List<UsableDto>();
+            dungeonConsumables = (await ConsumableService.GetAllConsumables(DungeonId))?.ToList() ?? new List<ConsumableDto>();
+            dungeonNpcs = (await NpcService.GetAllNpcs(DungeonId))?.ToList() ?? new List<NpcDto>();
+            dungeonRequestables = (await SpecialActionService.GetAllRequestables(DungeonId))?.ToList() ?? new List<RequestableDto>();
+            dungeonRooms = (await RoomService.GetAllRooms(DungeonId))?.ToList() ?? new List<RoomDto>();
+        }
+        StateHasChanged();
+    }
 
 
 }
