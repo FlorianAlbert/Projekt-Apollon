@@ -33,10 +33,10 @@
                                 <p class="card-text" style="height:7.5rem">@dungeon.DungeonDescription</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ViewDungeonButtonClicked(dungeon)">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ViewDungeonButtonClicked(dungeon)">Anzeigen</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => EditDungeonButtonClicked(dungeon)">Bearbeiten</button>
                                     </div>
-                                    <small class="text-muted">9 mins</small>
+                                    @*<small class="text-muted">@dungeon.LastActive</small>*@
                                 </div>
                             </div>
                         </div>
@@ -46,7 +46,7 @@
             @foreach (DungeonDto dungeon in userDungeons)
             {
                 @if (dungeon.Status == 1)
-                { 
+                {
                     <div class="col-md-4">
                         <div class="card mb-4 box-shadow text-muted" style="height:15rem">
                             <h5 class="card-header" style="height:2.5rem">@dungeon.DungeonName</h5>
@@ -54,11 +54,11 @@
                                 <p class="card-text" style="height:7.5rem">@dungeon.DungeonDescription</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ViewDungeonButtonClicked(dungeon)">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ViewDungeonButtonClicked(dungeon)">Anzeigen</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => EditDungeonButtonClicked(dungeon)">Bearbeiten</button>
                                         <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => DeleteDungeonButtonClicked(dungeon)">Löschen</button>
                                     </div>
-                                    <small class="text-muted">9 mins</small>
+                                    @*<small class="text-muted">@dungeon.LastActive</small>*@
                                 </div>
                             </div>
                         </div>
@@ -85,9 +85,9 @@
 
 @code {
 
-    /// <summary>
-    /// This list contains all dungeons belonging to the user
-    /// </summary>
+        /// <summary>
+        /// This list contains all dungeons belonging to the user
+        /// </summary>
     private List<DungeonDto> userDungeons = new List<DungeonDto>();
 
     /// <summary>
@@ -98,7 +98,7 @@
         //userDungeons = DungeonService.GetAllUserDungeons();
 
         var userDungeonCollection = await DungeonService.GetAllDungeonsForUser();
-        if(!(userDungeonCollection is null))
+        if (!(userDungeonCollection is null))
         {
             userDungeons = userDungeonCollection.ToList();
         }
@@ -111,7 +111,7 @@
     }
 
     /// <summary>
-    /// When the "view" Button of a Dungeon-Card is clicked, this Method opens the corresponding dungeon page
+    /// When the "view" Button of a Dungeon-Card is clicked, this Method opens the corresponding dungeon overview page
     /// </summary>
     /// <param name="dungeon"> The dungeon the user wants to view </param>
     private void ViewDungeonButtonClicked(DungeonDto dungeon)
@@ -120,11 +120,25 @@
         //TODO Masteransicht des Dungeon öffnen?
     }
 
+    /// <summary>
+    /// When the "Edit" Button of a Dungeon-Card is clicked, this Method opens the corresponding dungeon configuration page
+    /// </summary>
+    /// <param name="dungeon"> The dungeon the user wants to configurate </param>
+    private void EditDungeonButtonClicked(DungeonDto dungeon)
+    {
+        NavManager.NavigateTo("/CreateDungeon/" + dungeon.Id);
+    }
+
+
+    /// <summary>
+    /// When the "Delete" Button of a Dungeon-Card is clicked, this Method deletes the corresponding dungeon
+    /// </summary>
+    /// <param name="dungeon"> The dungeon the user wants to delete</param>
     private async void DeleteDungeonButtonClicked(DungeonDto dungeonToDelete)
     {
         if (!(dungeonToDelete is null))
         {
-            if(!(dungeonToDelete.Id == Guid.Empty))
+            if (!(dungeonToDelete.Id == Guid.Empty))
             {
                 await DungeonService.DeleteDungeon(dungeonToDelete.Id);
                 userDungeons.Remove(dungeonToDelete);
@@ -133,12 +147,5 @@
         }
     }
 
-    /// <summary>
-    /// When the "Edit" Button of a Dungeon-Card is clicked, this Method opens the corresponding dungeon configuration page
-    /// </summary>
-    /// <param name="dungeon"> The dungeon the user wants to view </param>
-    private void EditDungeonButtonClicked(DungeonDto dungeon)
-    {
-        NavManager.NavigateTo("/CreateDungeon/" + dungeon.Id);
-    }
+>>>>>>>>> Temporary merge branch 2
 }

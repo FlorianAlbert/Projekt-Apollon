@@ -1,6 +1,7 @@
 ﻿@page "/Dungeons"
 
 @using Apollon.Mud.Shared.Dungeon
+@inject NavigationManager NavManager
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 
 <div class="container shadow d-flex bg-white min-vh-100">
@@ -42,7 +43,7 @@
                                 </div>
                                 @if (dungeon.Visibility == 1)
                                 {
-                                    <a href="/Avatar/Selection" class="btn btn-success float-end">Beitreten</a>
+                                    <a href="/Avatar/Selection" class="btn btn-success float-end" @onclick="() => JoinDungeonButtonClicked(dungeon)">Beitreten</a>
                                 }
                                 else
                                 {
@@ -82,5 +83,14 @@
 
         StateHasChanged();
 
+    }
+
+    /// <summary>
+    /// When the "Play" Button of a Dungeon is clicked, this Method opens the corresponding avatar selection page
+    /// </summary>
+    /// <param name="dungeon"> The dungeon the user wants to join </param>
+    private void JoinDungeonButtonClicked(DungeonDto dungeon)
+    {
+        NavManager.NavigateTo("/Avatar/Selection/" + dungeon.Id);
     }
 }
