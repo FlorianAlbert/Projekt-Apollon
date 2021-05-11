@@ -1,0 +1,30 @@
+﻿@page "/dungeon/overview"
+@page "/dungeon/overview/{DungeonId:guid}"
+
+@inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
+@inject Apollon.Mud.Client.Services.Interfaces.IClassService ClassService
+@inject Apollon.Mud.Client.Services.Interfaces.IConsumableService ConsumableService
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+@inject Apollon.Mud.Client.Services.Interfaces.IInspectableService InspectableService
+@inject Apollon.Mud.Client.Services.Interfaces.INpcService NpcService
+@inject Apollon.Mud.Client.Services.Interfaces.IRaceService RaceService
+@inject Apollon.Mud.Client.Services.Interfaces.IRoomService RoomService
+@inject Apollon.Mud.Client.Services.Interfaces.ISpecialActionService SpecialActionService
+@inject Apollon.Mud.Client.Services.Interfaces.ITakeableService TakeableService
+@inject Apollon.Mud.Client.Services.Interfaces.IUsableService UsableService
+@inject Apollon.Mud.Client.Services.Interfaces.IWearableService WearableService
+
+
+
+
+<h3>DungeonOverviewPage</h3>
+
+@code {
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+
+}
