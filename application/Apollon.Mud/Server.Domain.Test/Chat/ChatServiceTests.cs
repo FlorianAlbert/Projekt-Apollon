@@ -66,11 +66,8 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
-            var inspectableInRoom = _Fixture.Create<Inspectable>();
-            var firstAvatarInRoom = new Avatar();
-            firstAvatarInRoom.Status = Status.Approved;
-            var secondAvatarInRoom = new Avatar();
-            secondAvatarInRoom.Status = Status.Pending;
+            var firstAvatarInRoom = new Avatar {Status = Status.Approved};
+            var secondAvatarInRoom = new Avatar {Status = Status.Pending};
 
             var chatConnectionId = _Fixture.Create<string>();
 
@@ -87,9 +84,8 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
                 Name = avatarName
             };
             var room = new Room(string.Empty, string.Empty);
-            room.Inspectables.Add(firstAvatarInRoom);
-            room.Inspectables.Add(secondAvatarInRoom);
-            room.Inspectables.Add(inspectableInRoom);
+            room.Avatars.Add(firstAvatarInRoom);
+            room.Avatars.Add(secondAvatarInRoom);
 
             avatar.CurrentRoom = room;
 

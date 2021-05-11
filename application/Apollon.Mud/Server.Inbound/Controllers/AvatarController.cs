@@ -69,21 +69,21 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (!avatarDungeon.WhiteList.Contains(user) || 
                 avatarDungeon.BlackList.Contains(user)) return Unauthorized();
 
-            var avatarRace = await GameConfigService.Get<Race>(avatar.Race.Id);
+            var avatarRace = avatarDungeon.ConfiguredRaces.FirstOrDefault(x => x.Id == avatar.Race.Id);
 
-            var avatarClass = await GameConfigService.Get<Class>(avatar.Class.Id);
+            var avatarClass = avatarDungeon.ConfiguredClasses.FirstOrDefault(x => x.Id == avatar.Class.Id);
 
             if (avatarRace is null || avatarClass is null) return BadRequest();
 
             var newAvatar = new Avatar(avatar.Name,
                 avatarRace,
                 avatarClass,
-                (Gender)avatar.Gender,
-                avatarDungeon, user)
+                (Gender)avatar.Gender)
             {
                 CurrentRoom = (await GameConfigService.Get<Dungeon>(dungeonId)).DefaultRoom,
                 Status = (Status)avatar.Status,
                 Owner = user,
+                Dungeon = avatarDungeon
             };
 
             //foreach(TakeableDto takeable in avatar.Class.InventoryTakeableDtos)
@@ -231,7 +231,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (dungeon is null) return BadRequest();
 
-            var userAvatars = dungeon.ConfiguredInspectables.OfType<Avatar>().Where(x => x.Owner.Id == user.Id);
+            var userAvatars = (await GameConfigService.GetAll<Avatar>()).Where(x => x.Owner == user && x.Dungeon == dungeon);
 
             var userAvatarDtos = userAvatars.Select(x => new AvatarDto
             {
@@ -259,14 +259,18 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Description = x.CurrentRoom.Description,
                     Status = (int)x.CurrentRoom.Status
                 },
-                HoldingItem = new TakeableDto
+                HoldingItem = x.HoldingItem is null 
+                    ? null 
+                    : new TakeableDto
                 {
                     Id = x.HoldingItem.Id,
                     Name = x.HoldingItem.Name,
                     Description = x.HoldingItem.Description,
                     Status = (int)x.HoldingItem.Status
                 },
-                Armor = new WearableDto
+                Armor = x.Armor is null 
+                    ? null 
+                    : new WearableDto
                 {
                     Id = x.Armor.Id,
                     Name = x.Armor.Name,
@@ -326,7 +330,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
-                        Name = x.Description,
+                        Name = x.Name,
                         Weight = x.Weight
                     }).ToList(),
                     InventoryUsableDtos = avatar.Inventory.OfType<Usable>().Select
@@ -335,7 +339,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
-                        Name = x.Description,
+                        Name = x.Name,
                         Weight = x.Weight,
                         DamageBoost = x.DamageBoost
                     }).ToList(),
@@ -345,7 +349,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
-                        Name = x.Description,
+                        Name = x.Name,
                         Weight = x.Weight,
                         EffectDescription = x.EffectDescription
                     }).ToList(),
@@ -355,7 +359,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
-                        Name = x.Description,
+                        Name = x.Name,
                         Weight = x.Weight,
                         ProtectionBoost = x.ProtectionBoost
                     }).ToList(),
@@ -386,13 +390,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Description = avatar.CurrentRoom.Description,
                     Name = avatar.CurrentRoom.Name,
                     Inspectables = avatar.CurrentRoom.Inspectables.OfType<Inspectable>().
-                    Where(x => x is not Takeable and not Npc and not Avatar).
+                    Where(x => x is not Takeable and not Npc).
                     Select(x => new InspectableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
-                        Name = x.Description,
+                        Name = x.Name,
                     }).ToList(),
                     Takeables = avatar.CurrentRoom.Inspectables.OfType<Takeable>().
                     Where(x => x is not Consumable and not Wearable and not Usable).
@@ -401,7 +405,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
-                        Name = x.Description,
+                        Name = x.Name,
                         Weight = x.Weight
                     }).ToList(),
                     Consumables = avatar.CurrentRoom.Inspectables.OfType<Consumable>().
@@ -410,7 +414,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
-                        Name = x.Description,
+                        Name = x.Name,
                         Weight = x.Weight,
                         EffectDescription = x.EffectDescription
                     }).ToList(),
@@ -420,7 +424,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
-                        Name = x.Description,
+                        Name = x.Name,
                         Weight = x.Weight,
                         ProtectionBoost = x.ProtectionBoost
                     }).ToList(),
@@ -430,7 +434,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
-                        Name = x.Description,
+                        Name = x.Name,
                         Weight = x.Weight,
                         DamageBoost = x.DamageBoost
                     }).ToList(),

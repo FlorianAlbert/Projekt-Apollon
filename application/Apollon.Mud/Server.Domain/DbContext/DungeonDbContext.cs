@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
@@ -111,8 +112,8 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Dungeon>()
                 .HasMany(e => e.RegisteredAvatars)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
+                .WithOne(x => x.Dungeon)
+                .OnDelete(DeleteBehavior.Restrict);
             builder.Entity<Dungeon>()
                 .HasMany(e => e.ConfiguredRooms)
                 .WithOne(x => x.Dungeon)
@@ -164,6 +165,10 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithOne(x => x.DefaultRoom)
                 .HasForeignKey<Dungeon>(x => x.DefaultRoomId)
                 .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Room>()
+                .HasMany(x => x.Avatars)
+                .WithOne(x => x.CurrentRoom)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Room>()
                 .Property(x => x.Id)
                 .HasConversion(
@@ -221,6 +226,8 @@ namespace Apollon.Mud.Server.Domain.DbContext
                     x => Guid.Parse(x));
 
             builder.Entity<Avatar>()
+                .HasKey(x => x.Id);
+            builder.Entity<Avatar>()
                 .HasMany(e => e.Inventory)
                 .WithMany(x => x.InventoryAvatars);
             builder.Entity<Avatar>()
@@ -232,7 +239,9 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithMany(x => x.Avatars)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Avatar>()
-                .HasOne(e => e.CurrentRoom);
+                .HasOne(e => e.CurrentRoom)
+                .WithMany(x => x.Avatars)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Avatar>()
                 .HasOne(e => e.HoldingItem)
                 .WithMany(x => x.HoldingItemAvatars)
@@ -244,9 +253,9 @@ namespace Apollon.Mud.Server.Domain.DbContext
             builder.Entity<Avatar>()
                 .HasOne(e => e.ChosenRace)
                 .WithMany(x => x.Avatars)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade); 
             builder.Entity<Avatar>()
-                .HasOne<Dungeon>()
+                .HasOne(x => x.Dungeon)
                 .WithMany(x => x.RegisteredAvatars)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Avatar>()

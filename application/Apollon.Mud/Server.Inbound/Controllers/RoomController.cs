@@ -118,7 +118,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Text = n.Text
                     }).ToList(),
                 Inspectables = x.Inspectables
-                    .Where(i => i is not Takeable and not Npc and not Avatar)
+                    .Where(i => i is not Takeable and not Npc)
                     .Select(i => new InspectableDto
                     {
                         Id = i.Id,
@@ -214,7 +214,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Text = n.Text
                     }).ToList(),
                 Inspectables = room.Inspectables
-                    .Where(i => i is not Takeable and not Avatar and not Npc)
+                    .Where(i => i is not Takeable and not Npc)
                     .Select(i => new InspectableDto
                     {
                         Id = i.Id,
@@ -493,7 +493,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             room.NeighborWest = neighborWest;
             room.NeighborNorth = neighborNorth;
 
-            room.Inspectables.RemoveAll(x => x is not Avatar);
+            room.Inspectables.Clear();
 
             if (!await GameConfigService.NewOrUpdate(room)) return BadRequest();
 

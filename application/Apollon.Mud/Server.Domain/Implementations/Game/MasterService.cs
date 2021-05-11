@@ -39,7 +39,9 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             var room = dungeon?.ConfiguredRooms.FirstOrDefault(x => x.Id == avatarRoomId);
 
-            if (room?.Inspectables.FirstOrDefault(x => x.Id == avatarId) is not Avatar avatar) return;
+            var avatar = room?.Avatars.FirstOrDefault(x => x.Id == avatarId);
+
+            if (avatar is null) return;
 
             avatar.CurrentHealth = newHpValue;
 
