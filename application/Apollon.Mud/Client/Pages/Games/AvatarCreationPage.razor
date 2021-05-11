@@ -115,7 +115,7 @@
     /// <summary>
     /// When the component is initialized this Method instantiates the EditContext
     /// </summary>
-    protected async override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
         avatarContext = new EditContext(avatarModel);
 
@@ -173,7 +173,7 @@
         {
             //TODO User Benachrichtigen
         }
-
+        NavManager.NavigateTo("/Avatar/Selection/" + DungeonId);
     }
 
     /// <summary>
