@@ -33,7 +33,7 @@
                 }
                 @foreach (DungeonDto dungeon in allDungeons)
                 {
-                    @if (dungeon.Status == 1)
+                    @if (dungeon.Status == 0)
                     {
                         <div class="card mt-2 shadow">
                             <h5 class="card-header">@dungeon.DungeonName</h5>
