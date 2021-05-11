@@ -84,11 +84,11 @@
                     <div class="col">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" aria-label="Default select example" @bind="chosenItemCategory">
-                                <option selected value="Inspectable">Inspectable</option>
-                                <option value="Takeable">Takeable</option>
-                                <option value="Consumable">Consumable</option>
-                                <option value="Usable">Usable</option>
-                                <option value="Wearable">Wearable</option>
+                                <option selected value="Inspectable">Untersuchbar</option>
+                                <option value="Takeable">Aufnehmbar</option>
+                                <option value="Consumable">Konsumierbar</option>
+                                <option value="Usable">Verwendbar</option>
+                                <option value="Wearable">Tragbar</option>
                             </select>
 
                         </div>
@@ -322,6 +322,7 @@
     List<ConsumableDto> dungeonConsumables = new List<ConsumableDto>();
 
     #endregion
+
 
     #region Methods
     /// <summary>
@@ -764,7 +765,11 @@
             var inspectableToDelete = dungeonInspectables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if(!(inspectableToDelete is null))
             {
-                if (!(inspectableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await InspectableService.DeleteInspectable(DungeonId, inspectableToDelete.Id);
+                if (!(inspectableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await InspectableService.DeleteInspectable(DungeonId, inspectableToDelete.Id);
+                    dungeonInspectables.Remove(inspectableToDelete);
+                }
             }
         }
         if (chosenItemCategory == "Takeable")
@@ -772,7 +777,11 @@
             var takeableToDelete = dungeonTakeables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if (!(takeableToDelete is null))
             {
-                if (!(takeableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await TakeableService.DeleteTakeable(DungeonId, takeableToDelete.Id);
+                if (!(takeableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await TakeableService.DeleteTakeable(DungeonId, takeableToDelete.Id);
+                    dungeonTakeables.Remove(takeableToDelete);
+                }
             }
         }
         if (chosenItemCategory == "Consumable")
@@ -780,7 +789,11 @@
             var consumableToDelete = dungeonConsumables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if (!(consumableToDelete is null))
             {
-                if (!(consumableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await ConsumableService.DeleteConsumable(DungeonId, consumableToDelete.Id);
+                if (!(consumableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await ConsumableService.DeleteConsumable(DungeonId, consumableToDelete.Id);
+                    dungeonConsumables.Remove(consumableToDelete);
+                }
             }
         }
         if (chosenItemCategory == "Usable")
@@ -788,7 +801,11 @@
             var usableToDelete = dungeonUsables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if (!(usableToDelete is null))
             {
-                if (!(usableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await UsableService.DeleteUsable(DungeonId, usableToDelete.Id);
+                if (!(usableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await UsableService.DeleteUsable(DungeonId, usableToDelete.Id);
+                    dungeonUsables.Remove(usableToDelete);
+                }
             }
         }
         if (chosenItemCategory == "Wearable")
@@ -796,7 +813,11 @@
             var wearableToDelete = dungeonWearables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if (!(wearableToDelete is null))
             {
-                if (!(wearableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await WearableService.DeleteWearable(DungeonId, wearableToDelete.Id);
+                if (!(wearableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await WearableService.DeleteWearable(DungeonId, wearableToDelete.Id);
+                    dungeonWearables.Remove(wearableToDelete);
+                }
             }
         }
         if(shouldFieldsBeEmptied)
@@ -817,4 +838,5 @@
 
 
     #endregion
+
 }

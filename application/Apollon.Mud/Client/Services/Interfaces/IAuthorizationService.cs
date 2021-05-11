@@ -47,6 +47,9 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <summary>
         /// Requests the reset of a password
         /// </summary>
+        void LogOut();
+
+        
         /// <param name="userEmail">The users Email connected with the Account</param>
         /// <returns>True if successfull, otherwise false</returns>
         Task<bool> RequestPasswordReset(string userEmail);
