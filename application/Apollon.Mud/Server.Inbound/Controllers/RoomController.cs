@@ -494,6 +494,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             room.Inspectables.RemoveAll(x => x is not Avatar);
 
+            if (!await GameConfigService.NewOrUpdate(room)) return BadRequest();
+
             foreach (var consumableDto in roomDto.Consumables)
             {
                 try
