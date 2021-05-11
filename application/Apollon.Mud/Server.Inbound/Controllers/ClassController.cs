@@ -133,7 +133,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             classToUpdate.DefaultHealth = classDto.DefaultHealth;
             classToUpdate.DefaultProtection = classDto.DefaultProtection;
             classToUpdate.Description = classDto.Description;
+
             classToUpdate.StartInventory.Clear();
+
+            if (!await GameConfigService.NewOrUpdate(classToUpdate)) return BadRequest();
 
             foreach (var consumableDto in classDto.InventoryConsumableDtos)
             {
