@@ -411,7 +411,7 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         column: x => x.DungeonId1,
                         principalTable: "Dungeons",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Inspectables_Inspectables_ArmorId",
                         column: x => x.ArmorId,
