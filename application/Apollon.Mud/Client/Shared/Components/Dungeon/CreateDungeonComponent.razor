@@ -120,8 +120,7 @@
                             <select class="form-select" @bind="dungeonModel.Status">
                                 @if (DungeonMustBeInactive)
                                 {
-                                    <option selected hidden value=""></option>
-                                    <option value="Pending">Inaktiv</option>
+                                    <option value="Pending" selected>Inaktiv</option>
                                     <option value="Approved" disabled>Aktiv</option>
                                 }
                                 else
@@ -266,6 +265,7 @@
     /// <returns></returns>
     private async Task HandleDungeonSubmit()
     {
+        if (DungeonMustBeInactive) dungeonModel.Status = "Pending";
         var validDungeon = dungeonContext.Validate();
         if (validDungeon)
         {
