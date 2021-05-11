@@ -140,7 +140,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             //Gets all pure type inspectables and no subclass object
             var inspectables = dungeon.ConfiguredInspectables
-                .Where(i => i is not Takeable and not Npc and not Avatar);
+                .Where(i => i is not Takeable and not Npc);
 
             var inspectableDtos = inspectables.Select(inspectable =>
                 new InspectableDto

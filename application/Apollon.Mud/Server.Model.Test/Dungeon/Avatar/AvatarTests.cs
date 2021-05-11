@@ -1,3 +1,5 @@
+using System;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
@@ -34,11 +36,10 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
                 .Without(x => x.Dungeon)
                 .Create();
             classMock.DefaultHealth = classHealth;
-            var avatar = new Implementations.Dungeons.Avatars.Avatar();
-            avatar.ChosenRace = raceMock;
-            avatar.ChosenClass = classMock;
-
-            avatar.Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty);
+            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Diverse)
+            {
+                Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty)
+            };
 
             var result = avatar.MaxHealth;
 
@@ -65,12 +66,11 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
                 .Without(x => x.Dungeon)
                 .Create();
 
-            var avatar = new Implementations.Dungeons.Avatars.Avatar();
-                avatar.ChosenRace = raceMock;
-                avatar.ChosenClass = classMock;
-                avatar.HoldingItem = weaponMock;
-
-            avatar.Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty);
+            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Diverse)
+            {
+                Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty),
+                HoldingItem = weaponMock
+            };
 
             var result = avatar.Damage;
 
@@ -91,11 +91,10 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
                 .With(x => x.DefaultDamage, classDamage)
                 .Without(x => x.Dungeon)
                 .Create();
-            var avatar = new Implementations.Dungeons.Avatars.Avatar();
-            avatar.ChosenRace = raceMock;
-            avatar.ChosenClass = classMock;
-
-            avatar.Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty);
+            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Diverse)
+            {
+                Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty)
+            };
 
             var result = avatar.Damage;
 
@@ -122,12 +121,11 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
                 .Without(x => x.Dungeon)
                 .Create();
 
-            var avatar = new Implementations.Dungeons.Avatars.Avatar();
-            avatar.ChosenRace = raceMock;
-            avatar.ChosenClass = classMock;
-            avatar.Armor = protectionMock;
-
-            avatar.Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty);
+            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Diverse)
+            {
+                Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty),
+                Armor = protectionMock
+            };
 
             var result = avatar.Protection;
 
@@ -149,11 +147,10 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
                 .Without(x => x.Dungeon)
                 .Create();
 
-            var avatar = new Implementations.Dungeons.Avatars.Avatar();
-            avatar.ChosenRace = raceMock;
-            avatar.ChosenClass = classMock;
-
-            avatar.Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty);
+            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Diverse)
+            {
+                Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty)
+            };
 
             var result = avatar.Protection;
 

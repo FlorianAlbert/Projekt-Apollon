@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables;
 
@@ -82,5 +83,12 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
         /// The dungeon this room belongs to
         /// </summary>
         public virtual Dungeon Dungeon { get; set; }
+
+        private ICollection<Avatar> _Avatars;
+
+        /// <summary>
+        /// The avatars that are currently in this room
+        /// </summary>
+        public virtual ICollection<Avatar> Avatars => _Avatars ??= new List<Avatar>();
     }
 }

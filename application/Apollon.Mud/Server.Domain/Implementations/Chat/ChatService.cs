@@ -44,12 +44,11 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
             if (senderAvatar is null) return;
 
             var recipientChatConnectionIds = new List<string>();
-            foreach (var inspectable in senderAvatar.CurrentRoom.Inspectables)
+            foreach (var avatar in senderAvatar.CurrentRoom.Avatars)
             {
                 Connection recipientConnection;
-                if (inspectable is Avatar avatar && 
-                        avatar.Status == Status.Approved && 
-                        (recipientConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id)) is not null)
+                if (avatar.Status == Status.Approved && 
+                    (recipientConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id)) is not null)
                     recipientChatConnectionIds.Add(recipientConnection.ChatConnectionId);
             }
 
