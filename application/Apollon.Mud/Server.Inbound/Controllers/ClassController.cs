@@ -186,7 +186,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight
                 }).ToList(),
                 InventoryUsableDtos = oldClass.StartInventory.OfType<Usable>().Select(x => new UsableDto
@@ -194,7 +194,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight,
                     DamageBoost = x.DamageBoost
                 }).ToList(),
@@ -203,7 +203,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight,
                     EffectDescription = x.EffectDescription
                 }).ToList(),
@@ -212,7 +212,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight,
                     ProtectionBoost = x.ProtectionBoost
                 }).ToList(),
@@ -278,7 +278,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight
                 }).ToList(),
                 InventoryUsableDtos = c.StartInventory.OfType<Usable>().Select
@@ -287,7 +287,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight,
                     DamageBoost = x.DamageBoost
                 }).ToList(),
@@ -297,7 +297,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight,
                     EffectDescription = x.EffectDescription
                 }).ToList(),
@@ -307,7 +307,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight,
                     ProtectionBoost = x.ProtectionBoost
                 }).ToList(),
@@ -347,7 +347,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight
                 }).ToList(),
                 InventoryUsableDtos = classToSend.StartInventory.OfType<Usable>().Select
@@ -356,7 +356,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight,
                     DamageBoost = x.DamageBoost
                 }).ToList(),
@@ -366,7 +366,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight,
                     EffectDescription = x.EffectDescription
                 }).ToList(),
@@ -376,7 +376,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight,
                     ProtectionBoost = x.ProtectionBoost
                 }).ToList(),

@@ -65,7 +65,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PutAsJsonAsync("api/races", raceDto, cancellationToken);
+            var response = await HttpClient.PutAsJsonAsync("api/races/" + dungeonId, raceDto, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<RaceDto>();
 
