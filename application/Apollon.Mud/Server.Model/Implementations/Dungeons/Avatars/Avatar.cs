@@ -8,6 +8,7 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.U
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
+using Apollon.Mud.Shared.Dungeon.Avatar;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
 {

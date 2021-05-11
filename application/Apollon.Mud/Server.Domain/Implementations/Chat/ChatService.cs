@@ -8,6 +8,7 @@ using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Outbound.Hubs;
 using Apollon.Mud.Shared.HubContract;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Apollon.Mud.Server.Domain.Implementations.Chat

@@ -11,6 +11,7 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Microsoft.AspNetCore.Authorization;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {

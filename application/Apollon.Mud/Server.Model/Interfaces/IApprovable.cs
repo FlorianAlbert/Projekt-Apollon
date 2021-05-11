@@ -1,4 +1,5 @@
 ﻿using Apollon.Mud.Server.Model.Implementations;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 using System;
 
 namespace Apollon.Mud.Server.Model.Interfaces

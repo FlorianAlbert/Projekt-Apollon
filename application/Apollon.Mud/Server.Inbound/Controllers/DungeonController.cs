@@ -14,6 +14,7 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Dungeon.User;
 using Apollon.Mud.Shared;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {

@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Interfaces;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
 {

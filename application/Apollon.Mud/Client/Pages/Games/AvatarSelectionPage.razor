@@ -1,5 +1,4 @@
-﻿@page "/Avatar/Selection"
-@page "/Avatar/Selection/{DungeonId:guid}"
+﻿@page "/Avatar/Selection/{DungeonId:guid}"
 
 @using Apollon.Mud.Shared.Dungeon.Avatar
 @inject NavigationManager NavManager
@@ -43,9 +42,9 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <h6>Geschlecht: @avatar.Gender</h6>
-                                    <h6>Klasse: @avatar.Class</h6>
-                                    <h6>Rasse: @avatar.Race</h6>
+                                    <h6>Geschlecht:@((Gender)avatar.Gender)</h6>
+                                    <h6>Klasse: @avatar.Class.Name</h6>
+                                    <h6>Rasse: @avatar.Race.Name</h6>
                                 </div>
                                 <div class="col-3 d-flex flex-column">
                                     <a class="btn btn-success btn-sm mt-auto" href="/Game">Beitreten</a>
