@@ -1,8 +1,15 @@
 ﻿@page "/Avatar/Creation"
+@page "/Avatar/Creation/{DungeonId:guid}"
 
-@using Apollon.Mud.Client.Data.Models
+@using Apollon.Mud.Shared.Dungeon.Avatar
+@using Apollon.Mud.Client.Data.Models.Game
 @using Apollon.Mud.Shared.Dungeon.Class
 @using Apollon.Mud.Shared.Dungeon.Race
+
+@inject NavigationManager NavManager
+@inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
+@inject Apollon.Mud.Client.Services.Interfaces.IClassService ClassService
+@inject Apollon.Mud.Client.Services.Interfaces.IRaceService RaceService
 
 <div style="height:93vh">
     <div class="container d-flex justify-content-center">
@@ -13,17 +20,17 @@
                         <h5>Avatar Auswahl</h5>
                     </div>
                     <div class="col">
-                        <a class="btn btn-danger btn-sm" href="/MasterView/Requests" role="button">Masteransicht</a>
+                        
                     </div>
                     <div class="col">
-                        <a class="btn btn-sm btn-primary" href="/Avatar/Selection">Avatarliste</a>
+                        <button class="btn btn-sm btn-primary" @onclick="@AvatarListButtonClicked">Avatarliste</button>
                     </div>
                 </div>
             </div>
             <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
                 <h4 class="ml-2">Hier kannst du einen neuen Avatar erstellen</h4>
                 <hr />
-                <EditForm EditContext="@avatarContext" OnSubmit="@HandleRegisterSubmit" novalidate>
+                <EditForm EditContext="@avatarContext" OnSubmit="@HandleAvatarSubmit" novalidate>
                     <DataAnnotationsValidator />
 
                     <div class="form-group mt-5">
@@ -44,31 +51,31 @@
                         <option value="3">Divers</option>
                     </select>
 
-                        <label class="mt-5" for="Input_Name">Wähle eine Klasse:</label>
-                        <select class="form-select" aria-label="Default select example" @bind="avatarModel.Class">
-                            <option value="NoClass" selected hidden></option>
-                            @if (!(dungeonClasses is null))
+                    <label class="mt-5" for="Input_Name">Wähle eine Klasse:</label>
+                    <select class="form-select" aria-label="Default select example" @bind="avatarModel.Class">
+                        <option value="NoClass" selected hidden></option>
+                        @if (!(dungeonClasses is null))
+                        {
+                            @foreach (ClassDto dungeonClass in dungeonClasses)
                             {
-                                @foreach (ClassDto dungeonClass in dungeonClasses)
-                                {
-                                    <option value="@dungeonClass.Name">@dungeonClass.Name</option>
-                                }
+                                <option value="@dungeonClass.Name">@dungeonClass.Name</option>
                             }
-                        </select>
+                        }
+                    </select>
 
-                        <label class="mt-5" for="Input_Name">Wähle eine Rasse:</label>
-                        <select class="form-select" aria-label="Default select example" @bind="avatarModel.Race">
-                            <option value="NoRace" selected hidden></option>
-                            @if (!(dungeonRaces is null))
+                    <label class="mt-5" for="Input_Name">Wähle eine Rasse:</label>
+                    <select class="form-select" aria-label="Default select example" @bind="avatarModel.Race">
+                        <option value="NoRace" selected hidden></option>
+                        @if (!(dungeonRaces is null))
+                        {
+                            @foreach (RaceDto dungeonRace in dungeonRaces)
                             {
-                                @foreach (RaceDto dungeonRace in dungeonRaces)
-                                {
-                                    <option value="@dungeonRace.Name">@dungeonRace.Name</option>
-                                }
+                                <option value="@dungeonRace.Name">@dungeonRace.Name</option>
                             }
-                        </select>
+                        }
+                    </select>
 
-                        <button class="btn btn-primary mt-5" type="submit">Erstellen</button>
+                    <button class="btn btn-primary mt-5" type="submit">Erstellen</button>
                 </EditForm>
             </div>
         </div>
@@ -86,6 +93,17 @@
     private EditContext avatarContext;
 
     /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// This list contains all Avatars of the user
+    /// </summary>
+    List<AvatarDto> userAvatars = new List<AvatarDto>();
+
+    /// <summary>
     /// The List containing the Classes of the Dungeon
     /// </summary>
     List<ClassDto> dungeonClasses = new List<ClassDto>();
@@ -97,24 +115,72 @@
     /// <summary>
     /// When the component is initialized this Method instantiates the EditContext
     /// </summary>
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
         avatarContext = new EditContext(avatarModel);
+
+        var userAvatarCollection = await AvatarService.GetAllAvatarsForUser(DungeonId);
+        if (!(userAvatarCollection is null))
+        {
+            userAvatars = userAvatarCollection.ToList();
+        }
+
+        var dungeonClassesCollection = await ClassService.GetAllClasses(DungeonId);
+        if (!(dungeonClassesCollection is null))
+        {
+            dungeonClasses = dungeonClassesCollection.ToList();
+        }
+
+        var dungeonRacesCollection = await RaceService.GetAllRaces(DungeonId);
+        if (!(dungeonRacesCollection is null))
+        {
+            dungeonRaces = dungeonRacesCollection.ToList();
+        }
+
+        StateHasChanged();
     }
 
     /// <summary>
     /// This Method gets called when the user wants to create the new avatar and validates the form and reacts accordingly
     /// </summary>
-    private async Task HandleRegisterSubmit()
+    private async Task HandleAvatarSubmit()
     {
         var validCreation = avatarContext.Validate();
-        if (validCreation)
+        if (validCreation && DungeonId != Guid.Empty)
         {
-            //TODO Daten absenden
+            bool newAvatar = false;
+            AvatarDto submitAvatar = userAvatars.Find(a => a.Name.Equals(avatarModel.Name));
+            if (submitAvatar is null)
+            {
+                submitAvatar = new AvatarDto();
+                newAvatar = true;
+            }
+            submitAvatar.Name = avatarModel.Name;
+            submitAvatar.Gender = avatarModel.Gender;
+            submitAvatar.Class = dungeonClasses.Find(c => c.Name.Equals(avatarModel.Class));
+            submitAvatar.Race = dungeonRaces.Find(r => r.Name.Equals(avatarModel.Race));
+            if (newAvatar)
+            {
+                var response = await AvatarService.CreateNewAvatar(submitAvatar, DungeonId);
+                if (response != Guid.Empty)
+                {
+                    submitAvatar.Id = response;
+                    userAvatars.Add(submitAvatar);
+                }
+            }
         }
         else
         {
             //TODO User Benachrichtigen
         }
+        NavManager.NavigateTo("/Avatar/Selection/" + DungeonId);
+    }
+
+    /// <summary>
+    /// This function navigates the User to the avatar selection page
+    /// </summary>
+    public void AvatarListButtonClicked()
+    {
+        NavManager.NavigateTo("/Avatar/Selection/" + DungeonId);
     }
 }

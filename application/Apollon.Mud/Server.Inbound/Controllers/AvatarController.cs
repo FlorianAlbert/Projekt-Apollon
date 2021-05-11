@@ -21,6 +21,7 @@ using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Shared.Dungeon.Race;
 using Apollon.Mud.Shared.Dungeon.Requestable;
 using Apollon.Mud.Shared.Dungeon.Room;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -50,6 +51,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Authorize(Roles = "Player, Admin")]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateNew([FromBody] AvatarDto avatar, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(u => u.Type == "UserId");
@@ -60,119 +62,66 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            var newAvatar = new Avatar(avatar.Name, await GameConfigService.Get<Race>(avatar.Race.Id), await GameConfigService.Get<Class>(avatar.Class.Id), (Gender)avatar.Gender, await GameConfigService.Get<Dungeon>(dungeonId), user)
+            var avatarDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
+
+            if (avatarDungeon is null) return BadRequest();
+
+            if (!avatarDungeon.WhiteList.Contains(user) || 
+                avatarDungeon.BlackList.Contains(user)) return Unauthorized();
+
+            var avatarRace = avatarDungeon.ConfiguredRaces.FirstOrDefault(x => x.Id == avatar.Race.Id);
+
+            var avatarClass = avatarDungeon.ConfiguredClasses.FirstOrDefault(x => x.Id == avatar.Class.Id);
+
+            if (avatarRace is null || avatarClass is null) return BadRequest();
+
+            var newAvatar = new Avatar(avatar.Name,
+                avatarRace,
+                avatarClass,
+                (Gender)avatar.Gender)
             {
                 CurrentRoom = (await GameConfigService.Get<Dungeon>(dungeonId)).DefaultRoom,
+                Status = (Status)avatar.Status,
+                Owner = user,
+                Dungeon = avatarDungeon
             };
-            foreach(TakeableDto takeable in avatar.Class.InventoryTakeableDtos)
-            {
-                newAvatar.Inventory.Add(new Takeable(takeable.Weight, takeable.Description, takeable.Name)
-                {
-                    Status = (Status)takeable.Status
-                });
-            }
-            foreach (UsableDto usable in avatar.Class.InventoryUsableDtos)
-            {
-                newAvatar.Inventory.Add(new Usable(usable.Name, usable.Description, usable.Weight, usable.DamageBoost)
-                {
-                    Status = (Status)usable.Status
-                });
-            }
-            foreach (WearableDto wearable in avatar.Class.InventoryWearableDtos)
-            {
-                newAvatar.Inventory.Add(new Wearable(wearable.Name, wearable.Description, wearable.Weight, wearable.ProtectionBoost)
-                {
-                    Status = (Status)wearable.Status
-                });
-            }
-            foreach (ConsumableDto consumable in avatar.Class.InventoryConsumableDtos)
-            {
-                newAvatar.Inventory.Add(new Consumable(consumable.Name, 
-                                        consumable.Description, 
-                                        consumable.Weight, 
-                                        consumable.EffectDescription)
-                                        {
-                                            Status = (Status)consumable.Status
-                                        });
-            }
+
+            //foreach(TakeableDto takeable in avatar.Class.InventoryTakeableDtos)
+            //{
+            //    newAvatar.Inventory.Add(new Takeable(takeable.Weight, takeable.Description, takeable.Name)
+            //    {
+            //        Status = (Status)takeable.Status
+            //    });
+            //}
+            //foreach (UsableDto usable in avatar.Class.InventoryUsableDtos)
+            //{
+            //    newAvatar.Inventory.Add(new Usable(usable.Name, usable.Description, usable.Weight, usable.DamageBoost)
+            //    {
+            //        Status = (Status)usable.Status
+            //    });
+            //}
+            //foreach (WearableDto wearable in avatar.Class.InventoryWearableDtos)
+            //{
+            //    newAvatar.Inventory.Add(new Wearable(wearable.Name, wearable.Description, wearable.Weight, wearable.ProtectionBoost)
+            //    {
+            //        Status = (Status)wearable.Status
+            //    });
+            //}
+            //foreach (ConsumableDto consumable in avatar.Class.InventoryConsumableDtos)
+            //{
+            //    newAvatar.Inventory.Add(new Consumable(consumable.Name, 
+            //                            consumable.Description, 
+            //                            consumable.Weight, 
+            //                            consumable.EffectDescription)
+            //                            {
+            //                                Status = (Status)consumable.Status
+            //                            });
+            //}
 
             if (await GameConfigService.NewOrUpdate(newAvatar)) return Ok(newAvatar.Id);
 
             return BadRequest();
         }
-
-        /*//Brauchen wir überhaupt eine Update?
-        [HttpPut]
-        [Route("{dungeonId}")]
-        [Authorize(Roles = "Player")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Update([FromBody] AvatarDto avatar, [FromRoute] Guid dungeonId)
-        {
-            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
-
-            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
-
-            var user = await UserService.GetUser(userId);
-
-            if (user is null) return BadRequest();
-
-            var avatarToUpdate = GameConfigService.Get<Avatar>(avatar.Id);
-
-            if (avatarToUpdate is null) return BadRequest();
-
-            if (avatarToUpdate.Owner.Id != user.Id) return Unauthorized(); 
-
-            avatarToUpdate.ChosenRace = new Race(avatar.Race.Name,
-                                        avatar.Race.Description,
-                                        avatar.Race.DefaultHealth,
-                                        avatar.Race.DefaultProtection,
-                                        avatar.Race.DefaultDamage)
-                                        {
-                                            Status = (Status) avatar.Race.Status
-                                        };
-
-            avatarToUpdate.ChosenClass = new Class(avatar.Class.Name, 
-                                        avatar.Class.Description, 
-                                        avatar.Class.DefaultHealth, 
-                                        avatar.Class.DefaultProtection, 
-                                        avatar.Class.DefaultDamage) 
-                                        {
-                                            Status = (Status) avatar.Class.Status
-                                        };
-
-            avatarToUpdate.ChosenGender = (Gender)avatar.Gender;
-            avatarToUpdate.Dungeon = GameConfigService.Get<Dungeon>(dungeonId);
-            avatarToUpdate.CurrentHealth = avatar.CurrentHealth;
-            avatarToUpdate.Inventory = avatar.
-
-
-            avatarToUpdate.HoldingItem = new Takeable(avatar.HoldingItem.Weight, avatar.HoldingItem.Description, avatar.HoldingItem.Name)
-            {
-                Status = (Status)avatar.HoldingItem.Status
-            };
-
-
-
-            actionToUpdate.Status = (Status)specialActionDto.Status;
-            actionToUpdate.MessageRegex = specialActionDto.MessageRegex;
-            actionToUpdate.PatternForPlayer = specialActionDto.PatternForPlayer;
-
-            if (GameConfigService.NewOrUpdate(actionToUpdate)) return Ok();
-
-            var oldAction = GameConfigService.Get<Requestable>(specialActionDto.Id);
-
-            var oldActionDto = new RequestableDto
-            {
-                Status = (int)oldAction.Status,
-                Id = oldAction.Id,
-                PatternForPlayer = oldAction.PatternForPlayer,
-                MessageRegex = oldAction.MessageRegex
-            };
-
-            return BadRequest(oldActionDto);
-        }*/
 
         [HttpDelete]
         [Authorize(Roles = "Player")]
@@ -180,8 +129,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Delete([FromRoute] Guid avatarId)
+        public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid avatarId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
 
@@ -193,9 +141,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var avatarToDelete = await GameConfigService.Get<Avatar>(avatarId);
 
-            if (avatarToDelete.Owner != user) return Unauthorized();
-
             if (avatarToDelete is null) return BadRequest();
+
+            if (avatarToDelete.Dungeon.Id != dungeonId) return BadRequest();
+
+            if (avatarToDelete.Owner != user) return Unauthorized();
 
             if (await GameConfigService.Delete<Avatar>(avatarId)) return Ok();
 
@@ -205,31 +155,133 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(ICollection<RequestableDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AvatarDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
-            var avatars = (await GameConfigService.Get<Dungeon>(dungeonId)).RegisteredAvatars;
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
-            if (!(avatars is null)) return Ok(avatars);
+            if (dungeon is null) return BadRequest();
 
-            return BadRequest();
+            var avatars = dungeon.RegisteredAvatars;
+
+            var avatarDtos = avatars.Select(x => new AvatarDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Status = (int) x.Status,
+                Class = new ClassDto
+                {
+                    Id = x.ChosenClass.Id,
+                    Name = x.ChosenClass.Name,
+                    Description = x.ChosenClass.Description,
+                    Status = (int) x.ChosenClass.Status
+                },
+                Race = new RaceDto
+                {
+                    Id = x.ChosenRace.Id,
+                    Name = x.ChosenRace.Name,
+                    Description = x.ChosenRace.Description,
+                    Status = (int)x.ChosenRace.Status
+                },
+                CurrentRoom = new RoomDto
+                {
+                    Id = x.CurrentRoom.Id,
+                    Name = x.CurrentRoom.Name,
+                    Description = x.CurrentRoom.Description,
+                    Status = (int) x.CurrentRoom.Status
+                },
+                HoldingItem = new TakeableDto
+                {
+                    Id = x.HoldingItem.Id,
+                    Name = x.HoldingItem.Name,
+                    Description = x.HoldingItem.Description,
+                    Status = (int) x.HoldingItem.Status
+                },
+                Armor = new WearableDto
+                {
+                    Id = x.Armor.Id,
+                    Name = x.Armor.Name,
+                    Description = x.Armor.Description,
+                    Status = (int) x.Armor.Status
+                },
+                CurrentHealth = x.CurrentHealth,
+                Gender = (int) x.ChosenGender
+            }).ToArray();
+
+            return Ok(avatarDtos);
         }
 
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}/user")]
-        [ProducesResponseType(typeof(ICollection<RequestableDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AvatarDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllForUser([FromRoute] Guid dungeonId)
         {
-            var avatars = (await GameConfigService.Get<Dungeon>(dungeonId)).RegisteredAvatars;
+            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
 
-            var userAvatars = avatars.Where(x => x.Owner.Id == "User.Id");
+            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
 
-            if (!(userAvatars is null)) return Ok(avatars);
+            var user = await UserService.GetUser(userId);
 
-            return BadRequest();
+            if (user is null) return BadRequest();
+
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
+
+            if (dungeon is null) return BadRequest();
+
+            var userAvatars = (await GameConfigService.GetAll<Avatar>()).Where(x => x.Owner == user && x.Dungeon == dungeon);
+
+            var userAvatarDtos = userAvatars.Select(x => new AvatarDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Status = (int)x.Status,
+                Class = new ClassDto
+                {
+                    Id = x.ChosenClass.Id,
+                    Name = x.ChosenClass.Name,
+                    Description = x.ChosenClass.Description,
+                    Status = (int)x.ChosenClass.Status
+                },
+                Race = new RaceDto
+                {
+                    Id = x.ChosenRace.Id,
+                    Name = x.ChosenRace.Name,
+                    Description = x.ChosenRace.Description,
+                    Status = (int)x.ChosenRace.Status
+                },
+                CurrentRoom = new RoomDto
+                {
+                    Id = x.CurrentRoom.Id,
+                    Name = x.CurrentRoom.Name,
+                    Description = x.CurrentRoom.Description,
+                    Status = (int)x.CurrentRoom.Status
+                },
+                HoldingItem = x.HoldingItem is null 
+                    ? null 
+                    : new TakeableDto
+                {
+                    Id = x.HoldingItem.Id,
+                    Name = x.HoldingItem.Name,
+                    Description = x.HoldingItem.Description,
+                    Status = (int)x.HoldingItem.Status
+                },
+                Armor = x.Armor is null 
+                    ? null 
+                    : new WearableDto
+                {
+                    Id = x.Armor.Id,
+                    Name = x.Armor.Name,
+                    Description = x.Armor.Description,
+                    Status = (int)x.Armor.Status
+                },
+                CurrentHealth = x.CurrentHealth,
+                Gender = (int)x.ChosenGender
+            }).ToArray();
+
+            return Ok(userAvatarDtos);
         }
 
         [HttpGet]
@@ -239,7 +291,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid avatarId)
         {
-            var avatar = (await GameConfigService.Get<Dungeon>(dungeonId)).RegisteredAvatars.FirstOrDefault(r => r.Id == avatarId);
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
+
+            if (dungeon is null) return BadRequest();
+
+            var avatar = dungeon.RegisteredAvatars.FirstOrDefault(r => r.Id == avatarId);
 
             if (avatar is null) return BadRequest();
 
@@ -333,14 +389,18 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Status = (int)avatar.CurrentRoom.Status,
                     Description = avatar.CurrentRoom.Description,
                     Name = avatar.CurrentRoom.Name,
-                    Inspectables = avatar.CurrentRoom.Inspectables.OfType<Inspectable>().Where(x => x is not Takeable and not Npc and not Avatar).Select(x => new InspectableDto
+                    Inspectables = avatar.CurrentRoom.Inspectables.OfType<Inspectable>().
+                    Where(x => x is not Takeable and not Npc).
+                    Select(x => new InspectableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
                         Name = x.Description,
                     }).ToList(),
-                    Takeables = avatar.CurrentRoom.Inspectables.OfType<Takeable>().Where(x => x is not Consumable and not Wearable and not Usable).Select(x => new TakeableDto
+                    Takeables = avatar.CurrentRoom.Inspectables.OfType<Takeable>().
+                    Where(x => x is not Consumable and not Wearable and not Usable).
+                    Select(x => new TakeableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -348,7 +408,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Name = x.Description,
                         Weight = x.Weight
                     }).ToList(),
-                    Consumables = avatar.CurrentRoom.Inspectables.OfType<Consumable>().Select(x => new ConsumableDto
+                    Consumables = avatar.CurrentRoom.Inspectables.OfType<Consumable>().
+                    Select(x => new ConsumableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -357,7 +418,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Weight = x.Weight,
                         EffectDescription = x.EffectDescription
                     }).ToList(),
-                    Wearables = avatar.CurrentRoom.Inspectables.OfType<Wearable>().Select(x => new WearableDto
+                    Wearables = avatar.CurrentRoom.Inspectables.OfType<Wearable>().
+                    Select(x => new WearableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -366,7 +428,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Weight = x.Weight,
                         ProtectionBoost = x.ProtectionBoost
                     }).ToList(),
-                    Usables = avatar.CurrentRoom.Inspectables.OfType<Usable>().Select(x => new UsableDto
+                    Usables = avatar.CurrentRoom.Inspectables.OfType<Usable>().
+                    Select(x => new UsableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,

@@ -11,11 +11,11 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Server.Outbound.Hubs;
 using Apollon.Mud.Shared.HubContract;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using Microsoft.AspNetCore.SignalR;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Xunit;
 
 namespace Apollon.Mud.Server.Domain.Test.Chat
@@ -48,7 +48,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
             await chatService.PostRoomMessage(dungeonId, avatarId, message);
 
             connectionService.DidNotReceive().GetConnectionByAvatarId(Arg.Any<Guid>());
-            hubContext.DidNotReceive().Clients.Clients(Arg.Any<IReadOnlyList<string>>()).ReceiveChatMessage(Arg.Any<string>(), message);
+            await hubContext.DidNotReceive().Clients.Clients(Arg.Any<IReadOnlyList<string>>()).ReceiveChatMessage(Arg.Any<string>(), message);
         }
 
         [Fact]
@@ -66,11 +66,8 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
-            var inspectableInRoom = _Fixture.Create<Inspectable>();
-            var firstAvatarInRoom = new Avatar();
-            firstAvatarInRoom.Status = Status.Approved;
-            var secondAvatarInRoom = new Avatar();
-            secondAvatarInRoom.Status = Status.Pending;
+            var firstAvatarInRoom = new Avatar {Status = Status.Approved};
+            var secondAvatarInRoom = new Avatar {Status = Status.Pending};
 
             var chatConnectionId = _Fixture.Create<string>();
 
@@ -87,9 +84,8 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
                 Name = avatarName
             };
             var room = new Room(string.Empty, string.Empty);
-            room.Inspectables.Add(firstAvatarInRoom);
-            room.Inspectables.Add(secondAvatarInRoom);
-            room.Inspectables.Add(inspectableInRoom);
+            room.Avatars.Add(firstAvatarInRoom);
+            room.Avatars.Add(secondAvatarInRoom);
 
             avatar.CurrentRoom = room;
 
@@ -103,7 +99,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
             await chatService.PostRoomMessage(dungeonId, avatarId, message);
 
             connectionService.Received().GetConnectionByAvatarId(firstAvatarInRoom.Id);
-            hubContext.Received().Clients.Clients(Arg.Is<List<string>>(x => x.Contains(chatConnectionId) && x.Count == 1)).ReceiveChatMessage(avatarName, message);
+            await hubContext.Received().Clients.Clients(Arg.Is<List<string>>(x => x.Contains(chatConnectionId) && x.Count == 1)).ReceiveChatMessage(avatarName, message);
         }
 
         [Fact]
@@ -126,7 +122,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             await gameDbService.DidNotReceive().Get<Avatar>(Arg.Any<Guid>());
             connectionService.DidNotReceive().GetConnectionByAvatarId(Arg.Any<Guid>());
-            hubContext.DidNotReceive().Clients.Client(Arg.Any<string>()).ReceiveChatMessage(Arg.Any<string>(), message);
+            await hubContext.DidNotReceive().Clients.Client(Arg.Any<string>()).ReceiveChatMessage(Arg.Any<string>(), message);
         }
 
         [Fact]
@@ -156,7 +152,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             await gameDbService.DidNotReceive().Get<Avatar>(Arg.Any<Guid>());
             connectionService.DidNotReceive().GetConnectionByAvatarId(Arg.Any<Guid>());
-            hubContext.Received().Clients.Client(chatConnectionId).ReceiveChatMessage("Dungeon Master", message);
+            await hubContext.Received().Clients.Client(chatConnectionId).ReceiveChatMessage("Dungeon Master", message);
         }
 
         /*[Fact] ToDo anpassen
@@ -217,11 +213,11 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
                 .Result
                 .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
             connectionService.DidNotReceive().GetConnectionByAvatarId(Arg.Any<Guid>());
-            hubContext.DidNotReceive().Clients.Client(Arg.Any<string>()).ReceiveChatMessage(Arg.Any<string>(), message);
+            await hubContext.DidNotReceive().Clients.Client(Arg.Any<string>()).ReceiveChatMessage(Arg.Any<string>(), message);
         }
 
         [Fact]
-        public void PostWhisperMessage_GameDbServiceReturnsNullForSender_Fails()
+        public async Task PostWhisperMessage_GameDbServiceReturnsNullForSender_Fails()
         {
             var dungeonId = _Fixture.Create<Guid>();
             var avatarId = _Fixture.Create<Guid>();
@@ -236,14 +232,14 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var chatService = new ChatService(gameDbService, connectionService, hubContext);
 
-            chatService.PostWhisperMessage(dungeonId, avatarId, recipientName, message);
+            await chatService.PostWhisperMessage(dungeonId, avatarId, recipientName, message);
 
-            gameDbService.Received().Get<Avatar>(avatarId);
+            await gameDbService.Received().Get<Avatar>(avatarId);
             gameDbService.Received().GetAll<Avatar>()
                 .Result
                 .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
             connectionService.DidNotReceive().GetConnectionByAvatarId(Arg.Any<Guid>());
-            hubContext.DidNotReceive().Clients.Client(Arg.Any<string>()).ReceiveChatMessage(Arg.Any<string>(), message);
+            await hubContext.DidNotReceive().Clients.Client(Arg.Any<string>()).ReceiveChatMessage(Arg.Any<string>(), message);
         }
 
         [Fact]
@@ -279,7 +275,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
             (await gameDbService.Received().GetAll<Avatar>())
                 .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
             connectionService.Received().GetConnectionByAvatarId(recipientAvatar.Id);
-            hubContext.DidNotReceive().Clients.Client(Arg.Any<string>()).ReceiveChatMessage(Arg.Any<string>(), message);
+            await hubContext.DidNotReceive().Clients.Client(Arg.Any<string>()).ReceiveChatMessage(Arg.Any<string>(), message);
         }
 
         [Fact]
@@ -326,7 +322,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
                 .Result
                 .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
             connectionService.Received().GetConnectionByAvatarId(recipientAvatar.Id);
-            hubContext.Received().Clients.Client(chatConnectionId).ReceiveChatMessage(senderAvatarName, message);
+            await hubContext.Received().Clients.Client(chatConnectionId).ReceiveChatMessage(senderAvatarName, message);
         }
 
         [Fact]
@@ -366,7 +362,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             await chatService.PostGlobalMessage(dungeonId, message);
 
-            hubContext.Received().Clients.Clients(Arg.Is<List<string>>(x => x.Contains(chatConnectionId) && x.Count == 1)).ReceiveChatMessage("Dungeon Master", message);
+            await hubContext.Received().Clients.Clients(Arg.Is<List<string>>(x => x.Contains(chatConnectionId) && x.Count == 1)).ReceiveChatMessage("Dungeon Master", message);
         }
     }
 }

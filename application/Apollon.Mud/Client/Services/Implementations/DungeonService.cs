@@ -1,4 +1,4 @@
-﻿using Apollon.Mud.Client.Data;
+﻿using Apollon.Mud.Client.Data.Account;
 using Apollon.Mud.Client.Services.Interfaces;
 using Apollon.Mud.Shared.Dungeon;
 using System;
@@ -84,6 +84,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
             return null;
         }
 
+        /// <summary>
+        /// Gets all Dungeons for a certain user
+        /// </summary>
+        /// <returns>A collection of the users dungeons if successfull, otherwise null</returns>
         public async Task<ICollection<DungeonDto>> GetAllDungeonsForUser()
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;

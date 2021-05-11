@@ -1,4 +1,4 @@
-﻿namespace Apollon.Mud.Server.Model.Implementations.Dungeons
+﻿namespace Apollon.Mud.Shared.Implementations.Dungeons
 {
     /// <summary>
     /// Describes the visibility of a dungeon

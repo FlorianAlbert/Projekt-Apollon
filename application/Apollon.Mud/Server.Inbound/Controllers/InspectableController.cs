@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -37,6 +38,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateNew([FromBody] InspectableDto inspectableDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -57,9 +59,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 Status = (Status)inspectableDto.Status,
                 Dungeon = dungeon
             };
-
-            var inspectableSaved = await GameConfigService.NewOrUpdate(newInspectable);
-            if (inspectableSaved) return Ok(newInspectable.Id);
+            
+            if (await GameConfigService.NewOrUpdate(newInspectable)) return Ok(newInspectable.Id);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
@@ -69,7 +70,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Update([FromBody] InspectableDto inspectableDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -84,15 +84,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (inspectableDto is null) return BadRequest();
 
-            var inspectableToUpdate = await GameConfigService.Get<Inspectable>(inspectableDto.Id);
+            var inspectableToUpdate = dungeon.ConfiguredInspectables.FirstOrDefault(x => x.Id == inspectableDto.Id);
             if (inspectableToUpdate is null) return BadRequest();
 
             inspectableToUpdate.Name = inspectableDto.Name;
             inspectableToUpdate.Description = inspectableDto.Description;
             inspectableToUpdate.Status = (Status) inspectableDto.Status;
-
-            var inspectableSaved = await GameConfigService.NewOrUpdate(inspectableToUpdate);
-            if (inspectableSaved) return Ok(inspectableToUpdate.Id);
+            
+            if (await GameConfigService.NewOrUpdate(inspectableToUpdate)) return Ok(inspectableToUpdate.Id);
 
             inspectableToUpdate = await GameConfigService.Get<Inspectable>(inspectableDto.Id);
 
@@ -114,7 +113,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid inspectableId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -126,44 +124,33 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
             if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
-            if (dungeon.Status is Status.Approved) return Forbid();
-
-            var inspectableDeleted = await GameConfigService.Delete<Inspectable>(inspectableId);
-            if (inspectableDeleted) return Ok();
+            
+            if (await GameConfigService.Delete<Inspectable>(inspectableId)) return Ok();
             return BadRequest();
         }
 
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(ICollection<InspectableDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(InspectableDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
-            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
-            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
-
-            var user = await UserService.GetUser(userId);
-            if (user is null) return BadRequest();
-
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
 
-            if (dungeon.ConfiguredInspectables is null) return BadRequest();
-
             //Gets all pure type inspectables and no subclass object
             var inspectables = dungeon.ConfiguredInspectables
-                .Where(i => i is not Takeable and not Npc and not Avatar);
+                .Where(i => i is not Takeable and not Npc);
 
             var inspectableDtos = inspectables.Select(inspectable =>
-                new InspectableDto()
+                new InspectableDto
                 {
                     Description = inspectable.Description,
                     Id = inspectable.Id,
                     Name = inspectable.Name,
                     Status = (int)inspectable.Status
-                });
+                }).ToArray();
             return Ok(inspectableDtos);
         }
 
@@ -172,19 +159,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Route("{dungeonId}/{inspectableId}")]
         [ProducesResponseType(typeof(InspectableDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid inspectableId)
         {
-            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
-            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
-
-            var user = await UserService.GetUser(userId);
-            if (user is null) return BadRequest();
-
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
 
-            var inspectable = await GameConfigService.Get<Inspectable>(inspectableId);
+            var inspectable = dungeon.ConfiguredInspectables.FirstOrDefault(x => x.Id == inspectableId);
             if (inspectable is null) return BadRequest();
 
             var inspectableDto = new InspectableDto()

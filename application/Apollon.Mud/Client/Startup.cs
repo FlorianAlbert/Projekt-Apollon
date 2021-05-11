@@ -1,4 +1,5 @@
 using Apollon.Mud.Client.Data;
+using Apollon.Mud.Client.Data.Account;
 using Apollon.Mud.Client.Services.Implementiations;
 using Apollon.Mud.Client.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
@@ -41,6 +42,7 @@ namespace Apollon.Mud.Client
             });
             services.AddTransient<IAuthorizationService, AuthorizationService>();
             services.AddTransient<IDungeonService, DungeonService>();
+            services.AddTransient<IAvatarService, AvatarService>();
             services.AddTransient<INpcService, NpcService>();
             services.AddTransient<IClassService, ClassService>();
             services.AddTransient<IRaceService, RaceService>();

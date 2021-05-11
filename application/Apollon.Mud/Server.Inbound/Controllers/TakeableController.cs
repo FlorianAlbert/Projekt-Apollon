@@ -12,10 +12,9 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 using Microsoft.AspNetCore.Authorization;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
-using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
-using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -39,6 +38,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateNew([FromBody] TakeableDto takeableDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -60,9 +60,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 Status = (Status)takeableDto.Status,
                 Dungeon = dungeon
             };
-
-            var takeableSaved = await GameConfigService.NewOrUpdate(newTakeable);
-            if (takeableSaved) return Ok(newTakeable.Id);
+            
+            if (await GameConfigService.NewOrUpdate(newTakeable)) return Ok(newTakeable.Id);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
@@ -72,7 +71,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Update([FromBody] TakeableDto takeableDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -87,15 +85,15 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (takeableDto is null) return BadRequest();
 
-            var takeableToUpdate = await GameConfigService.Get<Takeable>(takeableDto.Id);
-            if (takeableToUpdate is null) return BadRequest();
+            if (dungeon.ConfiguredInspectables.FirstOrDefault(x => x.Id == takeableDto.Id) is not Takeable takeableToUpdate) 
+                return BadRequest();
 
             takeableToUpdate.Name = takeableDto.Name;
             takeableToUpdate.Description = takeableDto.Description;
             takeableToUpdate.Status = (Status)takeableDto.Status;
-
-            var takeableSaved = await GameConfigService.NewOrUpdate(takeableToUpdate);
-            if (takeableSaved) return Ok(takeableToUpdate.Id);
+            takeableToUpdate.Weight = takeableToUpdate.Weight;
+            
+            if (await GameConfigService.NewOrUpdate(takeableToUpdate)) return Ok(takeableToUpdate.Id);
 
             takeableToUpdate = await GameConfigService.Get<Takeable>(takeableDto.Id);
 
@@ -117,8 +115,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid takeableId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -130,46 +126,35 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
             if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
-            if (dungeon.Status is Status.Approved) return Forbid();
-
-            var takeableDeleted = await GameConfigService.Delete<Takeable>(takeableId);
-            if (takeableDeleted) return Ok();
+            
+            if (await GameConfigService.Delete<Takeable>(takeableId)) return Ok();
             return BadRequest();
         }
 
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(ICollection<TakeableDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TakeableDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
-            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
-            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
-
-            var user = await UserService.GetUser(userId);
-            if (user is null) return BadRequest();
-
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
-
-            if (dungeon.ConfiguredInspectables is null) return BadRequest();
 
             //Gets all pure type takeables and no subclass object
             var takeables = dungeon.ConfiguredInspectables
                 .OfType<Takeable>()
-                .Where(i => i is not Consumable and not Wearable and not Usable).ToList();
+                .Where(i => i is not Consumable and not Wearable and not Usable);
 
             var takeableDtos = takeables.Select(takeable =>
-                new TakeableDto()
+                new TakeableDto
                 {
                     Description = takeable.Description,
                     Id = takeable.Id,
                     Name = takeable.Name,
                     Status = (int)takeable.Status,
                     Weight = takeable.Weight
-                });
+                }).ToArray();
             return Ok(takeableDtos);
         }
 
@@ -178,22 +163,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Route("{dungeonId}/{takeableId}")]
         [ProducesResponseType(typeof(TakeableDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid takeableId)
         {
-            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
-            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
-
-            var user = await UserService.GetUser(userId);
-            if (user is null) return BadRequest();
-
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
 
-            var takeable = await GameConfigService.Get<Takeable>(takeableId);
-            if (takeable is null) return BadRequest();
+            if (dungeon.ConfiguredInspectables.FirstOrDefault(x => x.Id == takeableId) is not Takeable takeable) return BadRequest();
 
-            var takeableDto = new TakeableDto()
+            var takeableDto = new TakeableDto
             {
                 Description = takeable.Description,
                 Id = takeable.Id,

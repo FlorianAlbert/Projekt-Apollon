@@ -1,4 +1,4 @@
-﻿@using Apollon.Mud.Client.Data.Models
+﻿@using Apollon.Mud.Client.Data.Models.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Class
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
@@ -27,7 +27,10 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" @bind="chosenClass" @onselect="@ClassSelectionChanged()" @onselect:stopPropagation="true">
+                            <select class="form-select" aria-label="Default select example" 
+                                    @bind="chosenClass" 
+                                    @onselect="@ClassSelectionChanged()" 
+                                    @onselect:stopPropagation="true">
                                 <option value="NoClass" selected hidden>Neue Klasse</option>
                                 @if (!(dungeonClasses is null))
                                 {
@@ -37,7 +40,12 @@
                                     }
                                 }
                             </select>
-                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="NewClassButtonClicked"><TooltipComponent Text="Neue Klasse erstellen"><strong>+</strong></TooltipComponent></button>
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" 
+                                    @onclick="NewClassButtonClicked">
+                                    <TooltipComponent Text="Neue Klasse erstellen">
+                                    <strong>+</strong>
+                                    </TooltipComponent>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -84,7 +92,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Lebenspunkte" @bind-Value="dungeonClassModel.Health" />
+                            <InputNumber class="form-control" placeholder="Lebenspunkte" @bind-Value="dungeonClassModel.Health" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Health) />
@@ -100,7 +108,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Schaden" @bind-Value="dungeonClassModel.Damage" />
+                            <InputNumber class="form-control" placeholder="Schaden" @bind-Value="dungeonClassModel.Damage" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Damage) />
@@ -116,7 +124,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Verteidigung" @bind-Value="@dungeonClassModel.Protection" />
+                            <InputNumber class="form-control" placeholder="Verteidigung" @bind-Value="@dungeonClassModel.Protection" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Protection) />
@@ -192,7 +200,8 @@
                                     </div>
                                 </div>
                                 <div class="col-1">
-                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveTakeableButtonClicked(takeable))">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button"
+                                            @onclick="(() => RemoveTakeableButtonClicked(takeable))">
                                         <TooltipComponent Text="Item entfernen">
                                             <span style="vertical-align:middle"><strong>-</strong></span>
                                         </TooltipComponent>
@@ -220,7 +229,8 @@
                                     </div>
                                 </div>
                                 <div class="col-1">
-                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveConsumableButtonClicked(consumable))">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" 
+                                            @onclick="(() => RemoveConsumableButtonClicked(consumable))">
                                         <TooltipComponent Text="Item entfernen">
                                             <span style="vertical-align:middle"><strong>-</strong></span>
                                         </TooltipComponent>
@@ -248,7 +258,8 @@
                                     </div>
                                 </div>
                                 <div class="col-1">
-                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveUsableButtonClicked(usable))">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" 
+                                            @onclick="(() => RemoveUsableButtonClicked(usable))">
                                         <TooltipComponent Text="Item entfernen">
                                             <span style="vertical-align:middle"><strong>-</strong></span>
                                         </TooltipComponent>
@@ -435,11 +446,15 @@
         if (DungeonId != Guid.Empty)
         {
             var dungeonClassCollection = await ClassService.GetAllClasses(DungeonId);
-            if (!(dungeonClassCollection is null))
+            if (!(dungeonClassCollection is null) && dungeonClassCollection.Count != 0)
             {
                 dungeonClasses = dungeonClassCollection.ToList();
                 await OnClassSavedOrLoaded.InvokeAsync();
             }
+            dungeonTakeables = (await TakeableService.GetAllTakeables(DungeonId))?.ToList() ?? new List<TakeableDto>();
+            dungeonWearables = (await WearableService.GetAllWearables(DungeonId))?.ToList() ?? new List<WearableDto>();
+            dungeonUsables = (await UsableService.GetAllUsables(DungeonId))?.ToList() ?? new List<UsableDto>();
+            dungeonConsumables = (await ConsumableService.GetAllConsumables(DungeonId))?.ToList() ?? new List<ConsumableDto>();
         }
         StateHasChanged();
     }
@@ -463,9 +478,9 @@
             }
             submitClass.Name = dungeonClassModel.Name;
             submitClass.Description = dungeonClassModel.Description;
-            submitClass.DefaultHealth = int.Parse(dungeonClassModel.Health);
-            submitClass.DefaultDamage = int.Parse(dungeonClassModel.Damage);
-            submitClass.DefaultProtection = int.Parse(dungeonClassModel.Protection);
+            submitClass.DefaultHealth = dungeonClassModel.Health ?? 1;
+            submitClass.DefaultDamage = dungeonClassModel.Damage ?? 1;
+            submitClass.DefaultProtection = dungeonClassModel.Protection ?? 1;
             submitClass.InventoryTakeableDtos = dungeonClassModel.InventoryTakeableDtos;
             submitClass.InventoryConsumableDtos = dungeonClassModel.InventoryConsumableDtos;
             submitClass.InventoryUsableDtos = dungeonClassModel.InventoryUsableDtos;
@@ -604,9 +619,9 @@
             dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
             dungeonClassModel.Name = newClass.Name;
             dungeonClassModel.Description = newClass.Description;
-            dungeonClassModel.Health = newClass.DefaultHealth.ToString();
-            dungeonClassModel.Protection = newClass.DefaultProtection.ToString();
-            dungeonClassModel.Damage = newClass.DefaultDamage.ToString();
+            dungeonClassModel.Health = newClass.DefaultHealth;
+            dungeonClassModel.Protection = newClass.DefaultProtection;
+            dungeonClassModel.Damage = newClass.DefaultDamage;
             dungeonClassModel.Status = newClass.Status == 0 ? "Approved" : "Pending";
             if (!(newClass.InventoryTakeableDtos is null))
             {
@@ -678,9 +693,9 @@
         chosenClass = "NoClass";
         dungeonClassModel.Name = string.Empty;
         dungeonClassModel.Description = string.Empty;
-        dungeonClassModel.Health = string.Empty;
-        dungeonClassModel.Protection = string.Empty;
-        dungeonClassModel.Damage = string.Empty;
+        dungeonClassModel.Health = null;
+        dungeonClassModel.Protection = null;
+        dungeonClassModel.Damage = null;
         dungeonClassModel.Status = string.Empty;
         defaultItemCount = 1;
         dungeonClassModel.InventoryTakeableDtos = new List<TakeableDto>();
@@ -707,9 +722,9 @@
             chosenClass = "NoClass";
             dungeonClassModel.Name = string.Empty;
             dungeonClassModel.Description = string.Empty;
-            dungeonClassModel.Health = string.Empty;
-            dungeonClassModel.Protection = string.Empty;
-            dungeonClassModel.Damage = string.Empty;
+            dungeonClassModel.Health = null;
+            dungeonClassModel.Protection = null;
+            dungeonClassModel.Damage = null;
             dungeonClassModel.Status = string.Empty;
             defaultItemCount = 1;
             dungeonClassModel.InventoryTakeableDtos = new List<TakeableDto>();

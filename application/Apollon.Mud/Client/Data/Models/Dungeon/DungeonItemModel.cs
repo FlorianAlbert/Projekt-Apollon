@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Apollon.Mud.Client.Data.Models
+namespace Apollon.Mud.Client.Data.Models.Dungeon
 {
     /// <summary>
     /// The Model to validate the form a user has to fill out when creating or changing an Item of a dungeon
@@ -14,7 +14,7 @@ namespace Apollon.Mud.Client.Data.Models
         /// <summary>
         /// The status indicates whether the dungeon is active
         /// </summary>
-        [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
+        [Required(ErrorMessage = "Du musst dem Item einen Status geben")]
         public string Status { get; set; }
 
         /// <summary>
@@ -37,8 +37,8 @@ namespace Apollon.Mud.Client.Data.Models
         /// Every Takeable has to have a weight, which has to be an Integer
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Item ein Gewicht zuordnen")]
-        [RegularExpression("[0-9]*", ErrorMessage = "Gewicht kann nur als Ganzzahl angegeben werden")]
-        public string Weight { get; set; }
+        [Range(1, 99, ErrorMessage = "Der Wert muss zwischen 1 und 99 liegen")]
+        public int? Weight { get; set; }
 
         #region Consumable
 
@@ -56,8 +56,8 @@ namespace Apollon.Mud.Client.Data.Models
         /// Every Usable has to have a Damage Boost, whcih has to be an Integer
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Item einen Schadensboost geben")]
-        [RegularExpression("[0-9]*", ErrorMessage = "Schadensboost kann nur als Ganzzahl angegeben werden")]
-        public string DamageBoost { get; set; }
+        [Range(-25, 25, ErrorMessage = "Der Wert muss zwischen -25 und +25 liegen")]
+        public int? DamageBoost { get; set; }
 
         #endregion
 
@@ -67,8 +67,8 @@ namespace Apollon.Mud.Client.Data.Models
         /// Every wearable has to have a Protection Boost, whcih has to be an Integer
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Item einen Vertidgungsboost geben")]
-        [RegularExpression("[0-9]*", ErrorMessage = "Verteidigungsboost kann nur als Ganzzahl angegeben werden")]
-        public string ProtectionBoost { get; set; }
+        [Range(-25, 25, ErrorMessage = "Der Wert muss zwischen -25 und +25 liegen")]
+        public int? ProtectionBoost { get; set; }
 
         #endregion
 

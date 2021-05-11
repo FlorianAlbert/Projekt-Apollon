@@ -1,4 +1,4 @@
-﻿using Apollon.Mud.Client.Data;
+﻿using Apollon.Mud.Client.Data.Account;
 using Apollon.Mud.Client.Services.Interfaces;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 using System;
@@ -14,20 +14,20 @@ namespace Apollon.Mud.Client.Services.Implementiations
     public class TakeableService : ITakeableService
     {
         /// <summary>
-        /// TODO
+        /// The Rest Http Client injected into the class
         /// </summary>
         public HttpClient HttpClient { get; }
 
         /// <summary>
-        /// TODO
+        /// Creates Cancellation Tokens for each Http Request
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
-        /// TODO
+        /// This service contains all logic for sending takeables to the backend and persist them
         /// </summary>
-        /// <param name="httpClientFactory"></param>
-        /// <param name="userContext"></param>
+        /// <param name="httpClientFactory">The HttpClient injected into this class</param>
+        /// <param name="userContext">The usercontext needed for authorization</param>
         public TakeableService(IHttpClientFactory httpClientFactory, UserContext userContext)
         {
             HttpClient = httpClientFactory.CreateClient("RestHttpClient");
@@ -36,11 +36,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Sends the given dungeon to the backend and persists it in the Database
         /// </summary>
-        /// <param name="takeableDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="takeableDto">The Dungeon to create</param>
+        /// <param name="dungeonId">The Dungeon that contains the takeable</param>
+        /// <returns>The Guid if the DB Transaction was successfull, otherwise an empty Guid</returns>
         public async Task<Guid> CreateNewTakeable(TakeableDto takeableDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -55,28 +55,28 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Updates the given takeable in the Database
         /// </summary>
-        /// <param name="takeableDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="takeableDto">The takeable with updated information</param>
+        /// <param name="dungeonId">The Dungeon that contains the takeable</param>
+        /// <returns>The old takeable in case the Database transaction failed, otherwise null</returns>
         public async Task<TakeableDto> UpdateTakeable(TakeableDto takeableDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
             var response = await HttpClient.PutAsJsonAsync("api/takeables/" + dungeonId, takeableDto, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<TakeableDto>();
+            if (response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<TakeableDto>();
 
             return null;
         }
 
         /// <summary>
-        /// TODO
+        /// Deletes the given takeable in the Database
         /// </summary>
-        /// <param name="takeableId"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="takeableId">The id of the takeable to delete</param>
+        /// <param name="dungeonId">The Dungeon that contains the takeable</param>
+        /// <returns>Wether the DB transaction was successfull</returns>
         public async Task<bool> DeleteTakeable(Guid dungeonId, Guid takeableId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -87,11 +87,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets all takeables of a dungeon
         /// </summary>
-        /// <param name="takeableDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the dungeon containing the requested takeables</param>
+        /// <returns>A Collection of the requested takeables, otherwise null</returns>
         public async Task<ICollection<TakeableDto>> GetAllTakeables(Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -104,11 +103,11 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// TODO
+        /// Gets one takeable of a dungeon
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <param name="takeableId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the dungeon containing the requested takeable</param>
+        /// <param name="takeableId">The ID of the requested class</param>
+        /// <returns>The requested class, otherwise null</returns>
         public async Task<TakeableDto> GetTakeable(Guid dungeonId, Guid takeableId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;

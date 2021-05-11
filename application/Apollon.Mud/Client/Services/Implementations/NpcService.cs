@@ -1,4 +1,4 @@
-﻿using Apollon.Mud.Client.Data;
+﻿using Apollon.Mud.Client.Data.Account;
 using Apollon.Mud.Client.Services.Interfaces;
 using Apollon.Mud.Shared.Dungeon.Npc;
 using System;
@@ -66,7 +66,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
 
             var response = await HttpClient.PutAsJsonAsync("api/npcs/" + dungeonId, npcDto, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<NpcDto>();
+            if (response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<NpcDto>();
 
             return null;
         }

@@ -17,7 +17,7 @@
                     <h4>Benötigst du Hilfe? Alle Infos zum Erstellen eines Dungeon findest du <a href="/">hier</a></h4> @*TODO Link einfügen*@
                     <hr class="featurette-divider" />
                     <section class="Classes mt-3" id="Classes">
-                        <CreateDungeonComponent @ref="ChildDungeonComponent" DungeonId="DungeonId" OnDungeonSavedOrLoaded="@DungeonSavedOrLoaded" DungeonMustBeInactive="dungeonMustBeInactive" DungeonHasRooms="dungeonHasRoom" />
+                        <CreateDungeonComponent @ref="ChildDungeonComponent" DungeonId="DungeonId" OnDungeonSavedOrLoaded="@DungeonSavedOrLoaded" DungeonMustBeInactive="dungeonMustBeInactive" />
                     </section>
                     @if (dungeonCreated)
                     {
@@ -37,7 +37,7 @@
                             <CreateDungeonActionComponent DungeonId="DungeonId" SpecialActionsChanged="ReloadSpecialActions" IsDungeonMasterConfigurating="false" />
                         </section>
                         <section class="Rooms mt-3" id="Rooms">
-                            <CreateDungeonRoomComponent @ref="ChildRoomComponent" DungeonId="DungeonId" OnRoomSavedOrLoaded="RoomSavedOrLoaded" IsDungeonMasterConfigurating="false" />
+                            <CreateDungeonRoomComponent @ref="ChildRoomComponent" DungeonId="DungeonId" OnRoomSavedOrLoaded="ReloadRooms" FirstRoomSavedOrLoaded="RoomSavedOrLoaded" IsDungeonMasterConfigurating="false" />
                         </section>
                     }
                 </div>
@@ -49,17 +49,17 @@
 @code {
 
     /// <summary>
-    /// TODO
+    /// The create Dungeon Component used in the page
     /// </summary>
     public CreateDungeonComponent ChildDungeonComponent { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The create Room component used in the page
     /// </summary>
     public CreateDungeonRoomComponent ChildRoomComponent { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The create Class component used in the page
     /// </summary>
     public CreateDungeonClassesComponent ChildClassComponent { get; set; }
 
@@ -109,8 +109,8 @@
     /// </summary>
     public void RoomSavedOrLoaded(Guid roomGuid)
     {
-        ChildDungeonComponent.SetDefaultRoom(roomGuid);
         dungeonHasRoom = true;
+        ChildDungeonComponent.SetDefaultRoom(roomGuid);
         if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
     }
 
@@ -133,7 +133,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Calls the Room Component to Reload its NPC List
     /// </summary>
     public void ReloadNpcs()
     {
@@ -141,7 +141,17 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Calls the Dungeon Component to Reload its Room List
+    /// </summary>
+    public void ReloadRooms()
+    {
+        dungeonHasRoom = true;
+        ChildDungeonComponent.ReloadDungeonRooms();
+        if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
+    }
+
+    /// <summary>
+    /// Calls the Room Component to reload its Special Action List
     /// </summary>
     public void ReloadSpecialActions()
     {
@@ -149,9 +159,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Calls the Room and Class Component to reload their item list
     /// </summary>
-    /// <param name="type"></param>
+    /// <param name="typeName">The Name of the category that need reloading</param>
     public void ReloadItems(string typeName)
     {
         ChildClassComponent.ReloadItems(typeName);

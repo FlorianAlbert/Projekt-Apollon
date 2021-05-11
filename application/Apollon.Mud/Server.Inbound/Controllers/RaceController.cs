@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
@@ -11,6 +10,7 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
 using Apollon.Mud.Shared.Dungeon.Race;
 using Microsoft.AspNetCore.Authorization;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -34,6 +34,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateNew([FromBody] RaceDto raceDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -58,8 +59,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 Dungeon = dungeon
             };
             
-            var raceSaved = await GameConfigService.NewOrUpdate(newRace);
-            if (raceSaved) return Ok(newRace.Id);
+            if (await GameConfigService.NewOrUpdate(newRace)) return Ok(newRace.Id);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
@@ -69,7 +69,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Update([FromBody] RaceDto raceDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -84,7 +83,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (raceDto is null) return BadRequest();
 
-            var raceToUpdate = await GameConfigService.Get<Race>(raceDto.Id);
+            var raceToUpdate = dungeon.ConfiguredRaces.FirstOrDefault(x => x.Id == raceDto.Id);
             if (raceToUpdate is null) return BadRequest();
 
             raceToUpdate.Name = raceDto.Name;
@@ -93,12 +92,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             raceToUpdate.DefaultProtection = raceDto.DefaultProtection;
             raceToUpdate.DefaultDamage = raceDto.DefaultDamage;
             raceToUpdate.Status = (Status) raceDto.Status;
-
-            var raceSaved = await GameConfigService.NewOrUpdate(raceToUpdate);
-            if (raceSaved) return Ok(raceToUpdate.Id);
+            
+            if (await GameConfigService.NewOrUpdate(raceToUpdate)) return Ok(raceToUpdate.Id);
 
             raceToUpdate = await GameConfigService.Get<Race>(raceDto.Id);
-            var oldRaceDto = new RaceDto()
+            var oldRaceDto = new RaceDto
             {
                 DefaultDamage = raceToUpdate.DefaultDamage,
                 DefaultHealth = raceToUpdate.DefaultHealth,
@@ -119,7 +117,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid raceId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -132,34 +129,24 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (dungeon is null) return BadRequest();
             if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
             if (dungeon.Status is Status.Approved) return Forbid();
-
-            var raceDeleted = await GameConfigService.Delete<Race>(raceId);
-            if (raceDeleted) return Ok();
+            
+            if (await GameConfigService.Delete<Race>(raceId)) return Ok();
             return BadRequest();
         }
 
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(ICollection<RaceDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RaceDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
-            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
-            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
-
-            var user = await UserService.GetUser(userId);
-            if (user is null) return BadRequest();
-
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
 
-            var races = dungeon.ConfiguredRaces;
-            if (races is null) return BadRequest();
-
-            var raceDtos = races.Select(race =>
-                new RaceDto() {
+            var raceDtos = dungeon.ConfiguredRaces.Select(race =>
+                new RaceDto 
+                {
                     DefaultDamage = race.DefaultDamage,
                     DefaultHealth = race.DefaultHealth,
                     DefaultProtection = race.DefaultProtection,
@@ -167,7 +154,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = race.Id,
                     Name = race.Name,
                     Status = (int)race.Status
-                });
+                }).ToArray();
             return Ok(raceDtos);
         }
 
@@ -176,22 +163,15 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Route("{dungeonId}/{raceId}")]
         [ProducesResponseType(typeof(RaceDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get([FromRoute] Guid dungeonId, [FromRoute] Guid raceId)
         {
-            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
-            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
-
-            var user = await UserService.GetUser(userId);
-            if (user is null) return BadRequest();
-
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
 
-            var race = await GameConfigService.Get<Race>(raceId);
+            var race = dungeon.ConfiguredRaces.FirstOrDefault(x => x.Id == raceId);
             if (race is null) return BadRequest();
 
-            var raceDto = new RaceDto()
+            var raceDto = new RaceDto
             {
                 DefaultDamage = race.DefaultDamage,
                 DefaultHealth = race.DefaultHealth,

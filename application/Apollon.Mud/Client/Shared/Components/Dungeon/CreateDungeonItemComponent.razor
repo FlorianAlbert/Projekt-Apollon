@@ -1,4 +1,4 @@
-﻿@using Apollon.Mud.Client.Data.Models
+﻿@using Apollon.Mud.Client.Data.Models.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Inspectable
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable
@@ -84,11 +84,11 @@
                     <div class="col">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" aria-label="Default select example" @bind="chosenItemCategory">
-                                <option selected value="Inspectable">Inspectable</option>
-                                <option value="Takeable">Takeable</option>
-                                <option value="Consumable">Consumable</option>
-                                <option value="Usable">Usable</option>
-                                <option value="Wearable">Wearable</option>
+                                <option selected value="Inspectable">Untersuchbar</option>
+                                <option value="Takeable">Aufnehmbar</option>
+                                <option value="Consumable">Konsumierbar</option>
+                                <option value="Usable">Verwendbar</option>
+                                <option value="Wearable">Tragbar</option>
                             </select>
 
                         </div>
@@ -137,7 +137,7 @@
                         </div>
                         <div class="col">
                             <div class="d-flex justify-content-center">
-                                <InputText class="form-control" placeholder="Gewicht" @bind-Value="dungeonItemModel.Weight" />
+                                <InputNumber class="form-control" placeholder="Gewicht" @bind-Value="dungeonItemModel.Weight" />
                             </div>
                             <div class="text-danger">
                                 <ValidationMessage For=@(() => dungeonItemModel.Weight) />
@@ -173,7 +173,7 @@
                             </div>
                             <div class="col">
                                 <div class="d-flex justify-content-center">
-                                    <InputText class="form-control" placeholder="Schadensboost" @bind-Value="dungeonItemModel.DamageBoost" />
+                                    <InputNumber class="form-control" placeholder="Schadensboost" @bind-Value="dungeonItemModel.DamageBoost" />
                                 </div>
                                 <div class="text-danger">
                                     <ValidationMessage For=@(() => dungeonItemModel.DamageBoost) />
@@ -191,7 +191,7 @@
                             </div>
                             <div class="col">
                                 <div class="d-flex justify-content-center">
-                                    <InputText class="form-control" placeholder="Verteidigungsboost" @bind-Value="dungeonItemModel.ProtectionBoost" />
+                                    <InputNumber class="form-control" placeholder="Verteidigungsboost" @bind-Value="dungeonItemModel.ProtectionBoost" />
                                 </div>
                                 <div class="text-danger">
                                     <ValidationMessage For=@(() => dungeonItemModel.ProtectionBoost) />
@@ -263,7 +263,7 @@
     public Guid DungeonId { get; set; }
 
     /// <summary>
-    /// TODO
+    /// Called when Items where created, updated or deleted, given the category of the Items that were changed
     /// </summary>
     [Parameter]
     public EventCallback<string> ItemsChanged { get; set; }
@@ -323,6 +323,7 @@
 
     #endregion
 
+
     #region Methods
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
@@ -340,22 +341,27 @@
             if (!(dungeonInspectableCollection is null))
             {
                 dungeonInspectables = dungeonInspectableCollection.ToList();
+                await ItemsChanged.InvokeAsync("Inspectables");
             }
             if (!(dungeonTakeableCollection is null))
             {
                 dungeonTakeables = dungeonTakeableCollection.ToList();
+                await ItemsChanged.InvokeAsync("Inspectables");
             }
             if (!(dungeonConsumableCollection is null))
             {
                 dungeonConsumables = dungeonConsumableCollection.ToList();
+                await ItemsChanged.InvokeAsync("Inspectables");
             }
             if (!(dungeonUsableCollection is null))
             {
                 dungeonUsables = dungeonUsableCollection.ToList();
+                await ItemsChanged.InvokeAsync("Inspectables");
             }
             if (!(dungeonWearableCollection is null))
             {
                 dungeonWearables = dungeonWearableCollection.ToList();
+                await ItemsChanged.InvokeAsync("Inspectables");
             }
         }
         StateHasChanged();
@@ -370,28 +376,28 @@
         switch (chosenItemCategory)
         {
             case "Inspectable":
-                dungeonItemModel.Weight = "0";
+                dungeonItemModel.Weight = 1;
                 dungeonItemModel.EffectDescription = "None";
-                dungeonItemModel.DamageBoost = "0";
-                dungeonItemModel.ProtectionBoost = "0";
+                dungeonItemModel.DamageBoost = 0;
+                dungeonItemModel.ProtectionBoost = 0;
                 break;
             case "Takeable":
                 dungeonItemModel.EffectDescription = " ";
                 dungeonItemModel.EffectDescription = "None";
-                dungeonItemModel.DamageBoost = "0";
-                dungeonItemModel.ProtectionBoost = "0";
+                dungeonItemModel.DamageBoost = 0;
+                dungeonItemModel.ProtectionBoost = 0;
                 break;
             case "Consumable":
-                dungeonItemModel.DamageBoost = "0";
-                dungeonItemModel.ProtectionBoost = "0";
+                dungeonItemModel.DamageBoost = 0;
+                dungeonItemModel.ProtectionBoost = 0;
                 break;
             case "Usable":
                 dungeonItemModel.EffectDescription = "None";
-                dungeonItemModel.ProtectionBoost = "0";
+                dungeonItemModel.ProtectionBoost = 0;
                 break;
             case "Wearable":
                 dungeonItemModel.EffectDescription = "None";
-                dungeonItemModel.DamageBoost = "0";
+                dungeonItemModel.DamageBoost = 0;
                 break;
         }
         var validItem = itemContext.Validate();
@@ -442,7 +448,7 @@
                     }
                     submitTakeable.Name = dungeonItemModel.Name;
                     submitTakeable.Description = dungeonItemModel.Description;
-                    submitTakeable.Weight = int.Parse(dungeonItemModel.Weight);
+                    submitTakeable.Weight = dungeonItemModel.Weight ?? 1;
                     submitTakeable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
@@ -463,7 +469,7 @@
                             dungeonItemModel.Name = response.Name;
                             dungeonItemModel.Description = response.Description;
                             dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
-                            dungeonItemModel.Weight = response.Weight.ToString();
+                            dungeonItemModel.Weight = response.Weight;
                             await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
@@ -477,7 +483,7 @@
                     }
                     submitConsumable.Name = dungeonItemModel.Name;
                     submitConsumable.Description = dungeonItemModel.Description;
-                    submitConsumable.Weight = int.Parse(dungeonItemModel.Weight);
+                    submitConsumable.Weight = dungeonItemModel.Weight ?? 1;
                     submitConsumable.EffectDescription = dungeonItemModel.EffectDescription;
                     submitConsumable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
@@ -499,7 +505,7 @@
                             dungeonItemModel.Name = response.Name;
                             dungeonItemModel.Description = response.Description;
                             dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
-                            dungeonItemModel.Weight = response.Weight.ToString();
+                            dungeonItemModel.Weight = response.Weight;
                             dungeonItemModel.EffectDescription = response.EffectDescription;
                             await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
@@ -514,8 +520,8 @@
                     }
                     submitUsable.Name = dungeonItemModel.Name;
                     submitUsable.Description = dungeonItemModel.Description;
-                    submitUsable.Weight = int.Parse(dungeonItemModel.Weight);
-                    submitUsable.DamageBoost = int.Parse(dungeonItemModel.DamageBoost);
+                    submitUsable.Weight = dungeonItemModel.Weight ?? 1;
+                    submitUsable.DamageBoost = dungeonItemModel.DamageBoost ?? 1;
                     submitUsable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
@@ -536,8 +542,8 @@
                             dungeonItemModel.Name = response.Name;
                             dungeonItemModel.Description = response.Description;
                             dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
-                            dungeonItemModel.Weight = response.Weight.ToString();
-                            dungeonItemModel.DamageBoost = response.DamageBoost.ToString();
+                            dungeonItemModel.Weight = response.Weight;
+                            dungeonItemModel.DamageBoost = response.DamageBoost;
                             await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
@@ -551,8 +557,8 @@
                     }
                     submitWearable.Name = dungeonItemModel.Name;
                     submitWearable.Description = dungeonItemModel.Description;
-                    submitWearable.Weight = int.Parse(dungeonItemModel.Weight);
-                    submitWearable.ProtectionBoost = int.Parse(dungeonItemModel.ProtectionBoost);
+                    submitWearable.Weight = dungeonItemModel.Weight ?? 1;
+                    submitWearable.ProtectionBoost = dungeonItemModel.ProtectionBoost ?? 1;
                     submitWearable.Status = dungeonItemModel.Status.Equals("Approved") ? 0 : 1;
                     if (newItem)
                     {
@@ -573,8 +579,8 @@
                             dungeonItemModel.Name = response.Name;
                             dungeonItemModel.Description = response.Description;
                             dungeonItemModel.Status = response.Status == 0 ? "Approved" : "Pending";
-                            dungeonItemModel.Weight = response.Weight.ToString();
-                            dungeonItemModel.ProtectionBoost = response.ProtectionBoost.ToString();
+                            dungeonItemModel.Weight = response.Weight;
+                            dungeonItemModel.ProtectionBoost = response.ProtectionBoost;
                             await ItemsChanged.InvokeAsync(chosenItemCategory);
                         }
                     }
@@ -612,7 +618,7 @@
                     if (!(newTakeable is null))
                     {
                         dungeonItemModel.Description = newTakeable.Description;
-                        dungeonItemModel.Weight = newTakeable.Weight.ToString();
+                        dungeonItemModel.Weight = newTakeable.Weight;
                         dungeonItemModel.Status = newTakeable.Status == 0 ? "Approved" : "Pending";
                     }
                     break;
@@ -622,7 +628,7 @@
                     if (!(newConsumable is null))
                     {
                         dungeonItemModel.Description = newConsumable.Description;
-                        dungeonItemModel.Weight = newConsumable.Weight.ToString();
+                        dungeonItemModel.Weight = newConsumable.Weight;
                         dungeonItemModel.Status = newConsumable.Status == 0 ? "Approved" : "Pending";
                         dungeonItemModel.EffectDescription = newConsumable.EffectDescription;
                     }
@@ -633,8 +639,8 @@
                     if (!(newUsable is null))
                     {
                         dungeonItemModel.Description = newUsable.Description;
-                        dungeonItemModel.Weight = newUsable.Weight.ToString();
-                        dungeonItemModel.DamageBoost = newUsable.DamageBoost.ToString();
+                        dungeonItemModel.Weight = newUsable.Weight;
+                        dungeonItemModel.DamageBoost = newUsable.DamageBoost;
                         dungeonItemModel.Status = newUsable.Status == 0 ? "Approved" : "Pending";
                     }
                     break;
@@ -644,8 +650,8 @@
                     if (!(newWearable is null))
                     {
                         dungeonItemModel.Description = newWearable.Description;
-                        dungeonItemModel.Weight = newWearable.Weight.ToString();
-                        dungeonItemModel.ProtectionBoost = newWearable.ProtectionBoost.ToString();
+                        dungeonItemModel.Weight = newWearable.Weight;
+                        dungeonItemModel.ProtectionBoost = newWearable.ProtectionBoost;
                         dungeonItemModel.Status = newWearable.Status == 0 ? "Approved" : "Pending";
                     }
                     break;
@@ -683,8 +689,8 @@
                             chosenItemCategory = "Wearable";
                             dungeonItemModel.Name = checkWearable.Name;
                             dungeonItemModel.Description = checkWearable.Description;
-                            dungeonItemModel.Weight = checkWearable.Weight.ToString();
-                            dungeonItemModel.ProtectionBoost = checkWearable.ProtectionBoost.ToString();
+                            dungeonItemModel.Weight = checkWearable.Weight;
+                            dungeonItemModel.ProtectionBoost = checkWearable.ProtectionBoost;
                             dungeonItemModel.Status = checkWearable.Status == 0 ? "Approved" : "Pending";
                         }
                     }
@@ -694,8 +700,8 @@
                         chosenItemCategory = "Usable";
                         dungeonItemModel.Name = checkUsable.Name;
                         dungeonItemModel.Description = checkUsable.Description;
-                        dungeonItemModel.Weight = checkUsable.Weight.ToString();
-                        dungeonItemModel.DamageBoost = checkUsable.DamageBoost.ToString();
+                        dungeonItemModel.Weight = checkUsable.Weight;
+                        dungeonItemModel.DamageBoost = checkUsable.DamageBoost;
                         dungeonItemModel.Status = checkUsable.Status == 0 ? "Approved" : "Pending";
                     }
                 }
@@ -705,7 +711,7 @@
                     chosenItemCategory = "Consumable";
                     dungeonItemModel.Name = checkConsumable.Name;
                     dungeonItemModel.Description = checkConsumable.Description;
-                    dungeonItemModel.Weight = checkConsumable.Weight.ToString();
+                    dungeonItemModel.Weight = checkConsumable.Weight;
                     dungeonItemModel.EffectDescription = checkConsumable.EffectDescription;
                     dungeonItemModel.Status = checkConsumable.Status == 0 ? "Approved" : "Pending";
                 }
@@ -716,7 +722,7 @@
                 chosenItemCategory = "Takeable";
                 dungeonItemModel.Name = checkTakeable.Name;
                 dungeonItemModel.Description = checkTakeable.Description;
-                dungeonItemModel.Weight = checkTakeable.Weight.ToString();
+                dungeonItemModel.Weight = checkTakeable.Weight;
                 dungeonItemModel.Status = checkTakeable.Status == 0 ? "Approved" : "Pending";
             }
         }
@@ -740,9 +746,9 @@
         chosenItemCategory = string.Empty;
         dungeonItemModel.Name = string.Empty;
         dungeonItemModel.Description = string.Empty;
-        dungeonItemModel.Weight = string.Empty;
-        dungeonItemModel.DamageBoost = string.Empty;
-        dungeonItemModel.ProtectionBoost = string.Empty;
+        dungeonItemModel.Weight = null;
+        dungeonItemModel.DamageBoost = null;
+        dungeonItemModel.ProtectionBoost = null;
         dungeonItemModel.EffectDescription = string.Empty;
         dungeonItemModel.Status = string.Empty;
     }
@@ -759,7 +765,11 @@
             var inspectableToDelete = dungeonInspectables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if(!(inspectableToDelete is null))
             {
-                if (!(inspectableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await InspectableService.DeleteInspectable(DungeonId, inspectableToDelete.Id);
+                if (!(inspectableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await InspectableService.DeleteInspectable(DungeonId, inspectableToDelete.Id);
+                    dungeonInspectables.Remove(inspectableToDelete);
+                }
             }
         }
         if (chosenItemCategory == "Takeable")
@@ -767,7 +777,11 @@
             var takeableToDelete = dungeonTakeables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if (!(takeableToDelete is null))
             {
-                if (!(takeableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await TakeableService.DeleteTakeable(DungeonId, takeableToDelete.Id);
+                if (!(takeableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await TakeableService.DeleteTakeable(DungeonId, takeableToDelete.Id);
+                    dungeonTakeables.Remove(takeableToDelete);
+                }
             }
         }
         if (chosenItemCategory == "Consumable")
@@ -775,7 +789,11 @@
             var consumableToDelete = dungeonConsumables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if (!(consumableToDelete is null))
             {
-                if (!(consumableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await ConsumableService.DeleteConsumable(DungeonId, consumableToDelete.Id);
+                if (!(consumableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await ConsumableService.DeleteConsumable(DungeonId, consumableToDelete.Id);
+                    dungeonConsumables.Remove(consumableToDelete);
+                }
             }
         }
         if (chosenItemCategory == "Usable")
@@ -783,7 +801,11 @@
             var usableToDelete = dungeonUsables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if (!(usableToDelete is null))
             {
-                if (!(usableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await UsableService.DeleteUsable(DungeonId, usableToDelete.Id);
+                if (!(usableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await UsableService.DeleteUsable(DungeonId, usableToDelete.Id);
+                    dungeonUsables.Remove(usableToDelete);
+                }
             }
         }
         if (chosenItemCategory == "Wearable")
@@ -791,19 +813,23 @@
             var wearableToDelete = dungeonWearables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
             if (!(wearableToDelete is null))
             {
-                if (!(wearableToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await WearableService.DeleteWearable(DungeonId, wearableToDelete.Id);
+                if (!(wearableToDelete.Id == Guid.Empty))
+                {
+                    shouldFieldsBeEmptied = await WearableService.DeleteWearable(DungeonId, wearableToDelete.Id);
+                    dungeonWearables.Remove(wearableToDelete);
+                }
             }
         }
         if(shouldFieldsBeEmptied)
         {
-            ItemsChanged.InvokeAsync(chosenItemCategory);
+            await ItemsChanged.InvokeAsync(chosenItemCategory);
             chosenItem = "NoItem";
             chosenItemCategory = string.Empty;
             dungeonItemModel.Name = string.Empty;
             dungeonItemModel.Description = string.Empty;
-            dungeonItemModel.Weight = string.Empty;
-            dungeonItemModel.DamageBoost = string.Empty;
-            dungeonItemModel.ProtectionBoost = string.Empty;
+            dungeonItemModel.Weight = null;
+            dungeonItemModel.DamageBoost = null;
+            dungeonItemModel.ProtectionBoost = null;
             dungeonItemModel.EffectDescription = string.Empty;
             dungeonItemModel.Status = string.Empty;
             StateHasChanged();
@@ -812,4 +838,5 @@
 
 
     #endregion
+
 }

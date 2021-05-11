@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Apollon.Mud.Server.Domain.Implementations.UserManagement;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Apollon.Mud.Server.Inbound
 {
@@ -72,6 +73,7 @@ namespace Apollon.Mud.Server.Inbound
                 options.UseSqlite(
                     Configuration.GetConnectionString("DungeonDbConnection"),
                     optionsBuilder => optionsBuilder.MigrationsAssembly("Apollon.Mud.Server.Domain"));
+                options.ConfigureWarnings(e => e.Log(CoreEventId.DetachedLazyLoadingWarning));
             });
 
             services.AddIdentityCore<DungeonUser>(options =>

@@ -1,7 +1,8 @@
 ﻿@page "/Dungeons"
-
 @using Apollon.Mud.Shared.Dungeon
+@inject NavigationManager NavManager
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+@inject Apollon.Mud.Client.Data.Account.UserContext UserContext
 
 <div class="container shadow d-flex bg-white min-vh-100">
     <div class="row container-fluid">
@@ -32,7 +33,7 @@
                 }
                 @foreach (DungeonDto dungeon in allDungeons)
                 {
-                    @if (dungeon.Status == 1)
+                    @if (dungeon.Status == 0)
                     {
                         <div class="card mt-2 shadow">
                             <h5 class="card-header">@dungeon.DungeonName</h5>
@@ -40,16 +41,24 @@
                                 <div class="row">
                                     <p class="card-text">@dungeon.DungeonDescription</p>
                                 </div>
-                                @if (dungeon.Visibility == 1)
+                                @if (dungeon.BlackList is not null && dungeon.BlackList.Contains(UserContext.DungeonUserContext))
                                 {
-                                    <a href="/Avatar/Selection" class="btn btn-success float-end">Beitreten</a>
+                                    <button class="btn btn-danger float-end" disabled>Gesperrt</button>
                                 }
-                                else
+                                else if (dungeon.OpenRequests is not null && dungeon.OpenRequests.Contains(UserContext.DungeonUserContext))
                                 {
-                                    <a href="/Avatar/Selection" class="btn btn-primary float-end">Anfrage stellen</a>
+                                    <button class="btn btn-outline-success float-end" disabled>Ausstehend</button>
+                                }
+                                else if (dungeon.Visibility == 1 || (dungeon.WhiteList is not null && dungeon.WhiteList.Contains(UserContext.DungeonUserContext)))
+                                {
+                                    <button class="btn btn-success float-end" @onclick="() => JoinDungeonButtonClicked(dungeon)">Beitreten</button>
+                                }
+                                else if (dungeon.Visibility == 0)
+                                {
+                                    <button class="btn btn-primary float-end">Anfrage stellen</button>
                                 }
                             </div>
-                            <div class="card-footer">Erstellt von @dungeon.DungeonOwner</div>
+                            <div class="card-footer">Erstellt von @dungeon.DungeonOwner.Email.Split("@")[0]</div>
                         </div>
                     }
                 }
@@ -68,19 +77,22 @@
     /// <summary>
     /// When initialized the Method requests all Dungeons belonging to user from the Server and saves them locally
     /// </summary>
-    protected async override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        #region ToDelete
-        DungeonDto quciktest = new DungeonDto();
-        quciktest.DungeonName = "TestDungeon";
-        quciktest.DungeonDescription = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,";
-        allDungeons.Add(quciktest);
-        #endregion
 
         var response = await DungeonService.GetAllDungeons();
         if (!(response is null)) allDungeons = response.ToList();
 
         StateHasChanged();
 
+    }
+
+    /// <summary>
+    /// When the "Play" Button of a Dungeon is clicked, this Method opens the corresponding avatar selection page
+    /// </summary>
+    /// <param name="dungeon"> The dungeon the user wants to join </param>
+    private void JoinDungeonButtonClicked(DungeonDto dungeon)
+    {
+        NavManager.NavigateTo("/Avatar/Selection/" + dungeon.Id);
     }
 }
