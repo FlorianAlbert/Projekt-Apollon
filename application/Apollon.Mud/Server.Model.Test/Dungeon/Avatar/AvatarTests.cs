@@ -4,6 +4,7 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
+using Apollon.Mud.Shared.Dungeon.Avatar;
 using AutoFixture;
 using Xunit;
 using NSubstitute;
