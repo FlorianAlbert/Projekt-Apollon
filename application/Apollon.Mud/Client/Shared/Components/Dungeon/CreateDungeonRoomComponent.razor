@@ -632,7 +632,8 @@
                                          !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
                                          !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
                                          !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
-                                          (dungeonRoom.NeighborSouthId == Guid.Empty || dungeonRoom.NeighborSouthId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
+                                          (dungeonRoom.NeighborSouthId == Guid.Empty ||
+                                          dungeonRoom.NeighborSouthId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -660,7 +661,8 @@
                                       !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
                                       !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
                                       !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
-                                      (dungeonRoom.NeighborEastId == Guid.Empty || dungeonRoom.NeighborEastId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
+                                      (dungeonRoom.NeighborEastId == Guid.Empty || 
+                                      dungeonRoom.NeighborEastId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -688,7 +690,8 @@
                                       !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
                                       !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
                                       !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth)&&
-                                      (dungeonRoom.NeighborWestId == Guid.Empty || dungeonRoom.NeighborWestId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
+                                      (dungeonRoom.NeighborWestId == Guid.Empty || 
+                                      dungeonRoom.NeighborWestId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -714,7 +717,8 @@
                                   !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
                                   !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
                                   !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth)&&
-                                  (dungeonRoom.NeighborNorthId == Guid.Empty || dungeonRoom.NeighborNorthId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
+                                  (dungeonRoom.NeighborNorthId == Guid.Empty || 
+                                  dungeonRoom.NeighborNorthId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
                                 {
                                     <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                 }
@@ -1078,15 +1082,16 @@
         for (int i = 0; i < 8; i++)
         {
             itemCategory[i] = string.Empty;
+            roomItems[i] = string.Empty;
         }
         if (DungeonId != Guid.Empty)
         {
-            var dungeonRoomCollection = await RoomService.GetAllRooms(DungeonId);
-            if (!(dungeonRoomCollection is null))
-            {
-                dungeonRooms = dungeonRoomCollection.ToList();
-            }
-
+            dungeonRooms = (await RoomService.GetAllRooms(DungeonId))?.ToList() ?? new List<RoomDto>();
+            dungeonInspectables = (await InspectableService.GetAllInspectables(DungeonId))?.ToList() ?? new List<InspectableDto>();
+            dungeonTakeables = (await TakeableService.GetAllTakeables(DungeonId))?.ToList() ?? new List<TakeableDto>();
+            dungeonWearables = (await WearableService.GetAllWearables(DungeonId))?.ToList() ?? new List<WearableDto>();
+            dungeonUsables = (await UsableService.GetAllUsables(DungeonId))?.ToList() ?? new List<UsableDto>();
+            dungeonConsumables = (await ConsumableService.GetAllConsumables(DungeonId))?.ToList() ?? new List<ConsumableDto>();
         }
         StateHasChanged();
     }
