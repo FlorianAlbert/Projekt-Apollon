@@ -1,4 +1,4 @@
-﻿namespace Apollon.Mud.Server.Model.Implementations
+﻿namespace Apollon.Mud.Shared.Implementations.Dungeons
 {
     /// <summary>
     /// Possible status of approvables

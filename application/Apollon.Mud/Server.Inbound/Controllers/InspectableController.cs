@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {

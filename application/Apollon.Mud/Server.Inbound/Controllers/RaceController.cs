@@ -10,6 +10,7 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
 using Apollon.Mud.Shared.Dungeon.Race;
 using Microsoft.AspNetCore.Authorization;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {

@@ -21,6 +21,7 @@ using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Shared.Dungeon.Race;
 using Apollon.Mud.Shared.Dungeon.Requestable;
 using Apollon.Mud.Shared.Dungeon.Room;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -14,6 +14,8 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Server.Model.Implementations.User;
+using Apollon.Mud.Shared.Dungeon.Avatar;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
