@@ -53,7 +53,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
                     recipientChatConnectionIds.Add(recipientConnection.ChatConnectionId);
             }
 
-            ChatHubContext.Clients.Clients(recipientChatConnectionIds).ReceiveChatMessage(senderAvatar.Name, message);
+            await ChatHubContext.Clients.Clients(recipientChatConnectionIds).ReceiveChatMessage(senderAvatar.Name, message);
         }
 
         /// <inheritdoc cref="IChatService.PostWhisperMessage"/>
@@ -89,7 +89,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
                 senderName = senderAvatar.Name;
             }
 
-            ChatHubContext.Clients.Client(recipientConnection.ChatConnectionId)
+            await ChatHubContext.Clients.Client(recipientConnection.ChatConnectionId)
                 .ReceiveChatMessage(senderName, message);
         }
 
@@ -107,7 +107,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
                     recipientChatConnectionIds.Add(recipientConnection.ChatConnectionId);
             }
 
-            ChatHubContext.Clients.Clients(recipientChatConnectionIds).ReceiveChatMessage("Dungeon Master", message);
+            await ChatHubContext.Clients.Clients(recipientChatConnectionIds).ReceiveChatMessage("Dungeon Master", message);
         }
     }
 }

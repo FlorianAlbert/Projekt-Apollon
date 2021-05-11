@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
-using Apollon.Mud.Server.Model.Implementations.User;
 using Apollon.Mud.Shared.Dungeon.User;
 using Apollon.Mud.Shared.UserManagement.Password;
 using Apollon.Mud.Shared.UserManagement.Registration;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -178,7 +175,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// Changes the password from the user with the given userId.
         /// </summary>
         /// <param name="changePasswordDto"></param>
-        /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("password/change")]

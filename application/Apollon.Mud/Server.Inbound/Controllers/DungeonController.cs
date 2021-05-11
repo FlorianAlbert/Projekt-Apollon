@@ -174,7 +174,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 var blackListTasks = dungeonDto.BlackList.Select(async x => await UserService.GetUser(x.Id));
                 var dungeonBlackList = await Task.WhenAll(blackListTasks);
-                foreach (var dungeonUser in dungeonBlackList)
+                foreach (var dungeonUser in dungeonBlackList)           //TODO: Alle aktiven Avatare der user kicken und alle Avatare des users im dungeon löschen
                 {
                     if (dungeonUser is not null) dungeonToUpdate.BlackList.Add(dungeonUser);
                 }
