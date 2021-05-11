@@ -888,7 +888,7 @@
             <div class="form-group mt-3">
                 <div class="row">
                     <div class="col-3">
-                        <h5 class="mt-1">Status @title</h5>
+                        <h5 class="mt-1">Status</h5>
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
@@ -1096,8 +1096,6 @@
         StateHasChanged();
     }
 
-    string title = "0";
-
     /// <summary>
     /// The method manages the save function when specific changes have been made in the room
     /// </summary>
@@ -1130,11 +1128,9 @@
                 {
                     case "Inspectable":
                         submitRoom.Inspectables.Add(dungeonInspectables.Find(r => r.Name.Equals(roomItems[i])));
-                        title = roomItems[i];
                         break;
                     case "Takeable":
                         submitRoom.Takeables.Add(dungeonTakeables.Find(r => r.Name.Equals(roomItems[i])));
-                        title = roomItems[i];
                         break;
                     case "Consumable":
                         submitRoom.Consumables.Add(dungeonConsumables.Find(r => r.Name.Equals(roomItems[i])));

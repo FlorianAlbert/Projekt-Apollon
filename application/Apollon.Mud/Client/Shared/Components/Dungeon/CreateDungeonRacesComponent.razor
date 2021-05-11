@@ -77,7 +77,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Lebenspunkte" type="number<Int64>" @bind-Value="dungeonRaceModel.Health" />
+                            <InputText class="form-control" placeholder="Lebenspunkte" @bind-Value="dungeonRaceModel.Health" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRaceModel.Health) />
@@ -93,7 +93,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Schaden" type="number" @bind-Value="dungeonRaceModel.Damage" />
+                            <InputText class="form-control" placeholder="Schaden" @bind-Value="dungeonRaceModel.Damage" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRaceModel.Damage) />
@@ -109,7 +109,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Verteidigung" type="number" @bind-Value="dungeonRaceModel.Protection" />
+                            <InputText class="form-control" placeholder="Verteidigung" @bind-Value="dungeonRaceModel.Protection" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRaceModel.Protection) />

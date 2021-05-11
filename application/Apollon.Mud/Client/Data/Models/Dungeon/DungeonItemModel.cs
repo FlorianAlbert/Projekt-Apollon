@@ -14,7 +14,7 @@ namespace Apollon.Mud.Client.Data.Models.Dungeon
         /// <summary>
         /// The status indicates whether the dungeon is active
         /// </summary>
-        [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
+        [Required(ErrorMessage = "Du musst dem Item einen Status geben")]
         public string Status { get; set; }
 
         /// <summary>
