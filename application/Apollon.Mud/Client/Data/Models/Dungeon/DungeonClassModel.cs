@@ -30,22 +30,22 @@ namespace Apollon.Mud.Client.Data.Models.Dungeon
         /// The class has to have a default health value, which has to be an Integer
         /// </summary>
         [Required(ErrorMessage = "Du musst einen Standard Lebenspunktewert angeben")]
-        [RegularExpression("[0-9]*", ErrorMessage = "Lebenspunkte können nur eine Ganzzahl sein")]
-        public string Health { get; set; }
+        [Range(1,99, ErrorMessage ="Der Wert muss zwischen 1 und 99 liegen")]
+        public int? Health { get; set; }
 
         /// <summary>
         /// The class has to have a default damage value, which has to be an Integer
         /// </summary>
         [Required(ErrorMessage = "Du musst einen Standard Schadenswert angeben")]
-        [RegularExpression("[0-9]*", ErrorMessage = "Der Schaden kann nur eine Ganzzahl sein")]
-        public string Damage { get; set; }
+        [Range(1, 99, ErrorMessage = "Der Wert muss zwischen 1 und 99 liegen")]
+        public int? Damage { get; set; }
 
         /// <summary>
         /// The class has to have a default protection value, which has to be an Integer
         /// </summary>
         [Required(ErrorMessage = "Du musst einen Standard Verteidigungswert angeben")]
-        [RegularExpression("[0-9]*", ErrorMessage = "Die Verteidigung kann nur eine Ganzzahl sein")]
-        public string Protection { get; set; }
+        [Range(1, 99, ErrorMessage = "Der Wert muss zwischen 1 und 99 liegen")]
+        public int? Protection { get; set; }
 
 
         /// <summary>

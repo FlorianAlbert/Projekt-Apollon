@@ -814,13 +814,17 @@
         roomContext = new EditContext(dungeonRoomModel);
         if (DungeonId != Guid.Empty)
         {
-            dungeonRooms = (await RoomService.GetAllRooms(DungeonId))?.ToList() ?? new List<RoomDto>();
+            var rooms = await RoomService.GetAllRooms(DungeonId);
+            if (rooms is not null && rooms.Count != 0)
+            {
+                dungeonRooms = rooms.ToList();
+                await OnRoomSavedOrLoaded.InvokeAsync();
+            }
             dungeonInspectables = (await InspectableService.GetAllInspectables(DungeonId))?.ToList() ?? new List<InspectableDto>();
             dungeonTakeables = (await TakeableService.GetAllTakeables(DungeonId))?.ToList() ?? new List<TakeableDto>();
             dungeonWearables = (await WearableService.GetAllWearables(DungeonId))?.ToList() ?? new List<WearableDto>();
             dungeonUsables = (await UsableService.GetAllUsables(DungeonId))?.ToList() ?? new List<UsableDto>();
             dungeonConsumables = (await ConsumableService.GetAllConsumables(DungeonId))?.ToList() ?? new List<ConsumableDto>();
-            await OnRoomSavedOrLoaded.InvokeAsync();
         }
         StateHasChanged();
     }

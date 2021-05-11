@@ -21,6 +21,7 @@ using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Shared.Dungeon.Race;
 using Apollon.Mud.Shared.Dungeon.Requestable;
 using Apollon.Mud.Shared.Dungeon.Room;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -50,6 +51,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Authorize(Roles = "Player, Admin")]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateNew([FromBody] AvatarDto avatar, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(u => u.Type == "UserId");
@@ -60,15 +62,28 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            var newAvatar = new Avatar(avatar.Name, 
-                await GameConfigService.Get<Race>(avatar.Race.Id), 
-                await GameConfigService.Get<Class>(avatar.Class.Id), 
-                (Gender)avatar.Gender, 
-                await GameConfigService.Get<Dungeon>(dungeonId), user)
+            var avatarDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
+
+            if (avatarDungeon is null) return BadRequest();
+
+            if (!avatarDungeon.WhiteList.Contains(user) || 
+                avatarDungeon.BlackList.Contains(user)) return Unauthorized();
+
+            var avatarRace = await GameConfigService.Get<Race>(avatar.Race.Id);
+
+            var avatarClass = await GameConfigService.Get<Class>(avatar.Class.Id);
+
+            if (avatarRace is null || avatarClass is null) return BadRequest();
+
+            var newAvatar = new Avatar(avatar.Name,
+                avatarRace,
+                avatarClass,
+                (Gender)avatar.Gender,
+                avatarDungeon, user)
             {
                 CurrentRoom = (await GameConfigService.Get<Dungeon>(dungeonId)).DefaultRoom,
-                Status = (Status) avatar.Status,
-                Owner = user
+                Status = (Status)avatar.Status,
+                Owner = user,
             };
 
             //foreach(TakeableDto takeable in avatar.Class.InventoryTakeableDtos)
@@ -204,11 +219,19 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllForUser([FromRoute] Guid dungeonId)
         {
+            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
+
+            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
+
+            var user = await UserService.GetUser(userId);
+
+            if (user is null) return BadRequest();
+
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
             if (dungeon is null) return BadRequest();
 
-            var userAvatars = dungeon.RegisteredAvatars.Where(x => x.Owner.Id == "User.Id");
+            var userAvatars = dungeon.ConfiguredInspectables.OfType<Avatar>().Where(x => x.Owner.Id == user.Id);
 
             var userAvatarDtos = userAvatars.Select(x => new AvatarDto
             {
@@ -362,14 +385,18 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Status = (int)avatar.CurrentRoom.Status,
                     Description = avatar.CurrentRoom.Description,
                     Name = avatar.CurrentRoom.Name,
-                    Inspectables = avatar.CurrentRoom.Inspectables.OfType<Inspectable>().Where(x => x is not Takeable and not Npc and not Avatar).Select(x => new InspectableDto
+                    Inspectables = avatar.CurrentRoom.Inspectables.OfType<Inspectable>().
+                    Where(x => x is not Takeable and not Npc and not Avatar).
+                    Select(x => new InspectableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
                         Description = x.Description,
                         Name = x.Description,
                     }).ToList(),
-                    Takeables = avatar.CurrentRoom.Inspectables.OfType<Takeable>().Where(x => x is not Consumable and not Wearable and not Usable).Select(x => new TakeableDto
+                    Takeables = avatar.CurrentRoom.Inspectables.OfType<Takeable>().
+                    Where(x => x is not Consumable and not Wearable and not Usable).
+                    Select(x => new TakeableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -377,7 +404,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Name = x.Description,
                         Weight = x.Weight
                     }).ToList(),
-                    Consumables = avatar.CurrentRoom.Inspectables.OfType<Consumable>().Select(x => new ConsumableDto
+                    Consumables = avatar.CurrentRoom.Inspectables.OfType<Consumable>().
+                    Select(x => new ConsumableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -386,7 +414,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Weight = x.Weight,
                         EffectDescription = x.EffectDescription
                     }).ToList(),
-                    Wearables = avatar.CurrentRoom.Inspectables.OfType<Wearable>().Select(x => new WearableDto
+                    Wearables = avatar.CurrentRoom.Inspectables.OfType<Wearable>().
+                    Select(x => new WearableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,
@@ -395,7 +424,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Weight = x.Weight,
                         ProtectionBoost = x.ProtectionBoost
                     }).ToList(),
-                    Usables = avatar.CurrentRoom.Inspectables.OfType<Usable>().Select(x => new UsableDto
+                    Usables = avatar.CurrentRoom.Inspectables.OfType<Usable>().
+                    Select(x => new UsableDto
                     {
                         Id = x.Id,
                         Status = (int)x.Status,

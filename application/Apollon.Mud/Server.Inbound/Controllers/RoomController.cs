@@ -25,6 +25,7 @@ using Apollon.Mud.Shared.Dungeon.Room;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {

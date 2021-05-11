@@ -37,8 +37,8 @@ namespace Apollon.Mud.Client.Data.Models.Dungeon
         /// Every Takeable has to have a weight, which has to be an Integer
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Item ein Gewicht zuordnen")]
-        [RegularExpression("[0-9]*", ErrorMessage = "Gewicht kann nur als Ganzzahl angegeben werden")]
-        public string Weight { get; set; }
+        [Range(1, 99, ErrorMessage = "Der Wert muss zwischen 1 und 99 liegen")]
+        public int? Weight { get; set; }
 
         #region Consumable
 
@@ -56,8 +56,8 @@ namespace Apollon.Mud.Client.Data.Models.Dungeon
         /// Every Usable has to have a Damage Boost, whcih has to be an Integer
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Item einen Schadensboost geben")]
-        [RegularExpression("[0-9]*", ErrorMessage = "Schadensboost kann nur als Ganzzahl angegeben werden")]
-        public string DamageBoost { get; set; }
+        [Range(-25, 25, ErrorMessage = "Der Wert muss zwischen -25 und +25 liegen")]
+        public int? DamageBoost { get; set; }
 
         #endregion
 
@@ -67,8 +67,8 @@ namespace Apollon.Mud.Client.Data.Models.Dungeon
         /// Every wearable has to have a Protection Boost, whcih has to be an Integer
         /// </summary>
         [Required(ErrorMessage = "Du musst dem Item einen Vertidgungsboost geben")]
-        [RegularExpression("[0-9]*", ErrorMessage = "Verteidigungsboost kann nur als Ganzzahl angegeben werden")]
-        public string ProtectionBoost { get; set; }
+        [Range(-25, 25, ErrorMessage = "Der Wert muss zwischen -25 und +25 liegen")]
+        public int? ProtectionBoost { get; set; }
 
         #endregion
 

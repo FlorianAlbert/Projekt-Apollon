@@ -1,4 +1,6 @@
-﻿namespace Apollon.Mud.Shared.HubContract
+﻿using System.Threading.Tasks;
+
+namespace Apollon.Mud.Shared.HubContract
 {
     /// <summary>
     /// TODO Abhilfe
@@ -10,6 +12,6 @@
         /// </summary>
         /// <param name="senderName"></param>
         /// <param name="message"></param>
-        void ReceiveChatMessage(string senderName, string message);
+        Task ReceiveChatMessage(string senderName, string message);
     }
 }

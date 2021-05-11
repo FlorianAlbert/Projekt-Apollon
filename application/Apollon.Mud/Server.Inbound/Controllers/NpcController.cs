@@ -5,6 +5,7 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
 using Apollon.Mud.Shared.Dungeon.Npc;
 using Apollon.Mud.Shared.Dungeon.Requestable;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

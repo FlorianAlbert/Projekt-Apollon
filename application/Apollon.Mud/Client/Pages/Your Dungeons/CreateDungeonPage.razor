@@ -145,8 +145,8 @@
     /// </summary>
     public void ReloadRooms()
     {
-        ChildDungeonComponent.ReloadDungeonRooms();
         dungeonHasRoom = true;
+        ChildDungeonComponent.ReloadDungeonRooms();
         if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
     }
 

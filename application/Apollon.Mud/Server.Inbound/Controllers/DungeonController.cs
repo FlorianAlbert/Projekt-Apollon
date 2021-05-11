@@ -14,6 +14,7 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Dungeon.User;
 using Apollon.Mud.Shared;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -174,7 +175,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 var blackListTasks = dungeonDto.BlackList.Select(async x => await UserService.GetUser(x.Id));
                 var dungeonBlackList = await Task.WhenAll(blackListTasks);
-                foreach (var dungeonUser in dungeonBlackList)
+                foreach (var dungeonUser in dungeonBlackList)           //TODO: Alle aktiven Avatare der user kicken und alle Avatare des users im dungeon löschen
                 {
                     if (dungeonUser is not null) dungeonToUpdate.BlackList.Add(dungeonUser);
                 }

@@ -13,6 +13,8 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Requestables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Server.Model.Implementations.User;
+using Apollon.Mud.Shared.Dungeon.Avatar;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -108,7 +110,9 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .WithOne(x => x.Dungeon)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Dungeon>()
-                .HasMany(e => e.RegisteredAvatars);
+                .HasMany(e => e.RegisteredAvatars)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Dungeon>()
                 .HasMany(e => e.ConfiguredRooms)
                 .WithOne(x => x.Dungeon)
@@ -240,6 +244,10 @@ namespace Apollon.Mud.Server.Domain.DbContext
             builder.Entity<Avatar>()
                 .HasOne(e => e.ChosenRace)
                 .WithMany(x => x.Avatars)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Avatar>()
+                .HasOne<Dungeon>()
+                .WithMany(x => x.RegisteredAvatars)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Avatar>()
                 .Property(x => x.ChosenGender)
