@@ -1,50 +1,178 @@
-﻿@page "/MasterView/PlayerList"
+﻿@page "/MasterView/PlayerList/{DungeonId:guid}"
 @layout MasterViewLayout
 
-<div class="row bg-white">   
+@using Apollon.Mud.Shared.Dungeon
+@using Apollon.Mud.Shared.Dungeon.Avatar
+@using Apollon.Mud.Shared.Dungeon.User
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+@inject Apollon.Mud.Client.Services.Interfaces.IRoomService RoomService
+@inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
+
+<div class="row bg-white">
     <div class="col-4">
         <div style="display: flex; flex-direction: column; height: 87vh">
             <div class="list-group" style="overflow-y:auto; height:100%">
                 <button type="button" class="list-group-item list-group-item-action" style="height:100px">
                     <h5>Liste aller Spieler</h5>
                 </button>
-                @for (int i = 0; i < 20; i++)
+                @if (AllPlayersList is null || AllPlayersList.Count == 0)
                 {
-                    <button type="button" class="list-group-item list-group-item-action">
-                        <h5>Spieler in Raum:</h5>
-                        <span> </span>
-                        <h6>Raum @i</h6>
-                    </button>
+                    <h5 class="text-muted">Dem Dungeon sind noch keine Spieler beigetreten</h5>
+                }
+                else
+                {
+                    @foreach (DungeonUserDto user in AllPlayersList)
+                    {
+                        <button type="button" class="list-group-item list-group-item-action" @onclick="( () => ChangeUser(user))">
+                            <h5>Spieler: @user.Email.Trim('@')[0]</h5>
+                            <span> </span>
+                            @foreach (AvatarDto avatar in UserAvatarDictionary[user])
+                            {
+                                <h6>@avatar.Name</h6>
+                            }
+                        </button>
+                    }
                 }
             </div>
         </div>
     </div>
     <div class="col-8">
         <div style="display: flex; flex-direction: column; height: 87vh">
-            <h2 class="mt-3">Übersicht aller Spieler</h2>
+
+            <div class="row bg-secondary">
+                <div class="col">
+                    <h5>Name: @OpenUser.Email.Trim('@')[0]</h5>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary btn-sm float-end me-3" type="button" @onclick="KickUser">Kicken</button>
+                    <button class="btn btn-danger btn-sm float-end" type="button" @onclick="BanUser">Verbannen</button>
+                </div>
+            </div>
             <ul class="list-group" style="overflow-y:auto; height:100%">
-                @for (int i = 0; i < 100; i++)
+                @foreach (AvatarDto avatar in UserAvatarDictionary[OpenUser])
                 {
                     <li class="list-group-item">
                         <div class="row">
-                            <div class="col-3">
-                                <span class="ms-2">Spieler @i</span>
+                            <div class="col-2">
+                                <span class="ms-2">@avatar.Name</span>
                             </div>
-                            <div class="col-1">
-
+                            <div class="col-1" />
+                            <div class="col-2">
+                                <span class="ms-2">@avatar.Class.Name</span>
                             </div>
-                            <div class="col">
-                                <button class="btn btn-danger btn-sm float-end" type="button">Verbannen</button>
-                                <button class="btn btn-primary btn-sm float-end me-3" type="button">Entfernen</button>
+                            <div class="col-1" />
+                            <div class="col-2">
+                                <span class="ms-2">@avatar.Race.Name</span>
                             </div>
+                            <div class="col-1" />
+                            @if (avatar.Status == 0)
+                            {
+                                <div class="col-2">
+                                    <div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-2">
+                                    <div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div>
+                                </div>
+                            }
                         </div>
                     </li>
                 }
             </ul>
+
         </div>
     </div>
 </div>
 
 @code {
+
+    /// <summary>
+    /// The Avatars created in this dungeon
+    /// </summary>
+    public List<AvatarDto> DungeonAvatars { get; set; }
+
+    /// <summary>
+    /// The List of Players that joined this Dungeon, active and inactive
+    /// </summary>
+    public List<DungeonUserDto> AllPlayersList { get; set; }
+
+    /// <summary>
+    /// The ID of the Dungeon this Master is handling
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// The Dungeon this Master is handling
+    /// </summary>
+    public DungeonDto Dungeon { get; set; }
+
+    /// <summary>
+    /// A Dictionary getting every Avatar of each user
+    /// </summary>
+    public Dictionary<DungeonUserDto, ICollection<AvatarDto>> UserAvatarDictionary { get; set; }
+
+    /// <summary>
+    /// The user that is currently opened
+    /// </summary>
+    public DungeonUserDto OpenUser { get; set; }
+
+    /// <summary>
+    /// Loads the corresponding dungeon and saves it locally, fills all lists
+    /// </summary>
+    /// <returns></returns>
+    protected async override Task OnInitializedAsync()
+    {
+        var dungeon = await DungeonService.GetDungeon(DungeonId);
+        if (dungeon is not null)
+        {
+            Dungeon = dungeon;
+            AllPlayersList = dungeon.WhiteList.ToList();
+            var avatars = await AvatarService.GetAllAvatars(DungeonId);
+            if (avatars is not null) DungeonAvatars = avatars.ToList();
+            foreach (DungeonUserDto user in AllPlayersList)
+            {
+                var userAvatars = await AvatarService.GetAllAvatarsForUser(DungeonId);
+                if (userAvatars is not null) UserAvatarDictionary.Add(user, userAvatars.ToList());
+                else UserAvatarDictionary.Add(user, new List<AvatarDto>());
+            }
+        }
+    }
+
+    /// <summary>
+    /// Called when the Master opens another user card
+    /// </summary>
+    /// <param name="user"></param>
+    private void ChangeUser(DungeonUserDto user)
+    {
+        OpenUser = user;
+    }
+
+    /// <summary>
+    /// Removes the chosen user from the Dungeons Whitelist
+    /// </summary>
+    private void KickUser()
+    {
+        //TODO Im Gamecontroller user Kicken (sobald vorhanden)
+        Dungeon.WhiteList.Remove(OpenUser);
+        AllPlayersList.Remove(OpenUser);
+        UserAvatarDictionary.Remove(OpenUser);
+        DungeonService.UpdateDungeon(Dungeon);
+    }
+
+    /// <summary>
+    /// Sets the chosen user to the Dungeons Blacklist
+    /// </summary>
+    private void BanUser()
+    {
+        //TODO Im Gamecontroller user Kicken (sobald vorhanden)
+        Dungeon.WhiteList.Remove(OpenUser);
+        Dungeon.BlackList.Add(OpenUser);
+        AllPlayersList.Remove(OpenUser);
+        UserAvatarDictionary.Remove(OpenUser);
+        DungeonService.UpdateDungeon(Dungeon);
+    }
 
 }
