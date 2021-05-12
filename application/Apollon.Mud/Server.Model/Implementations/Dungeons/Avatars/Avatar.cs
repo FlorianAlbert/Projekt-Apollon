@@ -169,7 +169,9 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         [ExcludeFromCodeCoverage]
         public virtual DungeonUser Owner { get; set; }
 
-        /// <inheritdoc cref="Inspectable.Description"/>
+        /// <summary>
+        /// Gives a descrition of the avatarS
+        /// </summary>
         public string Description => $"{ Name } ist von der Rasse { ChosenRace.Name } vom Geschlecht { ChosenGender.GetGermanGender() }.\n" +
                 "Diese Rasse zeichnet sich durch folgende Beschreibung aus: \n" +
                 $"{ ChosenRace.Description } \n\n" +
