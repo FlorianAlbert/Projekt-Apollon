@@ -11,6 +11,11 @@
     </div>
     <div class="card-body">
 
+        @if (DungeonNameAlreadyExists)
+        {
+            <label class="text-danger mt-1"><strong>Ein Dungeon mit diesem Namen existiert bereits, bitte wähle einen Anderen</strong></label>
+        }
+
         <EditForm EditContext="@dungeonContext" OnSubmit="@HandleDungeonSubmit" novalidate>
             <DataAnnotationsValidator />
 
@@ -196,9 +201,14 @@
     public EventCallback<Guid> OnDungeonSavedOrLoaded { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The Dungeon that is being edited 
     /// </summary>
     public DungeonDto CurrentDungeon { get; set; }
+
+    /// <summary>
+    /// When true shows a message to the user, that there already is a dungeon with this name
+    /// </summary>
+    public bool DungeonNameAlreadyExists { get; set; }
 
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
@@ -265,6 +275,7 @@
     /// <returns></returns>
     private async Task HandleDungeonSubmit()
     {
+        DungeonNameAlreadyExists = false;
         if (DungeonMustBeInactive) dungeonModel.Status = "Pending";
         var validDungeon = dungeonContext.Validate();
         if (validDungeon)
@@ -282,12 +293,13 @@
             if (DungeonId == Guid.Empty)
             {
                 var responseGuid = await DungeonService.CreateNewDungeon(submitDungeon);
-                if (responseGuid != Guid.Empty)
+                if (responseGuid.Item1 != Guid.Empty)
                 {
-                    await OnDungeonSavedOrLoaded.InvokeAsync(responseGuid);
-                    DungeonId = responseGuid;
+                    await OnDungeonSavedOrLoaded.InvokeAsync(responseGuid.Item1);
+                    DungeonId = responseGuid.Item1;
                     CurrentDungeon = await DungeonService.GetDungeon(DungeonId) ?? new DungeonDto();
                 }
+                else if (responseGuid.Item2) DungeonNameAlreadyExists = true;
             }
             else
             {
