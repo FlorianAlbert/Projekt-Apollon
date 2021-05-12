@@ -130,5 +130,29 @@ namespace Apollon.Mud.Client.Services.Implementiations
 
             return null;
         }
+
+        /// <summary>
+        /// Opens a request of a user to enter a private Dungeon
+        /// </summary>
+        /// <param name="dungeonId"></param>
+        /// <returns>True if submitting the request was successfull, else false</returns>
+        public async Task<bool> OpenEnterRequest(Guid dungeonId)
+        {
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.PostAsJsonAsync("api/dungeons/" + dungeonId + "/request", cancellationToken);
+
+            return response.StatusCode == HttpStatusCode.OK
+        }
+
+        /// <summary>
+        /// Answers a users request to enter a private dungeon
+        /// </summary>
+        /// <param name="dungeonId"></param>
+        /// <returns>True if sending it to the Backend was successfull, else false</returns>
+        public Task<bool> SubmitEnterRequest(Guid dungeonId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
