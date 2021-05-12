@@ -52,6 +52,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> CreateNew([FromBody] AvatarDto avatar, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(u => u.Type == "UserId");
@@ -75,6 +76,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (avatarRace is null || avatarClass is null) return BadRequest();
 
+            if (avatarDungeon.RegisteredAvatars.Any(x => x.Name == avatar.Name)) return Conflict();
+
             var newAvatar = new Avatar(avatar.Name,
                 avatarRace,
                 avatarClass,
@@ -85,38 +88,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 Owner = user,
                 Dungeon = avatarDungeon
             };
-
-            //foreach(TakeableDto takeable in avatar.Class.InventoryTakeableDtos)
-            //{
-            //    newAvatar.Inventory.Add(new Takeable(takeable.Weight, takeable.Description, takeable.Name)
-            //    {
-            //        Status = (Status)takeable.Status
-            //    });
-            //}
-            //foreach (UsableDto usable in avatar.Class.InventoryUsableDtos)
-            //{
-            //    newAvatar.Inventory.Add(new Usable(usable.Name, usable.Description, usable.Weight, usable.DamageBoost)
-            //    {
-            //        Status = (Status)usable.Status
-            //    });
-            //}
-            //foreach (WearableDto wearable in avatar.Class.InventoryWearableDtos)
-            //{
-            //    newAvatar.Inventory.Add(new Wearable(wearable.Name, wearable.Description, wearable.Weight, wearable.ProtectionBoost)
-            //    {
-            //        Status = (Status)wearable.Status
-            //    });
-            //}
-            //foreach (ConsumableDto consumable in avatar.Class.InventoryConsumableDtos)
-            //{
-            //    newAvatar.Inventory.Add(new Consumable(consumable.Name, 
-            //                            consumable.Description, 
-            //                            consumable.Weight, 
-            //                            consumable.EffectDescription)
-            //                            {
-            //                                Status = (Status)consumable.Status
-            //                            });
-            //}
 
             if (await GameConfigService.NewOrUpdate(newAvatar)) return Ok(newAvatar.Id);
 

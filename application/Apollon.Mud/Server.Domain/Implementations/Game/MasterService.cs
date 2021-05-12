@@ -1,21 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.Game;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
+using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Outbound.Hubs;
+using Apollon.Mud.Shared.Dungeon.Avatar;
+using Apollon.Mud.Shared.Game.Chat;
 using Apollon.Mud.Shared.HubContract;
 using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Apollon.Mud.Server.Domain.Implementations.Game
 {
-    /// <summary>
-    /// ToDo Muss noch implementiert werden
-    /// </summary>
-    public class MasterService: IMasterService
+    /// <inheritdoc cref="IMasterService"/>
+    public class MasterService : IMasterService
     {
         private IGameDbService GameDbService { get; }
 
@@ -23,6 +25,12 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
         private IConnectionService ConnectionService { get; }
 
+        /// <summary>
+        /// Creates a new Instance of MasterService
+        /// </summary>
+        /// <param name="gameDbService">The GameDbService to manipulate the database</param>
+        /// <param name="connectionService">The ConnectionService storing all active connections</param>
+        /// <param name="hubContext">The HubContext to contact the clients</param>
         public MasterService(IGameDbService gameDbService, IConnectionService connectionService, IHubContext<GameHub, IClientGameHubContract> hubContext)
         {
             GameDbService = gameDbService;
@@ -30,7 +38,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             HubContext = hubContext;
         }
 
-        public async Task ExecuteDungeonMasterRequestResponse(string message, Guid avatarRoomId, Guid avatarId, int newHpValue, Guid dungeonId)
+        /// <inheritdoc cref="IMasterService.ExecuteDungeonMasterRequestResponse"/>
+        public async Task ExecuteDungeonMasterRequestResponse(string message, Guid avatarId, int newHpValue, Guid dungeonId)
         {
             var connection = ConnectionService.GetConnectionByAvatarId(avatarId);
 
@@ -38,9 +47,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
 
-            var room = dungeon?.ConfiguredRooms.FirstOrDefault(x => x.Id == avatarRoomId);
-
-            var avatar = room?.Avatars.FirstOrDefault(x => x.Id == avatarId);
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
 
             if (avatar is null) return;
 
@@ -51,7 +58,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             await HubContext.Clients.Client(connection.GameConnectionId).ReceiveGameMessage(message);
         }
 
-        public async Task KickAvatar(Guid avatarRoomId, Guid avatarId, Guid dungeonId)
+        /// <inheritdoc cref="IMasterService.KickAvatar"/>
+        public async Task KickAvatar(Guid avatarId, Guid dungeonId)
         {
             var connection = ConnectionService.GetConnectionByAvatarId(avatarId);
 
@@ -59,9 +67,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
 
-            var room = dungeon?.ConfiguredRooms.FirstOrDefault(x => x.Id == avatarRoomId);
-
-            var avatar = room?.Avatars.FirstOrDefault(x => x.Id == avatarId);
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
 
             if (avatar is null) return;
 
@@ -72,8 +78,41 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             ConnectionService.RemoveConnectionByAvatarId(avatarId);
 
             await HubContext.Clients.Client(connection.GameConnectionId).NotifyKicked();
+
+            var avatarsToNotify = dungeon.RegisteredAvatars.Where(x => x.CurrentRoom == avatar.CurrentRoom && x.Status == Status.Approved).ToList();
+
+            var avatarsToNotifyConnectionIds =
+                from avatarToNotify
+                        in avatarsToNotify
+                select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
+                into avatarToNotifyConnection
+                where avatarToNotifyConnection is not null
+                select avatarToNotifyConnection.GameConnectionId;
+
+            var roomChatPartnerDtos = avatarsToNotify.Select(x => new ChatPartnerDto
+            {
+                AvatarId = x.Id,
+                AvatarName = x.Name
+            }).ToList();
+
+            var dungeonChatPartnerDtos = dungeon.RegisteredAvatars
+                .Where(x => x.Status == Status.Approved)
+                .Select(x => new ChatPartnerDto
+                {
+                    AvatarId = x.Id,
+                    AvatarName = x.Name
+                }).ToList();
+
+            await HubContext.Clients.Clients(avatarsToNotifyConnectionIds)
+                .ReceiveChatPartnerList(roomChatPartnerDtos);
+
+            var dungeonMasterConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeon.Id);
+
+            if (dungeonMasterConnection is not null) await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+                .ReceiveChatPartnerList(dungeonChatPartnerDtos);
         }
 
+        /// <inheritdoc cref="IMasterService.KickAllAvatars"/>
         public async Task KickAllAvatars(Guid dungeonId)
         {
             var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
@@ -96,6 +135,19 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
                 await HubContext.Clients.Client(connection.GameConnectionId).NotifyKicked();
             }
+
+            var dungeonChatPartnerDtos = dungeon.RegisteredAvatars
+                .Where(x => x.Status == Status.Approved)
+                .Select(x => new ChatPartnerDto
+                {
+                    AvatarId = x.Id,
+                    AvatarName = x.Name
+                }).ToList();
+
+            var dungeonMasterConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeon.Id);
+
+            if (dungeonMasterConnection is not null) await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+                .ReceiveChatPartnerList(dungeonChatPartnerDtos);
         }
     }
 }
