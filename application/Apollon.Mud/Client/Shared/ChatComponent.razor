@@ -8,8 +8,8 @@
 <div class="card ms-2 me-2 bg-secondary" style="display: flex; flex-direction: column; height: 87vh">
     <div style="flex-shrink: 0;">
         <select class="form-select" aria-label="MessageSelect" @bind="chosenRecipient">
-            <option selected>Nachricht an:</option>
-            <option value="all">Alle</option>
+            <option value="NoRecipient" selected>Nachricht an:</option>
+            <option value="All">Alle</option>
             <option value="Room">Raum</option>
             @foreach (AvatarDto avatarDto in dungeonAvatars)
             {
@@ -19,6 +19,7 @@
     </div>
     <div class="panel panel-body bg-white mt-2" id="chat" style="overflow-y:auto; height: 100%">
         <ul class="chat">
+            @foreach (ChatMessageDto message in userMessages)
             @for (int i = 0; i < 15; i++)
             {
                 <li class="left clearfix">
@@ -26,11 +27,11 @@
                         <div class="header">
                             <strong class="primary-font">from</strong>
                             <small class="pull-right text-muted">
-                                <span class="glyphicon glyphicon-time"></span>to:
+                                <span class="glyphicon glyphicon-time"></span>An: @message.RecipientName
                             </small>
                         </div>
                         <p>
-                            message
+                            @message.Message
                         </p>
                     </div>
                 </li>
@@ -39,8 +40,15 @@
     </div>
     <div class="chat mt-2 mb-2" style="flex-shrink: 0;">
         <div class="prompt d-flex">
-            <input id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
-            <button id="send" class="btn btn-primary ms-2">Senden</button>
+            <input @bind="inputMessage" id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
+            @if (chosenRecipient != "NoRecipient")
+            {
+                <button @onclick="SendMessage" id="send" class="btn btn-primary ms-2">Senden</button>
+            }
+            else
+            {
+                <button id="send" class="btn btn-primary ms-2" disabled>Senden</button>
+            }
         </div>
         <span> </span>
     </div>
@@ -55,9 +63,11 @@
 
     List<AvatarDto> dungeonAvatars = new List<AvatarDto>();
 
-    List<ChatMessageDto> userMessages = new List<ChatMessageDto>();
- 
+    Queue<ChatMessageDto> userMessages = new Queue<ChatMessageDto>();
+
     string chosenRecipient = "NoRecipient";
+
+    string inputMessage = "";
 
     protected async override Task OnInitializedAsync()
     {
@@ -66,10 +76,29 @@
             var avatars = await AvatarService.GetAllAvatars(DungeonId);
             if (avatars is not null)
             {
-                dungeonAvatars = avatars.ToList(); 
+                dungeonAvatars = avatars.ToList();
                 StateHasChanged();
             }
         }
 
+    }
+
+    public void SendMessage()
+    {
+        ChatMessageDto message = new ChatMessageDto();
+        message.Message = inputMessage;
+        message.RecipientName = chosenRecipient;
+        if (chosenRecipient == "All")
+        {
+            ChatService.PostGlobalMessage(message);
+        }
+        else if (chosenRecipient == "Room")
+        {
+            ChatService.PostRoomMessage(message);
+        }
+        else
+        {
+            ChatService.PostWhisperMessage(message);
+        }
     }
 }
