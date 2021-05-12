@@ -31,55 +31,77 @@
 
 
 
-<div class="container bg-white" style="min-height: 93vh; text-align:center">
+<div class="container" style="min-height: 93vh; text-align:center">
     <h3>Dungeon Übersicht</h3>
-    <div class="card mt-2">
+    <div class="card mt-5">
         <div class="card-header">Dungeon Infos</div>
         <div class="card-body">
             <div class="row">
-                <div class="col-3">
-                    <h6>Name: </h6>
+                <div class="col">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="float-start">
+                                <h6>Name: </h6>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="float-start">
+                                <span>@dungeon.DungeonName</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="float-start">
+                                <h6>Beschreibung: </h6>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="float-start">
+                                <span>@dungeon.DungeonDescription</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="col">
-                    <span>@dungeon.DungeonName</span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <h6>Beschreibung: </h6>
-                </div>
-                <div class="col">
-                    <span>@dungeon.DungeonDescription</span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <h6>Epoche:</h6>
-                </div>
-                <div class="col">
-                    <span>@dungeon.DungeonEpoch</span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <h6>Status:</h6>
-                </div>
-                <div class="col">
-                    @if (dungeon.Status == 0)
-                    {
-                        <span>Aktiv</span>
-                        <div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div>
-                    }
-                    else
-                    {
-                        <span>Inaktiv</span>
-                        <div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div>
-                    }
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="float-start">
+                                <h6>Epoche:</h6>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="float-start">
+                                <span>@dungeon.DungeonEpoch</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="float-start">
+                                <h6>Status:</h6>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="float-start">
+                                @if (dungeon.Status == 0)
+                                {
+                                    <span>Aktiv</span>
+                                    <div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div>
+                                }
+                                else
+                                {
+                                    <span>Inaktiv</span>
+                                    <div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div>
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="card mt-2">
+    <div class="card mt-5">
         <div class="card-header">Klassen</div>
         <div class="card-body">
             <table class="table">
@@ -119,7 +141,7 @@
             </table>
         </div>
     </div>
-    <div class="card mt-2">
+    <div class="card mt-5">
         <div class="card-header">Rassen</div>
         <div class="card-body">
             <table class="table">
@@ -153,7 +175,7 @@
             </table>
         </div>
     </div>
-    <div class="card mt-2">
+    <div class="card mt-5">
         <div class="card-header">Items</div>
         <div class="card-body">
             <div class="mt-2">
@@ -182,6 +204,7 @@
                     </tbody>
                 </table>
             </div>
+            <hr class="featurette-divider" />
             <div class="mt-2">
                 <h6>Aufnehmbare Items</h6>
                 <table class="table">
@@ -210,6 +233,7 @@
                     </tbody>
                 </table>
             </div>
+            <hr class="featurette-divider" />
             <div class="mt-2">
                 <h6>Konsumierbare Items</h6>
                 <table class="table">
@@ -240,6 +264,7 @@
                     </tbody>
                 </table>
             </div>
+            <hr class="featurette-divider" />
             <div class="mt-2">
                 <h6>Verwendbare Items</h6>
                 <table class="table">
@@ -270,6 +295,7 @@
                     </tbody>
                 </table>
             </div>
+            <hr class="featurette-divider" />
             <div class="mt-2">
                 <h6>Tragbare Items</h6>
                 <table class="table">
@@ -302,7 +328,7 @@
             </div>
         </div>
     </div>
-    <div class="card mt-2">
+    <div class="card mt-5">
         <div class="card-header">Npcs</div>
         <div class="card-body">
             <table class="table">
@@ -332,7 +358,7 @@
             </table>
         </div>
     </div>
-    <div class="card mt-2">
+    <div class="card mt-5">
         <div class="card-header">Befehle</div>
         <div class="card-body">
             <table class="table">
@@ -360,7 +386,7 @@
             </table>
         </div>
     </div>
-    <div class="card mt-2">
+    <div class="card mt-5">
         <div class="card-header">Räume</div>
         <div class="card-body">
             <table class="table">
