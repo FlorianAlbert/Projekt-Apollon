@@ -1,5 +1,5 @@
-﻿@page "/Avatar/RequestDungeon"
-@page "/Avatar/RequestDungeon/{DungeonId:guid}"
+﻿@page "/dungeon/avatar/request"
+@page "/dungeon/avatar/request/{DungeonId:guid}"
 
 @using Apollon.Mud.Shared.Dungeon
 @inject NavigationManager NavManager
@@ -24,7 +24,7 @@
                     <hr class="featurette-divider" />
                     <div class="row">
                         <div class="col">
-                            <button class="btn btn-danger" href="/Dungeons">Abbrechen</button>
+                            <button class="btn btn-danger" href="/dungeons">Abbrechen</button>
                         </div>
                         <div class="col">
                             <button class="btn btn-primary" @onclick="SendRequest">Anfragen</button>

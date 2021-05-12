@@ -1,19 +1,21 @@
 ﻿@using Apollon.Mud.Client.Data.Models.Game
 
-@page "/MasterView/Requests"
+@page "/dungeon/master/requests"
+@page "/dungeon/master/requests/{DungeonId:guid}"
 @layout MasterViewLayout
 
 <div class="row bg-white" style="padding:0;">
     <div class="col-4">
         <div class="card" style="display: flex; flex-direction: column; height: 87vh">
             <div class="list-group" style="overflow-y:auto; max-height:100%">
-                @for (int i = 0; i < 20; i++) {
+                @for (int i = 0; i < 20; i++)
+                {
 
-                <button type="button" class="list-group-item list-group-item-action">
-                    <h5>Avatarname</h5>
-                    <span> </span>
-                    <h6>Befehl</h6>
-                </button>
+                    <button type="button" class="list-group-item list-group-item-action">
+                        <h5>Avatarname</h5>
+                        <span> </span>
+                        <h6>Befehl</h6>
+                    </button>
                 }
             </div>
         </div>
@@ -45,6 +47,13 @@
 </div>
 
 @code {
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
     /// <summary>
     /// TODO Abhilfe
     /// </summary>

@@ -1,4 +1,6 @@
-﻿@page "/Game"
+﻿@page "/dungeon/game"
+@page "/dungeon/game/{DungeonId:guid}"
+
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
@@ -78,6 +80,12 @@
 
 
 @code {
+    /// <summary>
+    /// The unique dungeon identifier
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
     /// <summary>
     /// This Queue stores all commands entered by the player that haven't been send yet
     /// </summary>

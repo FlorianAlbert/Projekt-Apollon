@@ -1,11 +1,20 @@
-﻿
+﻿@using Apollon.Mud.Shared.Game.Chat
+@using Apollon.Mud.Shared.Dungeon.Avatar
+
+@inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
+@inject Apollon.Mud.Client.Services.Interfaces.IChatService ChatService
+
+
 <div class="card ms-2 me-2 bg-secondary" style="display: flex; flex-direction: column; height: 87vh">
     <div style="flex-shrink: 0;">
-        <select class="form-select" aria-label="MessageSelect" >
+        <select class="form-select" aria-label="MessageSelect" @bind="chosenRecipient">
             <option selected>Nachricht an:</option>
-            <option value="1">Alle Spieler</option>
-            <option value="2">Spieler 1</option>
-            <option value="3">Spieler 2</option>
+            <option value="all">Alle</option>
+            <option value="Room">Raum</option>
+            @foreach (AvatarDto avatarDto in dungeonAvatars)
+            {
+                <option value="@avatarDto.Name">@avatarDto.Name</option>
+            }
         </select>
     </div>
     <div class="panel panel-body bg-white mt-2" id="chat" style="overflow-y:auto; height: 100%">
@@ -38,5 +47,29 @@
 </div>
 
 @code {
+    /// <summary>
+    /// The unique dungeon identifier
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
 
+    List<AvatarDto> dungeonAvatars = new List<AvatarDto>();
+
+    List<ChatMessageDto> userMessages = new List<ChatMessageDto>();
+ 
+    string chosenRecipient = "NoRecipient";
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (DungeonId != Guid.Empty)
+        {
+            var avatars = await AvatarService.GetAllAvatars(DungeonId);
+            if (avatars is not null)
+            {
+                dungeonAvatars = avatars.ToList(); 
+                StateHasChanged();
+            }
+        }
+
+    }
 }

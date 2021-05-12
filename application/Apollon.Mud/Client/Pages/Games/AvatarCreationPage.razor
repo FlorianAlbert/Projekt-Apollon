@@ -1,5 +1,5 @@
-﻿@page "/Avatar/Creation"
-@page "/Avatar/Creation/{DungeonId:guid}"
+﻿@page "/dungeon/avatar/creation"
+@page "/dungeon/avatar/creation/{DungeonId:guid}"
 
 @using Apollon.Mud.Shared.Dungeon.Avatar
 @using Apollon.Mud.Client.Data.Models.Game
@@ -45,10 +45,11 @@
 
                     <label class="mt-5" for="Input_Name">Wähle ein Geschlecht:</label>
                     <select class="form-select" aria-label="Default select example" @bind="avatarModel.Gender">
-                        <option value="0" selected hidden></option>
-                        <option value="1">Männlich</option>
-                        <option value="2">Weiblich</option>
-                        <option value="3">Divers</option>
+                        <option value="NoGender" selected hidden></option>
+                        <option value="0">Männlich</option>
+                        <option value="1">Weiblich</option>
+                        <option value="2">Divers</option>
+                        <option value="3">Neutral</option>
                     </select>
 
                     <label class="mt-5" for="Input_Name">Wähle eine Klasse:</label>
@@ -173,7 +174,7 @@
         {
             //TODO User Benachrichtigen
         }
-        NavManager.NavigateTo("/Avatar/Selection/" + DungeonId);
+        NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
     }
 
     /// <summary>
@@ -181,6 +182,6 @@
     /// </summary>
     public void AvatarListButtonClicked()
     {
-        NavManager.NavigateTo("/Avatar/Selection/" + DungeonId);
+        NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
     }
 }
