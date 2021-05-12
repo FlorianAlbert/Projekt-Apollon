@@ -85,9 +85,9 @@
 
 @code {
 
-        /// <summary>
-        /// This list contains all dungeons belonging to the user
-        /// </summary>
+    /// <summary>
+    /// This list contains all dungeons belonging to the user
+    /// </summary>
     private List<DungeonDto> userDungeons = new List<DungeonDto>();
 
     /// <summary>
@@ -111,8 +111,7 @@
     /// <param name="dungeon"> The dungeon the user wants to view </param>
     private void ViewDungeonButtonClicked(DungeonDto dungeon)
     {
-        //NavManager.NavigateTo("/CreateDungeon/" + dungeon.Id);
-        //TODO Masteransicht des Dungeon öffnen?
+        NavManager.NavigateTo("/dungeon/overview/" + dungeon.Id);
     }
 
     /// <summary>
