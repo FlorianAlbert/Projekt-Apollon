@@ -12,5 +12,7 @@ namespace Apollon.Mud.Server.Domain.Interfaces.Game
             int newHpValue, Guid dungeonId);
 
         Task KickAvatar(Guid avatarRoomId, Guid avatarId, Guid dungeonId);
+
+        Task KickAllAvatars(Guid dungeonId);
     }
 }

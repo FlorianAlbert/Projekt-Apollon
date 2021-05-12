@@ -155,6 +155,7 @@ namespace Apollon.Mud.Server.Inbound
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/hubs/chat");
+                endpoints.MapHub<GameHub>("/hubs/game");
             });
 
             using var dbContext = serviceProvider.GetService<DungeonDbContext>();

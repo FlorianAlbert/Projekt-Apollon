@@ -1,5 +1,6 @@
 ﻿using Apollon.Mud.Server.Model.Implementations;
 using System;
+using System.Threading.Tasks;
 
 namespace Apollon.Mud.Server.Domain.Interfaces.Shared
 {
@@ -58,5 +59,11 @@ namespace Apollon.Mud.Server.Domain.Interfaces.Shared
         /// <param name="userId">userId of the connection that gets removed</param>
         /// <param name="sessionId">sessionId of the connection that gets removed</param>
         void RemoveConnection(Guid userId, Guid sessionId);
+
+        /// <summary>
+        /// Removes an existing connection based on its avatarId
+        /// </summary>
+        /// <param name="avatarId">The avatarId of the connection to remove</param>
+        void RemoveConnectionByAvatarId(Guid avatarId);
     }
 }
