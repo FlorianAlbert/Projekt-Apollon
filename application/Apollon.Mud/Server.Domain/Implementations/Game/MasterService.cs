@@ -12,9 +12,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Apollon.Mud.Server.Domain.Implementations.Game
 {
-    /// <summary>
-    /// ToDo Muss noch implementiert werden
-    /// </summary>
+    /// <inheritdoc cref="IMasterService"/>
     public class MasterService: IMasterService
     {
         private IGameDbService GameDbService { get; }
@@ -23,6 +21,12 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
         private IConnectionService ConnectionService { get; }
 
+        /// <summary>
+        /// Creates a new Instance of MasterService
+        /// </summary>
+        /// <param name="gameDbService">The GameDbService to manipulate the database</param>
+        /// <param name="connectionService"></param>
+        /// <param name="hubContext"></param>
         public MasterService(IGameDbService gameDbService, IConnectionService connectionService, IHubContext<GameHub, IClientGameHubContract> hubContext)
         {
             GameDbService = gameDbService;
@@ -30,7 +34,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             HubContext = hubContext;
         }
 
-        public async Task ExecuteDungeonMasterRequestResponse(string message, Guid avatarRoomId, Guid avatarId, int newHpValue, Guid dungeonId)
+        /// <inheritdoc cref="IMasterService.ExecuteDungeonMasterRequestResponse"/>
+        public async Task ExecuteDungeonMasterRequestResponse(string message, Guid avatarId, int newHpValue, Guid dungeonId)
         {
             var connection = ConnectionService.GetConnectionByAvatarId(avatarId);
 
@@ -38,9 +43,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
 
-            var room = dungeon?.ConfiguredRooms.FirstOrDefault(x => x.Id == avatarRoomId);
-
-            var avatar = room?.Avatars.FirstOrDefault(x => x.Id == avatarId);
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
 
             if (avatar is null) return;
 
@@ -51,7 +54,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             await HubContext.Clients.Client(connection.GameConnectionId).ReceiveGameMessage(message);
         }
 
-        public async Task KickAvatar(Guid avatarRoomId, Guid avatarId, Guid dungeonId)
+        /// <inheritdoc cref="IMasterService.KickAvatar"/>
+        public async Task KickAvatar(Guid avatarId, Guid dungeonId)
         {
             var connection = ConnectionService.GetConnectionByAvatarId(avatarId);
 
@@ -59,9 +63,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
 
-            var room = dungeon?.ConfiguredRooms.FirstOrDefault(x => x.Id == avatarRoomId);
-
-            var avatar = room?.Avatars.FirstOrDefault(x => x.Id == avatarId);
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
 
             if (avatar is null) return;
 
@@ -74,6 +76,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             await HubContext.Clients.Client(connection.GameConnectionId).NotifyKicked();
         }
 
+        /// <inheritdoc cref="IMasterService.KickAllAvatars"/>
         public async Task KickAllAvatars(Guid dungeonId)
         {
             var dungeon = await GameDbService.Get<Dungeon>(dungeonId);

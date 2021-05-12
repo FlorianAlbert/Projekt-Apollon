@@ -4,15 +4,34 @@ using System.Threading.Tasks;
 namespace Apollon.Mud.Server.Domain.Interfaces.Game
 {
     /// <summary>
-    /// ToDo Muss noch Implementiert werden
+    /// Service to handle requests by DungeonMasters
     /// </summary>
     public interface IMasterService
     {
-        Task ExecuteDungeonMasterRequestResponse(string message, Guid avatarRoomId, Guid avatarId,
+        /// <summary>
+        /// Handles answered Requestable by DungeonMaster
+        /// </summary>
+        /// <param name="message">Message to forward to the player</param>
+        /// <param name="avatarId">Id of the avatar that send the requestable</param>
+        /// <param name="newHpValue">New Health Value of the avatar</param>
+        /// <param name="dungeonId">DungeonId of the avatar that send the requestable</param>
+        /// <returns></returns>
+        Task ExecuteDungeonMasterRequestResponse(string message, Guid avatarId,
             int newHpValue, Guid dungeonId);
 
-        Task KickAvatar(Guid avatarRoomId, Guid avatarId, Guid dungeonId);
+        /// <summary>
+        /// Kicks a special avatar from the dungeon
+        /// </summary>
+        /// <param name="avatarId">Id of the avatar that gets kicked</param>
+        /// <param name="dungeonId">DungeonId of the avatar that gets kicked</param>
+        /// <returns></returns>
+        Task KickAvatar(Guid avatarId, Guid dungeonId);
 
+        /// <summary>
+        /// Kicks all avatars of a dungeon
+        /// </summary>
+        /// <param name="dungeonId">DungeonId of the dungeon all avatars gets kicked of</param>
+        /// <returns></returns>
         Task KickAllAvatars(Guid dungeonId);
     }
 }
