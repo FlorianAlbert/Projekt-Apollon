@@ -29,7 +29,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <param name="avatarDto">The Avatar to persist</param>
         /// <param name="dungeonId">The ID of the Dungeon associated with the Avatar</param>
         /// <returns>The Guid of the created Avatar if successfull, otherwise an empty Guid</returns>
-        Task<Guid> CreateNewAvatar(AvatarDto avatarDto, Guid dungeonId);
+        Task<(Guid, bool)> CreateNewAvatar(AvatarDto avatarDto, Guid dungeonId);
 
         /// <summary>
         /// Calls a backend Controller to delete the Avatar of the Dungeon from the Database

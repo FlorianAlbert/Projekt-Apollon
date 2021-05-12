@@ -41,7 +41,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// </summary>
         /// <param name="dungeonDto">The Dungeon to create</param>
         /// <returns>The Guid if the DB Transaction was successfull, otherwise an empty Guid</returns>
-        public async Task<Guid> CreateNewDungeon(DungeonDto dungeonDto)
+        public async Task<(Guid, bool)> CreateNewDungeon(DungeonDto dungeonDto)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
@@ -50,9 +50,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
             {
                 var responseGuid = response.Content.ReadFromJsonAsync<Guid>();
                 responseGuid.Wait();
-                return responseGuid.Result;
+                return (responseGuid.Result, false);
             }
-            return Guid.Empty;
+            if (response.StatusCode == HttpStatusCode.Conflict) return (Guid.Empty, true);
+            return (Guid.Empty, false);
         }
 
         /// <summary>

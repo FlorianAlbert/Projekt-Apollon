@@ -123,4 +123,11 @@
     {
         NavManager.NavigateTo("/MasterView/Requests/" + DungeonId);
     }
+
+    private async void DeleteAvatar(AvatarDto avatar)
+    {
+        var success = await AvatarService.DeleteAvatar(DungeonId, avatar.Id);
+        if (success) userAvatars.Remove(avatar);
+        StateHasChanged();
+    }
 }
