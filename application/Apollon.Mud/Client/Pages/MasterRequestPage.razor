@@ -8,13 +8,14 @@
     <div class="col-4">
         <div class="card" style="display: flex; flex-direction: column; height: 87vh">
             <div class="list-group" style="overflow-y:auto; max-height:100%">
-                @for (int i = 0; i < 20; i++) {
+                @for (int i = 0; i < 20; i++)
+                {
 
-                <button type="button" class="list-group-item list-group-item-action">
-                    <h5>Avatarname</h5>
-                    <span> </span>
-                    <h6>Befehl</h6>
-                </button>
+                    <button type="button" class="list-group-item list-group-item-action">
+                        <h5>Avatarname</h5>
+                        <span> </span>
+                        <h6>Befehl</h6>
+                    </button>
                 }
             </div>
         </div>
@@ -24,7 +25,7 @@
             <div class="container mt-3" style="height:100% ">
                 <h3>Avatarname möchte: </h3>
                 <h5>Befehl</h5>
-                <EditForm EditContext="@masterRequestContext" novalidate>
+                <EditForm EditContext="@masterRequestContext" @onsubmit="HandleActionAnswerSubmit" novalidate>
                     <DataAnnotationsValidator />
                     <InputTextArea class="form-control" placeholder="Raumbeschreibung" @bind-Value="roomDescription" />
                     <hr class="featurette-divider" />
@@ -95,5 +96,15 @@
     protected override void OnInitialized()
     {
         masterRequestContext = new EditContext(masterRequestModel);
+    }
+
+    private async Task HandleActionAnswerSubmit()
+    {
+        var validAnswer = masterRequestContext.Validate();
+        if (validAnswer)
+        {
+            //TODO Wartend auf Gamecontroller
+        }
+
     }
 }

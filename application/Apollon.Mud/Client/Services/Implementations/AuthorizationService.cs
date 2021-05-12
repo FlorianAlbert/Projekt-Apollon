@@ -84,7 +84,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="userId"></param>
         /// <param name="secret"></param>
         /// <returns>wether the registration was successfull</returns>
-        public async Task<bool> Register(string userId, string secret)
+        public async Task<HttpStatusCode> Register(string userId, string secret)
         {
             RegistrationRequestDto userCredentials = new RegistrationRequestDto
             {
@@ -95,7 +95,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
             var response = await HttpClient.PostAsJsonAsync("api/user/registration/request", userCredentials, cancellationToken);
-            return response.StatusCode == HttpStatusCode.OK;
+            return response.StatusCode;
         }
 
         /// <summary>

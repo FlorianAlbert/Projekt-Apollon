@@ -1,0 +1,126 @@
+﻿@page "/MasterView/EnterRequests/{DungeonId:guid}"
+@layout MasterViewLayout
+
+@using Apollon.Mud.Shared.Dungeon
+@using Apollon.Mud.Shared.Dungeon.User
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+
+<div class="row bg-white">
+    <div class="col-4">
+        <div style="display: flex; flex-direction: column; height: 87vh">
+            <div class="list-group" style="overflow-y:auto; height:100%">
+                <button type="button" class="list-group-item list-group-item-action" style="height:100px">
+                    <h5>Anfragende Spieler:</h5>
+                </button>
+                @if (OpenRequestList is not null && OpenRequestList.Count > 0)
+                {
+                    @foreach (DungeonUserDto request in OpenRequestList)
+                    {
+                        <button type="button" class="list-group-item list-group-item-action" @onclick="( () => ChangeRequest(request))">
+                            <h5>Spieler: @request.Email.Trim('@')[0]</h5>
+                            <span> </span>
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-8">
+        <div style="display: flex; flex-direction: column; height: 87vh">
+
+            @if (OpenRequestList is null || OpenRequestList.Count == 0)
+            {
+                <h3 class="text-muted">Keine offenen Anfragen</h3>
+            }
+            else
+            {
+                <div class="row bg-secondary">
+                    <div class="col">
+                        <h5>Name: @OpenRequest.Email.Trim('@')[0]</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-primary btn-sm float-end me-3" type="button" @onclick="AcceptUser">Annehmen</button>
+                        <button class="btn btn-danger btn-sm float-end" type="button" @onclick="RemoveUser">Ablehnen</button>
+                    </div>
+                </div>
+
+                <ul class="list-group" style="overflow-y:auto; height:100%">
+                </ul>
+            }
+
+        </div>
+    </div>
+</div>
+
+@code {
+
+    /// <summary>
+    /// The List of open Join-Requests
+    /// </summary>
+    public List<DungeonUserDto> OpenRequestList { get; set; }
+
+    /// <summary>
+    /// The ID of the Dungeon this Master is handling
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// The Dungeon this Master is handling
+    /// </summary>
+    public DungeonDto Dungeon { get; set; }
+
+    /// <summary>
+    /// The request that is currently opened
+    /// </summary>
+    public DungeonUserDto OpenRequest { get; set; }
+
+    /// <summary>
+    /// Loads the corresponding dungeon and saves it locally, fills all lists
+    /// </summary>
+    /// <returns></returns>
+    protected async override Task OnInitializedAsync()
+    {
+        var dungeon = await DungeonService.GetDungeon(DungeonId);
+        if (dungeon is not null)
+        {
+            Dungeon = dungeon;
+            OpenRequestList = dungeon.OpenRequests.ToList();
+        }
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Called when the Master opens another request card
+    /// </summary>
+    /// <param name="user"></param>
+    private void ChangeRequest(DungeonUserDto request)
+    {
+        OpenRequest = request;
+    }
+
+    /// <summary>
+    /// Removes the chosen request from the open Requests and adds the user to the whitelist
+    /// </summary>
+    private void AcceptUser()
+    {
+        OpenRequestList.Remove(OpenRequest);
+        Dungeon.OpenRequests.Remove(OpenRequest);
+        Dungeon.WhiteList.Add(OpenRequest);
+        DungeonService.UpdateDungeon(Dungeon);
+    }
+
+    /// <summary>
+    /// Removes the chosen request from the open requests and adds the user to the blacklist
+    /// </summary>
+    private void RemoveUser()
+    {
+        OpenRequestList.Remove(OpenRequest);
+        Dungeon.OpenRequests.Remove(OpenRequest);
+        //Dungeon.BlackList.Add(OpenRequest); //TODO machen wir das??
+        DungeonService.UpdateDungeon(Dungeon);
+    }
+
+}

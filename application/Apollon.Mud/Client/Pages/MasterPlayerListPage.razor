@@ -15,23 +15,16 @@
                 <button type="button" class="list-group-item list-group-item-action" style="height:100px">
                     <h5>Liste aller Spieler</h5>
                 </button>
-                @if (AllPlayersList is null || AllPlayersList.Count == 0)
+                @foreach (DungeonUserDto user in AllPlayersList)
                 {
-                    <h5 class="text-muted">Dem Dungeon sind noch keine Spieler beigetreten</h5>
-                }
-                else
-                {
-                    @foreach (DungeonUserDto user in AllPlayersList)
-                    {
-                        <button type="button" class="list-group-item list-group-item-action" @onclick="( () => ChangeUser(user))">
-                            <h5>Spieler: @user.Email.Trim('@')[0]</h5>
-                            <span> </span>
-                            @foreach (AvatarDto avatar in UserAvatarDictionary[user])
-                            {
-                                <h6>@avatar.Name</h6>
-                            }
-                        </button>
-                    }
+                    <button type="button" class="list-group-item list-group-item-action" @onclick="( () => ChangeUser(user))">
+                        <h5>Spieler: @user.Email.Trim('@')[0]</h5>
+                        <span> </span>
+                        @foreach (AvatarDto avatar in UserAvatarDictionary[user])
+                        {
+                            <h6>@avatar.Name</h6>
+                        }
+                    </button>
                 }
             </div>
         </div>
@@ -39,48 +32,55 @@
     <div class="col-8">
         <div style="display: flex; flex-direction: column; height: 87vh">
 
-            <div class="row bg-secondary">
-                <div class="col">
-                    <h5>Name: @OpenUser.Email.Trim('@')[0]</h5>
+            @if (AllPlayersList is null || AllPlayersList.Count == 0)
+            {
+                <h5 class="text-muted">Dem Dungeon sind noch keine Spieler beigetreten</h5>
+            }
+            else if(OpenUser is not null)
+            {
+                <div class="row bg-secondary">
+                    <div class="col">
+                        <h5>Name: @OpenUser.Email.Trim('@')[0]</h5>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-primary btn-sm float-end me-3" type="button" @onclick="KickUser">Kicken</button>
+                        <button class="btn btn-danger btn-sm float-end" type="button" @onclick="BanUser">Verbannen</button>
+                    </div>
                 </div>
-                <div class="col">
-                    <button class="btn btn-primary btn-sm float-end me-3" type="button" @onclick="KickUser">Kicken</button>
-                    <button class="btn btn-danger btn-sm float-end" type="button" @onclick="BanUser">Verbannen</button>
-                </div>
-            </div>
-            <ul class="list-group" style="overflow-y:auto; height:100%">
-                @foreach (AvatarDto avatar in UserAvatarDictionary[OpenUser])
-                {
-                    <li class="list-group-item">
-                        <div class="row">
-                            <div class="col-2">
-                                <span class="ms-2">@avatar.Name</span>
-                            </div>
-                            <div class="col-1" />
-                            <div class="col-2">
-                                <span class="ms-2">@avatar.Class.Name</span>
-                            </div>
-                            <div class="col-1" />
-                            <div class="col-2">
-                                <span class="ms-2">@avatar.Race.Name</span>
-                            </div>
-                            <div class="col-1" />
-                            @if (avatar.Status == 0)
-                            {
+                <ul class="list-group" style="overflow-y:auto; height:100%">
+                    @foreach (AvatarDto avatar in UserAvatarDictionary[OpenUser])
+                    {
+                        <li class="list-group-item">
+                            <div class="row">
                                 <div class="col-2">
-                                    <div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div>
+                                    <span class="ms-2">@avatar.Name</span>
                                 </div>
-                            }
-                            else
-                            {
+                                <div class="col-1" />
                                 <div class="col-2">
-                                    <div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div>
+                                    <span class="ms-2">@avatar.Class.Name</span>
                                 </div>
-                            }
-                        </div>
-                    </li>
-                }
-            </ul>
+                                <div class="col-1" />
+                                <div class="col-2">
+                                    <span class="ms-2">@avatar.Race.Name</span>
+                                </div>
+                                <div class="col-1" />
+                                @if (avatar.Status == 0)
+                                {
+                                    <div class="col-2">
+                                        <div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-2">
+                                        <div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div>
+                                    </div>
+                                }
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
 
         </div>
     </div>
@@ -174,5 +174,4 @@
         UserAvatarDictionary.Remove(OpenUser);
         DungeonService.UpdateDungeon(Dungeon);
     }
-
 }

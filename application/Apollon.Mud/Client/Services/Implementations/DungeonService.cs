@@ -143,7 +143,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
 
             var response = await HttpClient.PostAsJsonAsync("api/dungeons/" + dungeonId + "/request", cancellationToken);
 
-            return response.StatusCode == HttpStatusCode.OK
+            return response.StatusCode == HttpStatusCode.OK;
         }
 
         /// <summary>

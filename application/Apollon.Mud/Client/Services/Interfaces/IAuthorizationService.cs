@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <param name="userId">Email</param>
         /// <param name="secret">Password</param>
         /// <returns>True if successfull, otherwise false</returns>
-        Task<bool> Register(string userId, string secret);
+        Task<HttpStatusCode> Register(string userId, string secret);
 
         /// <summary>
         /// Confirms an users Email
