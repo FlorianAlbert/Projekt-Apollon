@@ -14,10 +14,40 @@
     @foreach (DungeonDto dungeon in allDungeons)
     {
         <div class="card mt-2 shadow">
-            <h5 class="card-header">@dungeon.DungeonName</h5>
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-3">
+                        <h4>@dungeon.DungeonName</h4>
+                    </div>
+                    <div class="col">
+                        <div class="row">
+                            <div class="col-2 float-end">
+                                <h5>Status: </h5>
+                            </div>
+                            <div class="col-1 float-start">
+                                @if (dungeon.Status == 0)
+                                {
+                                    <div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div>
+                                }
+                                else
+                                {
+                                    <div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div>
+                                }
+                            </div>
+                            <div class="col"></div>
+                        </div>
+                    </div>
+                    <div class="col-1">
+                        <button class="btn btn-sm btn-danger float-end" @onclick="() => DeleteDungeonButtonClicked(dungeon)">X</button>
+                    </div>
+                </div>
+            </div>
+            
             <div class="card-body">
                 <div class="row">
-                    <p class="card-text">@dungeon.DungeonDescription</p>
+                    <div class="col">
+                        <p class="card-text">@dungeon.DungeonDescription</p>
+                    </div>  
                 </div>
             </div>
             <div class="card-footer">Erstellt von @dungeon.DungeonOwner.Email.Split("@")[0]</div>
@@ -43,5 +73,22 @@
 
         StateHasChanged();
 
+    }
+
+    /// <summary>
+    /// When the "Delete" Button of a Dungeon-Card is clicked, this Method deletes the corresponding dungeon
+    /// </summary>
+    /// <param name="dungeonToDelete"> The dungeon the user wants to delete</param>
+    private async void DeleteDungeonButtonClicked(DungeonDto dungeonToDelete)
+    {
+        if (!(dungeonToDelete is null))
+        {
+            if (!(dungeonToDelete.Id == Guid.Empty))
+            {
+                await DungeonService.DeleteDungeon(dungeonToDelete.Id);
+                allDungeons.Remove(dungeonToDelete);
+                StateHasChanged();
+            }
+        }
     }
 }

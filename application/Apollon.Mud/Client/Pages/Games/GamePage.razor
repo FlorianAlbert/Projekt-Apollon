@@ -12,9 +12,9 @@
 @inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
 @inject IJSRuntime JSRuntime
 
-@implements IClientChatHubContract
+@*@implements IClientChatHubContract
 @implements IClientGameHubContract
-@implements IAsyncDisposable
+@implements IAsyncDisposable*@
 
 @*<AuthorizeView>
     <Authorized>*@
@@ -182,6 +182,7 @@
         await GameHubConnection.StartAsync();
 
         var enterRequest = GameService.EnterDungeon(false, DungeonId, AvatarId, ChatHubConnection.ConnectionId, GameHubConnection.ConnectionId);
+        await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
         //GameHubConnection aufbauen
         //HubConnection.StartAsync()
         //Connections dann zusammenbringen
@@ -232,9 +233,9 @@
     }
 
     public async Task ReceiveGameMessage(string message)
-        {
-            v
-        }
+    {
+
+    }
 
     /// <summary>
     /// TODO
