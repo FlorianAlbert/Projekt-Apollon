@@ -1,5 +1,5 @@
 ﻿@page "/Identity/Account/ConfirmAccount/{id:guid}/{token}"
-@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
+@inject Apollon.Mud.Client.Services.Interfaces.IUserService UserService
 @inject NavigationManager navManager
 @using Apollon.Mud.Client.Data.Models.Account
 
@@ -101,7 +101,7 @@
     protected override async Task OnInitializedAsync()
     {
         resendEmailContext = new EditContext(resendEmailModel);
-        successfullConfirmation = await authorizationService.ConfirmRegistration(Id, Token);
+        successfullConfirmation = await UserService.ConfirmUserRegistration(Id, Token);
         if(successfullConfirmation.Value is true)
         {
             navManager.NavigateTo("/Identity/Account/Confirmation");

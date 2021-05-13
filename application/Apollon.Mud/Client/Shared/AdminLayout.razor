@@ -1,0 +1,28 @@
+﻿@inherits LayoutComponentBase
+
+<div class="AdminLayout" id="AdminLayout" style="overflow-x:hidden; background: linear-gradient(180deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%)">
+    <div class="mb-0" style="min-height: 100vh">
+        <NavBar />
+        <div class="row">
+            <div class="col-3">
+                <div class="sidebar">
+                    <AdminMenu />
+                </div>
+            </div>
+            <div class="col bg-white" style="min-height: 93vh">
+                <div class="main">
+                    <div id="content">
+                        @Body
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+    <div id="footer">
+        <Footer />
+    </div>
+
+</div>
