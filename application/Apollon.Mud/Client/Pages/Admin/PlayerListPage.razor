@@ -15,7 +15,7 @@
     @foreach (DungeonUserDto user in allUsers)
     {
         <button type="button" class="list-group-item list-group-item-action">
-            <h5>Spieler: @user.Email.Trim('@')[0]</h5>
+            <h5>Spieler: @user.Email.Split("@")[0]</h5>
             <span> </span>
         </button>
     }
