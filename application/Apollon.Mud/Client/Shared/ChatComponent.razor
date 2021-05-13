@@ -1,15 +1,12 @@
 ﻿@using Apollon.Mud.Shared.Game.Chat
 @using Apollon.Mud.Shared.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Avatar
-@using Apollon.Mud.Shared.HubContract
 @using Apollon.Mud.Client.Data
 
 @inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 @inject Apollon.Mud.Client.Services.Interfaces.IChatService ChatService
 @inject Apollon.Mud.Client.Data.Account.UserContext UserContext
-
-@implements IClientChatHubContract
 
 
 <div class="card ms-2 me-2 bg-secondary" style="display: flex; flex-direction: column; height: 87vh">
@@ -60,7 +57,7 @@
                                 <strong class="primary-font">An</strong>
                                 <span>@message.RecipientName</span>
                                 <small class="pull-right text-muted">
-                                    <span class="glyphicon glyphicon-time"></span>Von: Dir 
+                                    <span class="glyphicon glyphicon-time"></span>Von: Dir
                                 </small>
                             </div>
                             <p>
@@ -90,6 +87,8 @@
 </div>
 
 @code {
+
+    #region General Attributes
     /// <summary>
     /// The unique dungeon identifier
     /// </summary>
@@ -125,6 +124,8 @@
     /// TODO
     /// </summary>
     public DungeonDto Dungeon { get; set; }
+    #endregion
+
 
     /// <summary>
     /// TODO
@@ -132,12 +133,8 @@
     /// <returns></returns>
     protected async override Task OnInitializedAsync()
     {
-
         if (Messages is null) Messages = new Queue<ChatMessage>();
-        var msg1 = new ChatMessage("Leon", "Du miefst", true);
-        var msg2 = new ChatMessage("Leon", "Ruhe du bitch", false);
-        Messages.Enqueue(msg1);
-        Messages.Enqueue(msg2);
+
         if (DungeonId != Guid.Empty)
         {
             var avatars = await AvatarService.GetAllAvatars(DungeonId);
@@ -151,7 +148,6 @@
             }
         }
         StateHasChanged();
-
     }
 
     /// <summary>
