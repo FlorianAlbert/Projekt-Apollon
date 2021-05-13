@@ -54,6 +54,7 @@ namespace Apollon.Mud.Client
             services.AddTransient<IUsableService, UsableService>();
             services.AddTransient<IWearableService, WearableService>();
             services.AddTransient<IChatService, ChatService>();
+            services.AddTransient<IGameService, GameService>();
             services.AddScoped<UserContext>();
             services.AddScoped<CustomAuthenticationStateProvider>();
             services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomAuthenticationStateProvider>());

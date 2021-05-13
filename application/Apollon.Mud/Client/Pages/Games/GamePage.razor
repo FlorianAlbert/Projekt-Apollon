@@ -1,11 +1,17 @@
 ﻿@page "/dungeon/game"
-@page "/dungeon/game/{DungeonId:guid}"
+@page "/dungeon/game/{DungeonId:guid}/{AvatarId:guid}"
+
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.Extensions.Configuration
+@using Apollon.Mud.Shared.HubContract
 
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
 @inject IJSRuntime JSRuntime
-@using Apollon.Mud.Client.Shared.Components
-@*@implements IAsyncDisposable*@
+
+@implements IClientChatHubContract
+@implements IAsyncDisposable
 
 @*<AuthorizeView>
     <Authorized>*@
@@ -50,7 +56,6 @@
                         <span>/_______  /____/|___|  /\___  / \___  &gt;____/|___|  /____  &gt;</span>
                         <span>        \/           \//_____/      \/           \/     \/ </span>
                         <span> </span>
-                        <span>> Bitte gib deinen Namen ein: </span><br />
                         @foreach (var entry in entries)
                         {
                             <span> </span>
@@ -59,12 +64,12 @@
                         }
                     </div>
                     <div class="prompt d-flex">
-                        <input @bind="messageInput" @onkeyup="@Check4Enter" id="prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" autofocus />
-                        <button type="submit" id="send" class="btn btn-primary" @onclick="Send" disabled="@(!isConnected)">Send</button>
+                        <input @bind="messageInput" @onkeyup="@CheckForEnter" id="prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" autofocus />
+                        <button type="submit" id="send" class="btn btn-primary" @onclick="ReadAndSendInput" disabled="@(!isConnected)">Send</button>
                     </div>
                 </div>
                 <div class="col-4 bg-secondary" style="padding: 0;">
-                    <ChatComponent />
+                    <ChatComponent @ref="ChatChildComponent" />
                 </div>
             </div>
         </div>
@@ -80,11 +85,19 @@
 
 
 @code {
+
+    #region General Attributes
     /// <summary>
     /// The unique dungeon identifier
     /// </summary>
     [Parameter]
     public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// The unique avatar identifier
+    /// </summary>
+    [Parameter]
+    public Guid AvatarId { get; set; }
 
     /// <summary>
     /// This Queue stores all commands entered by the player that haven't been send yet
@@ -100,6 +113,39 @@
     /// The Bool to (de)active the send button depending on a working connection to the server
     /// </summary>
     bool isConnected = true;
+    #endregion
+
+    #region Hubs
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public IConfiguration Configuration { get; }
+
+    #region Chat Hub
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public ChatComponent ChatChildComponent { get; set; }
+
+    /// <summary>
+    /// The Connection to the ChatHub
+    /// </summary>
+    public HubConnection ChatHubConnection { get; set; }
+
+    #endregion
+
+    #region Game Hub
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public HubConnection GameHubConnection { get; set; }
+
+    #endregion
+
+    #endregion
 
     /// <summary>
     /// On Initialization a hubConnection is set up and is configured to expect messages
@@ -107,54 +153,51 @@
     /// <returns> Nothing </returns>
     protected override async Task OnInitializedAsync()
     {
-        //hubConnection = new HubConnectionBuilder()
-        //    .WithUrl(NavigationManager.ToAbsoluteUri("/hubs/ConsoleHub"))
-        //    .Build();
+        ChatHubConnection = new HubConnectionBuilder()
+            .WithUrl(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + "/hubs/chat")
+            .Build();
 
-        //hubConnection.On<string>("ReceiveMessage", message =>
-        //{
-        //    var encodedMsg = $"> {message}\n";
-        //    entries.Enqueue(encodedMsg);
-        //    while (entries.Count > 20)
-        //    {
-        //        entries.Dequeue();
-        //    }
-        //    StateHasChanged();
-        //    JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
-        //});
+        ChatHubConnection.On<string, string>("ReceiveMessage", ReceiveChatMessage);
 
-        //await hubConnection.StartAsync();
-        //hubConnection.SendAsync("EnterMockDungeonRequest");
+        GameHubConnection = new HubConnectionBuilder()
+            .WithUrl(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + "hubs/game")
+            .Build();
+
+        await ChatHubConnection.StartAsync();
+        await GameHubConnection.StartAsync();
+
+        var enterRequest = GameService.EnterDungeon(false, DungeonId, AvatarId, ChatHubConnection.ConnectionId, GameHubConnection.ConnectionId);
+        //GameHubConnection aufbauen
+        //HubConnection.StartAsync()
+        //Connections dann zusammenbringen
+        //Dann an GameController Join request senden, beide IDs, Avatar und DungeonId mitschicken
     }
 
     /// <summary>
     /// This Method enables the user to send commands by pressing enter
     /// </summary>
     /// <param name="e"></param>
-    public void Check4Enter(KeyboardEventArgs e)
+    public void CheckForEnter(KeyboardEventArgs args)
     {
-        if (e.Key == "Enter")
+        if (args.Key == "Enter")
         {
-            Send();
+            ReadAndSendInput();
         }
     }
 
     /// <summary>
-    /// The Method to send the users commands
+    /// TODO
     /// </summary>
-    /// <returns></returns>
-    async Task Send()
+    public void ReadAndSendInput()
     {
-        //entries.Enqueue(messageInput + "\n");
-
-        //while (entries.Count > 20)
-        //{
-        //    entries.Dequeue();
-        //}
-
-        //StateHasChanged();
-        //hubConnection.SendAsync("SendMessage", messageInput);
-        //await JSRuntime.InvokeVoidAsync("clearPrompt", "prompt");
-        //await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
+        throw new NotImplementedException();
     }
+
+    public async Task ReceiveChatMessage(string sender, string message)
+    {
+        var encodedSender = $"{sender}";
+        var encodedMessage = $"{message}";
+        await ChatChildComponent.ReceiveChatMessage(encodedSender, encodedMessage);
+    }
+
 }
