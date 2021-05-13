@@ -58,7 +58,7 @@
                                     <h6>Rasse: @avatar.Race.Name</h6>
                                 </div>
                                 <div class="col-3 d-flex flex-column">
-                                    <button class="btn btn-success btn-sm mt-auto" @onclick="JoinDungeonButtonClicked">Beitreten</button>
+                                    <button class="btn btn-success btn-sm mt-auto" @onclick="() => JoinDungeonButtonClicked(avatar)">Beitreten</button>
                                 </div>
                             </div>
                         </li>
@@ -124,9 +124,13 @@
         NavManager.NavigateTo("/dungeon/master/requests/" + DungeonId);
     }
 
-    public void JoinDungeonButtonClicked()
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="avatar"></param>
+    public void JoinDungeonButtonClicked(AvatarDto avatar)
     {
-        NavManager.NavigateTo("/dungeon/game/" + DungeonId);
+        NavManager.NavigateTo("/dungeon/game/" + DungeonId + "/" + avatar.Id);
     }
 
     /// <summary>
@@ -146,6 +150,10 @@
         }
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="avatar"></param>
     private async void DeleteAvatar(AvatarDto avatar)
     {
         var success = await AvatarService.DeleteAvatar(DungeonId, avatar.Id);

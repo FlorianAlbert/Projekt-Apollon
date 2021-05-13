@@ -4,6 +4,8 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using Microsoft.Extensions.Configuration
 @using Apollon.Mud.Shared.HubContract
+@using Apollon.Mud.Shared.Dungeon.Avatar
+@using System.Net
 
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -11,6 +13,7 @@
 @inject IJSRuntime JSRuntime
 
 @implements IClientChatHubContract
+@implements IClientGameHubContract
 @implements IAsyncDisposable
 
 @*<AuthorizeView>
@@ -64,7 +67,7 @@
                         }
                     </div>
                     <div class="prompt d-flex">
-                        <input @bind="messageInput" @onkeyup="@CheckForEnter" id="prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" autofocus />
+                        <input @bind="UserInput" @onkeyup="@CheckForEnter" id="prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" autofocus />
                         <button type="submit" id="send" class="btn btn-primary" @onclick="ReadAndSendInput" disabled="@(!isConnected)">Send</button>
                     </div>
                 </div>
@@ -88,6 +91,23 @@
 
     #region General Attributes
     /// <summary>
+    /// This Queue stores all commands entered by the player that haven't been send yet
+    /// </summary>
+    private Queue<string> entries = new Queue<string>();
+
+    /// <summary>
+    /// The string to bind the user input to
+    /// </summary>
+    public string UserInput { get; set; }
+
+    /// <summary>
+    /// The Bool to (de)active the send button depending on a working connection to the server
+    /// </summary>
+    bool isConnected = true;
+
+    #region Parameters
+
+    /// <summary>
     /// The unique dungeon identifier
     /// </summary>
     [Parameter]
@@ -99,20 +119,8 @@
     [Parameter]
     public Guid AvatarId { get; set; }
 
-    /// <summary>
-    /// This Queue stores all commands entered by the player that haven't been send yet
-    /// </summary>
-    private Queue<string> entries = new Queue<string>();
+    #endregion
 
-    /// <summary>
-    /// The string to bind the user input to
-    /// </summary>
-    private string messageInput;
-
-    /// <summary>
-    /// The Bool to (de)active the send button depending on a working connection to the server
-    /// </summary>
-    bool isConnected = true;
     #endregion
 
     #region Hubs
@@ -147,6 +155,8 @@
 
     #endregion
 
+    #region Methods
+
     /// <summary>
     /// On Initialization a hubConnection is set up and is configured to expect messages
     /// </summary>
@@ -162,6 +172,11 @@
         GameHubConnection = new HubConnectionBuilder()
             .WithUrl(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + "hubs/game")
             .Build();
+
+        GameHubConnection.On<ICollection<AvatarDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
+        GameHubConnection.On("NotifyKicked", NotifyUserKicked);
+        GameHubConnection.On("NotfiyDungeonLeft", NotifyUserLeft);
+
 
         await ChatHubConnection.StartAsync();
         await GameHubConnection.StartAsync();
@@ -188,11 +203,27 @@
     /// <summary>
     /// TODO
     /// </summary>
-    public void ReadAndSendInput()
+    public async void ReadAndSendInput()
     {
-        throw new NotImplementedException();
+        var response = await GameService.SendCommand(UserInput);
+
+        if (response == HttpStatusCode.OK)
+        {
+
+        }
+
+        await JSRuntime.InvokeVoidAsync("clearPrompt", "prompt");
+        await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
     }
 
+    #region Hub Methods
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="message"></param>
+    /// <returns></returns>
     public async Task ReceiveChatMessage(string sender, string message)
     {
         var encodedSender = $"{sender}";
@@ -200,4 +231,39 @@
         await ChatChildComponent.ReceiveChatMessage(encodedSender, encodedMessage);
     }
 
+    public async Task ReceiveGameMessage(string message)
+        {
+            v
+        }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="avatars"></param>
+    /// <returns></returns>
+    public void UpdateChatPartnerList(ICollection<AvatarDto> avatars)
+    {
+        ChatChildComponent.UpdateChatPartners(avatars);
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
+    public async Task NotifyUserKicked()
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
+    public async Task NotifyUserLeft()
+    {
+        throw new NotImplementedException();
+    }
+
+    #endregion
+    #endregion
 }

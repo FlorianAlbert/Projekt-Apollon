@@ -162,14 +162,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Description = x.CurrentRoom.Description,
                     Status = (int) x.CurrentRoom.Status
                 },
-                HoldingItem = new TakeableDto
+                HoldingItem = x.HoldingItem is null ? null : new TakeableDto
                 {
                     Id = x.HoldingItem.Id,
                     Name = x.HoldingItem.Name,
                     Description = x.HoldingItem.Description,
                     Status = (int) x.HoldingItem.Status
                 },
-                Armor = new WearableDto
+                Armor = x.Armor is null ? null : new WearableDto
                 {
                     Id = x.Armor.Id,
                     Name = x.Armor.Name,
@@ -337,7 +337,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 },
                 Gender = (int)avatar.ChosenGender,
                 CurrentHealth = avatar.CurrentHealth,
-                HoldingItem = new TakeableDto
+                HoldingItem = avatar.HoldingItem is null ? null : new TakeableDto
                 {
                     Id = avatar.HoldingItem.Id,
                     Status = (int)avatar.HoldingItem.Status,
@@ -345,7 +345,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Name = avatar.HoldingItem.Name,
                     Weight = avatar.HoldingItem.Weight
                 },
-                Armor = new WearableDto
+                Armor = avatar.Armor is null ? null : new WearableDto
                 {
                     Id = avatar.Armor.Id,
                     Status = (int)avatar.Armor.Status,

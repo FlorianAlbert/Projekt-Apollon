@@ -124,6 +124,11 @@
     /// TODO
     /// </summary>
     public DungeonDto Dungeon { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public List<AvatarDto> ChatPartners { get; set; }
     #endregion
 
 
@@ -181,6 +186,12 @@
     public async Task ReceiveChatMessage(string senderName, string message)
     {
         Messages.Enqueue(new ChatMessage(senderName, message, true));
+        StateHasChanged();
+    }
+
+    public async Task UpdateChatPartners(ICollection<AvatarDto> partnerList)
+    {
+        ChatPartners = partnerList.ToList();
         StateHasChanged();
     }
 }
