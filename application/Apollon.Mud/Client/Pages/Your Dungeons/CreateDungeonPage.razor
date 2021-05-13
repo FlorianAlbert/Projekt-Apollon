@@ -3,6 +3,7 @@
 
 @using Apollon.Mud.Client.Shared.Components
 @using Apollon.Mud.Client.Shared.Components.Dungeon
+@inject NavigationManager NavManager
 
 <div class="container-fluid" style="height:93vh">
     <div class="row">
@@ -40,6 +41,14 @@
                             <CreateDungeonRoomComponent @ref="ChildRoomComponent" DungeonId="DungeonId" OnRoomSavedOrLoaded="ReloadRooms" FirstRoomSavedOrLoaded="RoomSavedOrLoaded" IsDungeonMasterConfigurating="false" />
                         </section>
                     }
+                    <div class="row mt-5 mb-5">
+                        <div class="col">
+                            <button class="btn btn-warning" style="width:20rem" type="button" @onclick="MasterButtonClicked">Zur Master Ansicht</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-info" style="width:20rem" type="button" @onclick="OverviewButtonClicked">Zur Übersicht</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -166,5 +175,21 @@
     {
         ChildClassComponent.ReloadItems(typeName);
         ChildRoomComponent.ReloadItems(typeName);
+    }
+
+    /// <summary>
+    /// This function navigates the User to the Dungeon Master View Page
+    /// </summary>
+    public void MasterButtonClicked()
+    {
+        NavManager.NavigateTo("/dungeon/master/" + DungeonId);
+    }
+
+    /// <summary>
+    /// This function navigates the User to the Dungeon Overview Page
+    /// </summary>
+    public void OverviewButtonClicked()
+    {
+        NavManager.NavigateTo("/dungeon/overview/" + DungeonId);
     }
 }

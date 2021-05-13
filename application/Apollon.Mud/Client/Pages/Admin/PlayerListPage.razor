@@ -1,8 +1,44 @@
 ﻿@page "/admin/users"
 @layout AdminLayout
 
-<h3>PlayerListPage</h3>
+@using Apollon.Mud.Shared.Dungeon.User
+@inject Apollon.Mud.Client.Services.Interfaces.IUserService UserService
+@inject Apollon.Mud.Client.Data.Account.UserContext UserContext
+
+
+<h3>Spieler Liste</h3>
+
+<div class="list-group" style="overflow-y:auto; height:100%">
+    <button type="button" class="list-group-item list-group-item-action" style="height:100px">
+        <h5>Liste aller Spieler</h5>
+    </button>
+    @foreach (DungeonUserDto user in allUsers)
+    {
+        <button type="button" class="list-group-item list-group-item-action">
+            <h5>Spieler: @user.Email.Trim('@')[0]</h5>
+            <span> </span>
+        </button>
+    }
+</div>
+
 
 @code {
+    /// <summary>
+    /// This list contains all users
+    /// </summary>
+    private List<DungeonUserDto> allUsers = new List<DungeonUserDto>();
 
+
+    /// <summary>
+    /// When initialized the Method requests all registrated Users
+    /// </summary>
+    protected async override Task OnInitializedAsync()
+    {
+
+        var response = await UserService.GetAllUsers();
+        if (!(response is null)) allUsers = response.ToList();
+
+        StateHasChanged();
+
+    }
 }

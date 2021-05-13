@@ -103,7 +103,11 @@
         var dungeon = await DungeonService.GetDungeon(DungeonId);
         if (dungeon is not null) Dungeon = dungeon;
 
-        UserIsDungeonMaster = Dungeon.DungeonMasters.Contains(UserContext.DungeonUserContext);
+        if (Dungeon.DungeonMasters is not null)
+        {
+            UserIsDungeonMaster = Dungeon.DungeonMasters.Contains(UserContext.DungeonUserContext);
+        }
+
 
         StateHasChanged();
     }

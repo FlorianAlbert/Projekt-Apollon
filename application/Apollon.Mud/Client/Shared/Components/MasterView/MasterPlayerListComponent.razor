@@ -1,7 +1,4 @@
-﻿@page "/MasterView/PlayerList/{DungeonId:guid}"
-@layout MasterViewLayout
-
-@using Apollon.Mud.Shared.Dungeon
+﻿@using Apollon.Mud.Shared.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Avatar
 @using Apollon.Mud.Shared.Dungeon.User
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
@@ -36,7 +33,7 @@
             {
                 <h5 class="text-muted">Dem Dungeon sind noch keine Spieler beigetreten</h5>
             }
-            else if(OpenUser is not null)
+            else if (OpenUser is not null)
             {
                 <div class="row bg-secondary">
                     <div class="col">
@@ -91,12 +88,12 @@
     /// <summary>
     /// The Avatars created in this dungeon
     /// </summary>
-    public List<AvatarDto> DungeonAvatars { get; set; }
+    public List<AvatarDto> DungeonAvatars { get; set; } = new List<AvatarDto>();
 
     /// <summary>
     /// The List of Players that joined this Dungeon, active and inactive
     /// </summary>
-    public List<DungeonUserDto> AllPlayersList { get; set; }
+    public List<DungeonUserDto> AllPlayersList { get; set; } = new List<DungeonUserDto>();
 
     /// <summary>
     /// The ID of the Dungeon this Master is handling

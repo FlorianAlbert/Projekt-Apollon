@@ -1,0 +1,101 @@
+﻿@page "/dungeon/master/"
+@page "/dungeon/master/{DungeonId:guid}"
+
+@using Apollon.Mud.Client.Shared.Components.MasterView
+
+@inject NavigationManager NavManager
+
+<div class="MasterViewLayout" id="MasterViewLayout" style="overflow-x:hidden">
+    <div class="row">
+        <nav class="navbar navbar-light bg-secondary" style="height:6vh">
+            <div class="col-8">
+                <div class="container">
+                    <div class="d-flex justify-content-center"></div>
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-primary ms-5" @onclick="PlayerListButtonClicked">Spielerliste</button>
+                        <button class="btn btn-primary ms-5" @onclick="RequestsButtonClicked">Anfragen</button>
+                        <button class="btn btn-primary ms-5" @onclick="ConfigurationButtonClicked">Konfiguration</button>
+                        <button class="btn btn-primary ms-5" @onclick="EnterRequestsButtonClicked">Offene Anfragen</button>
+                    </div>
+                    <div class="d-flex justify-content-center"></div>
+                </div>
+            </div>
+            <div class="col-4 text-center">
+                <h4 class="text-light">Chat</h4>
+            </div>
+        </nav>
+    </div>
+    <div class="row">
+        <div class="col-8" style="max-height:87vh">
+                <div class="content">
+                    @switch (masterPage)
+                    {
+                        case 0:
+                            <MasterPlayerListComponent DungeonId="DungeonId"/>
+                            break;
+                        case 1:
+                            <MasterRequestComponent DungeonId="DungeonId"/>
+                            break;
+                        case 2:
+                            <MasterConfigurationComponent DungeonId="DungeonId"/>
+                            break;
+                        case 3:
+                            <MasterViewEnterRequestsComponent DungeonId="DungeonId"/>
+                            break;
+                    }
+                </div>
+        </div>
+        <div class="col-4" style="max-height:87vh; padding-left:0;">
+            <div class="bg-secondary">
+                <ChatComponent />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    /// <summary>
+    /// The ID of the Dungeon this Master is handling
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    private int masterPage = 2;
+
+    /// <summary>
+    /// This function navigates the User to the Playerlist of the Dungeon
+    /// </summary>
+    public void PlayerListButtonClicked()
+    {
+        masterPage = 0;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// This function navigates the User to the Requests of the Dungeon
+    /// </summary>
+    public void RequestsButtonClicked()
+    {
+        masterPage = 1;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// This function navigates the User to the Configuration of the Dungeon
+    /// </summary>
+    public void ConfigurationButtonClicked()
+    {
+        masterPage = 2;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// This function navigates the User to the Enter Requests page of the dungeon
+    /// </summary>
+    public void EnterRequestsButtonClicked()
+    {
+        masterPage = 3;
+        StateHasChanged();
+    }
+}
