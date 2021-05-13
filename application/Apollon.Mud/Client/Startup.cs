@@ -1,6 +1,6 @@
 using Apollon.Mud.Client.Data;
 using Apollon.Mud.Client.Data.Account;
-using Apollon.Mud.Client.Services.Implementiations;
+using Apollon.Mud.Client.Services.Implementations;
 using Apollon.Mud.Client.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
@@ -53,6 +53,7 @@ namespace Apollon.Mud.Client
             services.AddTransient<IConsumableService, ConsumableService>();
             services.AddTransient<IUsableService, UsableService>();
             services.AddTransient<IWearableService, WearableService>();
+            services.AddTransient<IChatService, ChatService>();
             services.AddScoped<UserContext>();
             services.AddScoped<CustomAuthenticationStateProvider>();
             services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomAuthenticationStateProvider>());

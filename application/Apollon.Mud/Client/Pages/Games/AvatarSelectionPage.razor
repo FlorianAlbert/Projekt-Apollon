@@ -1,4 +1,4 @@
-﻿@page "/Avatar/Selection/{DungeonId:guid}"
+﻿@page "/dungeon/avatar/selection/{DungeonId:guid}"
 
 @using Apollon.Mud.Shared.Dungeon.Avatar
 @using Apollon.Mud.Shared.Dungeon
@@ -58,7 +58,7 @@
                                     <h6>Rasse: @avatar.Race.Name</h6>
                                 </div>
                                 <div class="col-3 d-flex flex-column">
-                                    <a class="btn btn-success btn-sm mt-auto" href="/Game">Beitreten</a>
+                                    <button class="btn btn-success btn-sm mt-auto" @onclick="JoinDungeonButtonClicked">Beitreten</button>
                                 </div>
                             </div>
                         </li>
@@ -113,7 +113,7 @@
     /// </summary>
     public void AvatarCreationButtonClicked()
     {
-        NavManager.NavigateTo("/Avatar/Creation/" + DungeonId);
+        NavManager.NavigateTo("/dungeon/avatar/creation/" + DungeonId);
     }
 
     /// <summary>
@@ -121,7 +121,29 @@
     /// </summary>
     public void MasterViewButtonClicked()
     {
-        NavManager.NavigateTo("/MasterView/Requests/" + DungeonId);
+        NavManager.NavigateTo("/dungeon/master/requests/" + DungeonId);
+    }
+
+    public void JoinDungeonButtonClicked()
+    {
+        NavManager.NavigateTo("/dungeon/game/" + DungeonId);
+    }
+
+    /// <summary>
+    /// This function deletes the avatar of a user
+    /// </summary>
+    /// <param name="avatarToDelete"></param>
+    private async void RemoveAvatarButtonClicked(AvatarDto avatarToDelete)
+    {
+        if (avatarToDelete is not null)
+        {
+            if (!(avatarToDelete.Id == Guid.Empty))
+            {
+                await AvatarService.DeleteAvatar(DungeonId, avatarToDelete.Id);
+                userAvatars.Remove(avatarToDelete);
+                StateHasChanged();
+            }
+        }
     }
 
     private async void DeleteAvatar(AvatarDto avatar)

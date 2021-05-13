@@ -1,7 +1,7 @@
 ﻿@using Apollon.Mud.Client.Data.Models.Game
 
-@page "/MasterView/Requests"
-@page "/MasterView/Requests/{DungeonId:guid}"
+@page "/dungeon/master/requests"
+@page "/dungeon/master/requests/{DungeonId:guid}"
 @layout MasterViewLayout
 
 <div class="row bg-white" style="padding:0;">
@@ -47,6 +47,13 @@
 </div>
 
 @code {
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
     /// <summary>
     /// TODO Abhilfe
     /// </summary>

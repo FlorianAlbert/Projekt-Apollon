@@ -37,7 +37,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
                 .Without(x => x.Dungeon)
                 .Create();
             classMock.DefaultHealth = classHealth;
-            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Diverse)
+            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Divers)
             {
                 Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty)
             };
@@ -67,7 +67,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
                 .Without(x => x.Dungeon)
                 .Create();
 
-            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Diverse)
+            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Divers)
             {
                 Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty),
                 HoldingItem = weaponMock
@@ -92,7 +92,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
                 .With(x => x.DefaultDamage, classDamage)
                 .Without(x => x.Dungeon)
                 .Create();
-            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Diverse)
+            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Divers)
             {
                 Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty)
             };
@@ -122,7 +122,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
                 .Without(x => x.Dungeon)
                 .Create();
 
-            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Diverse)
+            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Divers)
             {
                 Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty),
                 Armor = protectionMock
@@ -148,7 +148,7 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
                 .Without(x => x.Dungeon)
                 .Create();
 
-            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Diverse)
+            var avatar = new Implementations.Dungeons.Avatars.Avatar(string.Empty, raceMock, classMock, Gender.Divers)
             {
                 Dungeon = new Implementations.Dungeons.Dungeon(string.Empty, string.Empty, string.Empty)
             };

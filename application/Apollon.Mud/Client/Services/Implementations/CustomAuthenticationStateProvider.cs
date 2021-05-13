@@ -7,7 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Apollon.Mud.Client.Services.Implementiations
+namespace Apollon.Mud.Client.Services.Implementations
 {
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
