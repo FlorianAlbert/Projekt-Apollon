@@ -2,7 +2,6 @@ using Apollon.Mud.Client.Data;
 using Apollon.Mud.Client.Data.Account;
 using Apollon.Mud.Client.Services.Implementations;
 using Apollon.Mud.Client.Services.Interfaces;
-using Apollon.Mud.Server.Outbound.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -90,7 +89,6 @@ namespace Apollon.Mud.Client
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
-                endpoints.MapHub<ChatHub>("/chat");
                 endpoints.MapFallbackToPage("/_Host");
             });
         }
