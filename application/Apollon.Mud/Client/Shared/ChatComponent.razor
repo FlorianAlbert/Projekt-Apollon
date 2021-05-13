@@ -3,6 +3,9 @@
 @using Apollon.Mud.Shared.Dungeon.Avatar
 @using Apollon.Mud.Shared.HubContract
 @using Apollon.Mud.Client.Data
+@using Microsoft.AspNetCore.SignalR.Client
+@using Apollon.Mud.Client
+@using Microsoft.Extensions.Configuration
 
 @inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
@@ -10,6 +13,7 @@
 @inject Apollon.Mud.Client.Data.Account.UserContext UserContext
 
 @implements IClientChatHubContract
+@implements IAsyncDisposable
 
 
 <div class="card ms-2 me-2 bg-secondary" style="display: flex; flex-direction: column; height: 87vh">
@@ -60,7 +64,7 @@
                                 <strong class="primary-font">An</strong>
                                 <span>@message.RecipientName</span>
                                 <small class="pull-right text-muted">
-                                    <span class="glyphicon glyphicon-time"></span>Von: Dir 
+                                    <span class="glyphicon glyphicon-time"></span>Von: Dir
                                 </small>
                             </div>
                             <p>
@@ -90,6 +94,8 @@
 </div>
 
 @code {
+
+    #region General Attributes
     /// <summary>
     /// The unique dungeon identifier
     /// </summary>
@@ -125,6 +131,20 @@
     /// TODO
     /// </summary>
     public DungeonDto Dungeon { get; set; }
+    #endregion
+
+    #region Chat Hub
+
+    /// <summary>
+    /// The Connection to the ChatHub
+    /// </summary>
+    public HubConnection ChatHubConnection { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public IConfiguration Configuration { get; }
+    #endregion
 
     /// <summary>
     /// TODO
@@ -132,12 +152,27 @@
     /// <returns></returns>
     protected async override Task OnInitializedAsync()
     {
+        ChatHubConnection = new HubConnectionBuilder()
+            .WithUrl(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + "/hubs/chat")
+            .Build();
+
+        ChatHubConnection.On<string, string>("ReceiveMessage", (sender, message) =>
+        {
+            var encodedSender = $"{sender}";
+            var encodedMessage = $"{message}";
+
+            Messages.Enqueue(new ChatMessage(sender, message, true));
+            StateHasChanged();
+        });
+
+        //GameHubConnection aufbauen
+        //HubConnection.StartAsync()
+        //Connections dann zusammenbringen
+        //Dann an GameController Join request senden, beide IDs, Avatar und DungeonId mitschicken
+
 
         if (Messages is null) Messages = new Queue<ChatMessage>();
-        var msg1 = new ChatMessage("Leon", "Du miefst", true);
-        var msg2 = new ChatMessage("Leon", "Ruhe du bitch", false);
-        Messages.Enqueue(msg1);
-        Messages.Enqueue(msg2);
+        
         if (DungeonId != Guid.Empty)
         {
             var avatars = await AvatarService.GetAllAvatars(DungeonId);
@@ -181,10 +216,10 @@
     }
 
 
-    /// <inheritdoc cref="IClientChatHubContract.ReceiveChatMessage"/>
-    public async Task ReceiveChatMessage(string senderName, string message)
-    {
-        Messages.Enqueue(new ChatMessage(senderName, message, true));
-        StateHasChanged();
-    }
+    ///// <inheritdoc cref="IClientChatHubContract.ReceiveChatMessage"/>
+    //public async Task ReceiveChatMessage(string senderName, string message)
+    //{
+    //    Messages.Enqueue(new ChatMessage(senderName, message, true));
+    //    StateHasChanged();
+    //}
 }

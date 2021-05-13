@@ -6,14 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--<Content Include="Shared\ChatComponent.razor.css" />-->
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-preview2.20160.5" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.6" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Server.Outbound\Apollon.Mud.Server.Outbound.csproj" />
     <ProjectReference Include="..\Shared\Apollon.Mud.Shared.csproj" />
   </ItemGroup>
 

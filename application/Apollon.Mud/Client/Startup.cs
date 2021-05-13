@@ -2,11 +2,13 @@ using Apollon.Mud.Client.Data;
 using Apollon.Mud.Client.Data.Account;
 using Apollon.Mud.Client.Services.Implementations;
 using Apollon.Mud.Client.Services.Interfaces;
+using Apollon.Mud.Server.Outbound.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,8 +38,6 @@ namespace Apollon.Mud.Client
             {
                 httpClient.BaseAddress = new Uri(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + ":" 
                     + Configuration.GetSection("LoginConfiguration").GetSection("Port").Value);
-                
-                // Appsettings.json Config Sachen festlegen und darüber Base URI und Port festlegen
 
             });
             services.AddTransient<IAuthorizationService, AuthorizationService>();
@@ -57,11 +57,18 @@ namespace Apollon.Mud.Client
             services.AddScoped<UserContext>();
             services.AddScoped<CustomAuthenticationStateProvider>();
             services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomAuthenticationStateProvider>());
+            services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseResponseCompression();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -82,6 +89,7 @@ namespace Apollon.Mud.Client
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
+                endpoints.MapHub<ChatHub>("/chat");
                 endpoints.MapFallbackToPage("/_Host");
             });
         }
