@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.Game;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
@@ -11,6 +12,7 @@ using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Shared.Game;
 using Apollon.Mud.Shared.Game.Chat;
+using Apollon.Mud.Shared.Game.DungeonMaster;
 using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.CodeAnalysis.CSharp;
@@ -128,11 +130,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     enterDungeonDto.ChatConnectionId, 
                     enterDungeonDto.GameConnectionId, 
                     enterDungeonDto.DungeonId, 
-                    enterDungeonDto.AvatarId);
-                //ToDo muss entwas aus dem MasterService getriggert werden?
+                    null);
+                //ToDo muss etwas aus dem Maste/PlayerService getriggert werden?
                 return Ok();
             }
 
+            if (enterDungeonDto.AvatarId is null) return BadRequest();
             var avatar = dungeon.RegisteredAvatars.FirstOrDefault(a => a.Id == enterDungeonDto.AvatarId.GetValueOrDefault());
             if (avatar is null || avatar.Status == Status.Approved) return BadRequest();
 
@@ -161,9 +164,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
 
-            var sessionIdClaim = User.Claims.FirstOrDefault(x => x.Type == "SessionId");
-            if (sessionIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var sessionId)) return BadRequest();
-            
             var user = await _userDbService.GetUser(userId);
             if (user is null) return BadRequest();
 
@@ -191,9 +191,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
 
-            var sessionIdClaim = User.Claims.FirstOrDefault(x => x.Type == "SessionId");
-            if (sessionIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var sessionId)) return BadRequest();
-
             var user = await _userDbService.GetUser(userId);
             if (user is null) return BadRequest();
             
@@ -204,6 +201,43 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             //ToDo response
             await _masterService.KickAllAvatars(dungeonId);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("executeDungeonMasterRequestResponse")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> ExecuteDungeonMasterRequestResponse([FromBody] DungeonMasterRequestResponseDto dungeonMasterRequestResponseDto)
+        {
+            if (dungeonMasterRequestResponseDto is null) return BadRequest();
+            
+            var avatarDto = dungeonMasterRequestResponseDto.Avatar;
+            if (avatarDto is null) return BadRequest();
+
+            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
+            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
+
+            var sessionIdClaim = User.Claims.FirstOrDefault(x => x.Type == "SessionId");
+            if (sessionIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var sessionId)) return BadRequest();
+
+            var userConnection = _connectionService.GetConnection(userId, sessionId);
+            if (userConnection is null) return BadRequest();
+            if (!userConnection.IsDungeonMaster) return Forbid();
+
+            var user = await _userDbService.GetUser(userId);
+            if (user is null) return BadRequest();
+
+            var dungeon = await _gameDbService.Get<Dungeon>(userConnection.DungeonId);
+            if (dungeon is null) return BadRequest();
+
+            await _masterService.ExecuteDungeonMasterRequestResponse(
+                dungeonMasterRequestResponseDto.Message,
+                avatarDto.Id,
+                avatarDto.CurrentHealth,
+                dungeon.Id);
+
             return Ok();
         }
 

@@ -61,7 +61,6 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
         /// <inheritdoc cref="IMasterService.KickAvatar"/>
         public async Task KickAvatar(Guid avatarId, Guid dungeonId)
         {
-            //ToDo return bool, sodass bei Misslingen der Dm benachrichtigt wird oder vor return ihn über SignalR benachrichtigen!
             var connection = ConnectionService.GetConnectionByAvatarId(avatarId);
 
             if (connection is null) return;
