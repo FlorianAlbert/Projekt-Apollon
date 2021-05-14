@@ -11,7 +11,8 @@
 .terminal span {
     float: left;
     margin-left: 20px;
-    width: 100%;
+    width: 90%;
+    text-wrap: normal;
 }
 
 .play .prompt {

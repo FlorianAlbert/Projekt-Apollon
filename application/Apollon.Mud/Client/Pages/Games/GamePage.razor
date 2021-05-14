@@ -10,11 +10,9 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 @inject IJSRuntime JSRuntime
-
-@*@implements IClientChatHubContract
-@implements IClientGameHubContract
-@implements IAsyncDisposable*@
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
 
 @*<AuthorizeView>
     <Authorized>*@
@@ -45,7 +43,7 @@
                 <div class="col-8" style="display: flex; flex-direction: column; height: 87vh; padding:0;">
                     <div id="terminal" class="terminal">
                         <span> </span>
-                        <span>Welcome to Apollon Dungeons</span>
+                        <span>Wilkommen in den Weiten des Apollon</span>
                         <span>   _____                .__  .__                           </span>
                         <span>  /  _  \ ______   ____ |  | |  |   ____   ____            </span>
                         <span> /  /_\  \\____ \ /  _ \|  | |  |  /  _ \ /    \           </span>
@@ -59,11 +57,10 @@
                         <span>/_______  /____/|___|  /\___  / \___  &gt;____/|___|  /____  &gt;</span>
                         <span>        \/           \//_____/      \/           \/     \/ </span>
                         <span> </span>
-                        @foreach (var entry in entries)
+                        @foreach (var entry in TerminalMessages)
                         {
-                            <span> </span>
+                            <span></span><br />
                             <span>@entry</span><br />
-                            <span> </span><br />
                         }
                     </div>
                     <div class="prompt d-flex">
@@ -93,7 +90,7 @@
     /// <summary>
     /// This Queue stores all commands entered by the player that haven't been send yet
     /// </summary>
-    private Queue<string> entries = new Queue<string>();
+    private Queue<string> TerminalMessages = new Queue<string>();
 
     /// <summary>
     /// The string to bind the user input to
@@ -124,11 +121,6 @@
     #endregion
 
     #region Hubs
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    public IConfiguration Configuration { get; }
 
     #region Chat Hub
 
@@ -164,29 +156,31 @@
     protected override async Task OnInitializedAsync()
     {
         ChatHubConnection = new HubConnectionBuilder()
-            .WithUrl(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + "/hubs/chat")
+            .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/chat")
             .Build();
 
         ChatHubConnection.On<string, string>("ReceiveMessage", ReceiveChatMessage);
 
         GameHubConnection = new HubConnectionBuilder()
-            .WithUrl(Configuration.GetSection("LoginConfiguration").GetSection("BaseUri").Value + "hubs/game")
+            .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/game")
             .Build();
 
         GameHubConnection.On<ICollection<AvatarDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
         GameHubConnection.On("NotifyKicked", NotifyUserKicked);
-        GameHubConnection.On("NotfiyDungeonLeft", NotifyUserLeft);
-
+        GameHubConnection.On<bool>("NotfiyDungeonLeft", NotifyUserLeft);
 
         await ChatHubConnection.StartAsync();
         await GameHubConnection.StartAsync();
 
         var enterRequest = GameService.EnterDungeon(false, DungeonId, AvatarId, ChatHubConnection.ConnectionId, GameHubConnection.ConnectionId);
+
+        var dungeon = await DungeonService.GetDungeon(DungeonId);
+
+        TerminalMessages.Enqueue("Epoche: \n" + dungeon.DungeonEpoch + "\n");
+        TerminalMessages.Enqueue("Beschreibung: \n" + dungeon.DungeonDescription + "\n");
+        TerminalMessages.Enqueue("Raumbeschreibung: \n" + dungeon.DefaultRoom.Description + "\n");
         await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
-        //GameHubConnection aufbauen
-        //HubConnection.StartAsync()
-        //Connections dann zusammenbringen
-        //Dann an GameController Join request senden, beide IDs, Avatar und DungeonId mitschicken
+        StateHasChanged();
     }
 
     /// <summary>
@@ -210,10 +204,10 @@
 
         if (response == HttpStatusCode.OK)
         {
-
+            TerminalMessages.Enqueue(" > " + UserInput + "\n");
+            UserInput = string.Empty;
         }
 
-        await JSRuntime.InvokeVoidAsync("clearPrompt", "prompt");
         await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
     }
 
@@ -232,9 +226,15 @@
         await ChatChildComponent.ReceiveChatMessage(encodedSender, encodedMessage);
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
     public async Task ReceiveGameMessage(string message)
     {
-
+        TerminalMessages.Enqueue((message.Substring(1, message.Length - 3)) + "\n");
+        StateHasChanged();
     }
 
     /// <summary>
@@ -253,16 +253,19 @@
     /// <returns></returns>
     public async Task NotifyUserKicked()
     {
-        throw new NotImplementedException();
+        TerminalMessages.Enqueue("Du wurdest aus dem Spiel gekickt. " +
+            "Somit kannst du diesen Dungeon nicht mehr bespielen. Bitte versuche in Zukunft Verhalten, das zu einem Kick führt, zu vermeiden.");
     }
 
     /// <summary>
     /// TODO
     /// </summary>
     /// <returns></returns>
-    public async Task NotifyUserLeft()
+    public async Task NotifyUserLeft(bool success)
     {
-        throw new NotImplementedException();
+        if (success) TerminalMessages.Enqueue("Verbindung erfolgreich getrennt. Sie können den Dungeon jetzt verlassen");
+        else TerminalMessages.Enqueue("Beim Trennen der Verbindung ist ein Fehler aufgetreten, bitte versuche es erneut");
+        StateHasChanged();
     }
 
     #endregion
