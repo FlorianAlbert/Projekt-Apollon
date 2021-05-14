@@ -2,6 +2,7 @@
 using Apollon.Mud.Client.Services.Interfaces;
 using Apollon.Mud.Shared.Dungeon.Avatar;
 using Apollon.Mud.Shared.Game;
+using Apollon.Mud.Shared.Game.DungeonMaster;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -35,11 +36,25 @@ namespace Apollon.Mud.Client.Services.Implementations
             CancellationTokenSource = new CancellationTokenSource();
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public Task<HttpStatusCode> SendCommand(string message)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="AsMaster"></param>
+        /// <param name="dungeonId"></param>
+        /// <param name="avatarId"></param>
+        /// <param name="chatId"></param>
+        /// <param name="gameId"></param>
+        /// <returns></returns>
         public async Task<HttpStatusCode> EnterDungeon(bool AsMaster, Guid dungeonId, Guid? avatarId, string chatId, string gameId)
         {
             EnterDungeonDto enterDto = new EnterDungeonDto()
@@ -58,19 +73,53 @@ namespace Apollon.Mud.Client.Services.Implementations
             return response.StatusCode;
         }
 
-        public Task<HttpStatusCode> KickAvatar(Guid avatarId)
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="avatarId"></param>
+        /// <returns></returns>
+        public async Task<HttpStatusCode> KickAvatar(Guid avatarId)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.PostAsync("api/game/kick/" + avatarId, null, cancellationToken);
+
+            return response.StatusCode;
         }
 
-        public Task<HttpStatusCode> KickAll(Guid dungeonId)
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="dungeonId"></param>
+        /// <returns></returns>
+        public async Task<HttpStatusCode> KickAll(Guid dungeonId)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.PostAsync("api/game/kickall/" + dungeonId, null, cancellationToken);
+
+            return response.StatusCode;
         }
 
-        public Task<HttpStatusCode> AnswerDungeonMasterRequest(string message, AvatarDto avatar)
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="avatar"></param>
+        /// <returns></returns>
+        public async Task<HttpStatusCode> AnswerDungeonMasterRequest(string message, AvatarDto avatar)
         {
-            throw new NotImplementedException();
+            DungeonMasterRequestResponseDto answerDto = new DungeonMasterRequestResponseDto()
+            {
+                Avatar = avatar,
+                Message = message
+            };
+
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.PostAsJsonAsync("api/game/executeDungeonMasterRequestResponse", answerDto, cancellationToken);
+
+            return response.StatusCode;
         }
     }
 }
