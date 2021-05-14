@@ -5,37 +5,44 @@
 @inject NavigationManager NavManager
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 
-<div style="height:93vh">
-    <div class="container d-flex justify-content-center">
-        <div class="card mt-5" style="width:40rem">
-            <div class="card-header">
-                <div class="row">
-                    <h3>@RequestedDungeon.DungeonName</h3>
-                </div>
-            </div>
-            <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
-                <div class="list-group" style="overflow-y:auto; height:100%">
-
-                    <h4>Beschreibung:</h4>
-                    <p>@RequestedDungeon.DungeonDescription</p>
-                    <hr class="featurette-divider" />
-                    <h4>Epoche:</h4>
-                    <p>@RequestedDungeon.DungeonEpoch</p>
-                    <hr class="featurette-divider" />
-                    <div class="row">
-                        <div class="col">
-                            <button class="btn btn-danger" href="/dungeons">Abbrechen</button>
+<AuthorizeView>
+    <Authorized>
+        <div style="height:93vh">
+            <div class="container d-flex justify-content-center">
+                <div class="card mt-5" style="width:40rem">
+                    <div class="card-header">
+                        <div class="row">
+                            <h3>@RequestedDungeon.DungeonName</h3>
                         </div>
-                        <div class="col">
-                            <button class="btn btn-primary" @onclick="SendRequest">Anfragen</button>
-                        </div>
+                    </div>
+                    <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
+                        <div class="list-group" style="overflow-y:auto; height:100%">
 
+                            <h4>Beschreibung:</h4>
+                            <p>@RequestedDungeon.DungeonDescription</p>
+                            <hr class="featurette-divider" />
+                            <h4>Epoche:</h4>
+                            <p>@RequestedDungeon.DungeonEpoch</p>
+                            <hr class="featurette-divider" />
+                            <div class="row">
+                                <div class="col">
+                                    <button class="btn btn-danger" href="/dungeons">Abbrechen</button>
+                                </div>
+                                <div class="col">
+                                    <button class="btn btn-primary" @onclick="SendRequest">Anfragen</button>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent/>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     /// <summary>

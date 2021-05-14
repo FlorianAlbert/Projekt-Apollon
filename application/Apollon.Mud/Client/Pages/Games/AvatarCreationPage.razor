@@ -11,182 +11,190 @@
 @inject Apollon.Mud.Client.Services.Interfaces.IClassService ClassService
 @inject Apollon.Mud.Client.Services.Interfaces.IRaceService RaceService
 
-<div style="height:93vh">
-    <div class="container d-flex justify-content-center">
-        <div class="card mt-5" style="width:30rem">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-5">
-                        <h5>Avatar Auswahl</h5>
-                    </div>
-                    <div class="col">
+<AuthorizeView>
+    <Authorized Context="other">
+        <div style="height:93vh">
+            <div class="container d-flex justify-content-center">
+                <div class="card mt-5" style="width:30rem">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-5">
+                                <h5>Avatar Auswahl</h5>
+                            </div>
+                            <div class="col">
 
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-sm btn-primary" @onclick="@AvatarListButtonClicked">Avatarliste</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col">
-                        <button class="btn btn-sm btn-primary" @onclick="@AvatarListButtonClicked">Avatarliste</button>
+                    <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
+                        <h4 class="ml-2">Hier kannst du einen neuen Avatar erstellen</h4>
+                        <hr />
+                        @if (AvatarNameAlreadyExists)
+                        {
+                            <label class="text-danger mt-1"><strong>Ein Avatar mit diesem Namen existiert bereits, bitte wähle einen Anderen</strong></label>
+                        }
+                        <EditForm EditContext="@avatarContext" OnSubmit="@HandleAvatarSubmit" novalidate>
+                            <DataAnnotationsValidator />
+
+                            <div class="form-group mt-5">
+                                <label for="Input_Name">Avatarname</label>
+                                <div class="d-flex justify-content-center">
+                                    <InputText class="form-control" type="text" placeholder="Avatarname" id="Avatarname" @bind-Value="avatarModel.Name" />
+                                </div>
+                            </div>
+                            <div class="text-danger">
+                                <ValidationMessage For=@(() => avatarModel.Name) />
+                            </div>
+
+                            <label class="mt-5" for="Input_Name">Wähle ein Geschlecht:</label>
+                            <select class="form-select" aria-label="Default select example" @bind="avatarModel.Gender">
+                                <option value="NoGender" selected hidden></option>
+                                <option value="0">Männlich</option>
+                                <option value="1">Weiblich</option>
+                                <option value="2">Divers</option>
+                                <option value="3">Neutral</option>
+                            </select>
+
+                            <label class="mt-5" for="Input_Name">Wähle eine Klasse:</label>
+                            <select class="form-select" aria-label="Default select example" @bind="avatarModel.Class">
+                                <option value="NoClass" selected hidden></option>
+                                @if (!(dungeonClasses is null))
+                                {
+                                    @foreach (ClassDto dungeonClass in dungeonClasses)
+                                    {
+                                        <option value="@dungeonClass.Name">@dungeonClass.Name</option>
+                                    }
+                                }
+                            </select>
+
+                            <label class="mt-5" for="Input_Name">Wähle eine Rasse:</label>
+                            <select class="form-select" aria-label="Default select example" @bind="avatarModel.Race">
+                                <option value="NoRace" selected hidden></option>
+                                @if (!(dungeonRaces is null))
+                                {
+                                    @foreach (RaceDto dungeonRace in dungeonRaces)
+                                    {
+                                        <option value="@dungeonRace.Name">@dungeonRace.Name</option>
+                                    }
+                                }
+                            </select>
+
+                            <button class="btn btn-primary mt-5" type="submit">Erstellen</button>
+                        </EditForm>
                     </div>
                 </div>
             </div>
-            <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
-                <h4 class="ml-2">Hier kannst du einen neuen Avatar erstellen</h4>
-                <hr />
-                @if (AvatarNameAlreadyExists)
-                {
-                    <label class="text-danger mt-1"><strong>Ein Avatar mit diesem Namen existiert bereits, bitte wähle einen Anderen</strong></label>
-                }
-                <EditForm EditContext="@avatarContext" OnSubmit="@HandleAvatarSubmit" novalidate>
-                    <DataAnnotationsValidator />
-
-                    <div class="form-group mt-5">
-                        <label for="Input_Name">Avatarname</label>
-                        <div class="d-flex justify-content-center">
-                            <InputText class="form-control" type="text" placeholder="Avatarname" id="Avatarname" @bind-Value="avatarModel.Name" />
-                        </div>
-                    </div>
-                    <div class="text-danger">
-                        <ValidationMessage For=@(() => avatarModel.Name) />
-                    </div>
-
-                    <label class="mt-5" for="Input_Name">Wähle ein Geschlecht:</label>
-                    <select class="form-select" aria-label="Default select example" @bind="avatarModel.Gender">
-                        <option value="NoGender" selected hidden></option>
-                        <option value="0">Männlich</option>
-                        <option value="1">Weiblich</option>
-                        <option value="2">Divers</option>
-                        <option value="3">Neutral</option>
-                    </select>
-
-                    <label class="mt-5" for="Input_Name">Wähle eine Klasse:</label>
-                    <select class="form-select" aria-label="Default select example" @bind="avatarModel.Class">
-                        <option value="NoClass" selected hidden></option>
-                        @if (!(dungeonClasses is null))
-                        {
-                            @foreach (ClassDto dungeonClass in dungeonClasses)
-                            {
-                                <option value="@dungeonClass.Name">@dungeonClass.Name</option>
-                            }
-                        }
-                    </select>
-
-                    <label class="mt-5" for="Input_Name">Wähle eine Rasse:</label>
-                    <select class="form-select" aria-label="Default select example" @bind="avatarModel.Race">
-                        <option value="NoRace" selected hidden></option>
-                        @if (!(dungeonRaces is null))
-                        {
-                            @foreach (RaceDto dungeonRace in dungeonRaces)
-                            {
-                                <option value="@dungeonRace.Name">@dungeonRace.Name</option>
-                            }
-                        }
-                    </select>
-
-                    <button class="btn btn-primary mt-5" type="submit">Erstellen</button>
-                </EditForm>
-            </div>
         </div>
-    </div>
-</div>
-@code {
-    /// <summary>
-    /// The Model to validate the "Avatar" Form
-    /// </summary>
-    private AvatarCreationModel avatarModel = new AvatarCreationModel();
+    </Authorized>
+    <NotAuthorized>
+        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent/>
+    </NotAuthorized>
+</AuthorizeView>
 
-    /// <summary>
-    /// The Context for the "Avatar" Form
-    /// </summary>
-    private EditContext avatarContext;
+    @code {
+        /// <summary>
+        /// The Model to validate the "Avatar" Form
+        /// </summary>
+        private AvatarCreationModel avatarModel = new AvatarCreationModel();
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    [Parameter]
-    public Guid DungeonId { get; set; }
+        /// <summary>
+        /// The Context for the "Avatar" Form
+        /// </summary>
+        private EditContext avatarContext;
 
-    /// <summary>
-    /// This list contains all Avatars of the user
-    /// </summary>
-    List<AvatarDto> userAvatars = new List<AvatarDto>();
+        /// <summary>
+        /// TODO
+        /// </summary>
+        [Parameter]
+        public Guid DungeonId { get; set; }
 
-    /// <summary>
-    /// The List containing the Classes of the Dungeon
-    /// </summary>
-    List<ClassDto> dungeonClasses = new List<ClassDto>();
+        /// <summary>
+        /// This list contains all Avatars of the user
+        /// </summary>
+        List<AvatarDto> userAvatars = new List<AvatarDto>();
 
-    /// <summary>
-    /// The List containing the Races of the Dungeon
-    /// </summary>
-    List<RaceDto> dungeonRaces = new List<RaceDto>();
+        /// <summary>
+        /// The List containing the Classes of the Dungeon
+        /// </summary>
+        List<ClassDto> dungeonClasses = new List<ClassDto>();
 
-    /// <summary>
-    /// Shows the user an error Message when he wants to create an Avatar named after an already existing avatar
-    /// </summary>
-    public bool AvatarNameAlreadyExists { get; set; }
+        /// <summary>
+        /// The List containing the Races of the Dungeon
+        /// </summary>
+        List<RaceDto> dungeonRaces = new List<RaceDto>();
 
-    /// <summary>
-    /// When the component is initialized this Method instantiates the EditContext
-    /// </summary>
-    protected async override Task OnInitializedAsync()
-    {
-        avatarContext = new EditContext(avatarModel);
+        /// <summary>
+        /// Shows the user an error Message when he wants to create an Avatar named after an already existing avatar
+        /// </summary>
+        public bool AvatarNameAlreadyExists { get; set; }
 
-        var userAvatarCollection = await AvatarService.GetAllAvatarsForUser(DungeonId);
-        if (!(userAvatarCollection is null))
+        /// <summary>
+        /// When the component is initialized this Method instantiates the EditContext
+        /// </summary>
+        protected async override Task OnInitializedAsync()
         {
-            userAvatars = userAvatarCollection.ToList();
-        }
+            avatarContext = new EditContext(avatarModel);
 
-        var dungeonClassesCollection = await ClassService.GetAllClasses(DungeonId);
-        if (!(dungeonClassesCollection is null))
-        {
-            dungeonClasses = dungeonClassesCollection.ToList();
-        }
-
-        var dungeonRacesCollection = await RaceService.GetAllRaces(DungeonId);
-        if (!(dungeonRacesCollection is null))
-        {
-            dungeonRaces = dungeonRacesCollection.ToList();
-        }
-
-        StateHasChanged();
-    }
-
-    /// <summary>
-    /// This Method gets called when the user wants to create the new avatar and validates the form and reacts accordingly
-    /// </summary>
-    private async Task HandleAvatarSubmit()
-    {
-        AvatarNameAlreadyExists = false;
-        var validCreation = avatarContext.Validate();
-        if (validCreation && DungeonId != Guid.Empty)
-        {
-            var submitAvatar = userAvatars.Find(a => a.Name.Equals(avatarModel.Name));
-            if (submitAvatar is not null)
+            var userAvatarCollection = await AvatarService.GetAllAvatarsForUser(DungeonId);
+            if (!(userAvatarCollection is null))
             {
-                AvatarNameAlreadyExists = true;
-                return;
+                userAvatars = userAvatarCollection.ToList();
             }
-            submitAvatar = new AvatarDto();
-            submitAvatar.Name = avatarModel.Name;
-            submitAvatar.Gender = avatarModel.Gender;
-            submitAvatar.Class = dungeonClasses.Find(c => c.Name.Equals(avatarModel.Class));
-            submitAvatar.Race = dungeonRaces.Find(r => r.Name.Equals(avatarModel.Race));
-            var response = await AvatarService.CreateNewAvatar(submitAvatar, DungeonId);
-            if (response.Item1 != Guid.Empty)
-            {
-                submitAvatar.Id = response.Item1;
-                userAvatars.Add(submitAvatar);
-            }
-            else if (response.Item2) AvatarNameAlreadyExists = true;
-        }
-        NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
-    }
 
-    /// <summary>
-    /// This function navigates the User to the avatar selection page
-    /// </summary>
-    public void AvatarListButtonClicked()
-    {
-        NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
+            var dungeonClassesCollection = await ClassService.GetAllClasses(DungeonId);
+            if (!(dungeonClassesCollection is null))
+            {
+                dungeonClasses = dungeonClassesCollection.ToList();
+            }
+
+            var dungeonRacesCollection = await RaceService.GetAllRaces(DungeonId);
+            if (!(dungeonRacesCollection is null))
+            {
+                dungeonRaces = dungeonRacesCollection.ToList();
+            }
+
+            StateHasChanged();
+        }
+
+        /// <summary>
+        /// This Method gets called when the user wants to create the new avatar and validates the form and reacts accordingly
+        /// </summary>
+        private async Task HandleAvatarSubmit()
+        {
+            AvatarNameAlreadyExists = false;
+            var validCreation = avatarContext.Validate();
+            if (validCreation && DungeonId != Guid.Empty)
+            {
+                var submitAvatar = userAvatars.Find(a => a.Name.Equals(avatarModel.Name));
+                if (submitAvatar is not null)
+                {
+                    AvatarNameAlreadyExists = true;
+                    return;
+                }
+                submitAvatar = new AvatarDto();
+                submitAvatar.Name = avatarModel.Name;
+                submitAvatar.Gender = avatarModel.Gender;
+                submitAvatar.Class = dungeonClasses.Find(c => c.Name.Equals(avatarModel.Class));
+                submitAvatar.Race = dungeonRaces.Find(r => r.Name.Equals(avatarModel.Race));
+                var response = await AvatarService.CreateNewAvatar(submitAvatar, DungeonId);
+                if (response.Item1 != Guid.Empty)
+                {
+                    submitAvatar.Id = response.Item1;
+                    userAvatars.Add(submitAvatar);
+                }
+                else if (response.Item2) AvatarNameAlreadyExists = true;
+            }
+            NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
+        }
+
+        /// <summary>
+        /// This function navigates the User to the avatar selection page
+        /// </summary>
+        public void AvatarListButtonClicked()
+        {
+            NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
+        }
     }
-}

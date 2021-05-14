@@ -3,9 +3,11 @@
 
 <AuthorizeView>
     <Authorized>
-        <li class="nav-item">
-            <a class="nav-link text-light" href="/admin/dungeons">Admin</a>
-        </li>
+        <AuthorizeView Roles="Admin" Context="other">
+            <li class="nav-item">
+                <a class="nav-link text-light" href="/admin/dungeons">Admin</a>
+            </li>
+        </AuthorizeView>
         <li class="nav-item">
             <a class="nav-link text-light" href="/dungeons">Spiele</a>
         </li>
