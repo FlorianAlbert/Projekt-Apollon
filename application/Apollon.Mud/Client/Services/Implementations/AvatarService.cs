@@ -42,7 +42,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// <param name="avatarDto">The Avatar to persist</param>
         /// <param name="dungeonId">The ID of the Dungeon associated with the Avatar</param>
         /// <returns>The Guid of the created Avatar if successfull, otherwise an empty Guid</returns>
-        public async Task<Guid> CreateNewAvatar(AvatarDto avatarDto, Guid dungeonId)
+        public async Task<(Guid, bool)> CreateNewAvatar(AvatarDto avatarDto, Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
@@ -50,9 +50,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var responseGuid = await response.Content.ReadFromJsonAsync<Guid>();
-                return responseGuid;
+                return (responseGuid, false);
             }
-            return Guid.Empty;
+            if (response.StatusCode == HttpStatusCode.Conflict) return (Guid.Empty, true);
+            return (Guid.Empty, false);
         }
 
         /// <summary>

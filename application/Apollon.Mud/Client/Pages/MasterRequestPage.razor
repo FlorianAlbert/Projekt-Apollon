@@ -1,6 +1,7 @@
 ﻿@using Apollon.Mud.Client.Data.Models.Game
 
 @page "/MasterView/Requests"
+@page "/MasterView/Requests/{DungeonId:guid}"
 @layout MasterViewLayout
 
 <div class="row bg-white" style="padding:0;">
@@ -55,11 +56,39 @@
     /// </summary>
     EditContext masterRequestContext;
 
+    /// <summary>
+    /// The ID of the Dungeon the Master is handling
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    #region Bound Variables
+    /// <summary>
+    /// TODO
+    /// </summary>
     string roomDescription;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
     string textReaction;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
     string health;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
     string damage;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
     string defense;
+    #endregion
+
     /// <summary>
     /// TODO Abhilfe
     /// </summary>

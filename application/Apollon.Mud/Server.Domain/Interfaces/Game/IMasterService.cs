@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Apollon.Mud.Server.Model.Implementations.User;
 
 namespace Apollon.Mud.Server.Domain.Interfaces.Game
 {
@@ -33,5 +34,17 @@ namespace Apollon.Mud.Server.Domain.Interfaces.Game
         /// <param name="dungeonId">DungeonId of the dungeon all avatars gets kicked of</param>
         /// <returns></returns>
         Task KickAllAvatars(Guid dungeonId);
+
+        /// <summary>
+        /// Enters a dungeon as master.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="sessionId"></param>
+        /// <param name="chatConnectionId"></param>
+        /// <param name="gameConnectionId"></param>
+        /// <param name="dungeonId"></param>
+        /// <returns></returns>
+        Task<bool> EnterDungeon(DungeonUser user, Guid sessionId, string chatConnectionId, string gameConnectionId,
+            Guid dungeonId);
     }
 }

@@ -28,7 +28,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// </summary>
         /// <param name="dungeonDto">The Dungeon to create</param>
         /// <returns>The Guid if the DB Transaction was successfull, otherwise an empty Guid</returns>
-        Task<Guid> CreateNewDungeon(DungeonDto dungeonDto);
+        Task<(Guid, bool)> CreateNewDungeon(DungeonDto dungeonDto);
 
         /// <summary>
         /// Updates the given Dungeon in the Database

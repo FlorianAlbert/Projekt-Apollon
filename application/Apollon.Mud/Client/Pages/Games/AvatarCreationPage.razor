@@ -20,7 +20,7 @@
                         <h5>Avatar Auswahl</h5>
                     </div>
                     <div class="col">
-                        
+
                     </div>
                     <div class="col">
                         <button class="btn btn-sm btn-primary" @onclick="@AvatarListButtonClicked">Avatarliste</button>
@@ -30,6 +30,10 @@
             <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
                 <h4 class="ml-2">Hier kannst du einen neuen Avatar erstellen</h4>
                 <hr />
+                @if (AvatarNameAlreadyExists)
+                {
+                    <label class="text-danger mt-1"><strong>Ein Avatar mit diesem Namen existiert bereits, bitte wähle einen Anderen</strong></label>
+                }
                 <EditForm EditContext="@avatarContext" OnSubmit="@HandleAvatarSubmit" novalidate>
                     <DataAnnotationsValidator />
 
@@ -112,6 +116,12 @@
     /// The List containing the Races of the Dungeon
     /// </summary>
     List<RaceDto> dungeonRaces = new List<RaceDto>();
+
+    /// <summary>
+    /// Shows the user an error Message when he wants to create an Avatar named after an already existing avatar
+    /// </summary>
+    public bool AvatarNameAlreadyExists { get; set; }
+
     /// <summary>
     /// When the component is initialized this Method instantiates the EditContext
     /// </summary>
@@ -145,33 +155,28 @@
     /// </summary>
     private async Task HandleAvatarSubmit()
     {
+        AvatarNameAlreadyExists = false;
         var validCreation = avatarContext.Validate();
         if (validCreation && DungeonId != Guid.Empty)
         {
-            bool newAvatar = false;
-            AvatarDto submitAvatar = userAvatars.Find(a => a.Name.Equals(avatarModel.Name));
-            if (submitAvatar is null)
+            var submitAvatar = userAvatars.Find(a => a.Name.Equals(avatarModel.Name));
+            if (submitAvatar is not null)
             {
-                submitAvatar = new AvatarDto();
-                newAvatar = true;
+                AvatarNameAlreadyExists = true;
+                return;
             }
+            submitAvatar = new AvatarDto();
             submitAvatar.Name = avatarModel.Name;
             submitAvatar.Gender = avatarModel.Gender;
             submitAvatar.Class = dungeonClasses.Find(c => c.Name.Equals(avatarModel.Class));
             submitAvatar.Race = dungeonRaces.Find(r => r.Name.Equals(avatarModel.Race));
-            if (newAvatar)
+            var response = await AvatarService.CreateNewAvatar(submitAvatar, DungeonId);
+            if (response.Item1 != Guid.Empty)
             {
-                var response = await AvatarService.CreateNewAvatar(submitAvatar, DungeonId);
-                if (response != Guid.Empty)
-                {
-                    submitAvatar.Id = response;
-                    userAvatars.Add(submitAvatar);
-                }
+                submitAvatar.Id = response.Item1;
+                userAvatars.Add(submitAvatar);
             }
-        }
-        else
-        {
-            //TODO User Benachrichtigen
+            else if (response.Item2) AvatarNameAlreadyExists = true;
         }
         NavManager.NavigateTo("/Avatar/Selection/" + DungeonId);
     }
