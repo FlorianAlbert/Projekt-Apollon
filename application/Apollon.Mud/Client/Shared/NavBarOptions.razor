@@ -1,13 +1,17 @@
-﻿@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService AuthorizationService
+﻿@using Apollon.Mud.Client.Data.Account
+
+@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService AuthorizationService
 @inject NavigationManager NavManager
+@inject UserContext UserContext
 
 <AuthorizeView>
     <Authorized>
-        <AuthorizeView Roles="Admin" Context="other">
+        @if (UserContext.DungeonUserContext.IsAdmin)
+        {
             <li class="nav-item">
                 <a class="nav-link text-light" href="/admin/dungeons">Admin</a>
             </li>
-        </AuthorizeView>
+        }
         <li class="nav-item">
             <a class="nav-link text-light" href="/dungeons">Spiele</a>
         </li>
@@ -17,7 +21,7 @@
         <!--<li class="nav-item me-0">-->
         @*<a class="nav-link text-light" href="Identity/Account/Manage">Hello, @context.User.Identity.Name!</a>*@
         <!--<a class="nav-link text-light" href="Identity/Account/Manage">context.User.Identity.Name</a>
-    </li>-->
+        </li>-->
         <li class="nav-item">
             <button type="button" class="nav-link btn btn-link text-light" @onclick="LogOutUser">Ausloggen</button>
         </li>

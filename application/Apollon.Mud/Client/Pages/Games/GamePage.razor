@@ -194,8 +194,7 @@
         var avatar = await AvatarService.GetAvatar(DungeonId, AvatarId);
         if (avatar is not null && dungeon is not null)
         {
-            userAvatar = avatar;
-            TerminalMessages.Enqueue("Hallo " + userAvatar.Name + "\n");
+            TerminalMessages.Enqueue("Hallo " + avatar.Name + "\n");
             TerminalMessages.Enqueue("Epoche: \n" + dungeon.DungeonEpoch + "\n");
             TerminalMessages.Enqueue("Beschreibung: \n" + dungeon.DungeonDescription + "\n");
             TerminalMessages.Enqueue("Raumbeschreibung: \n" + dungeon.DefaultRoom.Description + "\n");
