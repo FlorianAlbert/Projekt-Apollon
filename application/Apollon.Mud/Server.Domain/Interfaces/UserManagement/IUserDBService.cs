@@ -91,5 +91,12 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// </summary>
         /// <returns></returns>
         Task<bool> IsAdminRegistered();
+
+        /// <summary>
+        /// Updates LastActive Timestamp of the user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        Task UpdateUserTimestamp(DungeonUser user);
     }
 }

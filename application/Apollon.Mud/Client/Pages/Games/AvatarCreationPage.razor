@@ -62,12 +62,14 @@
                             <select class="form-select" aria-label="Default select example" @bind="avatarModel.Class">
                                 <option value="NoClass" selected hidden></option>
                                 @if (!(dungeonClasses is null))
+                                {
                                     @foreach (ClassDto dungeonClass in dungeonClasses)
                                     {
                                         @if(dungeonClass.Status == 0)
                                         {
                                             <option value="@dungeonClass.Name">@dungeonClass.Name</option>
                                         }
+                                        
                                     }
                                 }
                             </select>
@@ -79,10 +81,10 @@
                                 {
                                     @foreach (RaceDto dungeonRace in dungeonRaces)
                                     {
-                                        if(dungeonRace.Status == 0)
-                                        {
+                                         @if (dungeonRace.Status == 0)
+                                         {
                                             <option value="@dungeonRace.Name">@dungeonRace.Name</option>
-                                        }  
+                                         }
                                     }
                                 }
                             </select>

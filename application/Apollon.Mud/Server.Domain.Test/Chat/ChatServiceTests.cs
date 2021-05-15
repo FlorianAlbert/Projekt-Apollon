@@ -66,8 +66,16 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
-            var firstAvatarInRoom = new Avatar {Status = Status.Approved};
-            var secondAvatarInRoom = new Avatar {Status = Status.Pending};
+            var firstAvatarInRoom = new Avatar
+            {
+                Dungeon = new Dungeon(string.Empty, string.Empty, string.Empty),
+                Status = Status.Approved
+            };
+            var secondAvatarInRoom = new Avatar
+            {
+                Dungeon = new Dungeon(string.Empty, string.Empty, string.Empty),
+                Status = Status.Pending
+            };
 
             var chatConnectionId = _Fixture.Create<string>();
 
@@ -254,7 +262,10 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
-            var recipientAvatar = new Avatar();
+            var recipientAvatar = new Avatar
+            {
+                Dungeon = new Dungeon(string.Empty, string.Empty, string.Empty)
+            };
             recipientAvatar.Status = Status.Approved;
             recipientAvatar.Dungeon = new Dungeon(string.Empty, string.Empty, string.Empty);
 

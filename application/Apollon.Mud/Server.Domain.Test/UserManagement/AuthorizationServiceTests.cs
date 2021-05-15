@@ -49,6 +49,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
                 Substitute.For<IUserClaimsPrincipalFactory<DungeonUser>>(),
                 null,
                 null,
+                null,
                 null);
 
             var configurationMock = Substitute.For<IConfiguration>();
@@ -88,6 +89,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
                 userManagerMock,
                 Substitute.For<IHttpContextAccessor>(),
                 Substitute.For<IUserClaimsPrincipalFactory<DungeonUser>>(),
+                null,
                 null,
                 null,
                 null);
@@ -137,6 +139,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
                 Substitute.For<IUserClaimsPrincipalFactory<DungeonUser>>(),
                 null,
                 null,
+                null,
                 null);
             signInManagerMock.CheckPasswordSignInAsync(dungeonUserMock, secretMock, false).Returns(SignInResult.Success);
 
@@ -150,6 +153,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
 
             await userDbServiceMock.Received().GetUserByEmail(emailMock);
             await signInManagerMock.Received().CheckPasswordSignInAsync(dungeonUserMock, secretMock, false);
+            await userDbServiceMock.Received().UpdateUserTimestamp(dungeonUserMock);
             loginResult.Status.Should().Be(LoginResultStatus.OK);
             loginResult.Token.Should().BeOfType<string>().And.NotBeEmpty();
             loginResult.User.Should().Be(dungeonUserMock);

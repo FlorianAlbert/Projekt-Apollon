@@ -58,7 +58,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             var user = new DungeonUser()
             {
                 UserName = userEmail,
-                Email = userEmail
+                Email = userEmail,
+                LastActive = DateTime.UtcNow
             };
             
             var creationResult = await _userDbService.CreateUser(user, password, !_adminRegistered);
@@ -89,6 +90,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         }
 
         /// <inheritdoc cref="IUserService.DeleteUser"/>
+        [ExcludeFromCodeCoverage]
         public async Task<bool> DeleteUser(Guid userId)
         {
             return await _userDbService.DeleteUser(userId);

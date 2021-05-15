@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Apollon.Mud.Shared
 {
     /// <summary>
     /// Dto to submit a Dungeon Enter Request
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class SubmitDungeonEnterRequestDto
     {
         /// <summary>

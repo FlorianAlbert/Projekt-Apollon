@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Apollon.Mud.Shared.Game
 {
     /// <summary>
     /// Class which represents the entering of a dungeon by an avatar.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class EnterDungeonDto
     {
         /// <summary>
