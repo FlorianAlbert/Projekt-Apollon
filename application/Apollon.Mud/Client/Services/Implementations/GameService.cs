@@ -130,11 +130,11 @@ namespace Apollon.Mud.Client.Services.Implementations
         /// TODO
         /// </summary>
         /// <returns></returns>
-        public void LeaveGame()
+        public async Task LeaveGame()
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            HttpClient.PostAsync("api/game/leave", null, cancellationToken);
+            HttpClient.PostAsJsonAsync<object>("api/game/leave", null, cancellationToken);
         }
     }
 }
