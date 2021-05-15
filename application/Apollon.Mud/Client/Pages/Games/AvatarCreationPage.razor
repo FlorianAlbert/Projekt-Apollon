@@ -65,7 +65,11 @@
                                 {
                                     @foreach (ClassDto dungeonClass in dungeonClasses)
                                     {
-                                        <option value="@dungeonClass.Name">@dungeonClass.Name</option>
+                                        @if(dungeonClass.Status == 0)
+                                        {
+                                            <option value="@dungeonClass.Name">@dungeonClass.Name</option>
+                                        }
+                                        
                                     }
                                 }
                             </select>
@@ -77,7 +81,10 @@
                                 {
                                     @foreach (RaceDto dungeonRace in dungeonRaces)
                                     {
-                                        <option value="@dungeonRace.Name">@dungeonRace.Name</option>
+                                         @if (dungeonRace.Status == 0)
+                                         {
+                                            <option value="@dungeonRace.Name">@dungeonRace.Name</option>
+                                         }
                                     }
                                 }
                             </select>
@@ -179,6 +186,7 @@
             submitAvatar.Gender = avatarModel.Gender;
             submitAvatar.Class = dungeonClasses.Find(c => c.Name.Equals(avatarModel.Class));
             submitAvatar.Race = dungeonRaces.Find(r => r.Name.Equals(avatarModel.Race));
+            submitAvatar.Status = 1;
             var response = await AvatarService.CreateNewAvatar(submitAvatar, DungeonId);
             if (response.Item1 != Guid.Empty)
             {

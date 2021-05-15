@@ -15,6 +15,7 @@ using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Shared.Dungeon.Race;
 using Apollon.Mud.Shared.Dungeon.Room;
+using Apollon.Mud.Shared.Dungeon.User;
 using Apollon.Mud.Shared.Game.Chat;
 using Apollon.Mud.Shared.HubContract;
 using Apollon.Mud.Shared.Implementations.Dungeons;
@@ -31,17 +32,21 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
         private IConnectionService ConnectionService { get; }
 
+        private IPlayerService PlayerService { get; }
+
         /// <summary>
         /// Creates a new Instance of MasterService
         /// </summary>
         /// <param name="gameDbService">The GameDbService to manipulate the database</param>
         /// <param name="connectionService">The ConnectionService storing all active connections</param>
         /// <param name="hubContext">The HubContext to contact the clients</param>
-        public MasterService(IGameDbService gameDbService, IConnectionService connectionService, IHubContext<GameHub, IClientGameHubContract> hubContext)
+        public MasterService(IGameDbService gameDbService, IConnectionService connectionService, IHubContext<GameHub, 
+            IClientGameHubContract> hubContext, IPlayerService playerService)
         {
             GameDbService = gameDbService;
             ConnectionService = connectionService;
             HubContext = hubContext;
+            PlayerService = playerService;
         }
 
         /// <inheritdoc cref="IMasterService.ExecuteDungeonMasterRequestResponse"/>
@@ -84,38 +89,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             ConnectionService.RemoveConnectionByAvatarId(avatarId);
 
             await HubContext.Clients.Client(connection.GameConnectionId).NotifyKicked();
-
-            var avatarsToNotify = dungeon.RegisteredAvatars.Where(x => x.CurrentRoom == avatar.CurrentRoom && x.Status == Status.Approved).ToList();
-
-            var avatarsToNotifyConnectionIds =
-                from avatarToNotify
-                        in avatarsToNotify
-                select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
-                into avatarToNotifyConnection
-                where avatarToNotifyConnection is not null
-                select avatarToNotifyConnection.GameConnectionId;
-
-            var roomChatPartnerDtos = avatarsToNotify.Select(x => new ChatPartnerDto
-            {
-                AvatarId = x.Id,
-                AvatarName = x.Name
-            }).ToList();
-
-            var dungeonChatPartnerDtos = dungeon.RegisteredAvatars
-                .Where(x => x.Status == Status.Approved)
-                .Select(x => new ChatPartnerDto
-                {
-                    AvatarId = x.Id,
-                    AvatarName = x.Name
-                }).ToList();
-
-            await HubContext.Clients.Clients(avatarsToNotifyConnectionIds)
-                .ReceiveChatPartnerList(roomChatPartnerDtos);
-
-            var dungeonMasterConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeon.Id);
-
-            if (dungeonMasterConnection is not null) await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
-                .ReceiveChatPartnerList(dungeonChatPartnerDtos);
+            
+            await PlayerService.NotifyAvatarLeftDungeon(avatar.Name, dungeonId, avatar.CurrentRoom.Id);
         }
 
         /// <inheritdoc cref="IMasterService.KickAllAvatars"/>
@@ -129,13 +104,13 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             foreach (var avatar in activeAvatars)
             {
-                var connection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
-
-                if (connection is null) continue;
-
                 avatar.Status = Status.Pending;
 
                 if (!await GameDbService.NewOrUpdate(avatar)) continue;
+
+                var connection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
+
+                if (connection is null) continue;
 
                 ConnectionService.RemoveConnectionByAvatarId(avatar.Id);
 
@@ -144,7 +119,34 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             var dungeonMasterConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeon.Id);
 
-            if (dungeonMasterConnection is not null) await UpdateMasterView(dungeonMasterConnection, dungeon);
+            if (dungeonMasterConnection is not null)
+            {
+                var dungeonChatPartnerDtos = dungeon.RegisteredAvatars
+                    .Where(x => x.Status == Status.Approved)
+                    .Select(x => new ChatPartnerDto
+                    {
+                        AvatarId = x.Id,
+                        AvatarName = x.Name
+                    }).ToList();
+
+                await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+                    .ReceiveChatPartnerList(dungeonChatPartnerDtos);
+
+                await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+                    .ReceiveAvatarList(dungeon.RegisteredAvatars.Where(x => x.Status is Status.Approved).Select(x =>
+                        new AvatarDto
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            Status = (int)x.Status,
+                            Owner = new DungeonUserDto
+                            {
+                                Id = Guid.Parse(x.Owner.Id),
+                                Email = x.Owner.Email,
+                                LastActive = x.Owner.LastActive
+                            }
+                        }).ToList());
+            }
         }
 
         public async Task<bool> EnterDungeon(DungeonUser user, Guid sessionId, string chatConnectionId, string gameConnectionId, Guid dungeonId)
@@ -166,87 +168,22 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             var dungeonMasterConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeon.Id);
             if (dungeonMasterConnection is null) return false;
 
-            await UpdateMasterView(dungeonMasterConnection, dungeon);
-
-
-            //ToDo global message
-
-            await UpdateAllChatPartnersForAvatars();
-
+            await PlayerService.NotifyDungeonMasterEntering(dungeonId);
             return true;
         }
 
-        private async Task UpdateMasterView(Connection dungeonMasterConnection, Dungeon dungeon)
+        public async Task<bool> LeaveDungeon(Guid dungeonId, Guid userId, Guid sessionId)
         {
-            //generate and send list of all chatpartners to dm
-            var dungeonChatPartnerDtos = dungeon.RegisteredAvatars
-                .Where(x => x.Status == Status.Approved)
-                .Select(x => new ChatPartnerDto
-                {
-                    AvatarId = x.Id,
-                    AvatarName = x.Name
-                }).ToList();
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+            if (dungeon is null) return false;
 
-            await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
-                .ReceiveChatPartnerList(dungeonChatPartnerDtos);
+            dungeon.CurrentDungeonMaster = null;
+            if (!await GameDbService.NewOrUpdate(dungeon)) return false;
 
-            //generate and send list of all avatars online
-            var avatars =
-                (await GameDbService.GetAll<Avatar>())
-                .Where(a => a.Dungeon == dungeon && a.Status == Status.Approved);
+            ConnectionService.RemoveConnection(userId, sessionId);
 
-            var avatarDtos = avatars.Select(x =>
-                new AvatarDto
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Status = (int) x.Status,
-                    Class = new ClassDto
-                    {
-                        Id = x.ChosenClass.Id,
-                        Name = x.ChosenClass.Name,
-                        Description = x.ChosenClass.Description,
-                        Status = (int) x.ChosenClass.Status
-                    },
-                    Race = new RaceDto
-                    {
-                        Id = x.ChosenRace.Id,
-                        Name = x.ChosenRace.Name,
-                        Description = x.ChosenRace.Description,
-                        Status = (int) x.ChosenRace.Status
-                    },
-                    CurrentRoom = new RoomDto
-                    {
-                        Id = x.CurrentRoom.Id,
-                        Name = x.CurrentRoom.Name,
-                        Description = x.CurrentRoom.Description,
-                        Status = (int) x.CurrentRoom.Status
-                    },
-                    HoldingItem = new TakeableDto
-                    {
-                        Id = x.HoldingItem.Id,
-                        Name = x.HoldingItem.Name,
-                        Description = x.HoldingItem.Description,
-                        Status = (int) x.HoldingItem.Status
-                    },
-                    Armor = new WearableDto
-                    {
-                        Id = x.Armor.Id,
-                        Name = x.Armor.Name,
-                        Description = x.Armor.Description,
-                        Status = (int) x.Armor.Status
-                    },
-                    CurrentHealth = x.CurrentHealth,
-                    Gender = (int) x.ChosenGender
-                }).ToList();
-
-            await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
-                .ReceiveAvatarList(avatarDtos);
-        }
-
-        private async Task UpdateAllChatPartnersForAvatars()
-        {
-
+            await PlayerService.NotifyDungeonMasterLeaving(dungeonId);
+            return true;
         }
     }
 }

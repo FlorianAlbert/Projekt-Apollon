@@ -48,7 +48,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
             foreach (var avatar in senderAvatar.CurrentRoom.Avatars)
             {
                 Connection recipientConnection;
-                if (avatar.Status == Status.Approved && 
+                if (avatar.Status == Status.Approved && avatar.Id != senderAvatar.Id && 
                     (recipientConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id)) is not null)
                     recipientChatConnectionIds.Add(recipientConnection.ChatConnectionId);
             }

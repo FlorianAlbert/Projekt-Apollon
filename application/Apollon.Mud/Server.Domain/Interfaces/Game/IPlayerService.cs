@@ -16,5 +16,19 @@ namespace Apollon.Mud.Server.Domain.Interfaces.Game
         /// <param name="message">Message the player entered</param>
         /// <returns></returns>
         Task ValidateCommand(Guid avatarId, Guid dungeonId, string message);
+        
+        Task NotifyAvatarLeftRoom(string avatarName, Guid dungeonId, Guid roomId);
+        Task NotifyAvatarEnteredRoom(string avatarName, Guid dungeonId, Guid roomId);
+        Task NotifyDungeonMasterEntering(Guid dungeonId);
+        Task NotifyDungeonMasterLeaving(Guid dungeonId);
+        Task NotifyAvatarEnteredDungeon(string avatarName, Guid dungeonId, Guid roomId);
+        Task NotifyAvatarLeftDungeon(string avatarName, Guid dungeonId, Guid roomId);
+
+        Task NotifyAvatarMovedToDefaultRoom(Guid avatarId, Guid dungeonId);
+
+        Task<bool> EnterDungeon(Guid userId, Guid sessionId, string chatConnectionId, string gameConnectionId,
+            Guid dungeonId, Guid avatarId);
+
+        Task<bool> LeaveDungeon(Guid avatarId, Guid dungeonId);
     }
 }

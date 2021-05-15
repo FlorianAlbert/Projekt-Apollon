@@ -26,7 +26,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
 
         public Avatar()
         {
-            
+            Id = Guid.NewGuid();
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         public Avatar(string name, Race chosenRace, Class chosenClass, Gender chosenGender)
         {
             Id = Guid.NewGuid();
-            Status = Status.Pending;
+            _Status = Status.Pending;
 
             Name = name;
 
@@ -181,7 +181,17 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <inheritdoc cref="IApprovable.Id"/>
         public Guid Id { get; }
 
+        private Status _Status;
+
         /// <inheritdoc cref="IApprovable.Status"/>
-        public Status Status { get; set; }
+        public Status Status 
+        { 
+            get => _Status;
+            set
+            {
+                _Status = value;
+                Dungeon.LastActive = DateTime.UtcNow;
+            }
+        }
     }
 }
