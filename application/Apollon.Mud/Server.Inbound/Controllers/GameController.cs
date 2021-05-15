@@ -136,7 +136,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (enterDungeonDto.AvatarId is null) return BadRequest();
             var avatar = dungeon.RegisteredAvatars.FirstOrDefault(a => a.Id == enterDungeonDto.AvatarId.GetValueOrDefault());
-            if (avatar is null || avatar.Status == Status.Approved) return BadRequest();
+            if (avatar is null || 
+                avatar.Status is Status.Approved || 
+                avatar.ChosenClass.Status is Status.Pending || 
+                avatar.ChosenRace.Status is Status.Pending) 
+                return BadRequest();
+
             if (avatar.Owner != user) return Forbid();
 
             if (await _playerService.EnterDungeon(

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Apollon.Mud.Server.Domain.Interfaces.Game;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -31,10 +32,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         private IUserService UserService { get; }
 
-        public ClassController(IGameDbService gameDbService, IUserService userService)
+        private IMasterService MasterService { get; }
+
+        public ClassController(IGameDbService gameDbService, IUserService userService, IMasterService masterService)
         {
             GameConfigService = gameDbService;
             UserService = userService;
+            MasterService = masterService;
         }
 
         [HttpPost]
@@ -167,7 +171,16 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 if (wearable is not null) classToUpdate.StartInventory.Add(wearable);
             }
 
-            if (await GameConfigService.NewOrUpdate(classToUpdate)) return Ok();
+            if (await GameConfigService.NewOrUpdate(classToUpdate))
+            {
+                if (classToUpdate.Status is not Status.Pending) return Ok();
+                foreach (var avatar in classToUpdate.Avatars)
+                {
+                    if (avatar.Status is Status.Pending) continue;
+                    await MasterService.KickAvatar(avatar.Id, dungeonId);
+                }
+                return Ok();
+            }
 
             var oldClass = await GameConfigService.Get<Class>(classDto.Id);
 

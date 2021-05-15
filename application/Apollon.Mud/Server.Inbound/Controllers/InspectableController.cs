@@ -91,7 +91,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             inspectableToUpdate.Description = inspectableDto.Description;
             inspectableToUpdate.Status = (Status) inspectableDto.Status;
             
-            if (await GameConfigService.NewOrUpdate(inspectableToUpdate)) return Ok(inspectableToUpdate.Id);
+            if (await GameConfigService.NewOrUpdate(inspectableToUpdate)) return Ok();
 
             inspectableToUpdate = await GameConfigService.Get<Inspectable>(inspectableDto.Id);
 

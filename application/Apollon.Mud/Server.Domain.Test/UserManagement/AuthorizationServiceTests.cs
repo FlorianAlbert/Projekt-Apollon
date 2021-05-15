@@ -153,6 +153,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
 
             await userDbServiceMock.Received().GetUserByEmail(emailMock);
             await signInManagerMock.Received().CheckPasswordSignInAsync(dungeonUserMock, secretMock, false);
+            await userDbServiceMock.Received().UpdateUserTimestamp(dungeonUserMock);
             loginResult.Status.Should().Be(LoginResultStatus.OK);
             loginResult.Token.Should().BeOfType<string>().And.NotBeEmpty();
             loginResult.User.Should().Be(dungeonUserMock);
