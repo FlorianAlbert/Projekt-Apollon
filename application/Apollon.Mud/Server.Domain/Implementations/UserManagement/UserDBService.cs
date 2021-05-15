@@ -160,6 +160,47 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
             await _userManager.UpdateAsync(user);
         }
+
+        /// <inheritdoc cref="IUserDbService.IsUserInRole"/>
+        public async Task<bool> IsUserInRole(string userId, string role)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null) return false;
+
+            return await _userManager.IsInRoleAsync(user, role);
+        }
+
+        /// <inheritdoc cref="IUserDbService.GetUsersInRole"/>
+        public async Task<ICollection<DungeonUser>> GetUsersInRole(string role)
+        {
+            return await _userManager.GetUsersInRoleAsync(role);
+        }
+
+        /// <inheritdoc cref="IUserDbService.AddUserToRole"/>
+        public async Task<bool> AddUserToRole(string userId, string role)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null) return false;
+
+            var result = await _userManager.AddToRoleAsync(user, role);
+
+            return result.Succeeded;
+        }
+
+        /// <inheritdoc cref="IUserDbService.RemoveUserFromRole"/>
+        public async Task<bool> RemoveUserFromRole(string userId, string role)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null) return false;
+
+            var result = await _userManager.RemoveFromRoleAsync(user, role);
+
+            return result.Succeeded;
+        }
+
         #endregion
     }
 }

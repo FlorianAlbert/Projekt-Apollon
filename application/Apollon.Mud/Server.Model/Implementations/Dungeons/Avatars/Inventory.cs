@@ -14,7 +14,6 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
     /// </summary>
     public class Inventory : ICollection<Takeable>
     {
-        // TODO: diskutieren ob Wert realistisch
         private const int _MaxWeight = 100;
 
         private ICollection<Takeable> _Items;
@@ -27,7 +26,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// Adds all possible Takeables while the WeightSum of the Inventory is less then _MaxWeight.
         /// </summary>
         /// <param name="takeables"></param>
-        public Inventory(IEnumerable<Takeable> takeables):base()
+        public Inventory(IEnumerable<Takeable> takeables)
         {
             foreach (var takeable in takeables)
             {

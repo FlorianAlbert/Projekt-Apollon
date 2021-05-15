@@ -34,6 +34,12 @@ namespace Apollon.Mud.Shared.Dungeon.User
         public bool EmailConfirmed { get; set; }
 
         /// <summary>
+        /// If the user is admin.
+        /// </summary>
+        [JsonProperty("IsAdmin")]
+        public bool IsAdmin { get; set; }
+
+        /// <summary>
         /// Checks if the Object is equal to the calling User
         /// </summary>
         /// <param name="obj"></param>

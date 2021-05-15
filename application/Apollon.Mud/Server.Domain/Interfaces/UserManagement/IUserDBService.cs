@@ -98,5 +98,34 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// <param name="user"></param>
         /// <returns></returns>
         Task UpdateUserTimestamp(DungeonUser user);
+
+        /// <summary>
+        /// Checks if a user is in a special Role
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<bool> IsUserInRole(string userId, string role);
+
+        /// <summary>
+        /// Returns all registered users in given role.
+        /// </summary>
+        /// <returns></returns>
+        Task<ICollection<DungeonUser>> GetUsersInRole(string role);
+
+        /// <summary>
+        /// Adds a user to given role
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        Task<bool> AddUserToRole(string userId, string role);
+
+        /// <summary>
+        /// Removes a user from a given role
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        Task<bool> RemoveUserFromRole(string userId, string role);
     }
 }
