@@ -1,16 +1,13 @@
 ﻿using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
-using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
-using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
-using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
 using Apollon.Mud.Shared.Dungeon.Avatar;
 using Apollon.Mud.Shared.Dungeon.Class;
 using Apollon.Mud.Shared.Dungeon.Inspectable;
@@ -19,14 +16,12 @@ using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Shared.Dungeon.Race;
-using Apollon.Mud.Shared.Dungeon.Requestable;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -76,7 +71,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (avatarRace is null || avatarClass is null) return BadRequest();
 
-            if (avatarDungeon.RegisteredAvatars.Any(x => x.Name == avatar.Name) ) return Conflict();
+            if (avatarDungeon.RegisteredAvatars.Any(x => x.Name == avatar.Name) || avatar.Name == "Dungeon Master") return Conflict();
 
             var newAvatar = new Avatar(avatar.Name,
                 avatarRace,
