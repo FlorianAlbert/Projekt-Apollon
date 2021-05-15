@@ -13,20 +13,26 @@
                 <h1 class="display-2">Dungeon konfigurieren</h1>
                 <h4>Hier kannst du den Dungeon konfigurieren!</h4>
                 <hr class="featurette-divider" />
+                <section class="General mt-3" id="General">
+                    <CreateDungeonComponent @ref="ChildDungeonComponent" DungeonId="DungeonId" DungeonMustBeInactive="false" />
+                </section>
                 <section class="Classes mt-3" id="Classes">
-                    <CreateDungeonClassesComponent DungeonId="DungeonId"/>
+                    <CreateDungeonClassesComponent @ref="ChildClassComponent" DungeonId="DungeonId" IsDungeonMasterConfigurating="true" />
                 </section>
                 <section class="Races mt-3" id="Races">
-                    <CreateDungeonRacesComponent DungeonId="DungeonId"/>
+                    <CreateDungeonRacesComponent DungeonId="DungeonId" IsDungeonMasterConfigurating="true" />
                 </section>
                 <section class="Items mt-3" id="Items">
-                    <CreateDungeonItemComponent DungeonId="DungeonId"/>
+                    <CreateDungeonItemComponent DungeonId="DungeonId" IsDungeonMasterConfigurating="true" ItemsChanged="ReloadItems" />
                 </section>
                 <section class="Npcs mt-3" id="Npcs">
-                    <CreateDungeonNpcsComponent DungeonId="DungeonId"/>
+                    <CreateDungeonNpcsComponent DungeonId="DungeonId" NpcsChanged="ReloadNpcs" IsDungeonMasterConfigurating="true" />
+                </section>
+                <section class="SpecialActions mt-3" id="SpecialActions">
+                    <CreateDungeonActionComponent DungeonId="DungeonId" SpecialActionsChanged="ReloadSpecialActions" IsDungeonMasterConfigurating="true" />
                 </section>
                 <section class="Rooms mt-3" id="Rooms">
-                    <CreateDungeonRoomComponent DungeonId="DungeonId"/>
+                    <CreateDungeonRoomComponent @ref="ChildRoomComponent" OnRoomSavedOrLoaded="ReloadRooms" DungeonId="DungeonId" IsDungeonMasterConfigurating="true" />
                 </section>
             </div>
         </div>
@@ -39,4 +45,53 @@
     /// </summary>
     [Parameter]
     public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// The create Dungeon Component used in the page
+    /// </summary>
+    public CreateDungeonComponent ChildDungeonComponent { get; set; }
+
+    /// <summary>
+    /// The create Room component used in the page
+    /// </summary>
+    public CreateDungeonRoomComponent ChildRoomComponent { get; set; }
+
+    /// <summary>
+    /// The create Class component used in the page
+    /// </summary>
+    public CreateDungeonClassesComponent ChildClassComponent { get; set; }
+
+    /// <summary>
+    /// Calls the Room and Class Component to reload their item list
+    /// </summary>
+    /// <param name="typeName">The Name of the category that need reloading</param>
+    public void ReloadItems(string typeName)
+    {
+        ChildClassComponent.ReloadItems(typeName);
+        ChildRoomComponent.ReloadItems(typeName);
+    }
+
+    /// <summary>
+    /// Calls the Room Component to Reload its NPC List
+    /// </summary>
+    public void ReloadNpcs()
+    {
+        ChildRoomComponent.ReloadNpcs();
+    }
+
+    /// <summary>
+    /// Calls the Room Component to reload its Special Action List
+    /// </summary>
+    public void ReloadSpecialActions()
+    {
+        ChildRoomComponent.ReloadSpecialActions();
+    }
+
+    /// <summary>
+    /// Calls the Dungeon Component to Reload its Room List
+    /// </summary>
+    public void ReloadRooms()
+    {
+        ChildDungeonComponent.ReloadDungeonRooms();
+    }
 }

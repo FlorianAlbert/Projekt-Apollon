@@ -2,6 +2,8 @@
 
 @using Apollon.Mud.Shared.Dungeon.Avatar
 @using Apollon.Mud.Shared.Dungeon
+@using Apollon.Mud.Client.Shared.Components
+
 @inject NavigationManager NavManager
 @inject Apollon.Mud.Client.Data.Account.UserContext UserContext
 @inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
@@ -18,9 +20,15 @@
                                 <h5>Avatar Auswahl</h5>
                             </div>
                             <div class="col">
-                                @if (UserIsDungeonMaster)
+                                @if (UserIsDungeonMaster && Dungeon.CurrentMaster is null)
                                 {
                                     <button class="btn btn-danger btn-sm" @onclick="MasterViewButtonClicked" role="button">Masteransicht</button>
+                                }
+                                else if (Dungeon.CurrentMaster is not null)
+                                {
+                                    <button class="btn btn-danger btn-sm" role="button" disabled>
+                                        <TooltipComponent Text="Ein Master spielt bereits">Masteransicht</TooltipComponent>
+                                    </button>
                                 }
                             </div>
                             <div class="col">
@@ -72,7 +80,7 @@
         </div>
     </Authorized>
     <NotAuthorized>
-        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent/>
+        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent />
     </NotAuthorized>
 </AuthorizeView>
 
@@ -114,8 +122,6 @@
         {
             UserIsDungeonMaster = Dungeon.DungeonMasters.Contains(UserContext.DungeonUserContext);
         }
-
-
         StateHasChanged();
     }
 

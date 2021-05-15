@@ -478,7 +478,6 @@
     /// <returns></returns>
     private async Task HandleClassSubmit()
     {
-        ///TODO Als Task erstellen, damit es parallel läuft
         var validClass = classContext.Validate();
         if (validClass && DungeonId != Guid.Empty)
         {

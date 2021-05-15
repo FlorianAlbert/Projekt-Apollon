@@ -14,7 +14,7 @@ namespace Apollon.Mud.Shared.Game.Chat
         /// The avatars id.
         /// </summary>
         [JsonProperty("AvatarId")]
-        public Guid AvatarId { get; set; }
+        public Guid? AvatarId { get; set; }
 
         /// <summary>
         /// The avatars name.

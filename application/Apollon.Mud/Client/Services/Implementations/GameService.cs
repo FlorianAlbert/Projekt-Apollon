@@ -41,9 +41,13 @@ namespace Apollon.Mud.Client.Services.Implementations
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Task<HttpStatusCode> SendCommand(string message)
+        public async Task<HttpStatusCode> SendCommand(string message)
         {
-            throw new NotImplementedException();
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.PostAsJsonAsync("api/game/command", message, cancellationToken);
+
+            return response.StatusCode;
         }
 
         /// <summary>

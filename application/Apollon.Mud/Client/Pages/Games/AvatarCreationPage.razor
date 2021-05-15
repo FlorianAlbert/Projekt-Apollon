@@ -90,20 +90,20 @@
         </div>
     </Authorized>
     <NotAuthorized>
-        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent/>
+        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent />
     </NotAuthorized>
 </AuthorizeView>
 
-    @code {
-        /// <summary>
-        /// The Model to validate the "Avatar" Form
-        /// </summary>
-        private AvatarCreationModel avatarModel = new AvatarCreationModel();
+@code {
+    /// <summary>
+    /// The Model to validate the "Avatar" Form
+    /// </summary>
+    private AvatarCreationModel avatarModel = new AvatarCreationModel();
 
-        /// <summary>
-        /// The Context for the "Avatar" Form
-        /// </summary>
-        private EditContext avatarContext;
+    /// <summary>
+    /// The Context for the "Avatar" Form
+    /// </summary>
+    private EditContext avatarContext;
 
         /// <summary>
         /// The ID of the dungeon
@@ -111,90 +111,90 @@
         [Parameter]
         public Guid DungeonId { get; set; }
 
-        /// <summary>
-        /// This list contains all Avatars of the user
-        /// </summary>
-        List<AvatarDto> userAvatars = new List<AvatarDto>();
+    /// <summary>
+    /// This list contains all Avatars of the user
+    /// </summary>
+    List<AvatarDto> userAvatars = new List<AvatarDto>();
 
-        /// <summary>
-        /// The List containing the Classes of the Dungeon
-        /// </summary>
-        List<ClassDto> dungeonClasses = new List<ClassDto>();
+    /// <summary>
+    /// The List containing the Classes of the Dungeon
+    /// </summary>
+    List<ClassDto> dungeonClasses = new List<ClassDto>();
 
-        /// <summary>
-        /// The List containing the Races of the Dungeon
-        /// </summary>
-        List<RaceDto> dungeonRaces = new List<RaceDto>();
+    /// <summary>
+    /// The List containing the Races of the Dungeon
+    /// </summary>
+    List<RaceDto> dungeonRaces = new List<RaceDto>();
 
-        /// <summary>
-        /// Shows the user an error Message when he wants to create an Avatar named after an already existing avatar
-        /// </summary>
-        public bool AvatarNameAlreadyExists { get; set; }
+    /// <summary>
+    /// Shows the user an error Message when he wants to create an Avatar named after an already existing avatar
+    /// </summary>
+    public bool AvatarNameAlreadyExists { get; set; }
 
-        /// <summary>
-        /// When the component is initialized this Method instantiates the EditContext
-        /// </summary>
-        protected async override Task OnInitializedAsync()
+    /// <summary>
+    /// When the component is initialized this Method instantiates the EditContext
+    /// </summary>
+    protected async override Task OnInitializedAsync()
+    {
+        avatarContext = new EditContext(avatarModel);
+
+        var userAvatarCollection = await AvatarService.GetAllAvatarsForUser(DungeonId);
+        if (!(userAvatarCollection is null))
         {
-            avatarContext = new EditContext(avatarModel);
-
-            var userAvatarCollection = await AvatarService.GetAllAvatarsForUser(DungeonId);
-            if (!(userAvatarCollection is null))
-            {
-                userAvatars = userAvatarCollection.ToList();
-            }
-
-            var dungeonClassesCollection = await ClassService.GetAllClasses(DungeonId);
-            if (!(dungeonClassesCollection is null))
-            {
-                dungeonClasses = dungeonClassesCollection.ToList();
-            }
-
-            var dungeonRacesCollection = await RaceService.GetAllRaces(DungeonId);
-            if (!(dungeonRacesCollection is null))
-            {
-                dungeonRaces = dungeonRacesCollection.ToList();
-            }
-
-            StateHasChanged();
+            userAvatars = userAvatarCollection.ToList();
         }
 
-        /// <summary>
-        /// This Method gets called when the user wants to create the new avatar and validates the form and reacts accordingly
-        /// </summary>
-        private async Task HandleAvatarSubmit()
+        var dungeonClassesCollection = await ClassService.GetAllClasses(DungeonId);
+        if (!(dungeonClassesCollection is null))
         {
-            AvatarNameAlreadyExists = false;
-            var validCreation = avatarContext.Validate();
-            if (validCreation && DungeonId != Guid.Empty)
-            {
-                var submitAvatar = userAvatars.Find(a => a.Name.Equals(avatarModel.Name));
-                if (submitAvatar is not null)
-                {
-                    AvatarNameAlreadyExists = true;
-                    return;
-                }
-                submitAvatar = new AvatarDto();
-                submitAvatar.Name = avatarModel.Name;
-                submitAvatar.Gender = avatarModel.Gender;
-                submitAvatar.Class = dungeonClasses.Find(c => c.Name.Equals(avatarModel.Class));
-                submitAvatar.Race = dungeonRaces.Find(r => r.Name.Equals(avatarModel.Race));
-                var response = await AvatarService.CreateNewAvatar(submitAvatar, DungeonId);
-                if (response.Item1 != Guid.Empty)
-                {
-                    submitAvatar.Id = response.Item1;
-                    userAvatars.Add(submitAvatar);
-                }
-                else if (response.Item2) AvatarNameAlreadyExists = true;
-            }
-            NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
+            dungeonClasses = dungeonClassesCollection.ToList();
         }
 
-        /// <summary>
-        /// This function navigates the User to the avatar selection page
-        /// </summary>
-        public void AvatarListButtonClicked()
+        var dungeonRacesCollection = await RaceService.GetAllRaces(DungeonId);
+        if (!(dungeonRacesCollection is null))
         {
-            NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
+            dungeonRaces = dungeonRacesCollection.ToList();
         }
+
+        StateHasChanged();
     }
+
+    /// <summary>
+    /// This Method gets called when the user wants to create the new avatar and validates the form and reacts accordingly
+    /// </summary>
+    private async Task HandleAvatarSubmit()
+    {
+        AvatarNameAlreadyExists = false;
+        var validCreation = avatarContext.Validate();
+        if (validCreation && DungeonId != Guid.Empty)
+        {
+            var submitAvatar = userAvatars.Find(a => a.Name.Equals(avatarModel.Name));
+            if (submitAvatar is not null)
+            {
+                AvatarNameAlreadyExists = true;
+                return;
+            }
+            submitAvatar = new AvatarDto();
+            submitAvatar.Name = avatarModel.Name;
+            submitAvatar.Gender = avatarModel.Gender;
+            submitAvatar.Class = dungeonClasses.Find(c => c.Name.Equals(avatarModel.Class));
+            submitAvatar.Race = dungeonRaces.Find(r => r.Name.Equals(avatarModel.Race));
+            var response = await AvatarService.CreateNewAvatar(submitAvatar, DungeonId);
+            if (response.Item1 != Guid.Empty)
+            {
+                submitAvatar.Id = response.Item1;
+                userAvatars.Add(submitAvatar);
+            }
+            else if (response.Item2) AvatarNameAlreadyExists = true;
+        }
+        NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
+    }
+
+    /// <summary>
+    /// This function navigates the User to the avatar selection page
+    /// </summary>
+    public void AvatarListButtonClicked()
+    {
+        NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
+    }
+}

@@ -16,7 +16,7 @@ namespace Apollon.Mud.Server.Model.ModelExtensions
         [ExcludeFromCodeCoverage]
         public static string NormalizeString(this string input)
         {
-            return string.Join(" ", input.ToLower().Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
+            return string.Join(" ", input.ToLower().Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
         }
     }
 }
