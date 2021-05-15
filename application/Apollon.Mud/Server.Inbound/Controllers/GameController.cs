@@ -121,34 +121,32 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 var isEnteringAsMasterPossible = dungeon.CurrentDungeonMaster is null
                                                  && dungeon.DungeonMasters.Contains(user);
                 if (!isEnteringAsMasterPossible) return Forbid();
-                dungeon.CurrentDungeonMaster = user;
 
-                if(!await _gameDbService.NewOrUpdate(dungeon)) return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-                _connectionService.AddConnection
-                    (userId, 
-                    sessionId, 
-                    enterDungeonDto.ChatConnectionId, 
-                    enterDungeonDto.GameConnectionId, 
-                    enterDungeonDto.DungeonId, 
-                    null);
-                //ToDo muss etwas aus dem Maste/PlayerService getriggert werden?
-                return Ok();
+                if (await _masterService.EnterDungeon(
+                    user,
+                    sessionId,
+                    enterDungeonDto.ChatConnectionId,
+                    enterDungeonDto.GameConnectionId,
+                    dungeon.Id)) 
+                    return Ok();
+
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
             if (enterDungeonDto.AvatarId is null) return BadRequest();
             var avatar = dungeon.RegisteredAvatars.FirstOrDefault(a => a.Id == enterDungeonDto.AvatarId.GetValueOrDefault());
             if (avatar is null || avatar.Status == Status.Approved) return BadRequest();
 
-            avatar.Status = Status.Approved;
-            if (!await _gameDbService.NewOrUpdate(avatar)) return BadRequest();
             _connectionService.AddConnection
-                (userId,
+            (userId,
                 sessionId,
                 enterDungeonDto.ChatConnectionId,
                 enterDungeonDto.GameConnectionId,
                 enterDungeonDto.DungeonId,
                 enterDungeonDto.AvatarId);
-            //ToDo triggern von EnterDungeon im PlayerService
+            //ToDo in Playerservice --> Listen von Master updaten und Avatare im Raum benachrichtigen und chatpartner updated
+            //avatar.Status = Status.Approved;
+            //if (!await _gameDbService.NewOrUpdate(avatar)) return BadRequest();
             return Ok();
 
         }
@@ -175,8 +173,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (!dungeon.DungeonMasters.Contains(user)) return Forbid();
 
             await _masterService.KickAvatar(avatarId, dungeon.Id);
-
-            //ToDo response
+            
             return Ok();
         }
 
@@ -198,8 +195,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (dungeon is null) return BadRequest();
 
             if (!dungeon.DungeonMasters.Contains(user)) return Forbid();
-
-            //ToDo response
+            
             await _masterService.KickAllAvatars(dungeonId);
             return Ok();
         }
@@ -240,7 +236,6 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             return Ok();
         }
-
         #endregion
     }
 }

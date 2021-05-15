@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 using AutoFixture;
 using FluentAssertions;
 using NSubstitute;
@@ -44,11 +45,13 @@ namespace Apollon.Mud.Server.Model.Test.Dungeon.Avatar
             var takeableMock = _Fixture.Build<Takeable>()
                 .Without(x => x.Dungeon)
                 .With(x => x.Weight, newWeight)
+                .With(x => x.Status, Status.Approved)
                 .Create();
 
             var inventoryItemMock = _Fixture.Build<Takeable>()
                 .Without(x => x.Dungeon)
                 .With(x => x.Weight, alreadyContainingWeight)
+                .With(x => x.Status, Status.Approved)
                 .Create();
 
             var inventory = new Inventory(new List<Takeable>() {inventoryItemMock});
