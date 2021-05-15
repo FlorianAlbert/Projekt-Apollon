@@ -76,7 +76,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (avatarRace is null || avatarClass is null) return BadRequest();
 
-            if (avatarDungeon.RegisteredAvatars.Any(x => x.Name == avatar.Name)) return Conflict();
+            if (avatarDungeon.RegisteredAvatars.Any(x => x.Name == avatar.Name) ) return Conflict();
 
             var newAvatar = new Avatar(avatar.Name,
                 avatarRace,
