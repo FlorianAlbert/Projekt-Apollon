@@ -40,14 +40,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         private ILogger<RoomController> _logger;
 
-        private IPlayerService PlayerService { get; }
+        private IMasterService MasterService { get; }
 
-        public RoomController(ILogger<RoomController> logger, IGameDbService gameDbService, IUserService userService, IPlayerService playerService)
+        public RoomController(ILogger<RoomController> logger, IGameDbService gameDbService, IUserService userService, IMasterService masterService)
         {
             _logger = logger;
             GameConfigService = gameDbService;
             UserService = userService;
-            PlayerService = playerService;
+            MasterService = masterService;
         }
 
         [HttpGet]
@@ -261,7 +261,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
-            await MoveAvatarsToDefaultRoom(roomId, dungeonId);
+            await MasterService.MoveAvatarsToDefaultRoom(roomId, dungeonId);
 
             if (await GameConfigService.Delete<Room>(roomId)) return Ok();
 
@@ -594,29 +594,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 }
             }
 
-            if (moveAvatarsToDefault) await MoveAvatarsToDefaultRoom(room.Id, dungeonId);
+            if (moveAvatarsToDefault) await MasterService.MoveAvatarsToDefaultRoom(room.Id, dungeonId);
             if (await GameConfigService.NewOrUpdate(room))return Ok();
 
 
             return BadRequest();
         }
 
-        public async Task MoveAvatarsToDefaultRoom(Guid roomId, Guid dungeonId)
-        {
-            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
-            var room = dungeon?.ConfiguredRooms.FirstOrDefault(r => r.Id == roomId);
-            if (room is null) return;
-            
-            foreach (var avatar in room.Avatars)
-            {
-                avatar.CurrentRoom = dungeon.DefaultRoom;
-                await GameConfigService.NewOrUpdate(avatar);
-
-                if (avatar.Status is Status.Pending) continue;
-                await PlayerService.NotifyAvatarMovedToDefaultRoom(avatar.Id, dungeonId);
-                await PlayerService.NotifyAvatarEnteredRoom(avatar.Name, dungeonId, dungeon.DefaultRoom.Id);
-            }
-
-        }
+        
     }
 }

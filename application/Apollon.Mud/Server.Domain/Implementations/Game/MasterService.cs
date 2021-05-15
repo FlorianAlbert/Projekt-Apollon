@@ -185,5 +185,23 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             await PlayerService.NotifyDungeonMasterLeaving(dungeonId);
             return true;
         }
+
+        public async Task MoveAvatarsToDefaultRoom(Guid roomId, Guid dungeonId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+            var room = dungeon?.ConfiguredRooms.FirstOrDefault(r => r.Id == roomId);
+            if (room is null) return;
+
+            foreach (var avatar in room.Avatars)
+            {
+                avatar.CurrentRoom = dungeon.DefaultRoom;
+                await GameDbService.NewOrUpdate(avatar);
+
+                if (avatar.Status is Status.Pending) continue;
+                await PlayerService.NotifyAvatarMovedToDefaultRoom(avatar.Id, dungeonId);
+                await PlayerService.NotifyAvatarEnteredRoom(avatar.Name, dungeonId, dungeon.DefaultRoom.Id);
+            }
+
+        }
     }
 }
