@@ -247,7 +247,7 @@
     /// <returns></returns>
     public async Task ReceiveGameMessage(string message)
     {
-        TerminalMessages.Enqueue((message.Substring(1, message.Length - 3)) + "\n");
+        TerminalMessages.Enqueue(message);
         StateHasChanged();
     }
 

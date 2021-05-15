@@ -69,7 +69,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// TODO
         /// </summary>
         /// <returns></returns>
-        void LeaveGame();
+        Task LeaveGame();
 
 
     }

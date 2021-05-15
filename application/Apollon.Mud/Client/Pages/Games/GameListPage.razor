@@ -40,10 +40,10 @@
                         }
                         @foreach (DungeonDto dungeon in allDungeons)
                         {
-                            @if (dungeon.Status == 0 && 
-                                dungeon.DungeonName.Contains(FilterForName) && 
-                                dungeon.DungeonDescription.Contains(FilterForDescription) &&
-                                dungeon.DungeonEpoch.Contains(FilterForEpoch))
+                            @if (dungeon.Status == 0 &&
+                               dungeon.DungeonName.Contains(FilterForName) &&
+                               dungeon.DungeonDescription.Contains(FilterForDescription) &&
+                               dungeon.DungeonEpoch.Contains(FilterForEpoch))
                             {
                                 <div class="card mt-2 shadow">
                                     <h5 class="card-header">@dungeon.DungeonName</h5>
@@ -81,7 +81,7 @@
         </div>
     </Authorized>
     <NotAuthorized>
-        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent/>
+        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent />
     </NotAuthorized>
 </AuthorizeView>
 
@@ -124,9 +124,15 @@
     /// When the "Play" Button of a Dungeon is clicked, this Method opens the corresponding avatar selection page
     /// </summary>
     /// <param name="dungeon"> The dungeon the user wants to join </param>
-    private void JoinDungeonButtonClicked(DungeonDto dungeon)
+    private async void JoinDungeonButtonClicked(DungeonDto dungeon)
     {
-        NavManager.NavigateTo("/dungeon/avatar/selection/" + dungeon.Id);
+        if (!dungeon.WhiteList.Contains(UserContext.DungeonUserContext))
+        {
+            var success = await DungeonService.OpenEnterRequest(dungeon.Id);
+            if (success) NavManager.NavigateTo("/dungeon/avatar/selection/" + dungeon.Id);
+        }
+        else NavManager.NavigateTo("/dungeon/avatar/selection/" + dungeon.Id);
+
     }
 
     /// <summary>

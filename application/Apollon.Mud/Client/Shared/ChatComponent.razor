@@ -79,7 +79,7 @@
     <div class="chat mt-2 mb-2" style="flex-shrink: 0;">
         <div class="prompt d-flex">
             <input @bind="inputMessage" id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
-            @if (chosenRecipient != "NoRecipient")
+            @if (chosenRecipient != "NoRecipient" && inputMessage != "")
             {
                 <button @onclick="SendMessage" id="send" class="btn btn-primary ms-2">Senden</button>
             }
