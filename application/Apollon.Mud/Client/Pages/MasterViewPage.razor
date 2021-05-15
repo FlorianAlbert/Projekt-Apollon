@@ -33,6 +33,7 @@
                                     <button class="btn btn-primary ms-5" @onclick="RequestsButtonClicked">Anfragen</button>
                                     <button class="btn btn-primary ms-5" @onclick="ConfigurationButtonClicked">Konfiguration</button>
                                     <button class="btn btn-primary ms-5" @onclick="EnterRequestsButtonClicked">Offene Anfragen</button>
+                                    <button class="btn btn-primary ms-5" @onclick="EndConnectionButtonClicked">Beenden</button>
                                 </div>
                                 <div class="d-flex justify-content-center"></div>
                             </div>
@@ -48,10 +49,10 @@
                             @switch (masterPage)
                             {
                                 case 0:
-                                    <MasterPlayerListComponent DungeonId="DungeonId" @ref="PlayerListChildComponent"/>
+                                    <MasterPlayerListComponent DungeonId="DungeonId" @ref="PlayerListChildComponent" />
                                     break;
                                 case 1:
-                                    <MasterRequestComponent DungeonId="DungeonId" @ref="RequestChildComponent"/>
+                                    <MasterRequestComponent DungeonId="DungeonId" @ref="RequestChildComponent" />
                                     break;
                                 case 2:
                                     <MasterConfigurationComponent DungeonId="DungeonId" />
@@ -163,7 +164,7 @@
     /// <returns></returns>
     public async Task ReceiveChatMessage(string sender, string message)
     {
-        await ChatChildComponent.ReceiveChatMessage(sender, message);
+        ChatChildComponent.ReceiveChatMessage(sender, message);
     }
 
     /// <summary>
@@ -192,6 +193,15 @@
     public void ProcessAvatarList(ICollection<AvatarDto> avatars)
     {
         if (masterPage == 0) PlayerListChildComponent.UpdateAvatars(avatars);
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
+    public async Task NotifyUserKicked()
+    {
+        NavManager.NavigateTo("/dungeon/master/kickedmessage/0");
     }
 
     #endregion
@@ -234,4 +244,13 @@
         StateHasChanged();
     }
     #endregion
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void EndConnectionButtonClicked()
+    {
+        //TODO Route zum Beenden aufrufen
+        NavManager.NavigateTo("/");
+    }
 }

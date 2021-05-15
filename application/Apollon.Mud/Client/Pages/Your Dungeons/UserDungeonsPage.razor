@@ -1,5 +1,8 @@
 ﻿@page "/user/dungeons"
+
 @using Apollon.Mud.Shared.Dungeon
+@using Apollon.Mud.Client.Shared.Components
+
 @inject NavigationManager NavManager
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 
@@ -36,7 +39,16 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="btn-group">
                                                 <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ViewDungeonButtonClicked(dungeon)">Anzeigen</button>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => EditDungeonButtonClicked(dungeon)">Bearbeiten</button>
+                                                @if (dungeon.CurrentMaster is null)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => EditDungeonButtonClicked(dungeon)">Bearbeiten</button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled>
+                                                        <TooltipComponent Text="Du kannst einen aktiven Dungeon nur als Master bearbeiten">Bearbeiten</TooltipComponent>
+                                                    </button>
+                                                }
                                             </div>
                                             @*<small class="text-muted">@dungeon.LastActive</small>*@
                                         </div>
@@ -86,7 +98,7 @@
         </div>
     </Authorized>
     <NotAuthorized>
-        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent/>
+        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent />
     </NotAuthorized>
 </AuthorizeView>
 

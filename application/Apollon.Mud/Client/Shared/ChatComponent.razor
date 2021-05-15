@@ -12,11 +12,11 @@
 <div class="card ms-2 me-2 bg-secondary" style="display: flex; flex-direction: column; height: 87vh">
     <div style="flex-shrink: 0;">
         <select class="form-select" aria-label="MessageSelect" @bind="chosenRecipient">
-            <option value="NoRecipient" selected>Nachricht an:</option>
+            <option value="NoRecipient" hidden selected>Nachricht an:</option>
             @if (IsDungeonMaster)
             {
                 <option value="All">Alle</option>
-                @foreach (AvatarDto avatarDto in dungeonAvatars)
+                @foreach (AvatarDto avatarDto in ChatPartners)
                 {
                     <option value="@avatarDto.Name">@avatarDto.Name</option>
                 }
@@ -24,7 +24,10 @@
             else
             {
                 <option value="Room">Raum</option>
-                //TODO: Die For Each Schleife der Avatare im selben Raum
+                @foreach (AvatarDto avatarDto in ChatPartners)
+                {
+                    <option value="@avatarDto.Name">@avatarDto.Name</option>
+                }
             }
         </select>
     </div>
@@ -98,11 +101,6 @@
     /// <summary>
     /// TODO
     /// </summary>
-    List<AvatarDto> dungeonAvatars = new List<AvatarDto>();
-
-    /// <summary>
-    /// TODO
-    /// </summary>
     public Queue<ChatMessage> Messages { get; set; }
 
     /// <summary>
@@ -142,13 +140,10 @@
 
         if (DungeonId != Guid.Empty)
         {
-            var avatars = await AvatarService.GetAllAvatars(DungeonId);
-            if (avatars is not null) dungeonAvatars = avatars.ToList();
-
-            var dungeon = DungeonService.GetDungeon(DungeonId);
+            var dungeon = await DungeonService.GetDungeon(DungeonId);
             if (dungeon is not null)
             {
-                Dungeon = Dungeon;
+                Dungeon = dungeon;
                 IsDungeonMaster = Dungeon.DungeonMasters.Contains(UserContext.DungeonUserContext);
             }
         }
@@ -189,9 +184,18 @@
         StateHasChanged();
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="partnerList"></param>
+    /// <returns></returns>
     public async Task UpdateChatPartners(ICollection<AvatarDto> partnerList)
     {
+        //TODO Doppelte Überprüfung?
         ChatPartners = partnerList.ToList();
+        ChatPartners.Where(x => x.Owner.Id == UserContext.DungeonUserContext.Id)
+            .ToList()
+            .ForEach(x => ChatPartners.Remove(x));
         StateHasChanged();
     }
 }

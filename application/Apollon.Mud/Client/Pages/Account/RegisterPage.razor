@@ -1,9 +1,10 @@
 ﻿@page "/Identity/Account/Register"
-@inject Apollon.Mud.Client.Services.Interfaces.IUserService UserService
-@inject NavigationManager NavManager
+
 @using Apollon.Mud.Client.Data.Models.Account
 @using System.Net
 
+@inject Apollon.Mud.Client.Services.Interfaces.IUserService UserService
+@inject NavigationManager NavManager
 
 <div class="container d-flex justify-content-center">
     <div class="card mt-5" style="width:45rem">
@@ -23,7 +24,7 @@
                 }
                 @if (showErrorMessage)
                 {
-                        <h4 class="text-danger">Es existiert bereits ein Account mit dieser E-Mail</h4>
+                    <h4 class="text-danger">Es existiert bereits ein Account mit dieser E-Mail</h4>
                 }
                 <EditForm EditContext="@registerContext" OnSubmit="@HandleRegisterSubmit" novalidate>
                     <DataAnnotationsValidator />

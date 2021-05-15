@@ -70,7 +70,7 @@
                                 </div>
                                 <div class="prompt d-flex">
                                     <input @bind="UserInput" @onkeyup="@CheckForEnter" id="prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" autofocus />
-                                    <button type="submit" id="send" class="btn btn-primary" @onclick="ReadAndSendInput">Send</button>
+                                    <button type="submit" id="send" class="btn btn-primary" @onclick="ReadAndSendInput" disabled="@disableSendButton">Send</button>
                                 </div>
                             </div>
                             <div class="col-4 bg-secondary" style="padding: 0;">
@@ -95,10 +95,10 @@
 
 @code {
 
-    #region General Attributes
-    /// <summary>
-    /// This Queue stores all commands entered by the player that haven't been send yet
-    /// </summary>
+        #region General Attributes
+        /// <summary>
+        /// This Queue stores all commands entered by the player that haven't been send yet
+        /// </summary>
     private Queue<string> TerminalMessages = new Queue<string>();
 
     /// <summary>
@@ -110,6 +110,11 @@
     /// Enables the page when the connection to the server was successfull
     /// </summary>
     bool? successfullConnection;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    bool disableSendButton;
 
     #region Parameters
 
@@ -201,7 +206,7 @@
     /// <param name="e"></param>
     public void CheckForEnter(KeyboardEventArgs args)
     {
-        if (args.Key == "Enter")
+        if (args.Key == "Enter" && !disableSendButton)
         {
             ReadAndSendInput();
         }
@@ -265,6 +270,8 @@
     {
         TerminalMessages.Enqueue("Du wurdest aus dem Spiel gekickt. " +
             "Somit kannst du diesen Dungeon nicht mehr bespielen. Bitte versuche in Zukunft Verhalten, das zu einem Kick führt, zu vermeiden.");
+        disableSendButton = true;
+        StateHasChanged();
     }
 
     /// <summary>
@@ -273,7 +280,11 @@
     /// <returns></returns>
     public async Task NotifyUserLeft(bool success)
     {
-        if (success) TerminalMessages.Enqueue("Verbindung erfolgreich getrennt. Sie können den Dungeon jetzt verlassen");
+        if (success)
+        {
+            TerminalMessages.Enqueue("Verbindung erfolgreich getrennt. Sie können den Dungeon jetzt verlassen");
+            disableSendButton = true;
+        }
         else TerminalMessages.Enqueue("Beim Trennen der Verbindung ist ein Fehler aufgetreten, bitte versuche es erneut");
         StateHasChanged();
     }

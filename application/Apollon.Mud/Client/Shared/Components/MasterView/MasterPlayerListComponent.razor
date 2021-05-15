@@ -12,15 +12,40 @@
     <div class="col-4">
         <div style="display: flex; flex-direction: column; height: 87vh">
             <div class="list-group" style="overflow-y:auto; height:100%">
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-info" @onclick=" () => ChangeListContent(true)">Spieler</button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-warning" @onclick="() => ChangeListContent(false)">Master</button>
+                    </div>
+                </div>
                 <div class="list-group-item list-group-item-action" style="height:100px">
                     <h5>Liste aller Spieler</h5>
                 </div>
-                @foreach (DungeonUserDto user in AllPlayersList)
+                @if (showMasters)
                 {
-                    <button type="button" class="list-group-item list-group-item-action" @onclick="( () => ChangeUser(user))">
-                        <h5>Spieler: @user.Email.Split("@")[0]</h5>
-                    </button>
+                    @foreach (DungeonUserDto user in Dungeon.DungeonMasters)
+                    {
+                        <button type="button" class="list-group-item list-group-item-action" @onclick="( () => ChangeUser(user))">
+                            <h5>Spieler: @user.Email.Split("@")[0]</h5>
+                        </button>
+                    }
                 }
+                else
+                {
+                    @foreach (DungeonUserDto user in AllPlayersList)
+                    {
+                        @if (Dungeon.DungeonMasters.Contains(user))
+                        {
+                            <button type="button" class="list-group-item list-group-item-action" @onclick="( () => ChangeUser(user))">
+                                <h5>Spieler: @user.Email.Split("@")[0]</h5>
+                            </button>
+                        }
+
+                    }
+                }
+
             </div>
         </div>
     </div>
@@ -39,6 +64,18 @@
                             <div class="col">
                                 <h3>Name: @OpenUser.Email.Split("@")[0]</h3>
                             </div>
+                            @if (showMasters && OpenUser != Dungeon.DungeonOwner)
+                            {
+                                <div class="col">
+                                    <button class="btn btn-warning btn-sm float-end me-3" type="button" @onclick="RemoveDungeonMaster">Master entfernen</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col">
+                                    <button class="btn btn-warning btn-sm float-end me-3" type="button" @onclick="AddDungeonMaster">Master ernennen</button>
+                                </div>
+                            }
                             <div class="col">
                                 <button class="btn btn-primary btn-sm float-end me-3" type="button" @onclick="KickUser">Kicken</button>
                             </div>
@@ -128,6 +165,11 @@
     public DungeonUserDto OpenUser { get; set; }
 
     /// <summary>
+    /// TODO
+    /// </summary>
+    bool showMasters;
+
+    /// <summary>
     /// Loads the corresponding dungeon and saves it locally, fills all lists
     /// </summary>
     /// <returns></returns>
@@ -156,21 +198,26 @@
     /// <returns></returns>
     public async Task UpdateAvatars(ICollection<AvatarDto> avatarList)
     {
-        //TODO Woher kommt der Owner?
-        //foreach (AvatarDto avatar in avatarList)
-        //{
-        //    if (!DungeonAvatars.Contains(avatar)) DungeonAvatars.Add(avatar);
-        //    UserAvatarDictionary[avatar.Owner].Remove(avatar);
-        //    UserAvatarDictionary[avatar.Owner].Add(avatar);
-        //}
+        foreach (AvatarDto avatar in avatarList)
+        {
+            if (!DungeonAvatars.Contains(avatar)) DungeonAvatars.Add(avatar);
+            UserAvatarDictionary[avatar.Owner].Remove(avatar);
+            UserAvatarDictionary[avatar.Owner].Add(avatar);
+        }
     }
 
     /// <summary>
     /// Called when the Master opens another user card
     /// </summary>
     /// <param name="user"></param>
-    private void ChangeUser(DungeonUserDto user)
+    private async void ChangeUser(DungeonUserDto user)
     {
+        var userAvatars = await AvatarService.GetAllAvatarsForUser(DungeonId);
+        if (userAvatars is not null)
+        {
+            UserAvatarDictionary[user].Clear();
+            UserAvatarDictionary[user] = userAvatars.ToList();
+        }
         OpenUser = user;
     }
 
@@ -179,6 +226,7 @@
     /// </summary>
     private async void KickUser()
     {
+        if (Dungeon.DungeonMasters.Contains(OpenUser)) Dungeon.DungeonMasters.Remove(OpenUser);
         var success = await GameService.KickAvatar(OpenUser.Id);
         if (success == HttpStatusCode.OK)
         {
@@ -195,6 +243,7 @@
     /// </summary>
     private async void BanUser()
     {
+        if (Dungeon.DungeonMasters.Contains(OpenUser)) Dungeon.DungeonMasters.Remove(OpenUser);
         var success = await GameService.KickAvatar(OpenUser.Id);
         if (success == HttpStatusCode.OK)
         {
@@ -204,5 +253,33 @@
             UserAvatarDictionary.Remove(OpenUser);
             DungeonService.UpdateDungeon(Dungeon);
         }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private async void RemoveDungeonMaster()
+    {
+        if (Dungeon.DungeonMasters.Contains(OpenUser)) Dungeon.DungeonMasters.Remove(OpenUser);
+        DungeonService.UpdateDungeon(Dungeon);
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private async void AddDungeonMaster()
+    {
+        if (!Dungeon.DungeonMasters.Contains(OpenUser)) Dungeon.DungeonMasters.Add(OpenUser);
+        DungeonService.UpdateDungeon(Dungeon);
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="masterOrPlayer"></param>
+    private void ChangeListContent(bool masterOrPlayer)
+    {
+        showMasters = masterOrPlayer;
+        StateHasChanged();
     }
 }

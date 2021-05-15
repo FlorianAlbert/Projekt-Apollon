@@ -17,20 +17,7 @@ namespace Apollon.Mud.Client.Data.Models.Game
         /// The new HP of the player 
         /// </summary>
         [Required(ErrorMessage = "Du musst die neuen Avatar HP angeben")]
-        public string HealthChange { get; set; }
-
-        /*TODO: Rauswerfen?
-        /// <summary>
-        /// The new Damage value of the player
-        /// </summary>
-        [Required(ErrorMessage = "Du musst den neuen Schaden angeben")]
-        public string DamageChange { get; set; }
-
-        /// <summary>
-        /// The new protection value of the player
-        /// </summary>
-        [Required(ErrorMessage = "Du musst die neue Verteidung angeben")]
-        public string ProtectionChange { get; set; }
-        */
+        [Range(0,99, ErrorMessage = "Gib einen gültigen Wert (0-99) an")]
+        public int HealthChange { get; set; }
     }
 }

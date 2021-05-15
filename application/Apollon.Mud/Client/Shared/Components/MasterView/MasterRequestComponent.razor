@@ -43,7 +43,7 @@
                         <ValidationMessage For=@(() => masterRequestModel.RequestAnswer) />
                         <p>Lebenspunkte</p>
                         <input type="range" class="form-range" min="0" max="99" step="1" @bind="@masterRequestModel.HealthChange" @bind:event="oninput" />
-                        <InputText class="form-control mb-3" style="width:3.5rem" @bind-Value="masterRequestModel.HealthChange" />
+                        <InputNumber class="form-control mb-3" style="width:3.5rem" @bind-Value="masterRequestModel.HealthChange" />
                         <ValidationMessage For=@(() => masterRequestModel.HealthChange) />
                         <button class="btn btn-success mt-5" style="width:15rem" type="submit">Bestätigen</button>
                     </EditForm>

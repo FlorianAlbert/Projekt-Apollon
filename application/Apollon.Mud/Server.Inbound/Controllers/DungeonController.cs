@@ -329,7 +329,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Email = x.DungeonOwner.Email,
                         Id = Guid.Parse(x.DungeonOwner.Id)
                     },
-                    DefaultRoom = defaultRoom
+                    DefaultRoom = defaultRoom,
+                    CurrentMaster = new DungeonUserDto()
+                    {
+                        Email = x.CurrentDungeonMaster.Email,
+                        EmailConfirmed = x.CurrentDungeonMaster.EmailConfirmed,
+                        Id = Guid.Parse(x.CurrentDungeonMaster.Id),
+                        LastActive = x.CurrentDungeonMaster.LastActive
+                    }
                 };
             }).ToArray();
 
@@ -411,7 +418,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Email = x.DungeonOwner.Email,
                         Id = Guid.Parse(x.DungeonOwner.Id)
                     },
-                    DefaultRoom = defaultRoom
+                    DefaultRoom = defaultRoom,
+                    CurrentMaster = new DungeonUserDto()
+                    {
+                        Email = x.CurrentDungeonMaster.Email,
+                        EmailConfirmed = x.CurrentDungeonMaster.EmailConfirmed,
+                        Id = Guid.Parse(x.CurrentDungeonMaster.Id),
+                        LastActive = x.CurrentDungeonMaster.LastActive
+                    }
                 };
             }).ToArray();
 
@@ -487,7 +501,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Email = dungeon.DungeonOwner.Email,
                     Id = Guid.Parse(dungeon.DungeonOwner.Id)
                 },
-                DefaultRoom = defaultRoom
+                DefaultRoom = defaultRoom,
+                CurrentMaster = new DungeonUserDto()
+                {
+                    Email = dungeon.CurrentDungeonMaster.Email,
+                    EmailConfirmed = dungeon.CurrentDungeonMaster.EmailConfirmed,
+                    Id = Guid.Parse(dungeon.CurrentDungeonMaster.Id),
+                    LastActive = dungeon.CurrentDungeonMaster.LastActive
+                }
             };
 
             return Ok(dungeonDto);
