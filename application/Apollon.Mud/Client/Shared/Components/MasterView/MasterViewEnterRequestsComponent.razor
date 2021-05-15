@@ -4,11 +4,11 @@
 
 <div class="row bg-white">
     <div class="col-4">
-        <div style="display: flex; flex-direction: column; height: 87vh">
+        <div class="card" style="display: flex; flex-direction: column; height: 87vh">
+            <div class="card-header">
+                <h5>Anfragende Spieler:</h5>
+            </div>
             <div class="list-group" style="overflow-y:auto; height:100%">
-                <button type="button" class="list-group-item list-group-item-action" style="height:100px">
-                    <h5>Anfragende Spieler:</h5>
-                </button>
                 @if (OpenRequestList is not null && OpenRequestList.Count > 0)
                 {
                     @foreach (DungeonUserDto request in OpenRequestList)
