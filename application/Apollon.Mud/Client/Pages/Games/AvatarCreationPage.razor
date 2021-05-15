@@ -65,7 +65,11 @@
                                 {
                                     @foreach (ClassDto dungeonClass in dungeonClasses)
                                     {
-                                        <option value="@dungeonClass.Name">@dungeonClass.Name</option>
+                                        @if(dungeonClass.Status == 0)
+                                        {
+                                            <option value="@dungeonClass.Name">@dungeonClass.Name</option>
+                                        }
+                                        
                                     }
                                 }
                             </select>
@@ -77,7 +81,10 @@
                                 {
                                     @foreach (RaceDto dungeonRace in dungeonRaces)
                                     {
-                                        <option value="@dungeonRace.Name">@dungeonRace.Name</option>
+                                         @if (dungeonRace.Status == 0)
+                                         {
+                                            <option value="@dungeonRace.Name">@dungeonRace.Name</option>
+                                         }
                                     }
                                 }
                             </select>
