@@ -152,6 +152,14 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
                 result = await _userManager.DeleteAsync(user);
             } while (!result.Succeeded);
         }
+
+        /// <inheritdoc cref="IUserDbService.UpdateUserTimestamp"/>
+        public async Task UpdateUserTimestamp(DungeonUser user)
+        {
+            user.LastActive = DateTime.UtcNow;
+
+            await _userManager.UpdateAsync(user);
+        }
         #endregion
     }
 }

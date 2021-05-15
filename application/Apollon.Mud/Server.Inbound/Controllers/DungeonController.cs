@@ -69,7 +69,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 Status = (Status)dungeonDto.Status,
                 Visibility = (Visibility)dungeonDto.Visibility,
-                DungeonOwner = user
+                DungeonOwner = user,
+                LastActive = DateTime.UtcNow
             };
             newDungeon.WhiteList.Add(user);
             newDungeon.DungeonMasters.Add(user);
@@ -305,7 +306,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Email = x.DungeonOwner.Email,
                         Id = Guid.Parse(x.DungeonOwner.Id)
                     },
-                    DefaultRoom = defaultRoom
+                    DefaultRoom = defaultRoom,
+                    LastActive = x.LastActive
                 };
             }).ToArray();
 
@@ -359,7 +361,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Email = x.DungeonOwner.Email,
                         Id = Guid.Parse(x.DungeonOwner.Id)
                     },
-                    DefaultRoom = defaultRoom
+                    DefaultRoom = defaultRoom,
+                    LastActive = x.LastActive
                 };
             }).ToArray();
 
@@ -407,7 +410,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Email = dungeon.DungeonOwner.Email,
                     Id = Guid.Parse(dungeon.DungeonOwner.Id)
                 },
-                DefaultRoom = defaultRoom
+                DefaultRoom = defaultRoom,
+                LastActive = dungeon.LastActive
             };
 
             return Ok(dungeonDto);

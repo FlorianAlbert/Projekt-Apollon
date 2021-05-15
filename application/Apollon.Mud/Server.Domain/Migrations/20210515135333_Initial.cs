@@ -265,7 +265,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     DungeonOwnerId = table.Column<string>(type: "TEXT", nullable: true),
                     Visibility = table.Column<int>(type: "INTEGER", nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    DungeonName = table.Column<string>(type: "TEXT", nullable: true)
+                    DungeonName = table.Column<string>(type: "TEXT", nullable: true),
+                    LastActive = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

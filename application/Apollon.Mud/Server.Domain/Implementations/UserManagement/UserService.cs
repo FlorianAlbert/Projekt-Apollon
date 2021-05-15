@@ -58,7 +58,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             var user = new DungeonUser()
             {
                 UserName = userEmail,
-                Email = userEmail
+                Email = userEmail,
+                LastActive = DateTime.UtcNow
             };
             
             var creationResult = await _userDbService.CreateUser(user, password, !_adminRegistered);

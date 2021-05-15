@@ -86,5 +86,11 @@ namespace Apollon.Mud.Shared.Dungeon
         [JsonProperty("OpenRequests")]
         public ICollection<DungeonUserDto> OpenRequests { get; set; }
 
+        /// <summary>
+        /// The Timestamp when the dungeon got played by an avatar the last time
+        /// </summary>
+        [JsonProperty("LastActive")]
+        public DateTime LastActive { get; set; }
+
     }
 }

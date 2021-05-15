@@ -181,7 +181,17 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <inheritdoc cref="IApprovable.Id"/>
         public Guid Id { get; }
 
+        private Status _Status;
+
         /// <inheritdoc cref="IApprovable.Status"/>
-        public Status Status { get; set; }
+        public Status Status 
+        { 
+            get => _Status;
+            set
+            {
+                _Status = value;
+                Dungeon.LastActive = DateTime.UtcNow;
+            }
+        }
     }
 }
