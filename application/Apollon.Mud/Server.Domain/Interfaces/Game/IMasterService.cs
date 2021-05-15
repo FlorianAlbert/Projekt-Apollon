@@ -46,5 +46,7 @@ namespace Apollon.Mud.Server.Domain.Interfaces.Game
         /// <returns></returns>
         Task<bool> EnterDungeon(DungeonUser user, Guid sessionId, string chatConnectionId, string gameConnectionId,
             Guid dungeonId);
+
+        Task<bool> LeaveDungeon(Guid dungeonId, Guid userId, Guid sessionId);
     }
 }

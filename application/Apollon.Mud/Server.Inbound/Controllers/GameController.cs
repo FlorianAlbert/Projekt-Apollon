@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.Game;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
@@ -136,18 +137,18 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (enterDungeonDto.AvatarId is null) return BadRequest();
             var avatar = dungeon.RegisteredAvatars.FirstOrDefault(a => a.Id == enterDungeonDto.AvatarId.GetValueOrDefault());
             if (avatar is null || avatar.Status == Status.Approved) return BadRequest();
+            if (avatar.Owner != user) return Forbid();
 
-            _connectionService.AddConnection
-            (userId,
+            if (await _playerService.EnterDungeon(
+                userId,
                 sessionId,
                 enterDungeonDto.ChatConnectionId,
                 enterDungeonDto.GameConnectionId,
-                enterDungeonDto.DungeonId,
-                enterDungeonDto.AvatarId);
-            //ToDo in Playerservice --> Listen von Master updaten und Avatare im Raum benachrichtigen und chatpartner updated
-            //avatar.Status = Status.Approved;
-            //if (!await _gameDbService.NewOrUpdate(avatar)) return BadRequest();
-            return Ok();
+                dungeon.Id,
+                avatar.Id))
+                return Ok();
+
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
 
         }
 
@@ -218,12 +219,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             var sessionIdClaim = User.Claims.FirstOrDefault(x => x.Type == "SessionId");
             if (sessionIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var sessionId)) return BadRequest();
 
+            var user = await _userDbService.GetUser(userId);
+            if (user is null) return BadRequest();
+
             var userConnection = _connectionService.GetConnection(userId, sessionId);
             if (userConnection is null) return BadRequest();
             if (!userConnection.IsDungeonMaster) return Forbid();
-
-            var user = await _userDbService.GetUser(userId);
-            if (user is null) return BadRequest();
 
             var dungeon = await _gameDbService.Get<Dungeon>(userConnection.DungeonId);
             if (dungeon is null) return BadRequest();
@@ -235,6 +236,41 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 dungeon.Id);
 
             return Ok();
+        }
+
+        [HttpPost]
+        [Route("leave")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> LeaveDungeon()
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
+            if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
+
+            var sessionIdClaim = User.Claims.FirstOrDefault(x => x.Type == "SessionId");
+            if (sessionIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var sessionId)) return BadRequest();
+
+            var user = await _userDbService.GetUser(userId);
+            if (user is null) return BadRequest();
+
+            var userConnection = _connectionService.GetConnection(userId, sessionId);
+            if (userConnection is null) return BadRequest();
+
+            var dungeon = await _gameDbService.Get<Dungeon>(userConnection.DungeonId);
+            if (dungeon is null) return BadRequest();
+
+            if (userConnection.IsDungeonMaster)
+            {
+                if(await _masterService.LeaveDungeon(dungeon.Id, userId, sessionId)) return Ok();
+            }
+            else
+            {
+                if (await _playerService.LeaveDungeon(userConnection.AvatarId.GetValueOrDefault(), dungeon.Id))
+                    return Ok();
+            }
+
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
         #endregion
     }

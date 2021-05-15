@@ -798,7 +798,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (room is null || room.Status is Status.Pending) return;
 
-            var avatarsToNotify = dungeon.RegisteredAvatars.Where(x => x.CurrentRoom == room && x.Status == Status.Approved).ToList();
+            var avatarsToNotify = room.Avatars.Where(x => x.Status == Status.Approved).ToList();
 
             var avatarsToNotifyConnectionIds =
                 (from avatarToNotify
@@ -837,7 +837,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (room is null || room.Status is Status.Pending) return;
 
-            var avatarsToNotify = dungeon.RegisteredAvatars.Where(x => x.CurrentRoom == room && x.Status == Status.Approved).ToList();
+            var avatarsToNotify = room.Avatars.Where(x => x.Status == Status.Approved).ToList();
 
             var avatarsToNotifyConnectionIdsChat =
                 from avatarToNotify
@@ -877,7 +877,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 .ReceiveGameMessage($"{ avatarName } betritt den Raum!\n");
         }
 
-        public async Task NotifyDungeonMasterEntering(string avatarName, Guid dungeonId)
+        public async Task NotifyDungeonMasterEntering(Guid dungeonId)
         {
             var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
 
@@ -889,6 +889,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             {
                 foreach (var room in dungeon.ConfiguredRooms)
                 {
+                    if(room.Status is Status.Pending) continue;
+
                     var roomAvatars = room.Avatars.Where(x => x.Status is Status.Approved).ToList();
 
                     var roomAvatarsConnectionIds =
@@ -946,7 +948,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             }
         }
 
-        public async Task NotifyDungeonMasterLeaving(string avatarName, Guid dungeonId)
+        public async Task NotifyDungeonMasterLeaving(Guid dungeonId)
         {
             var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
 
@@ -954,6 +956,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             foreach (var room in dungeon.ConfiguredRooms)
             {
+                if (room.Status is Status.Pending) continue;
+
                 var roomAvatars = room.Avatars.Where(x => x.Status is Status.Approved).ToList();
 
                 var roomAvatarsConnectionIds =
@@ -1061,6 +1065,45 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                             }
                         }).ToList());
             }
+        }
+
+        public async Task<bool> EnterDungeon(Guid userId, Guid sessionId, string chatConnectionId, string gameConnectionId, Guid dungeonId,
+            Guid avatarId)
+        {
+
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(a => a.Id == avatarId);
+            if (avatar is null) return false;
+
+            avatar.Status = Status.Approved;
+            if (!await GameDbService.NewOrUpdate(avatar)) return false;
+
+            ConnectionService.AddConnection
+            (userId,
+                sessionId,
+                chatConnectionId,
+                gameConnectionId,
+                dungeonId,
+                avatarId);
+
+            await NotifyAvatarEnteredDungeon(avatar.Name, dungeonId, avatar.CurrentRoom.Id);
+            return true;
+        }
+
+        async Task<bool> IPlayerService.LeaveDungeon(Guid avatarId, Guid dungeonId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(a => a.Id == avatarId);
+            if (avatar is null) return false;
+
+            avatar.Status = Status.Pending;
+            if (!await GameDbService.NewOrUpdate(avatar)) return false;
+
+            ConnectionService.RemoveConnectionByAvatarId(avatarId);
+            await NotifyAvatarLeftDungeon(avatar.Name, dungeonId, avatar.CurrentRoom.Id);
+            return true;
         }
     }
 }

@@ -49,6 +49,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
                 Substitute.For<IUserClaimsPrincipalFactory<DungeonUser>>(),
                 null,
                 null,
+                null,
                 null);
 
             var configurationMock = Substitute.For<IConfiguration>();
@@ -88,6 +89,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
                 userManagerMock,
                 Substitute.For<IHttpContextAccessor>(),
                 Substitute.For<IUserClaimsPrincipalFactory<DungeonUser>>(),
+                null,
                 null,
                 null,
                 null);
@@ -135,6 +137,7 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
                 userManagerMock,
                 Substitute.For<IHttpContextAccessor>(),
                 Substitute.For<IUserClaimsPrincipalFactory<DungeonUser>>(),
+                null,
                 null,
                 null,
                 null);

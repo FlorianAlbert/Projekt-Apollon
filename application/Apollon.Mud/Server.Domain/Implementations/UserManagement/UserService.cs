@@ -90,6 +90,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         }
 
         /// <inheritdoc cref="IUserService.DeleteUser"/>
+        [ExcludeFromCodeCoverage]
         public async Task<bool> DeleteUser(Guid userId)
         {
             return await _userDbService.DeleteUser(userId);
