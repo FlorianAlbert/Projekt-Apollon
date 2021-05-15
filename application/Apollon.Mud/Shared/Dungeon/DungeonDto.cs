@@ -63,6 +63,12 @@ namespace Apollon.Mud.Shared.Dungeon
         public ICollection<DungeonUserDto> DungeonMasters { get; set; }
 
         /// <summary>
+        /// The current Dungeon Master playing the game
+        /// </summary>
+        [JsonProperty("DungeonMasters")]
+        public DungeonUserDto CurrentMaster { get; set; }
+
+        /// <summary>
         /// The owner of the dungeon.
         /// </summary>
         [JsonProperty("DungeonOwner")]

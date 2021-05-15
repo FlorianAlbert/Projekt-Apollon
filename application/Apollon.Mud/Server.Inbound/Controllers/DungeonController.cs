@@ -316,12 +316,48 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     DungeonEpoch = x.DungeonEpoch,
                     Visibility = (int)x.Visibility,
                     Status = (int)x.Status,
+                    BlackList = x.BlackList.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
+                    WhiteList = x.WhiteList.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
+                    DungeonMasters = x.DungeonMasters.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
+                    OpenRequests = x.OpenRequests.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
                     DungeonOwner = new DungeonUserDto
                     {
                         Email = x.DungeonOwner.Email,
                         Id = Guid.Parse(x.DungeonOwner.Id)
                     },
                     DefaultRoom = defaultRoom,
+                    CurrentMaster = x.CurrentDungeonMaster is null ? null : 
+                    new DungeonUserDto()
+                    {
+                        Email = x.CurrentDungeonMaster.Email,
+                        EmailConfirmed = x.CurrentDungeonMaster.EmailConfirmed,
+                        Id = Guid.Parse(x.CurrentDungeonMaster.Id),
+                        LastActive = x.CurrentDungeonMaster.LastActive
+                    },
                     LastActive = x.LastActive
                 };
             }).ToArray();
@@ -371,13 +407,48 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     DungeonEpoch = x.DungeonEpoch,
                     Visibility = (int) x.Visibility,
                     Status = (int) x.Status,
+                    BlackList = x.BlackList.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
+                    WhiteList = x.WhiteList.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
+                    DungeonMasters = x.DungeonMasters.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
+                    OpenRequests = x.OpenRequests.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
                     DungeonOwner = new DungeonUserDto
                     {
                         Email = x.DungeonOwner.Email,
                         Id = Guid.Parse(x.DungeonOwner.Id)
                     },
                     DefaultRoom = defaultRoom,
-                    LastActive = x.LastActive
+                    LastActive = x.LastActive,
+                    CurrentMaster = x.CurrentDungeonMaster is null ? null : new DungeonUserDto()
+                    {
+                        Email = x.CurrentDungeonMaster.Email,
+                        EmailConfirmed = x.CurrentDungeonMaster.EmailConfirmed,
+                        Id = Guid.Parse(x.CurrentDungeonMaster.Id),
+                        LastActive = x.CurrentDungeonMaster.LastActive
+                    }
                 };
             }).ToArray();
 
@@ -420,13 +491,48 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 DungeonEpoch = dungeon.DungeonEpoch,
                 Visibility = (int)dungeon.Visibility,
                 Status = (int)dungeon.Status,
+                BlackList = dungeon.BlackList.Select(u => new DungeonUserDto()
+                {
+                    Email = u.Email,
+                    EmailConfirmed = u.EmailConfirmed,
+                    Id = Guid.Parse(u.Id),
+                    LastActive = u.LastActive
+                }).ToList(),
+                WhiteList = dungeon.WhiteList.Select(u => new DungeonUserDto()
+                {
+                    Email = u.Email,
+                    EmailConfirmed = u.EmailConfirmed,
+                    Id = Guid.Parse(u.Id),
+                    LastActive = u.LastActive
+                }).ToList(),
+                DungeonMasters = dungeon.DungeonMasters.Select(u => new DungeonUserDto()
+                {
+                    Email = u.Email,
+                    EmailConfirmed = u.EmailConfirmed,
+                    Id = Guid.Parse(u.Id),
+                    LastActive = u.LastActive
+                }).ToList(),
+                OpenRequests = dungeon.OpenRequests.Select(u => new DungeonUserDto()
+                {
+                    Email = u.Email,
+                    EmailConfirmed = u.EmailConfirmed,
+                    Id = Guid.Parse(u.Id),
+                    LastActive = u.LastActive
+                }).ToList(),
                 DungeonOwner = new DungeonUserDto
                 {
                     Email = dungeon.DungeonOwner.Email,
                     Id = Guid.Parse(dungeon.DungeonOwner.Id)
                 },
                 DefaultRoom = defaultRoom,
-                LastActive = dungeon.LastActive
+                LastActive = dungeon.LastActive,
+                CurrentMaster = dungeon.CurrentDungeonMaster is null ? null : new DungeonUserDto()
+                {
+                    Email = dungeon.CurrentDungeonMaster.Email,
+                    EmailConfirmed = dungeon.CurrentDungeonMaster.EmailConfirmed,
+                    Id = Guid.Parse(dungeon.CurrentDungeonMaster.Id),
+                    LastActive = dungeon.CurrentDungeonMaster.LastActive
+                }
             };
 
             return Ok(dungeonDto);

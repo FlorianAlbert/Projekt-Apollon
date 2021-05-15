@@ -9,7 +9,7 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Apollon.Mud.Client.Services.Implementiations
+namespace Apollon.Mud.Client.Services.Implementations
 {
     
     public class DungeonService : IDungeonService
@@ -130,6 +130,30 @@ namespace Apollon.Mud.Client.Services.Implementiations
             if(response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<DungeonDto>();
 
             return null;
+        }
+
+        /// <summary>
+        /// Opens a request of a user to enter a private Dungeon
+        /// </summary>
+        /// <param name="dungeonId"></param>
+        /// <returns>True if submitting the request was successfull, else false</returns>
+        public async Task<bool> OpenEnterRequest(Guid dungeonId)
+        {
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.PostAsJsonAsync("api/dungeons/" + dungeonId + "/request", cancellationToken);
+
+            return response.StatusCode == HttpStatusCode.OK;
+        }
+
+        /// <summary>
+        /// Answers a users request to enter a private dungeon
+        /// </summary>
+        /// <param name="dungeonId"></param>
+        /// <returns>True if sending it to the Backend was successfull, else false</returns>
+        public Task<bool> SubmitEnterRequest(Guid dungeonId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

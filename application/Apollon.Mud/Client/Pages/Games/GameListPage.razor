@@ -1,0 +1,116 @@
+﻿@page "/dungeons"
+@using Apollon.Mud.Shared.Dungeon
+@inject NavigationManager NavManager
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+@inject Apollon.Mud.Client.Data.Account.UserContext UserContext
+
+<AuthorizeView>
+    <Authorized>
+        <div class="container shadow d-flex bg-white min-vh-100">
+            <div class="row container-fluid">
+                <div class="col-md-auto mt-3">
+                    <h2>Filter</h2>
+                    <div class="card shadow-sm" style="width: 18rem;">
+                        <div class="card-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="SearchName">Name</label>
+                                    <input type="search" class="form-control" id="searchName" placeholder="Search for a name">
+                                </div>
+                                <div class="form-check mt-2">
+                                    <input type="checkbox" class="form-check-input" id="CheckOnline">
+                                    <label class="form-check-label" for="exampleCheck1">Only show Online</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-2 disabled">Search</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9 mt-3">
+                    <div class="container ">
+                        <h1>Games</h1>
+                        @if (allDungeons.Count == 0)
+                        {
+                            <h2 class="text-muted">Momentan gibt es keine aktiven Dungeons</h2>
+                        }
+                        @foreach (DungeonDto dungeon in allDungeons)
+                        {
+                            @if (dungeon.Status == 0)
+                            {
+                                <div class="card mt-2 shadow">
+                                    <h5 class="card-header">@dungeon.DungeonName</h5>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <p class="card-text">@dungeon.DungeonDescription</p>
+                                        </div>
+                                        @if (dungeon.BlackList is not null && dungeon.BlackList.Contains(UserContext.DungeonUserContext))
+                                        {
+                                            <button class="btn btn-danger float-end" disabled>Gesperrt</button>
+                                        }
+                                        else if (dungeon.OpenRequests is not null && dungeon.OpenRequests.Contains(UserContext.DungeonUserContext))
+                                        {
+                                            <button class="btn btn-outline-success float-end" disabled>Ausstehend</button>
+                                        }
+                                        else if (dungeon.Visibility == 1 || (dungeon.WhiteList is not null && dungeon.WhiteList.Contains(UserContext.DungeonUserContext)))
+                                        {
+                                            <button class="btn btn-success float-end" @onclick="() => JoinDungeonButtonClicked(dungeon)">Beitreten</button>
+                                        }
+                                        else if (dungeon.Visibility == 0)
+                                        {
+                                            <button class="btn btn-primary float-end" @onclick="() => SendDungeonEnterRequest(dungeon)">Anfrage stellen</button>
+                                        }
+                                    </div>
+                                    <div class="card-footer">Erstellt von @dungeon.DungeonOwner.Email.Split("@")[0]</div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent/>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    /// <summary>
+    /// This list contains all dungeons
+    /// </summary>
+    private List<DungeonDto> allDungeons = new List<DungeonDto>();
+
+    /// <summary>
+    /// When initialized the Method requests all Dungeons belonging to user from the Server and saves them locally
+    /// </summary>
+    protected async override Task OnInitializedAsync()
+    {
+
+        var response = await DungeonService.GetAllDungeons();
+        if (!(response is null)) allDungeons = response.ToList();
+
+        StateHasChanged();
+
+    }
+
+    /// <summary>
+    /// When the "Play" Button of a Dungeon is clicked, this Method opens the corresponding avatar selection page
+    /// </summary>
+    /// <param name="dungeon"> The dungeon the user wants to join </param>
+    private void JoinDungeonButtonClicked(DungeonDto dungeon)
+    {
+        NavManager.NavigateTo("/dungeon/avatar/selection/" + dungeon.Id);
+    }
+
+    /// <summary>
+    /// Sends a request to join this Dungeon
+    /// </summary>
+    private async void SendDungeonEnterRequest(DungeonDto dungeon)
+    {
+        var response = await DungeonService.SubmitEnterRequest(dungeon.Id);
+        if (!response)
+        {
+            //TODO Nutzer darauf hinweisen, dass etwas schief lief
+        }
+    }
+}
