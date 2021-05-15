@@ -1,5 +1,4 @@
-﻿@page "/dungeon/avatar/request"
-@page "/dungeon/avatar/request/{DungeonId:guid}"
+﻿@page "/dungeon/avatar/request/{DungeonId:guid}"
 
 @using Apollon.Mud.Shared.Dungeon
 @inject NavigationManager NavManager
@@ -52,10 +51,9 @@
     public Guid DungeonId { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The Dungeon the user wants to join
     /// </summary>
     public DungeonDto RequestedDungeon { get; set; }
-
 
     /// <summary>
     /// When initialized the Method requests all Avatars belonging to user on this dungeon and saves them locally

@@ -1,0 +1,28 @@
+﻿@page "/dungeon/kickedmessage"
+
+<AuthorizeView>
+    <Authorized>
+        <div class="container d-flex justify-content-center">
+            <div class="card mt-5" style="width:45rem">
+                <div class="card-body text-center">
+                    <h1 class="display-2">Dungeon Verlassen</h1>
+                    <section>
+                        <h4 class="ml-2">Du wurdest aus dem Dungeon gekickt oder gebannt</h4>
+                        <h4 class="ml-2">Dies passiert, wenn ein Dungeon Master deinen dir verbietet, weiterhin den Dungeon zu bespielen</h4>
+                        <h4 class="ml-2">Falls du gekickt wurdest, kannst du dem Dungeon erneut beitreten</h4>
+                        <h4>Im Falle eines Banns wurde alle deine Avatare gelöscht und dein Beitritt zum Dungeon ist verboten</h4>
+                        <hr />
+                        <a class="btn btn-primary mt-2" href="/">Zurück zur Startseite</a>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+}

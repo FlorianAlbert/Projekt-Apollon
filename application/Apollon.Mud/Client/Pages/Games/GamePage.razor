@@ -3,6 +3,7 @@
 
 @using Microsoft.AspNetCore.SignalR.Client
 @using Apollon.Mud.Shared.Dungeon.Avatar
+@using Apollon.Mud.Shared.HubContract
 @using System.Net
 @using Apollon.Mud.Client.Shared.Components
 
@@ -70,7 +71,7 @@
                                 </div>
                                 <div class="prompt d-flex">
                                     <input @bind="UserInput" @onkeyup="@CheckForEnter" id="prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" autofocus />
-                                    <button type="submit" id="send" class="btn btn-primary" @onclick="ReadAndSendInput" disabled="@disableSendButton">Send</button>
+                                    <button type="submit" id="send" class="btn btn-primary" @onclick="ReadAndSendInput">Send</button>
                                 </div>
                             </div>
                             <div class="col-4 bg-secondary" style="padding: 0;">
@@ -111,11 +112,6 @@
     /// </summary>
     bool? successfullConnection;
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    bool disableSendButton;
-
     #region Parameters
 
     /// <summary>
@@ -139,7 +135,7 @@
     #region Chat Hub
 
     /// <summary>
-    /// TODO
+    /// The Chat Component used by the page
     /// </summary>
     public ChatComponent ChatChildComponent { get; set; }
 
@@ -153,7 +149,7 @@
     #region Game Hub
 
     /// <summary>
-    /// TODO
+    /// The Connection to the GameHub
     /// </summary>
     public HubConnection GameHubConnection { get; set; }
 
@@ -169,29 +165,28 @@
     /// <returns> Nothing </returns>
     protected override async Task OnInitializedAsync()
     {
-        //TODO Einkommentieren sobald möglich
-        //ChatHubConnection = new HubConnectionBuilder()
-        //    .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/chat")
-        //    .Build();
+        ChatHubConnection = new HubConnectionBuilder()
+            .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/chat")
+            .Build();
 
-        //ChatHubConnection.On<string, string>("ReceiveMessage", ReceiveChatMessage);
+        ChatHubConnection.On<string, string>("ReceiveMessage", ReceiveChatMessage);
 
-        //GameHubConnection = new HubConnectionBuilder()
-        //    .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/game")
-        //    .Build();
+        GameHubConnection = new HubConnectionBuilder()
+            .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/game")
+            .Build();
 
-        //GameHubConnection.On<ICollection<AvatarDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
-        //GameHubConnection.On("NotifyKicked", NotifyUserKicked);
-        //GameHubConnection.On<bool>("NotfiyDungeonLeft", NotifyUserLeft);
-        //GameHubConnection.On<string>("ReceiveGameMessage", ReceiveGameMessage);
+        GameHubConnection.On<ICollection<AvatarDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
+        GameHubConnection.On("NotifyKicked", NotifyUserKicked);
+        GameHubConnection.On<bool>("NotfiyDungeonLeft", NotifyUserLeft);
+        GameHubConnection.On<string>("ReceiveGameMessage", ReceiveGameMessage);
 
-        //await ChatHubConnection.StartAsync();
-        //await GameHubConnection.StartAsync();
+        await ChatHubConnection.StartAsync();
+        await GameHubConnection.StartAsync();
 
-        //var enterRequest = await GameService.EnterDungeon(false, DungeonId, AvatarId, ChatHubConnection.ConnectionId, GameHubConnection.ConnectionId);
+        var enterRequest = await GameService.EnterDungeon(false, DungeonId, AvatarId, ChatHubConnection.ConnectionId, GameHubConnection.ConnectionId);
 
-        //successfullConnection = enterRequest == HttpStatusCode.OK;
-        successfullConnection = true;
+        successfullConnection = enterRequest == HttpStatusCode.OK;
+        successfullConnection = true; //TODO entfernen
 
         var dungeon = await DungeonService.GetDungeon(DungeonId);
 
@@ -208,14 +203,11 @@
     /// <param name="e"></param>
     public void CheckForEnter(KeyboardEventArgs args)
     {
-        if (args.Key == "Enter" && !disableSendButton)
-        {
-            ReadAndSendInput();
-        }
+        if (args.Key == "Enter") ReadAndSendInput();
     }
 
     /// <summary>
-    /// TODO
+    /// Reads the Input of the user and sends it to the Backend
     /// </summary>
     public async void ReadAndSendInput()
     {
@@ -233,10 +225,10 @@
     #region Hub Methods
 
     /// <summary>
-    /// TODO
+    /// Called when the real time SignalR Connection to the Chat Hub receives a new message
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="message"></param>
+    /// <param name="sender">The Name of the sender</param>
+    /// <param name="message">The message content</param>
     /// <returns></returns>
     public void ReceiveChatMessage(string sender, string message)
     {
@@ -244,9 +236,10 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Called when the real time SignalR Connection to the Game Hub receives a new Game Message
+    /// e.g. the reaction to a command
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="message">The text of the message</param>
     /// <returns></returns>
     public async Task ReceiveGameMessage(string message)
     {
@@ -254,39 +247,23 @@
         StateHasChanged();
     }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    /// <param name="avatars"></param>
-    /// <returns></returns>
+    /// <inheritdoc cref="IClientGameHubContract.ReceiveChatPartnerList"/>
     public void UpdateChatPartnerList(ICollection<AvatarDto> avatars)
     {
         ChatChildComponent.UpdateChatPartners(avatars);
     }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    /// <returns></returns>
+    /// <inheritdoc cref="IClientGameHubContract.NotifyKicked"/>
     public async Task NotifyUserKicked()
     {
-        TerminalMessages.Enqueue("Du wurdest aus dem Spiel gekickt. " +
-            "Somit kannst du diesen Dungeon nicht mehr bespielen. Bitte versuche in Zukunft Verhalten, das zu einem Kick führt, zu vermeiden.");
-        disableSendButton = true;
+        NavigationManager.NavigateTo("/dungeon/kickedmessage");
         StateHasChanged();
     }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    /// <returns></returns>
+    /// <inheritdoc cref="IClientGameHubContract.NotifyDungeonLeft(bool)"/>
     public async Task NotifyUserLeft(bool success)
     {
-        if (success)
-        {
-            TerminalMessages.Enqueue("Verbindung erfolgreich getrennt. Sie können den Dungeon jetzt verlassen");
-            disableSendButton = true;
-        }
+        if (success) TerminalMessages.Enqueue("Verbindung erfolgreich getrennt. Sie können den Dungeon jetzt verlassen");
         else TerminalMessages.Enqueue("Beim Trennen der Verbindung ist ein Fehler aufgetreten, bitte versuche es erneut");
         StateHasChanged();
     }

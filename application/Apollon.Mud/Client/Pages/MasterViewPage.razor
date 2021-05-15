@@ -3,10 +3,11 @@
 
 @using Apollon.Mud.Client.Shared.Components.MasterView
 @using Apollon.Mud.Client.Shared.Components
+@using Apollon.Mud.Shared.HubContract
 @using Apollon.Mud.Shared.Dungeon.Avatar
 @using Apollon.Mud.Shared.Game.DungeonMaster
-@using System.Net
 @using Microsoft.AspNetCore.SignalR.Client
+@using System.Net
 
 @inject NavigationManager NavManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -20,8 +21,8 @@
         {
             <ConnectingToServerComponent />
         }
-        //else if (successfullConnection == true)
-        //{
+        else if (successfullConnection == true)
+        {
             <div class="MasterViewLayout" id="MasterViewLayout" style="overflow-x:hidden">
                 <div class="row">
                     <nav class="navbar navbar-light bg-secondary" style="height:6vh">
@@ -70,11 +71,11 @@
                     </div>
                 </div>
             </div>
-        @*}
+        }
         else
         {
             <ServerConnectionFailedComponent />
-        }*@
+        }
 
     </Authorized>
     <NotAuthorized>
@@ -108,7 +109,7 @@
     #region Hubs
 
     /// <summary>
-    /// TODO
+    /// The Connection to the GameHub
     /// </summary>
     public HubConnection GameHubConnection { get; set; }
 
@@ -118,63 +119,57 @@
     public HubConnection ChatHubConnection { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The Chat component used by the page
     /// </summary>
     public ChatComponent ChatChildComponent { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The PlayersList Component used by the page
     /// </summary>
     public MasterPlayerListComponent PlayerListChildComponent { get; set; }
     #endregion
 
     /// <summary>
-    /// TODO
+    /// Builds up the Hub connections, binds the Methods to call and sends an enter Dungeon request
     /// </summary>
     /// <returns></returns>
     protected override async Task OnInitializedAsync()
     {
-        //TODO einkommentieren sobald möglich
-        //ChatHubConnection = new HubConnectionBuilder()
-        //    .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/chat")
-        //    .Build();
+        ChatHubConnection = new HubConnectionBuilder()
+            .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/chat")
+            .Build();
 
-        //ChatHubConnection.On<string, string>("ReceiveMessage", ReceiveChatMessage);
+        ChatHubConnection.On<string, string>("ReceiveMessage", ReceiveChatMessage);
 
-        //GameHubConnection = new HubConnectionBuilder()
-        //    .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/game")
-        //    .Build();
+        GameHubConnection = new HubConnectionBuilder()
+            .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/game")
+            .Build();
 
-        //GameHubConnection.On<ICollection<AvatarDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
-        //GameHubConnection.On<DungeonMasterRequestDto>("ReceiveRequest", ProcessSpecialAction);
-        //GameHubConnection.On<ICollection<AvatarDto>>("ReceiveAvatarList", ProcessAvatarList);
+        GameHubConnection.On<ICollection<AvatarDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
+        GameHubConnection.On<DungeonMasterRequestDto>("ReceiveRequest", ProcessSpecialAction);
+        GameHubConnection.On<ICollection<AvatarDto>>("ReceiveAvatarList", ProcessAvatarList);
 
-        //await ChatHubConnection.StartAsync();
-        //await GameHubConnection.StartAsync();
+        await ChatHubConnection.StartAsync();
+        await GameHubConnection.StartAsync();
 
-        //var enterRequest = await GameService.EnterDungeon(true, DungeonId, null, ChatHubConnection.ConnectionId, GameHubConnection.ConnectionId);
+        var enterRequest = await GameService.EnterDungeon(true, DungeonId, null, ChatHubConnection.ConnectionId, GameHubConnection.ConnectionId);
 
-        //successfullConnection = enterRequest == HttpStatusCode.OK;
-        successfullConnection = true;
+        successfullConnection = enterRequest == HttpStatusCode.OK;
+        successfullConnection = true; //TODO entfernen
 
         StateHasChanged();
     }
 
     #region Hub Methods
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="message"></param>
-    /// <returns></returns>
+    /// <inheritdoc cref="IClientChatHubContract.ReceiveChatMessage(string, string)"/>
     public async Task ReceiveChatMessage(string sender, string message)
     {
         ChatChildComponent.ReceiveChatMessage(sender, message);
     }
 
     /// <summary>
-    /// TODO
+    /// Tells the Chat Component used by the page to update its userlist
     /// </summary>
     /// <param name="avatars"></param>
     /// <returns></returns>
@@ -184,7 +179,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Calls the Request Component used by the page to add the new request
     /// </summary>
     /// <param name="requestDto"></param>
     public void ProcessSpecialAction(DungeonMasterRequestDto requestDto)
@@ -193,23 +188,13 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Calls the Playerlist component used by the page to update its Avatar List
     /// </summary>
     /// <param name="avatars"></param>
     public void ProcessAvatarList(ICollection<AvatarDto> avatars)
     {
         if (masterPage == 0) PlayerListChildComponent.UpdateAvatars(avatars);
     }
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    /// <returns></returns>
-    public async Task NotifyUserKicked()
-    {
-        NavManager.NavigateTo("/dungeon/master/kickedmessage/0");
-    }
-
     #endregion
 
 
@@ -252,11 +237,10 @@
     #endregion
 
     /// <summary>
-    /// TODO
+    /// Leaves the page
     /// </summary>
     public void EndConnectionButtonClicked()
     {
-        //TODO Route zum Beenden aufrufen
         NavManager.NavigateTo("/");
     }
 }

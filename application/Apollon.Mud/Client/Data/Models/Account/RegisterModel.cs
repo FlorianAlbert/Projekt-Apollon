@@ -13,6 +13,7 @@ namespace Apollon.Mud.Client.Data.Models.Account
         /// </summary>
         [Required(ErrorMessage = "Bitte gib Deine E-Mail Adresse an")]
         [EmailAddress(ErrorMessage = "Bitte gib eine gültige E-Mail Adresse ein")]
+        [ValidateComplexType]
         public string Email { get; set; }
 
         /// <summary>
