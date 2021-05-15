@@ -96,22 +96,22 @@
     public Guid DungeonId { get; set; }
 
     /// <summary>
-    /// TODO
+    /// List of all Avatars of the dungeon
     /// </summary>
     List<AvatarDto> dungeonAvatars = new List<AvatarDto>();
 
     /// <summary>
-    /// TODO
+    /// Queue of all incoming and outgoing messages
     /// </summary>
     public Queue<ChatMessage> Messages { get; set; }
 
     /// <summary>
-    /// TODO
+    /// String of the selected Recipient
     /// </summary>
     string chosenRecipient = "NoRecipient";
 
     /// <summary>
-    /// TODO
+    /// String of the message written in the input
     /// </summary>
     string inputMessage = "";
 
@@ -121,7 +121,7 @@
     public bool IsDungeonMaster { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The DungeonDto of the current Dungeon
     /// </summary>
     public DungeonDto Dungeon { get; set; }
 
@@ -133,7 +133,7 @@
 
 
     /// <summary>
-    /// TODO
+    /// Called when the component is initialized, this method receives data from the backend and saves them locally
     /// </summary>
     /// <returns></returns>
     protected async override Task OnInitializedAsync()
@@ -156,7 +156,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Sends the inputMessage to the selected Recipient
     /// </summary>
     public async void SendMessage()
     {
@@ -180,7 +180,6 @@
         if (success) Messages.Enqueue(new ChatMessage(chosenRecipient, inputMessage, false));
         StateHasChanged();
     }
-
 
     /// <inheritdoc cref="IClientChatHubContract.ReceiveChatMessage"/>
     public async Task ReceiveChatMessage(string senderName, string message)

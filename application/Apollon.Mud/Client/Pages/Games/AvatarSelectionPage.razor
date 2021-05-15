@@ -43,7 +43,7 @@
                                             <h5>Avatarname: @avatar.Name</h5>
                                         </div>
                                         <div class="col-2 d-flex flex-column">
-                                            <button class="btn btn-default btn-xs mt-auto d-flex">
+                                            <button class="btn btn-default btn-xs mt-auto d-flex" @onclick="() => RemoveAvatarButtonClicked(avatar)">
                                                 <svg height="20px" width="20px" viewBox="-40 0 427 427.00131" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="m232.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
                                                     <path d="m114.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
@@ -136,7 +136,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// This function navigates to the Game View of the selected Dungeon
     /// </summary>
     /// <param name="avatar"></param>
     public void JoinDungeonButtonClicked(AvatarDto avatar)
@@ -159,16 +159,5 @@
                 StateHasChanged();
             }
         }
-    }
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    /// <param name="avatar"></param>
-    private async void DeleteAvatar(AvatarDto avatar)
-    {
-        var success = await AvatarService.DeleteAvatar(DungeonId, avatar.Id);
-        if (success) userAvatars.Remove(avatar);
-        StateHasChanged();
     }
 }
