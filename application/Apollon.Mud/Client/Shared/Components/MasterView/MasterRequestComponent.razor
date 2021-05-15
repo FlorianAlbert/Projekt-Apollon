@@ -1,16 +1,20 @@
 ﻿@using Apollon.Mud.Client.Data.Models.Game
+@using Apollon.Mud.Shared.Game.DungeonMaster
+@using System.Net
+
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+@inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
 
 <div class="row bg-white" style="padding:0;">
     <div class="col-4">
         <div class="card" style="display: flex; flex-direction: column; height: 87vh">
             <div class="list-group" style="overflow-y:auto; max-height:100%">
-                @for (int i = 0; i < 20; i++)
+                @foreach (DungeonMasterRequestDto request in RequestQueue)
                 {
-
-                    <button type="button" class="list-group-item list-group-item-action">
-                        <h5>Avatarname</h5>
+                    <button type="button" class="list-group-item list-group-item-action" @onclick=" () => OpenRequest(request)">
+                        <h5>@request.Avatar.Name</h5>
                         <span> </span>
-                        <h6>Befehl</h6>
+                        <h6>@request.Request</h6>
                     </button>
                 }
             </div>
@@ -19,24 +23,35 @@
     <div class="col-8">
         <div style="display: flex; flex-direction: column; height: 87vh">
             <div class="container mt-3" style="height:100% ">
-                <h3>Avatarname möchte: </h3>
-                <h5>Befehl</h5>
-                <EditForm EditContext="@masterRequestContext" OnSubmit="@HandleActionAnswerSubmit" novalidate>
-                    <DataAnnotationsValidator />
-                    <InputTextArea class="form-control" placeholder="Raumbeschreibung" @bind-Value="roomDescription" />
-                    <hr class="featurette-divider" />
-                    <InputTextArea class="form-control  mb-5" placeholder="Reaktion" @bind-Value="textReaction" />
-                    <p>Lebenspunkte</p>
-                    <input type="range" class="form-range" min="0" max="100" step="1" @bind="@health" @bind:event="oninput" />
-                    <InputText class="form-control mb-3" style="width:3.5rem" @bind-Value="health" />
-                    <p>Schaden</p>
-                    <input type="range" class="form-range" min="0" max="100" step="1" @bind="@damage" @bind:event="oninput" />
-                    <InputText class="form-control mb-3" style="width:3.5rem" @bind-Value="damage" />
-                    <p>Verteidigung</p>
-                    <input type="range" class="form-range" min="0" max="100" step="1" @bind="@defense" @bind:event="oninput" />
-                    <InputText class="form-control mb-3" style="width:3.5rem" @bind-Value="defense" />
-                    <button class="btn btn-success mt-5" style="width:15rem" type="submit">Bestätigen</button>
-                </EditForm>
+                @if (RequestQueue.Count == 0)
+                {
+                    <h5 class="text-muted">Es gibt keine offenen Anfragen</h5>
+                }
+                else if (CurrentRequest is not null)
+                {
+                    <h3>@CurrentRequest.Avatar.Name möchte: </h3>
+                    <h5>@CurrentRequest.Request</h5>
+                    @if (sendError)
+                    {
+                        <h5 class="text-danger">Beim Senden ist ein Fehler aufgetreten, bitte versuche es erneut</h5>
+                    }
+                    <EditForm EditContext="@masterRequestContext" OnSubmit="@HandleActionAnswerSubmit" novalidate>
+                        <DataAnnotationsValidator />
+                        <InputTextArea class="form-control" placeholder="Raumbeschreibung" @bind-Value="CurrentRequest.Avatar.CurrentRoom.Description" />
+                        <hr class="featurette-divider" />
+                        <InputTextArea class="form-control  mb-5" placeholder="Reaktion" @bind-Value="masterRequestModel.RequestAnswer" />
+                        <ValidationMessage For=@(() => masterRequestModel.RequestAnswer) />
+                        <p>Lebenspunkte</p>
+                        <input type="range" class="form-range" min="0" max="99" step="1" @bind="@masterRequestModel.HealthChange" @bind:event="oninput" />
+                        <InputText class="form-control mb-3" style="width:3.5rem" @bind-Value="masterRequestModel.HealthChange" />
+                        <ValidationMessage For=@(() => masterRequestModel.HealthChange) />
+                        <button class="btn btn-success mt-5" style="width:15rem" type="submit">Bestätigen</button>
+                    </EditForm>
+                }
+                else
+                {
+                    <h5 class="text-muted">Wähle eine Anfrage</h5>
+                }
             </div>
         </div>
     </div>
@@ -59,48 +74,79 @@
     /// </summary>
     EditContext masterRequestContext;
 
-    #region Bound Variables
     /// <summary>
-    /// TODO
+    /// The list of open Requests
     /// </summary>
-    string roomDescription;
+    private List<DungeonMasterRequestDto> _RequestQueue;
+
+    public List<DungeonMasterRequestDto> RequestQueue
+    {
+        get { return _RequestQueue ??= new List<DungeonMasterRequestDto>(); }
+        set { _RequestQueue = value; }
+    }
 
     /// <summary>
-    /// TODO
+    /// The currently opened Request
     /// </summary>
-    string textReaction;
+    public DungeonMasterRequestDto CurrentRequest { get; set; }
 
     /// <summary>
-    /// TODO
+    /// Informs the master about a failed sending
     /// </summary>
-    string health;
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    string damage;
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    string defense;
-    #endregion
+    bool sendError;
 
     /// <summary>
     /// TODO Abhilfe
     /// </summary>
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
         masterRequestContext = new EditContext(masterRequestModel);
+
+        var dungeon = await DungeonService.GetDungeon(DungeonId);
+
+        if (dungeon is not null)
+        {
+            //TODO Offene SpecialActions aus dem Dungeon holen, falls das iwann noch geht
+        }
     }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
     private async Task HandleActionAnswerSubmit()
     {
+        sendError = false;
         var validAnswer = masterRequestContext.Validate();
         if (validAnswer)
         {
-            //TODO Wartend auf Gamecontroller
+            var avatar = CurrentRequest.Avatar;
+            avatar.CurrentHealth = int.Parse(masterRequestModel.HealthChange);
+            var response = await GameService.AnswerDungeonMasterRequest(masterRequestModel.RequestAnswer, avatar);
+            if (response == HttpStatusCode.OK)
+            {
+                RequestQueue.Remove(CurrentRequest);
+                CurrentRequest = null;
+            }
+            else sendError = true;
+            StateHasChanged();
         }
+    }
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="requestDto"></param>
+    /// <returns></returns>
+    public async Task AddMasterRequest(DungeonMasterRequestDto requestDto)
+    {
+        if (requestDto is not null) RequestQueue.Add(requestDto);
+        StateHasChanged();
+    }
+
+    private async Task OpenRequest(DungeonMasterRequestDto requestDto)
+    {
+        CurrentRequest = requestDto;
+        StateHasChanged();
     }
 }

@@ -1,9 +1,12 @@
 ﻿@using Apollon.Mud.Shared.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Avatar
 @using Apollon.Mud.Shared.Dungeon.User
+@using System.Net
+
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 @inject Apollon.Mud.Client.Services.Interfaces.IRoomService RoomService
 @inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
+@inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
 
 <div class="row bg-white">
     <div class="col-4">
@@ -60,21 +63,21 @@
                                 @{int avatarIndex = 1;}
                                 @foreach (AvatarDto avatar in UserAvatarDictionary[OpenUser])
                                 {
-                                <tr>
-                                    <th scope="row">@avatarIndex</th>
-                                    <td>@avatar.Name</td>
-                                    <td>@avatar.Class.Name</td>
-                                    <td>@avatar.Race.Name</td>
-                                    <td>@avatar.CurrentRoom.Name</td>
-                                    @if (avatar.Status == 0)
-                                    {
-                                        <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>
-                                    }
-                                    else
-                                    {
-                                        <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
-                                    }
-                                </tr>
+                                    <tr>
+                                        <th scope="row">@avatarIndex</th>
+                                        <td>@avatar.Name</td>
+                                        <td>@avatar.Class.Name</td>
+                                        <td>@avatar.Race.Name</td>
+                                        <td>@avatar.CurrentRoom.Name</td>
+                                        @if (avatar.Status == 0)
+                                        {
+                                            <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                        }
+                                        else
+                                        {
+                                            <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                        }
+                                    </tr>
                                     avatarIndex++;
                                 }
                             </tbody>
@@ -147,6 +150,22 @@
     }
 
     /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="avatarList"></param>
+    /// <returns></returns>
+    public async Task UpdateAvatars(ICollection<AvatarDto> avatarList)
+    {
+        //TODO Woher kommt der Owner?
+        //foreach (AvatarDto avatar in avatarList)
+        //{
+        //    if (!DungeonAvatars.Contains(avatar)) DungeonAvatars.Add(avatar);
+        //    UserAvatarDictionary[avatar.Owner].Remove(avatar);
+        //    UserAvatarDictionary[avatar.Owner].Add(avatar);
+        //}
+    }
+
+    /// <summary>
     /// Called when the Master opens another user card
     /// </summary>
     /// <param name="user"></param>
@@ -158,25 +177,32 @@
     /// <summary>
     /// Removes the chosen user from the Dungeons Whitelist
     /// </summary>
-    private void KickUser()
+    private async void KickUser()
     {
-        //TODO Im Gamecontroller user Kicken (sobald vorhanden)
-        Dungeon.WhiteList.Remove(OpenUser);
-        AllPlayersList.Remove(OpenUser);
-        UserAvatarDictionary.Remove(OpenUser);
-        DungeonService.UpdateDungeon(Dungeon);
+        var success = await GameService.KickAvatar(OpenUser.Id);
+        if (success == HttpStatusCode.OK)
+        {
+            Dungeon.WhiteList.Remove(OpenUser);
+            AllPlayersList.Remove(OpenUser);
+            UserAvatarDictionary.Remove(OpenUser);
+            DungeonService.UpdateDungeon(Dungeon);
+            OpenUser = null;
+        }
     }
 
     /// <summary>
     /// Sets the chosen user to the Dungeons Blacklist
     /// </summary>
-    private void BanUser()
+    private async void BanUser()
     {
-        //TODO Im Gamecontroller user Kicken (sobald vorhanden)
-        Dungeon.WhiteList.Remove(OpenUser);
-        Dungeon.BlackList.Add(OpenUser);
-        AllPlayersList.Remove(OpenUser);
-        UserAvatarDictionary.Remove(OpenUser);
-        DungeonService.UpdateDungeon(Dungeon);
+        var success = await GameService.KickAvatar(OpenUser.Id);
+        if (success == HttpStatusCode.OK)
+        {
+            Dungeon.WhiteList.Remove(OpenUser);
+            Dungeon.BlackList.Add(OpenUser);
+            AllPlayersList.Remove(OpenUser);
+            UserAvatarDictionary.Remove(OpenUser);
+            DungeonService.UpdateDungeon(Dungeon);
+        }
     }
 }
