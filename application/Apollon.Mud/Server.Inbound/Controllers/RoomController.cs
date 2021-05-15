@@ -72,63 +72,63 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 NeighborWestId = x.NeighborWest?.Id ?? Guid.Empty,
                 NeighborNorthId = x.NeighborNorth?.Id ?? Guid.Empty,
                 Status = (int)x.Status,
-                Consumables = x.Inspectables.OfType<Consumable>()
+                Consumables = x.Inspectables.Where(c => c.Inspectable.GetType() == typeof(Consumable))
                     .Select(c => new ConsumableDto
                     {
-                        Id = c.Id,
-                        Name = c.Name,
-                        Description = c.Description,
-                        Weight = c.Weight,
-                        EffectDescription = c.EffectDescription,
-                        Status = (int)c.Status
+                        Id = c.Inspectable.Id,
+                        Name = c.Inspectable.Name,
+                        Description = c.Inspectable.Description,
+                        Weight = (c.Inspectable as Consumable).Weight,
+                        EffectDescription = (c.Inspectable as Consumable).EffectDescription,
+                        Status = (int)(c.Inspectable as Consumable).Status
                     }).ToList(),
-                Usables = x.Inspectables.OfType<Usable>()
+                Usables = x.Inspectables.Where(u => u.Inspectable.GetType() == typeof(Usable))
                     .Select(u => new UsableDto
                     {
-                        Id = u.Id,
-                        Name = u.Name,
-                        Description = u.Description,
-                        Weight = u.Weight,
-                        Status = (int)u.Status,
-                        DamageBoost = u.DamageBoost
+                        Id = u.Inspectable.Id,
+                        Name = u.Inspectable.Name,
+                        Description = u.Inspectable.Description,
+                        Weight = (u.Inspectable as Usable).Weight,
+                        Status = (int)(u.Inspectable as Usable).Status,
+                        DamageBoost = (u.Inspectable as Usable).DamageBoost
                     }).ToList(),
-                Takeables = x.Inspectables.OfType<Takeable>()
-                    .Where(t => t is not Consumable and not Wearable and not Usable)
+                Takeables = x.Inspectables.Where(t => t.Inspectable.GetType() == typeof(Takeable))
+                    .Where(t => t.Inspectable is not Consumable and not Wearable and not Usable)
                     .Select(t => new TakeableDto
                     {
-                        Id = t.Id,
-                        Name = t.Name,
-                        Description = t.Description,
-                        Weight = t.Weight,
-                        Status = (int)t.Status
+                        Id = t.Inspectable.Id,
+                        Name = t.Inspectable.Name,
+                        Description = t.Inspectable.Description,
+                        Weight = (t.Inspectable as Takeable).Weight,
+                        Status = (int)(t.Inspectable as Takeable).Status
                     }).ToList(),
-                Wearables = x.Inspectables.OfType<Wearable>()
+                Wearables = x.Inspectables.Where(w => w.Inspectable.GetType() == typeof(Wearable))
                     .Select(w => new WearableDto
                     {
-                        Id = w.Id,
-                        Name = w.Name,
-                        Description = w.Description,
-                        Weight = w.Weight,
-                        Status = (int)w.Status,
-                        ProtectionBoost = w.ProtectionBoost
+                        Id = w.Inspectable.Id,
+                        Name = w.Inspectable.Name,
+                        Description = w.Inspectable.Description,
+                        Weight = (w.Inspectable as Wearable).Weight,
+                        Status = (int)(w.Inspectable as Wearable).Status,
+                        ProtectionBoost = (w.Inspectable as Wearable).ProtectionBoost
                     }).ToList(),
-                Npcs = x.Inspectables.OfType<Npc>()
+                Npcs = x.Inspectables.Where(n => n.Inspectable.GetType() == typeof(Npc))
                     .Select(n => new NpcDto
                     {
-                        Id = n.Id,
-                        Name = n.Name,
-                        Description = n.Description,
-                        Status = (int)n.Status,
-                        Text = n.Text
+                        Id = n.Inspectable.Id,
+                        Name = n.Inspectable.Name,
+                        Description = n.Inspectable.Description,
+                        Status = (int)n.Inspectable.Status,
+                        Text = (n.Inspectable as Npc).Text
                     }).ToList(),
                 Inspectables = x.Inspectables
-                    .Where(i => i is not Takeable and not Npc)
+                    .Where(i => i.Inspectable is not Takeable and not Npc)
                     .Select(i => new InspectableDto
                     {
-                        Id = i.Id,
-                        Name = i.Name,
-                        Description = i.Description,
-                        Status = (int)i.Status
+                        Id = i.Inspectable.Id,
+                        Name = i.Inspectable.Name,
+                        Description = i.Inspectable.Description,
+                        Status = (int)i.Inspectable.Status
                     }).ToList(),
                 SpecialActions = x.SpecialActions.Select(s => new RequestableDto
                 {
@@ -168,63 +168,63 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 NeighborWestId = room.NeighborWest?.Id ?? Guid.Empty,
                 NeighborNorthId = room.NeighborNorth?.Id ?? Guid.Empty,
                 Status = (int)room.Status,
-                Consumables = room.Inspectables.OfType<Consumable>()
+                Consumables = room.Inspectables.Where(c => c.Inspectable.GetType() == typeof(Consumable))
                     .Select(c => new ConsumableDto
                     {
-                        Id = c.Id,
-                        Name = c.Name,
-                        Description = c.Description,
-                        Weight = c.Weight,
-                        EffectDescription = c.EffectDescription,
-                        Status = (int)c.Status
+                        Id = c.Inspectable.Id,
+                        Name = c.Inspectable.Name,
+                        Description = c.Inspectable.Description,
+                        Weight = (c.Inspectable as Consumable).Weight,
+                        EffectDescription = (c.Inspectable as Consumable).EffectDescription,
+                        Status = (int)(c.Inspectable as Consumable).Status
                     }).ToList(),
-                Usables = room.Inspectables.OfType<Usable>()
+                Usables = room.Inspectables.Where(u => u.Inspectable.GetType() == typeof(Usable))
                     .Select(u => new UsableDto
                     {
-                        Id = u.Id,
-                        Name = u.Name,
-                        Description = u.Description,
-                        Weight = u.Weight,
-                        Status = (int)u.Status,
-                        DamageBoost = u.DamageBoost
+                        Id = u.Inspectable.Id,
+                        Name = u.Inspectable.Name,
+                        Description = u.Inspectable.Description,
+                        Weight = (u.Inspectable as Usable).Weight,
+                        Status = (int)(u.Inspectable as Usable).Status,
+                        DamageBoost = (u.Inspectable as Usable).DamageBoost
                     }).ToList(),
-                Takeables = room.Inspectables.OfType<Takeable>()
-                    .Where(t => t is not Consumable and not Wearable and not Usable)
+                Takeables = room.Inspectables.Where(t => t.Inspectable.GetType() == typeof(Takeable))
+                    .Where(t => t.Inspectable is not Consumable and not Wearable and not Usable)
                     .Select(t => new TakeableDto
                     {
-                        Id = t.Id,
-                        Name = t.Name,
-                        Description = t.Description,
-                        Weight = t.Weight,
-                        Status = (int)t.Status
+                        Id = t.Inspectable.Id,
+                        Name = t.Inspectable.Name,
+                        Description = t.Inspectable.Description,
+                        Weight = (t.Inspectable as Takeable).Weight,
+                        Status = (int)(t.Inspectable as Takeable).Status
                     }).ToList(),
-                Wearables = room.Inspectables.OfType<Wearable>()
+                Wearables = room.Inspectables.Where(w => w.Inspectable.GetType() == typeof(Wearable))
                     .Select(w => new WearableDto
                     {
-                        Id = w.Id,
-                        Name = w.Name,
-                        Description = w.Description,
-                        Weight = w.Weight,
-                        Status = (int)w.Status,
-                        ProtectionBoost = w.ProtectionBoost
+                        Id = w.Inspectable.Id,
+                        Name = w.Inspectable.Name,
+                        Description = w.Inspectable.Description,
+                        Weight = (w.Inspectable as Wearable).Weight,
+                        Status = (int)(w.Inspectable as Wearable).Status,
+                        ProtectionBoost = (w.Inspectable as Wearable).ProtectionBoost
                     }).ToList(),
-                Npcs = room.Inspectables.OfType<Npc>()
+                Npcs = room.Inspectables.Where(n => n.Inspectable.GetType() == typeof(Npc))
                     .Select(n => new NpcDto
                     {
-                        Id = n.Id,
-                        Name = n.Name,
-                        Description = n.Description,
-                        Status = (int)n.Status,
-                        Text = n.Text
+                        Id = n.Inspectable.Id,
+                        Name = n.Inspectable.Name,
+                        Description = n.Inspectable.Description,
+                        Status = (int)n.Inspectable.Status,
+                        Text = (n.Inspectable as Npc).Text
                     }).ToList(),
                 Inspectables = room.Inspectables
-                    .Where(i => i is not Takeable and not Npc)
+                    .Where(i => i.Inspectable is not Takeable and not Npc)
                     .Select(i => new InspectableDto
                     {
-                        Id = i.Id,
-                        Name = i.Name,
-                        Description = i.Description,
-                        Status = (int)i.Status
+                        Id = i.Inspectable.Id,
+                        Name = i.Inspectable.Name,
+                        Description = i.Inspectable.Description,
+                        Status = (int)i.Inspectable.Status
                     }).ToList(),
                 SpecialActions = room.SpecialActions.Select(s => new RequestableDto
                 {
@@ -363,7 +363,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == usableDto.Id) is Usable usable) room.Inspectables.Add(usable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == usableDto.Id) is Usable usable) room.Inspectables.Add(new usable);
                 }
                 catch (InvalidOperationException ex)
                 {

@@ -40,12 +40,12 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms
         /// </summary>
         public string Name { get; set; }
 
-        private ICollection<Inspectable> _Inspectables;
+        private ICollection<RoomInspectable> _Inspectables;
 
         /// <summary>
         /// All inspectables that are currently in this room
         /// </summary>
-        public virtual ICollection<Inspectable> Inspectables => _Inspectables ??= new List<Inspectable>();
+        public virtual ICollection<RoomInspectable> Inspectables => _Inspectables ??= new List<RoomInspectable>();
 
         /// <summary>
         /// The room that is in the north

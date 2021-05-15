@@ -35,12 +35,12 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
             Status = Status.Pending;
         }
 
-        private Inventory _StartInventory;
+        private ClassInventory _StartInventory;
 
         /// <summary>
         /// The start inventory every avatar with this class has right after creation
         /// </summary>
-        public virtual Inventory StartInventory => _StartInventory ??= new Inventory();
+        public virtual ClassInventory StartInventory => _StartInventory ??= new ClassInventory();
 
         /// <inheritdoc cref="IChoosable.Name"/>
         public string Name { get; set; }

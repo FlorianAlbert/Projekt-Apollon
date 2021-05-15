@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
@@ -51,6 +52,12 @@ namespace Apollon.Mud.Server.Domain.DbContext
         public DbSet<Takeable> Takeables { get; set; }
 
         public DbSet<Inspectable> Inspectables { get; set; }
+
+        public DbSet<RoomInspectable> RoomInspectables { get; set; }
+
+        public DbSet<ClassTakeable> ClassTakeables { get; set; }
+
+        public DbSet<AvatarTakeable> AvatarTakeables { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -136,7 +143,7 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasKey(e => e.Id);
             builder.Entity<Room>()
                 .HasMany(e => e.Inspectables)
-                .WithMany(x => x.Rooms);
+                .WithOne(x => x.Room);
             builder.Entity<Room>()
                 .HasMany(e => e.SpecialActions)
                 .WithMany(x => x.Rooms);
@@ -179,7 +186,7 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasKey(e => e.Id);
             builder.Entity<Class>()
                 .HasMany(e => e.StartInventory)
-                .WithMany(x => x.Classes);
+                .WithOne(x => x.Class);
             builder.Entity<Class>()
                 .HasOne(x => x.Dungeon)
                 .WithMany(x => x.ConfiguredClasses)
@@ -214,7 +221,7 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasKey(e => e.Id);
             builder.Entity<Inspectable>()
                 .HasMany(x => x.Rooms)
-                .WithMany(x => x.Inspectables);
+                .WithOne(x => x.Inspectable);
             builder.Entity<Inspectable>()
                 .HasOne(x => x.Dungeon)
                 .WithMany(x => x.ConfiguredInspectables)
@@ -229,7 +236,7 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasKey(x => x.Id);
             builder.Entity<Avatar>()
                 .HasMany(e => e.Inventory)
-                .WithMany(x => x.InventoryAvatars);
+                .WithOne(x => x.Avatar);
             builder.Entity<Avatar>()
                 .HasOne(e => e.Armor)
                 .WithMany(x => x.ArmorAvatars)
@@ -291,14 +298,14 @@ namespace Apollon.Mud.Server.Domain.DbContext
 
             builder.Entity<Takeable>()
                 .HasMany(x => x.Classes)
-                .WithMany(x => x.StartInventory); 
+                .WithOne(x => x.Takeable); 
             builder.Entity<Takeable>()
                 .HasMany(x => x.HoldingItemAvatars)
                 .WithOne(x => x.HoldingItem)
                 .OnDelete(DeleteBehavior.SetNull); 
             builder.Entity<Takeable>()
                 .HasMany(x => x.InventoryAvatars)
-                .WithMany(x => x.Inventory);
+                .WithOne(x => x.Takeable);
             builder.Entity<Takeable>()
                 .Property(x => x.Id)
                 .HasConversion(
@@ -333,6 +340,32 @@ namespace Apollon.Mud.Server.Domain.DbContext
                     x => x.ToString(),
                     x => Guid.Parse(x));
 
+            builder.Entity<AvatarTakeable>()
+                .HasKey(x => x.Id);
+            builder.Entity<AvatarTakeable>()
+                .HasOne(x => x.Avatar)
+                .WithMany(x => x.Inventory);
+            builder.Entity<AvatarTakeable>()
+                .HasOne(x => x.Takeable)
+                .WithMany(x => x.InventoryAvatars);
+
+            builder.Entity<ClassTakeable>()
+                .HasKey(x => x.Id);
+            builder.Entity<ClassTakeable>()
+                .HasOne(x => x.Class)
+                .WithMany(x => x.StartInventory);
+            builder.Entity<ClassTakeable>()
+                .HasOne(x => x.Takeable)
+                .WithMany(x => x.Classes);
+
+            builder.Entity<RoomInspectable>()
+                .HasKey(x => x.Id);
+            builder.Entity<RoomInspectable>()
+                .HasOne(x => x.Room)
+                .WithMany(x => x.Inspectables);
+            builder.Entity<RoomInspectable>()
+                .HasOne(x => x.Inspectable)
+                .WithMany(x => x.Rooms);
 
             base.OnModelCreating(builder);
         }

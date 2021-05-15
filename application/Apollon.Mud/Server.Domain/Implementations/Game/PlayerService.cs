@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
@@ -196,18 +197,18 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (avatarConnection is null) return;
 
-            var inspectable = avatar.CurrentRoom.Inspectables.FirstOrDefault(x => x.Name.NormalizeString() == npcName.NormalizeString());
+            var inspectable = avatar.CurrentRoom.Inspectables.FirstOrDefault(x => x.Inspectable.Name.NormalizeString() == npcName.NormalizeString());
 
-            if (inspectable is null || inspectable.Status is Status.Pending)
+            if (inspectable?.Inspectable is null || inspectable.Inspectable.Status is Status.Pending)
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"Hier gibt es keinen NPC mit dem Namen { npcName }!\n");
 
                 return;
             }
 
-            if (inspectable is not Npc npc)
+            if (inspectable.Inspectable is not Npc npc)
             {
-                await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"Mit { inspectable.Name } kannst du nicht sprechen!\n");
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"Mit { inspectable.Inspectable.Name } kannst du nicht sprechen!\n");
 
                 return;
             }
@@ -270,8 +271,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (avatarConnection is null) return;
 
-            var itemToWear = avatar.Inventory.FirstOrDefault(x => x.Name.NormalizeString() == itemName.NormalizeString());
-            if (itemToWear is null || itemToWear.Status is Status.Pending)
+            var itemToWear = avatar.Inventory.FirstOrDefault(x => x.Takeable.Name.NormalizeString() == itemName.NormalizeString());
+            if (itemToWear?.Takeable is null || itemToWear.Takeable.Status is Status.Pending)
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
                     .ReceiveGameMessage("In deinem Inventar existiert kein Item mit diesem Namen!\n");
@@ -279,10 +280,10 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 return;
             }
 
-            if (itemToWear is not Wearable wearable)
+            if (itemToWear.Takeable is not Wearable wearable)
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                    .ReceiveGameMessage($"{ itemToWear.Name } kannst du nicht anziehen!\n");
+                    .ReceiveGameMessage($"{ itemToWear.Takeable.Name } kannst du nicht anziehen!\n");
 
                 return;
             }
@@ -293,11 +294,18 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
                 avatar.Armor = wearable;
 
-                avatar.Inventory.Remove(wearable);
+                avatar.Inventory.Remove(itemToWear);
 
-                avatar.Inventory.Add(wornWearable);
+                var avatarTakeable = new AvatarTakeable
+                {
+                    Takeable = wornWearable,
+                    Id = Guid.NewGuid(),
+                    Avatar = avatar
+                };
 
-                if (!avatar.Inventory.Contains(wornWearable))
+                avatar.Inventory.Add(avatarTakeable);
+
+                if (!avatar.Inventory.Contains(avatarTakeable))
                 {
                     var room = await GameDbService.Get<Room>(avatar.CurrentRoom.Id);
 
@@ -310,7 +318,12 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         return;
                     }
 
-                    room.Inspectables.Add(wornWearable);
+                    room.Inspectables.Add(new RoomInspectable
+                    {
+                        Inspectable = wornWearable,
+                        Id = Guid.NewGuid(),
+                        Room = room
+                    });
 
                     if (!await GameDbService.NewOrUpdate(room))
                     {
@@ -335,7 +348,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 }
 
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                    .ReceiveGameMessage($"Du trägst nun { itemToWear.Name } als Rüstung!\n");
+                    .ReceiveGameMessage($"Du trägst nun { itemToWear.Takeable.Name } als Rüstung!\n");
             }
         }
 
@@ -351,8 +364,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (avatarConnection is null) return;
 
-            var takeable = avatar.Inventory.FirstOrDefault(x => x.Name.NormalizeString() == itemName.NormalizeString());
-            if (takeable is null || takeable.Status is Status.Pending)
+            var takeable = avatar.Inventory.FirstOrDefault(x => x.Takeable.Name.NormalizeString() == itemName.NormalizeString());
+            if (takeable?.Takeable is null || takeable.Takeable.Status is Status.Pending)
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
                     .ReceiveGameMessage("In deinem Inventar existiert kein Item mit diesem Namen!\n");
@@ -360,15 +373,15 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 return;
             }
 
-            if (takeable is not Consumable consumable)
+            if (takeable.Takeable is not Consumable consumable)
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                    .ReceiveGameMessage($"{ takeable.Name } kann nicht konsumiert werden!\n");
+                    .ReceiveGameMessage($"{ takeable.Takeable.Name } kann nicht konsumiert werden!\n");
 
                 return;
             }
 
-            avatar.Inventory.Remove(consumable);
+            avatar.Inventory.Remove(takeable);
 
             if (!await GameDbService.NewOrUpdate(avatar))
             {
@@ -395,8 +408,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (avatarConnection is null) return;
 
-            var itemToThrowAway = avatar.Inventory.FirstOrDefault(x => x.Name.NormalizeString() == itemName.NormalizeString());
-            if (itemToThrowAway is null || itemToThrowAway.Status is Status.Pending)
+            var itemToThrowAway = avatar.Inventory.FirstOrDefault(x => x.Takeable.Name.NormalizeString() == itemName.NormalizeString());
+            if (itemToThrowAway?.Takeable is null || itemToThrowAway.Takeable.Status is Status.Pending)
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
                     .ReceiveGameMessage("In deinem Inventar existiert kein Item mit diesem Namen!\n");
@@ -415,7 +428,12 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 return;
             }
 
-            room.Inspectables.Add(itemToThrowAway);
+            room.Inspectables.Add(new RoomInspectable
+            {
+                Id = Guid.NewGuid(),
+                Inspectable = itemToThrowAway.Takeable,
+                Room = room
+            });
 
             if (!await GameDbService.NewOrUpdate(room))
             {
@@ -438,7 +456,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             }
 
             await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                .ReceiveGameMessage($"{ itemToThrowAway.Name } befindet sich jetzt wieder im Raum!\n");
+                .ReceiveGameMessage($"{ itemToThrowAway.Takeable.Name } befindet sich jetzt wieder im Raum!\n");
         }
 
         private async Task Store(Guid dungeonId, Guid avatarId)
@@ -472,9 +490,16 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 return;
             }
 
-            avatar.Inventory.Add(avatar.HoldingItem);
+            var avatarItem = new AvatarTakeable
+            {
+                Takeable = avatar.HoldingItem,
+                Id = Guid.NewGuid(),
+                Avatar = avatar
+            };
 
-            if (!avatar.Inventory.Contains(avatar.HoldingItem))
+            avatar.Inventory.Add(avatarItem);
+
+            if (!avatar.Inventory.Contains(avatarItem))
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
                     .ReceiveGameMessage("In deinem Inventar ist nicht genügend Platz, um dieses Item noch unterzubringen!\n");
@@ -509,8 +534,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (avatarConnection is null) return;
 
-            var itemToHold = avatar.Inventory.FirstOrDefault(x => x.Name.NormalizeString() == itemName.NormalizeString());
-            if (itemToHold is null || itemToHold.Status is Status.Pending)
+            var itemToHold = avatar.Inventory.FirstOrDefault(x => x.Takeable.Name.NormalizeString() == itemName.NormalizeString());
+            if (itemToHold?.Takeable is null || itemToHold.Takeable.Status is Status.Pending)
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
                     .ReceiveGameMessage("In deinem Inventar existiert kein Item mit diesem Namen!\n");
@@ -520,9 +545,14 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (avatar.HoldingItem is not null)
             {
-                var heldItem = await GameDbService.Get<Takeable>(avatar.HoldingItem.Id);
+                var heldItem = new AvatarTakeable
+                {
+                    Takeable = await GameDbService.Get<Takeable>(avatar.HoldingItem.Id),
+                    Id = Guid.NewGuid(),
+                    Avatar = avatar
+                };
 
-                avatar.HoldingItem = itemToHold;
+                avatar.HoldingItem = itemToHold.Takeable;
 
                 avatar.Inventory.Remove(itemToHold);
 
@@ -541,7 +571,12 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         return;
                     }
 
-                    room.Inspectables.Add(heldItem);
+                    room.Inspectables.Add(new RoomInspectable
+                    {
+                        Inspectable = heldItem.Takeable,
+                        Id = Guid.NewGuid(),
+                        Room = room
+                    });
 
                     if (!await GameDbService.NewOrUpdate(room))
                     {
@@ -553,7 +588,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                     }
 
                     await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                        .ReceiveGameMessage($"In deinem Inventar war nicht mehr genügend Platz, deshalb wurde dein zuvor gehaltenes Item { heldItem.Name } im Raum abgelegt!\n");
+                        .ReceiveGameMessage($"In deinem Inventar war nicht mehr genügend Platz, deshalb wurde dein zuvor gehaltenes Item { heldItem.Takeable.Name } im Raum abgelegt!\n");
                 }
 
                 if (!await GameDbService.NewOrUpdate(avatar))
@@ -566,7 +601,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 }
 
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                    .ReceiveGameMessage($"Du hältst nun { itemToHold.Name } in der Hand!\n");
+                    .ReceiveGameMessage($"Du hältst nun { itemToHold.Takeable.Name } in der Hand!\n");
             }
         }
 
@@ -582,9 +617,9 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (avatarConnection is null) return;
 
-            var inspectable = avatar.CurrentRoom.Inspectables.FirstOrDefault(x => x.Name.NormalizeString() == itemName.NormalizeString());
+            var inspectable = avatar.CurrentRoom.Inspectables.FirstOrDefault(x => x.Inspectable.Name.NormalizeString() == itemName.NormalizeString());
 
-            if (inspectable is null || inspectable.Status is Status.Pending)
+            if (inspectable?.Inspectable is null || inspectable.Inspectable.Status is Status.Pending)
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
                     .ReceiveGameMessage("Hier gibt es kein Objekt mit diesem Namen!\n");
@@ -592,10 +627,10 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 return;
             }
 
-            if (inspectable is not Takeable takeable)
+            if (inspectable.Inspectable is not Takeable takeable)
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                    .ReceiveGameMessage($"{ inspectable.Name } kannst du leider nicht aufnehmen!\n");
+                    .ReceiveGameMessage($"{ inspectable.Inspectable.Name } kannst du leider nicht aufnehmen!\n");
 
                 return;
             }
@@ -610,7 +645,14 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 return;
             }
 
-            avatar.Inventory.Add(takeable);
+            var avatarTakeable = new AvatarTakeable
+            {
+                Id = Guid.NewGuid(),
+                Avatar = avatar,
+                Takeable = takeable
+            };
+
+            avatar.Inventory.Add(avatarTakeable);
 
             if (!await GameDbService.NewOrUpdate(avatar))
             {
@@ -621,7 +663,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 return;
             }
 
-            if (!avatar.Inventory.Contains(takeable))
+            if (!avatar.Inventory.Contains(avatarTakeable))
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
                     .ReceiveGameMessage("Dein Inventar kann dieses Item nicht mehr aufnehmen! Es ist wohl zu schwer!\n");
@@ -629,7 +671,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 return;
             }
 
-            room.Inspectables.Remove(takeable);
+            room.Inspectables.Remove(inspectable);
 
             if (!await GameDbService.NewOrUpdate(room))
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId)
@@ -654,8 +696,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             if (room.Inspectables.Count != 0)
             {
                 description += "\n\tGegenstände:\n";
-                description = room.Inspectables.Where(x => x.Status is Status.Approved).Aggregate(description,
-                    (current, inspectable) => current + $"\t\t{ inspectable.Name }\n");
+                description = room.Inspectables.Where(x => x.Inspectable.Status is Status.Approved).Aggregate(description,
+                    (current, inspectable) => current + $"\t\t{ inspectable.Inspectable.Name }\n");
             }
 
             if (room.Avatars.Count == 0) return description;
@@ -744,7 +786,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (avatarConnection is null) return;
 
-            var inspectable = avatar.CurrentRoom.Inspectables.FirstOrDefault(x => x.Name.NormalizeString() == inspectableName.NormalizeString());
+            var inspectable = avatar.CurrentRoom.Inspectables.FirstOrDefault(x => x.Inspectable.Name.NormalizeString() == inspectableName.NormalizeString())?.Inspectable;
 
             if (inspectable is null || inspectable.Status is Status.Pending)
             {
@@ -787,8 +829,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             return avatar.Inventory.Count == 0
                 ? "\tMaximalgewicht: 100\n\tInventar ist leer"
-                : avatar.Inventory.Where(x => x.Status is Status.Approved)
-                    .Aggregate("\tMaximalgewicht: 100\n", (s, t) => s + $"\t- { t.Name } (Gewicht: { t.Weight })\n");
+                : avatar.Inventory.Where(x => x.Takeable.Status is Status.Approved)
+                    .Aggregate("\tMaximalgewicht: 100\n", (s, t) => s + $"\t- { t.Takeable.Name } (Gewicht: { t.Takeable.Weight })\n");
         }
 
         private async Task<string> GenerateAvatarProperties(Guid avatarId)

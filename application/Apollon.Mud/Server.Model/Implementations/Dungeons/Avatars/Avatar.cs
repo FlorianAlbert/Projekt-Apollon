@@ -20,7 +20,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
     /// </summary>
     public class Avatar : IApprovable
     {
-        private Inventory _Inventory;
+        private AvatarInventory _Inventory;
 
         private int _HealthDifference;
 
@@ -52,7 +52,15 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
             MaxHealth = ChosenRace.DefaultHealth + ChosenClass.DefaultHealth;
 
             // CHECK: überprüfen ob Referenz oder Kopie genommen wird
-            Inventory = chosenClass.StartInventory;
+            foreach (var classTakeable in chosenClass.StartInventory)
+            {
+                Inventory.Add(new AvatarTakeable
+                {
+                    Id = Guid.NewGuid(),
+                    Takeable = classTakeable.Takeable,
+                    Avatar = this
+                });
+            }
         }
 
         /// <summary>
@@ -94,7 +102,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <summary>
         /// The actual health value of the avatar
         /// </summary>
-        public int CurrentHealth 
+        public int CurrentHealth
         {
             get => MaxHealth - _HealthDifference;
             set
@@ -108,9 +116,9 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <summary>
         /// The damage value of the avatar
         /// </summary>
-        public int Damage 
+        public int Damage
         {
-            get 
+            get
             {
                 var result = ChosenClass.DefaultDamage + ChosenRace.DefaultDamage;
 
@@ -123,8 +131,8 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <summary>
         /// The protection value of the avatar
         /// </summary>
-        public int Protection 
-        { 
+        public int Protection
+        {
             get
             {
                 var result = ChosenRace.DefaultProtection + ChosenClass.DefaultProtection;
@@ -139,9 +147,9 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// The inventory with everything the avatar is carrying
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public virtual Inventory Inventory 
-        { 
-            get => _Inventory ??= new Inventory();
+        public virtual AvatarInventory Inventory
+        {
+            get => _Inventory ??= new AvatarInventory();
             init => _Inventory = value;
         }
 
@@ -184,8 +192,8 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         private Status _Status;
 
         /// <inheritdoc cref="IApprovable.Status"/>
-        public Status Status 
-        { 
+        public Status Status
+        {
             get => _Status;
             set
             {

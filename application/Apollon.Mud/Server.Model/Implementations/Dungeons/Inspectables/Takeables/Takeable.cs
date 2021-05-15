@@ -30,12 +30,12 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeabl
         /// </summary>
         public int Weight { get; set; }
 
-        private ICollection<Avatar> _InventoryAvatars;
+        private ICollection<AvatarTakeable> _InventoryAvatars;
 
         /// <summary>
         /// The avatars whose inventory contain this takeable
         /// </summary>
-        public virtual ICollection<Avatar> InventoryAvatars => _InventoryAvatars ??= new List<Avatar>();
+        public virtual ICollection<AvatarTakeable> InventoryAvatars => _InventoryAvatars ??= new List<AvatarTakeable>();
 
         private ICollection<Avatar> _HoldingItemAvatars;
 
@@ -44,11 +44,11 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeabl
         /// </summary>
         public virtual ICollection<Avatar> HoldingItemAvatars => _HoldingItemAvatars ??= new List<Avatar>();
 
-        private ICollection<Class> _Classes;
+        private ICollection<ClassTakeable> _Classes;
 
         /// <summary>
         /// The classes whose StartInventory contain this takeable
         /// </summary>
-        public virtual ICollection<Class> Classes => _Classes ??= new List<Class>();
+        public virtual ICollection<ClassTakeable> Classes => _Classes ??= new List<ClassTakeable>();
     }
 }

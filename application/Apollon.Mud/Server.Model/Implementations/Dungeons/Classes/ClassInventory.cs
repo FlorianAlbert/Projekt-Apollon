@@ -1,32 +1,28 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Shared.Implementations.Dungeons;
 
-namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
+namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Classes
 {
-    /// <summary>
-    /// An inventory which contains takeables
-    /// </summary>
-    public class Inventory : ICollection<Takeable>
+    public class ClassInventory : ICollection<ClassTakeable>
     {
         private const int _MaxWeight = 100;
 
-        private ICollection<Takeable> _Items;
+        private ICollection<ClassTakeable> _Items;
 
-        private ICollection<Takeable> Items => _Items ??= new List<Takeable>();
+        private ICollection<ClassTakeable> Items => _Items ??= new List<ClassTakeable>();
 
-        public Inventory(){}
+        public ClassInventory() { }
 
         /// <summary>
         /// Adds all possible Takeables while the WeightSum of the Inventory is less then _MaxWeight.
         /// </summary>
         /// <param name="takeables"></param>
-        public Inventory(IEnumerable<Takeable> takeables)
+        public ClassInventory(IEnumerable<ClassTakeable> takeables)
         {
             foreach (var takeable in takeables)
             {
@@ -37,54 +33,54 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <summary>
         /// weight sum of all of the items in the inventory
         /// </summary>
-        public int WeightSum => Items.Where(x => x.Status is Status.Approved).Sum(takeable => takeable.Weight);
+        public int WeightSum => Items.Where(x => x.Takeable.Status is Status.Approved).Sum(takeable => takeable.Takeable.Weight);
 
-        /// <inheritdoc cref="ICollection{Takeable}.Count"/>
+        /// <inheritdoc cref="ICollection{ClassTakeable}.Count"/>
         [ExcludeFromCodeCoverage]
         public int Count => Items.Count;
 
-        /// <inheritdoc cref="ICollection{Takeable}.IsReadOnly"/>
+        /// <inheritdoc cref="ICollection{ClassTakeable}.IsReadOnly"/>
         [ExcludeFromCodeCoverage]
         public bool IsReadOnly => false;
 
-        /// <inheritdoc cref="ICollection{Takeable}.Add"/>
-        public void Add(Takeable item)
+        /// <inheritdoc cref="ICollection{ClassTakeable}.Add"/>
+        public void Add(ClassTakeable item)
         {
-            if (item != null && (item.Status is Status.Pending || item.Status is Status.Approved && WeightSum + item.Weight <= _MaxWeight))
+            if (item != null && (item.Takeable.Status is Status.Pending || item.Takeable.Status is Status.Approved && WeightSum + item.Takeable.Weight <= _MaxWeight))
                 Items.Add(item);
         }
 
-        /// <inheritdoc cref="ICollection{Takeable}.Clear"/>
+        /// <inheritdoc cref="ICollection{ClassTakeable}.Clear"/>
         [ExcludeFromCodeCoverage]
         public void Clear()
         {
             Items.Clear();
         }
 
-        /// <inheritdoc cref="ICollection{Takeable}.Contains"/>
+        /// <inheritdoc cref="ICollection{ClassTakeable}.Contains"/>
         [ExcludeFromCodeCoverage]
-        public bool Contains(Takeable item)
+        public bool Contains(ClassTakeable item)
         {
             return Items.Contains(item);
         }
 
-        /// <inheritdoc cref="ICollection{Takeable}.CopyTo"/>
+        /// <inheritdoc cref="ICollection{ClassTakeable}.CopyTo"/>
         [ExcludeFromCodeCoverage]
-        public void CopyTo(Takeable[] array, int arrayIndex)
+        public void CopyTo(ClassTakeable[] array, int arrayIndex)
         {
             Items.CopyTo(array, arrayIndex);
         }
 
-        /// <inheritdoc cref="IEnumerable{Takeable}.GetEnumerator"/>
+        /// <inheritdoc cref="IEnumerable{ClassTakeable}.GetEnumerator"/>
         [ExcludeFromCodeCoverage]
-        public IEnumerator<Takeable> GetEnumerator()
+        public IEnumerator<ClassTakeable> GetEnumerator()
         {
             return Items.GetEnumerator();
         }
 
-        /// <inheritdoc cref="ICollection{Takeable}.Remove"/>
+        /// <inheritdoc cref="ICollection{ClassTakeable}.Remove"/>
         [ExcludeFromCodeCoverage]
-        public bool Remove(Takeable item)
+        public bool Remove(ClassTakeable item)
         {
             return Items.Remove(item);
         }
@@ -102,7 +98,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <param name="predicate">The condition the result item has to fulfill</param>
         /// <returns>The first matching item</returns>
         [ExcludeFromCodeCoverage]
-        public Takeable FirstOrDefault(Func<Takeable, bool> predicate)
+        public ClassTakeable FirstOrDefault(Func<ClassTakeable, bool> predicate)
         {
             return Items.FirstOrDefault(predicate);
         }
