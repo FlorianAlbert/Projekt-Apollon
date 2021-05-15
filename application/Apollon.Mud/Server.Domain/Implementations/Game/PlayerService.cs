@@ -1067,6 +1067,21 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             }
         }
 
+        public async Task NotifyAvatarMovedToDefaultRoom(Guid avatarId, Guid dungeonId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+            var room = dungeon?.DefaultRoom;
+            if (room is null) return;
+
+            var connection = ConnectionService.GetConnectionByAvatarId(avatarId);
+            if (connection is null) return;
+
+            var roomDescription = await GenerateRoomDescription(dungeonId, room.Id);
+
+            await HubContext.Clients.Clients(connection.GameConnectionId)
+                .ReceiveGameMessage($"Du wurdest in den Standardraum verschoben!\n + {roomDescription}");
+        }
+
         public async Task<bool> EnterDungeon(Guid userId, Guid sessionId, string chatConnectionId, string gameConnectionId, Guid dungeonId,
             Guid avatarId)
         {

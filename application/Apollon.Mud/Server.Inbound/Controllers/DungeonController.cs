@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
+using Apollon.Mud.Server.Domain.Interfaces.Game;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Dungeon.User;
@@ -29,15 +31,18 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         private IUserService UserService { get; }
 
+        private IMasterService MasterService { get; }
+
         /// <summary>
         /// Creates a new instance of DungeonController
         /// </summary>
         /// <param name="gameDbService">The GameDbService to communicate with the database</param>
         /// <param name="userService">The UserService to get user informations</param>
-        public DungeonController(IGameDbService gameDbService, IUserService userService)
+        public DungeonController(IGameDbService gameDbService, IUserService userService, IMasterService masterService)
         {
             GameConfigService = gameDbService;
             UserService = userService;
+            MasterService = masterService;
         }
 
         /// <summary>
@@ -153,11 +158,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var dungeonMasterTasks =
                     dungeonDto.DungeonMasters.Select(async x => await UserService.GetUser(x.Id));
-                var dungeonMasters = await Task.WhenAll(dungeonMasterTasks);
-                foreach (var dungeonMaster in dungeonMasters)
-                {
-                    if (dungeonMaster is not null) dungeonToUpdate.DungeonMasters.Add(dungeonMaster);
-                }
+            var dungeonMasters = await Task.WhenAll(dungeonMasterTasks);
+            foreach (var dungeonMaster in dungeonMasters)
+            {
+                if (dungeonMaster is not null) dungeonToUpdate.DungeonMasters.Add(dungeonMaster);
+            }
+            dungeonToUpdate.DungeonMasters.Add(dungeonToUpdate.DungeonOwner);
 
 
             dungeonDto.WhiteList ??= new List<DungeonUserDto>
@@ -169,20 +175,29 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             };
 
             var whiteListTasks = dungeonDto.WhiteList.Select(async x => await UserService.GetUser(x.Id));
-                var dungeonWhiteList = await Task.WhenAll(whiteListTasks);
-                foreach (var dungeonUser in dungeonWhiteList)
-                {
-                    if (dungeonUser is not null) dungeonToUpdate.WhiteList.Add(dungeonUser);
-                }
-            
+            var dungeonWhiteList = await Task.WhenAll(whiteListTasks);
+            foreach (var dungeonUser in dungeonWhiteList)
+            {
+                if (dungeonUser is not null) dungeonToUpdate.WhiteList.Add(dungeonUser);
+            }
+            dungeonToUpdate.WhiteList.Add(dungeonToUpdate.DungeonOwner);
+
 
             if (dungeonDto.BlackList is not null)
             {
                 var blackListTasks = dungeonDto.BlackList.Select(async x => await UserService.GetUser(x.Id));
                 var dungeonBlackList = await Task.WhenAll(blackListTasks);
-                foreach (var dungeonUser in dungeonBlackList)           //TODO: Alle aktiven Avatare der user kicken und alle Avatare des users im dungeon löschen
+                foreach (var dungeonUser in dungeonBlackList)           //TODO: alle Avatare des users im dungeon löschen?
                 {
-                    if (dungeonUser is not null) dungeonToUpdate.BlackList.Add(dungeonUser);
+                    if (dungeonUser is null || dungeonUser == dungeonToUpdate.DungeonOwner) continue;
+
+                    dungeonToUpdate.BlackList.Add(dungeonUser);
+                    var userAvatar = (await GameConfigService.GetAll<Avatar>()).
+                        Where(a => a.Owner == dungeonUser && a.Status == Status.Approved);
+                    foreach (var avatar in userAvatar)
+                    {
+                        await MasterService.KickAvatar(avatar.Id, avatar.Dungeon.Id);
+                    }
                 }
             }
 

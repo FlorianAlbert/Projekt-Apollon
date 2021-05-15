@@ -93,7 +93,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             consumableToUpdate.EffectDescription = consumableDto.EffectDescription;
             consumableToUpdate.Weight = consumableDto.Weight;
             
-            if (await GameConfigService.NewOrUpdate(consumableToUpdate)) return Ok(consumableToUpdate.Id);
+            if (await GameConfigService.NewOrUpdate(consumableToUpdate)) return Ok();
 
             consumableToUpdate = await GameConfigService.Get<Consumable>(consumableDto.Id);
 

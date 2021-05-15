@@ -24,6 +24,8 @@ namespace Apollon.Mud.Server.Domain.Interfaces.Game
         Task NotifyAvatarEnteredDungeon(string avatarName, Guid dungeonId, Guid roomId);
         Task NotifyAvatarLeftDungeon(string avatarName, Guid dungeonId, Guid roomId);
 
+        Task NotifyAvatarMovedToDefaultRoom(Guid avatarId, Guid dungeonId);
+
         Task<bool> EnterDungeon(Guid userId, Guid sessionId, string chatConnectionId, string gameConnectionId,
             Guid dungeonId, Guid avatarId);
 
