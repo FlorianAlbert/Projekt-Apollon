@@ -1,5 +1,7 @@
 ﻿@page "/dungeons"
+
 @using Apollon.Mud.Shared.Dungeon
+
 @inject NavigationManager NavManager
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 @inject Apollon.Mud.Client.Data.Account.UserContext UserContext
@@ -15,13 +17,16 @@
                             <form>
                                 <div class="form-group">
                                     <label for="SearchName">Name</label>
-                                    <input type="search" class="form-control" id="searchName" placeholder="Search for a name">
+                                    <input class="form-control" placeholder="Suche nach einem Namen" @bind-value="FilterForName" @bind-value:event="oninput">
                                 </div>
-                                <div class="form-check mt-2">
-                                    <input type="checkbox" class="form-check-input" id="CheckOnline">
-                                    <label class="form-check-label" for="exampleCheck1">Only show Online</label>
+                                <div class="form-group mt-3">
+                                    <label for="SearchName">Beschreibung</label>
+                                    <input class="form-control" placeholder="Suche nach einer Beschreibung" @bind-value="FilterForDescription" @bind-value:event="oninput">
                                 </div>
-                                <button type="submit" class="btn btn-primary mt-2 disabled">Search</button>
+                                <div class="form-group mt-3">
+                                    <label for="SearchName">Epoch</label>
+                                    <input class="form-control" placeholder="Suche nach einer Epoche" @bind-value="FilterForEpoch" @bind-value:event="oninput">
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -35,13 +40,19 @@
                         }
                         @foreach (DungeonDto dungeon in allDungeons)
                         {
-                            @if (dungeon.Status == 0)
+                            @if (dungeon.Status == 0 && 
+                                dungeon.DungeonName.Contains(FilterForName) && 
+                                dungeon.DungeonDescription.Contains(FilterForDescription) &&
+                                dungeon.DungeonEpoch.Contains(FilterForEpoch))
                             {
                                 <div class="card mt-2 shadow">
                                     <h5 class="card-header">@dungeon.DungeonName</h5>
                                     <div class="card-body">
                                         <div class="row">
-                                            <p class="card-text">@dungeon.DungeonDescription</p>
+                                            <p class="card-text">Beschreibung: @dungeon.DungeonDescription</p>
+                                        </div>
+                                        <div class="row">
+                                            <p class="card-text">Epoche: @dungeon.DungeonEpoch</p>
                                         </div>
                                         @if (dungeon.BlackList is not null && dungeon.BlackList.Contains(UserContext.DungeonUserContext))
                                         {
@@ -75,6 +86,22 @@
 </AuthorizeView>
 
 @code {
+
+    /// <summary>
+    /// The Name that is being searched for
+    /// </summary>
+    public string FilterForName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The Description that is being searched for
+    /// </summary>
+    public string FilterForDescription { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The Epoch that is being searched for
+    /// </summary>
+    public string FilterForEpoch { get; set; } = string.Empty;
+
     /// <summary>
     /// This list contains all dungeons
     /// </summary>
@@ -105,12 +132,14 @@
     /// <summary>
     /// Sends a request to join this Dungeon
     /// </summary>
-    private async void SendDungeonEnterRequest(DungeonDto dungeon)
+    private void SendDungeonEnterRequest(DungeonDto dungeon)
     {
-        var response = await DungeonService.SubmitEnterRequest(dungeon.Id);
-        if (!response)
-        {
-            //TODO Nutzer darauf hinweisen, dass etwas schief lief
-        }
+        NavManager.NavigateTo("/dungeon/avatar/request/" + dungeon.Id);
+    }
+
+    private EventCallback SearchStringChanged()
+    {
+        StateHasChanged();
+        return EventCallback.Empty;
     }
 }

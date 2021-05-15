@@ -1,5 +1,6 @@
 ﻿using Apollon.Mud.Client.Data.Account;
 using Apollon.Mud.Client.Services.Interfaces;
+using Apollon.Mud.Shared;
 using Apollon.Mud.Shared.Dungeon;
 using System;
 using System.Collections.Generic;
@@ -151,9 +152,19 @@ namespace Apollon.Mud.Client.Services.Implementations
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns>True if sending it to the Backend was successfull, else false</returns>
-        public Task<bool> SubmitEnterRequest(Guid dungeonId)
+        public async Task<bool> SubmitEnterRequest(Guid dungeonId, Guid requestUserId, bool granted)
         {
-            throw new NotImplementedException();
+            SubmitDungeonEnterRequestDto submit = new()
+            {
+                GrantAccess = granted,
+                RequestUserId = requestUserId
+            };
+
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.PostAsJsonAsync("api/dungeons/" + dungeonId + "/submitRequest", submit, cancellationToken);
+
+            return response.StatusCode == HttpStatusCode.OK;
         }
     }
 }

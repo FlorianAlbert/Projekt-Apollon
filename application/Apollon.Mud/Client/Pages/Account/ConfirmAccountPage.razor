@@ -23,34 +23,8 @@
             {
                 <section>
                     <h4 class="ml-2">Deine E-Mail Adresse konnte leider nicht bestätigt werden</h4>
-                    @*<h4 class="ml-2">Versuche über den Button einen neuen Link zu erhalten</h4>*@
+                    <h4 class="ml-2">Versuche bitte erneut den Link aus der Bestätigungsemail aufzurufen</h4>
                     <hr />
-
-                    @*<EditForm EditContext="@resendEmailContext" OnSubmit="@HandleResendSubmit" novalidate>
-                        <DataAnnotationsValidator />
-
-                        <div class="form-group mt-2">
-                            <label for="Input_Email">E-Mail</label>
-                            <div class="d-flex justify-content-center">
-                                <InputText class="form-control" style="width:25rem" type="email" placeholder="E-Mail" id="Email" @bind-Value="resendEmailModel.Email" />
-                            </div>
-                        </div>
-                        <div class="text-danger">
-                            <ValidationMessage For=@(() => resendEmailModel.Email) />
-                        </div>
-                        <div class="form-group mt-4">
-                            <label for="Input_Password">E-Mail bestätigen</label>
-                            <div class="d-flex justify-content-center">
-                                <InputText class="form-control" style="width:25rem" placeholder="E-Mail bestätigen" id="Passwort" @bind-Value="resendEmailModel.EmailVerification" />
-                            </div>
-                        </div>
-                        <div class="text-danger">
-                            <ValidationMessage For=@(() => resendEmailModel.EmailVerification) />
-                        </div>
-                        <button class="btn btn-primary mt-5" type="submit">E-Mail erneut senden</button>
-                    </EditForm>*@
-
-
                     <p></p>
                     <p class="mt-5"><strong class="text-muted">Sollte das Problem weiterhin bestehen, wende Dich bitte an den Support</strong></p>
                 </section>
@@ -62,13 +36,13 @@
 @code {
 
     /// <summary>
-    /// This GUID represents the request to validate a certain E-Mail and will be delivered in the link
+    /// This GUID represents the user whos E-Mail is to be confirmed
     /// </summary>
     [Parameter]
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Manages the tokens
+    /// This GUID represents the request to validate a certain E-Mail and will be delivered in the link
     /// </summary>
     [Parameter]
     public string Token { get; set; }
@@ -93,28 +67,10 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        resendEmailContext = new EditContext(resendEmailModel);
         successfullConfirmation = await UserService.ConfirmUserRegistration(Id, Token);
         if(successfullConfirmation.Value is true)
         {
             navManager.NavigateTo("/Identity/Account/Confirmation");
-        }
-    }
-
-    /// <summary>
-    /// This Method, called when the user wants to submit sending the confimartion E-Mail again, validates the form and reacts accordingly
-    /// </summary>
-    /// <returns>The Task that resends the Confirmation Email</returns>
-    private async Task HandleResendSubmit()
-    {
-        var validCredentials = resendEmailContext.Validate();
-        if (validCredentials)
-        {
-            //TODO Daten absenden
-        }
-        else
-        {
-            //TODO User Benachrichtigen
         }
     }
 }

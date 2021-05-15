@@ -1,64 +1,74 @@
 ﻿@page "/admin/dungeons"
+
 @layout AdminLayout
 
 @using Apollon.Mud.Shared.Dungeon
+@using Apollon.Mud.Client.Data.Account
+
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 @inject Apollon.Mud.Client.Data.Account.UserContext UserContext
 
-<AuthorizeView Roles="Admin">
+<AuthorizeView>
     <Authorized>
-        <div class="container ">
-            <h1>Liste aller Dungeons</h1>
-            @if (allDungeons.Count == 0)
-            {
-                <h2 class="text-muted">Momentan gibt es keine Dungeons</h2>
-            }
-            @foreach (DungeonDto dungeon in allDungeons)
-            {
-                <div class="card mt-2 shadow">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col-3">
-                                <h4>@dungeon.DungeonName</h4>
-                            </div>
-                            <div class="col">
-                                <div class="row">
-                                    <div class="col-2 float-end">
-                                        <h5>Status: </h5>
+        @if (UserContext.DungeonUserContext.IsAdmin)
+        {
+            <div class="container ">
+                <h1>Liste aller Dungeons</h1>
+                @if (allDungeons.Count == 0)
+                {
+                    <h2 class="text-muted">Momentan gibt es keine Dungeons</h2>
+                }
+                @foreach (DungeonDto dungeon in allDungeons)
+                {
+                    <div class="card mt-2 shadow">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-3">
+                                    <h4>@dungeon.DungeonName</h4>
+                                </div>
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col-2 float-end">
+                                            <h5>Status: </h5>
+                                        </div>
+                                        <div class="col-1 float-start">
+                                            @if (dungeon.Status == 0)
+                                            {
+                                                <div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div>
+                                            }
+                                            else
+                                            {
+                                                <div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div>
+                                            }
+                                        </div>
+                                        <div class="col"></div>
                                     </div>
-                                    <div class="col-1 float-start">
-                                        @if (dungeon.Status == 0)
-                                        {
-                                            <div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div>
-                                        }
-                                        else
-                                        {
-                                            <div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div>
-                                        }
-                                    </div>
-                                    <div class="col"></div>
+                                </div>
+                                <div class="col-1">
+                                    <button class="btn btn-sm btn-danger float-end" @onclick="() => DeleteDungeonButtonClicked(dungeon)">X</button>
                                 </div>
                             </div>
-                            <div class="col-1">
-                                <button class="btn btn-sm btn-danger float-end" @onclick="() => DeleteDungeonButtonClicked(dungeon)">X</button>
-                            </div>
                         </div>
-                    </div>
 
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <p class="card-text">@dungeon.DungeonDescription</p>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <p class="card-text">@dungeon.DungeonDescription</p>
+                                </div>
                             </div>
                         </div>
+                        <div class="card-footer">Erstellt von @dungeon.DungeonOwner.Email.Split("@")[0]</div>
                     </div>
-                    <div class="card-footer">Erstellt von @dungeon.DungeonOwner.Email.Split("@")[0]</div>
-                </div>
-            }
-        </div>
+                }
+            </div>
+        }
+        else
+        {
+            <h3>Diese Seite ist nur für Admins zugänglich!</h3>
+        }
     </Authorized>
     <NotAuthorized>
-        <h3>Diese Seite ist nur für Admins zugänglich!</h3>
+        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent />
     </NotAuthorized>
 </AuthorizeView>
 
@@ -74,12 +84,9 @@
     /// </summary>
     protected async override Task OnInitializedAsync()
     {
-
         var response = await DungeonService.GetAllDungeons();
         if (!(response is null)) allDungeons = response.ToList();
-
         StateHasChanged();
-
     }
 
     /// <summary>

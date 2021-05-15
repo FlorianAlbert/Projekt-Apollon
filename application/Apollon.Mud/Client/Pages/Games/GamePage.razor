@@ -2,7 +2,8 @@
 @page "/dungeon/game/{DungeonId:guid}/{AvatarId:guid}"
 
 @using Microsoft.AspNetCore.SignalR.Client
-@using Apollon.Mud.Shared.Dungeon.Avatar
+@using Apollon.Mud.Shared.Game.Chat
+@using Apollon.Mud.Shared.HubContract
 @using System.Net
 @using Apollon.Mud.Client.Shared.Components
 
@@ -16,75 +17,71 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (successfullConnection is null)
+        @if (successfullConnection)
         {
-            <ConnectingToServerComponent />
-        }
-        else if (successfullConnection == true)
-        {
-            <div class="container-fluid max-vh-100">
-                <div class="row text-end" style="height: 6vh">
-                    <div class="col" style="background:linear-gradient(90deg, rgba(33,37,41,0) 0%, rgba(255,255,255,1) 100%);" />
-                    <div class="col-8 bg-white">
-                        <div class="row">
-                            <div class="col text-end">
-                                <h5>Du möchtest mehr über MUDs erfahren?</h5>
-                            </div>
-                            <div class="col text-start">
-                                <button class="btn btn-primary mt-2">Zum Wiki</button>
-                            </div>
-                            <div class="col text-end">
-                                <h5>Du suchst Tipps und Tricks fürs Spielen?</h5>
-                            </div>
-                            <div class="col text-start">
-                                <button class="btn btn-primary mt-2">Zur Hilfe</button>
-                            </div>
+        <div class="container-fluid max-vh-100">
+            <div class="row text-end" style="height: 6vh">
+                <div class="col" style="background:linear-gradient(90deg, rgba(33,37,41,0) 0%, rgba(255,255,255,1) 100%);" />
+                <div class="col-8 bg-white">
+                    <div class="row">
+                        <div class="col text-end">
+                            <h5>Du möchtest mehr über MUDs erfahren?</h5>
+                        </div>
+                        <div class="col text-start">
+                            <button class="btn btn-primary mt-2">Zum Wiki</button>
+                        </div>
+                        <div class="col text-end">
+                            <h5>Du suchst Tipps und Tricks fürs Spielen?</h5>
+                        </div>
+                        <div class="col text-start">
+                            <button class="btn btn-primary mt-2">Zur Hilfe</button>
                         </div>
                     </div>
-                    <div class="col" style="background: linear-gradient(90deg, rgba(255,255,255,1), rgba(33,37,41,0));" />
                 </div>
-                <div class="play">
-                    <div class="window">
-                        <div class="row">
-                            <div class="col-8" style="display: flex; flex-direction: column; height: 87vh; padding:0;">
-                                <div id="terminal" class="terminal">
-                                    <span> </span>
-                                    <span>Wilkommen in den Weiten des Apollon</span>
-                                    <span>   _____                .__  .__                           </span>
-                                    <span>  /  _  \ ______   ____ |  | |  |   ____   ____            </span>
-                                    <span> /  /_\  \\____ \ /  _ \|  | |  |  /  _ \ /    \           </span>
-                                    <span>/    |    \  |_&gt; &gt;  &lt;_&gt; )  |_|  |_(  &lt;_&gt; )   |  \          </span>
-                                    <span>\____|__  /   __/ \____/|____/____/\____/|___|  /          </span>
-                                    <span>        \/|__|                                \/           </span>
-                                    <span>________                                                   </span>
-                                    <span>\______ \  __ __  ____    ____   ____  ____   ____   ______</span>
-                                    <span> |    |  \|  |  \/    \  / ___\_/ __ \/  _ \ /    \ /  ___/</span>
-                                    <span> |    `   \  |  /   |  \/ /_/  &gt;  ___(  &lt;_&gt; )   |  \\___ \ </span>
-                                    <span>/_______  /____/|___|  /\___  / \___  &gt;____/|___|  /____  &gt;</span>
-                                    <span>        \/           \//_____/      \/           \/     \/ </span>
-                                    <span> </span>
-                                    @foreach (var entry in TerminalMessages)
-                                    {
-                                        <span></span><br />
-                                        <span>@entry</span><br />
-                                    }
-                                </div>
-                                <div class="prompt d-flex">
-                                    <input @bind="UserInput" @onkeyup="@CheckForEnter" id="prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" autofocus />
-                                    <button type="submit" id="send" class="btn btn-primary" @onclick="ReadAndSendInput" disabled="@disableSendButton">Send</button>
-                                </div>
+                <div class="col" style="background: linear-gradient(90deg, rgba(255,255,255,1), rgba(33,37,41,0));" />
+            </div>
+            <div class="play">
+                <div class="window">
+                    <div class="row">
+                        <div class="col-8" style="display: flex; flex-direction: column; height: 87vh; padding:0;">
+                            <div id="terminal" class="terminal">
+                                <span> </span>
+                                <span>Wilkommen in den Weiten des Apollon</span>
+                                <span>   _____                .__  .__                           </span>
+                                <span>  /  _  \ ______   ____ |  | |  |   ____   ____            </span>
+                                <span> /  /_\  \\____ \ /  _ \|  | |  |  /  _ \ /    \           </span>
+                                <span>/    |    \  |_&gt; &gt;  &lt;_&gt; )  |_|  |_(  &lt;_&gt; )   |  \          </span>
+                                <span>\____|__  /   __/ \____/|____/____/\____/|___|  /          </span>
+                                <span>        \/|__|                                \/           </span>
+                                <span>________                                                   </span>
+                                <span>\______ \  __ __  ____    ____   ____  ____   ____   ______</span>
+                                <span> |    |  \|  |  \/    \  / ___\_/ __ \/  _ \ /    \ /  ___/</span>
+                                <span> |    `   \  |  /   |  \/ /_/  &gt;  ___(  &lt;_&gt; )   |  \\___ \ </span>
+                                <span>/_______  /____/|___|  /\___  / \___  &gt;____/|___|  /____  &gt;</span>
+                                <span>        \/           \//_____/      \/           \/     \/ </span>
+                                <span> </span>
+                                @foreach (var entry in TerminalMessages)
+                                {
+                                    <span></span><br />
+                                    <span>@entry</span><br />
+                                }
                             </div>
-                            <div class="col-4 bg-secondary" style="padding: 0;">
-                                <ChatComponent @ref="ChatChildComponent" />
+                            <div class="prompt d-flex">
+                                <input @bind="UserInput" @onkeyup="@CheckForEnter" id="prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" autofocus />
+                                <button type="submit" id="send" class="btn btn-primary" @onclick="ReadAndSendInput">Send</button>
                             </div>
+                        </div>
+                        <div class="col-4 bg-secondary" style="padding: 0;">
+                            <ChatComponent @ref="ChatChildComponent" AvatarId="AvatarId"/>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         }
         else
         {
-            <ServerConnectionFailedComponent />
+        <ServerConnectionFailedComponent />
         }
 
     </Authorized>
@@ -110,17 +107,7 @@
     /// <summary>
     /// Enables the page when the connection to the server was successfull
     /// </summary>
-    bool? successfullConnection;
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    bool disableSendButton;
-
-    /// <summary>
-    /// TODO
-    /// </summary>
-    private AvatarDto userAvatar = new AvatarDto();
+    bool successfullConnection = true;
 
     #region Parameters
 
@@ -145,7 +132,7 @@
     #region Chat Hub
 
     /// <summary>
-    /// TODO
+    /// The Chat Component used by the page
     /// </summary>
     public ChatComponent ChatChildComponent { get; set; }
 
@@ -159,7 +146,7 @@
     #region Game Hub
 
     /// <summary>
-    /// TODO
+    /// The Connection to the GameHub
     /// </summary>
     public HubConnection GameHubConnection { get; set; }
 
@@ -185,7 +172,7 @@
             .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/game")
             .Build();
 
-        GameHubConnection.On<ICollection<AvatarDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
+        GameHubConnection.On<ICollection<ChatPartnerDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
         GameHubConnection.On("NotifyKicked", NotifyUserKicked);
         GameHubConnection.On<bool>("NotfiyDungeonLeft", NotifyUserLeft);
         GameHubConnection.On<string>("ReceiveGameMessage", ReceiveGameMessage);
@@ -196,18 +183,16 @@
         var enterRequest = await GameService.EnterDungeon(false, DungeonId, AvatarId, ChatHubConnection.ConnectionId, GameHubConnection.ConnectionId);
 
         successfullConnection = enterRequest == HttpStatusCode.OK;
-        successfullConnection = true;
 
         var dungeon = await DungeonService.GetDungeon(DungeonId);
 
         var avatar = await AvatarService.GetAvatar(DungeonId, AvatarId);
         if (avatar is not null && dungeon is not null)
         {
-            userAvatar = avatar;
-            TerminalMessages.Enqueue("Hallo " + userAvatar.Name + "\n");
             TerminalMessages.Enqueue("Epoche: \n" + dungeon.DungeonEpoch + "\n");
             TerminalMessages.Enqueue("Beschreibung: \n" + dungeon.DungeonDescription + "\n");
             TerminalMessages.Enqueue("Raumbeschreibung: \n" + dungeon.DefaultRoom.Description + "\n");
+            TerminalMessages.Enqueue("Hallo " + avatar.Name + "\n");
         }
         else
         {
@@ -222,14 +207,11 @@
     /// <param name="e"></param>
     public void CheckForEnter(KeyboardEventArgs args)
     {
-        if (args.Key == "Enter" && !disableSendButton)
-        {
-            ReadAndSendInput();
-        }
+        if (args.Key == "Enter") ReadAndSendInput();
     }
 
     /// <summary>
-    /// TODO
+    /// Reads the Input of the user and sends it to the Backend
     /// </summary>
     public async void ReadAndSendInput()
     {
@@ -247,10 +229,10 @@
     #region Hub Methods
 
     /// <summary>
-    /// TODO
+    /// Called when the real time SignalR Connection to the Chat Hub receives a new message
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="message"></param>
+    /// <param name="sender">The Name of the sender</param>
+    /// <param name="message">The message content</param>
     /// <returns></returns>
     public void ReceiveChatMessage(string sender, string message)
     {
@@ -258,9 +240,10 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Called when the real time SignalR Connection to the Game Hub receives a new Game Message
+    /// e.g. the reaction to a command
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="message">The text of the message</param>
     /// <returns></returns>
     public async Task ReceiveGameMessage(string message)
     {
@@ -268,39 +251,23 @@
         StateHasChanged();
     }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    /// <param name="avatars"></param>
-    /// <returns></returns>
-    public void UpdateChatPartnerList(ICollection<AvatarDto> avatars)
+    /// <inheritdoc cref="IClientGameHubContract.ReceiveChatPartnerList"/>
+    public void UpdateChatPartnerList(ICollection<ChatPartnerDto> avatars)
     {
         ChatChildComponent.UpdateChatPartners(avatars);
     }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    /// <returns></returns>
+    /// <inheritdoc cref="IClientGameHubContract.NotifyKicked"/>
     public async Task NotifyUserKicked()
     {
-        TerminalMessages.Enqueue("Du wurdest aus dem Spiel gekickt. " +
-            "Somit kannst du diesen Dungeon nicht mehr bespielen. Bitte versuche in Zukunft Verhalten, das zu einem Kick führt, zu vermeiden.");
-        disableSendButton = true;
+        NavigationManager.NavigateTo("/dungeon/kickedmessage");
         StateHasChanged();
     }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    /// <returns></returns>
+    /// <inheritdoc cref="IClientGameHubContract.NotifyDungeonLeft(bool)"/>
     public async Task NotifyUserLeft(bool success)
     {
-        if (success)
-        {
-            TerminalMessages.Enqueue("Verbindung erfolgreich getrennt. Sie können den Dungeon jetzt verlassen");
-            disableSendButton = true;
-        }
+        if (success) TerminalMessages.Enqueue("Verbindung erfolgreich getrennt. Sie können den Dungeon jetzt verlassen");
         else TerminalMessages.Enqueue("Beim Trennen der Verbindung ist ein Fehler aufgetreten, bitte versuche es erneut");
         StateHasChanged();
     }
