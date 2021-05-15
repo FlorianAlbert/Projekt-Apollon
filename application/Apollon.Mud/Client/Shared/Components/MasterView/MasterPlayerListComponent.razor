@@ -10,16 +10,23 @@
 
 <div class="row bg-white">
     <div class="col-4">
-        <div style="display: flex; flex-direction: column; height: 87vh">
-            <div class="list-group" style="overflow-y:auto; height:100%">
-                <div class="row">
-                    <div class="col">
-                        <button class="btn btn-info" @onclick=" () => ChangeListContent(true)">Spieler</button>
-                    </div>
-                    <div class="col">
-                        <button class="btn btn-warning" @onclick="() => ChangeListContent(false)">Master</button>
-                    </div>
+        <div class="card" style="display: flex; flex-direction: column; height: 87vh">
+            <div class="card-header text-center">
+                <div class="btn-group">
+                    @if (showMasters)
+                    {
+                        <button class="btn btn-outline-info active" @onclick=" () => ChangeListContent(true)">Spieler</button>
+                        <button class="btn btn-outline-info" @onclick="() => ChangeListContent(false)">Master</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-info" @onclick=" () => ChangeListContent(true)">Spieler</button>
+                        <button class="btn btn-outline-info active" @onclick="() => ChangeListContent(false)">Master</button>
+                    }
                 </div>
+                @*<small class="text-muted">@dungeon.LastActive</small>*@
+            </div>
+            <div class="list-group border-dark" style="overflow-y:auto; height:100%">
                 @if (showMasters)
                 {
                     @foreach (DungeonUserDto user in Dungeon.DungeonMasters)

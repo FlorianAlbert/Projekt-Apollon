@@ -19,8 +19,8 @@
         {
             <ConnectingToServerComponent />
         }
-        @*else if (successfullConnection == true)
-        {*@
+        else if (successfullConnection == true)
+        {
             <div class="container-fluid max-vh-100">
                 <div class="row text-end" style="height: 6vh">
                     <div class="col" style="background:linear-gradient(90deg, rgba(33,37,41,0) 0%, rgba(255,255,255,1) 100%);" />
@@ -80,11 +80,11 @@
                     </div>
                 </div>
             </div>
-        @*}
+        }
         else
         {
             <ServerConnectionFailedComponent />
-        }*@
+        }
 
     </Authorized>
     <NotAuthorized>
@@ -169,28 +169,27 @@
     /// <returns> Nothing </returns>
     protected override async Task OnInitializedAsync()
     {
-        //TODO Einkommentieren sobald möglich
-        //ChatHubConnection = new HubConnectionBuilder()
-        //    .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/chat")
-        //    .Build();
+        ChatHubConnection = new HubConnectionBuilder()
+            .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/chat")
+            .Build();
 
-        //ChatHubConnection.On<string, string>("ReceiveMessage", ReceiveChatMessage);
+        ChatHubConnection.On<string, string>("ReceiveMessage", ReceiveChatMessage);
 
-        //GameHubConnection = new HubConnectionBuilder()
-        //    .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/game")
-        //    .Build();
+        GameHubConnection = new HubConnectionBuilder()
+            .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/game")
+            .Build();
 
-        //GameHubConnection.On<ICollection<AvatarDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
-        //GameHubConnection.On("NotifyKicked", NotifyUserKicked);
-        //GameHubConnection.On<bool>("NotfiyDungeonLeft", NotifyUserLeft);
-        //GameHubConnection.On<string>("ReceiveGameMessage", ReceiveGameMessage);
+        GameHubConnection.On<ICollection<AvatarDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
+        GameHubConnection.On("NotifyKicked", NotifyUserKicked);
+        GameHubConnection.On<bool>("NotfiyDungeonLeft", NotifyUserLeft);
+        GameHubConnection.On<string>("ReceiveGameMessage", ReceiveGameMessage);
 
-        //await ChatHubConnection.StartAsync();
-        //await GameHubConnection.StartAsync();
+        await ChatHubConnection.StartAsync();
+        await GameHubConnection.StartAsync();
 
-        //var enterRequest = await GameService.EnterDungeon(false, DungeonId, AvatarId, ChatHubConnection.ConnectionId, GameHubConnection.ConnectionId);
+        var enterRequest = await GameService.EnterDungeon(false, DungeonId, AvatarId, ChatHubConnection.ConnectionId, GameHubConnection.ConnectionId);
 
-        //successfullConnection = enterRequest == HttpStatusCode.OK;
+        successfullConnection = enterRequest == HttpStatusCode.OK;
         successfullConnection = true;
 
         var dungeon = await DungeonService.GetDungeon(DungeonId);
@@ -198,7 +197,6 @@
         TerminalMessages.Enqueue("Epoche: \n" + dungeon.DungeonEpoch + "\n");
         TerminalMessages.Enqueue("Beschreibung: \n" + dungeon.DungeonDescription + "\n");
         TerminalMessages.Enqueue("Raumbeschreibung: \n" + dungeon.DefaultRoom.Description + "\n");
-        await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
         StateHasChanged();
     }
 
