@@ -48,5 +48,7 @@ namespace Apollon.Mud.Server.Domain.Interfaces.Game
             Guid dungeonId);
 
         Task<bool> LeaveDungeon(Guid dungeonId, Guid userId, Guid sessionId);
+
+        Task MoveAvatarsToDefaultRoom(Guid roomId, Guid dungeonId);
     }
 }
