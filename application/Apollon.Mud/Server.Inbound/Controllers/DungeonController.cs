@@ -330,7 +330,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Id = Guid.Parse(x.DungeonOwner.Id)
                     },
                     DefaultRoom = defaultRoom,
-                    CurrentMaster = new DungeonUserDto()
+                    CurrentMaster = x.CurrentDungeonMaster is null ? null : 
+                    new DungeonUserDto()
                     {
                         Email = x.CurrentDungeonMaster.Email,
                         EmailConfirmed = x.CurrentDungeonMaster.EmailConfirmed,
@@ -419,7 +420,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                         Id = Guid.Parse(x.DungeonOwner.Id)
                     },
                     DefaultRoom = defaultRoom,
-                    CurrentMaster = new DungeonUserDto()
+                    CurrentMaster = x.CurrentDungeonMaster is null ? null : new DungeonUserDto()
                     {
                         Email = x.CurrentDungeonMaster.Email,
                         EmailConfirmed = x.CurrentDungeonMaster.EmailConfirmed,
@@ -502,7 +503,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = Guid.Parse(dungeon.DungeonOwner.Id)
                 },
                 DefaultRoom = defaultRoom,
-                CurrentMaster = new DungeonUserDto()
+                CurrentMaster = dungeon.CurrentDungeonMaster is null ? null : new DungeonUserDto()
                 {
                     Email = dungeon.CurrentDungeonMaster.Email,
                     EmailConfirmed = dungeon.CurrentDungeonMaster.EmailConfirmed,

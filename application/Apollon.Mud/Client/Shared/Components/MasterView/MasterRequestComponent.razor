@@ -121,7 +121,7 @@
         if (validAnswer)
         {
             var avatar = CurrentRequest.Avatar;
-            avatar.CurrentHealth = int.Parse(masterRequestModel.HealthChange);
+            avatar.CurrentHealth = masterRequestModel.HealthChange;
             var response = await GameService.AnswerDungeonMasterRequest(masterRequestModel.RequestAnswer, avatar);
             if (response == HttpStatusCode.OK)
             {
