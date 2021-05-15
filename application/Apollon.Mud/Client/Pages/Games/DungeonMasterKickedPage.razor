@@ -1,0 +1,41 @@
+﻿@page "/dungeon/master/kickedmessage/{PageContent:int}"
+
+<div class="container d-flex justify-content-center">
+    <div class="card mt-5" style="width:45rem">
+        <div class="card-body text-center">
+            <h1 class="display-2">Dungeon Verlassen</h1>
+
+            @if (PageContent == 0)
+            {
+                <section>
+                    <h4 class="ml-2">Du wurdest aus dem Dungeon gekickt oder gebannt</h4>
+                    <h4 class="ml-2">Dies passiert, wenn ein anderer Dungeon Master oder der Besitzer deinen Account aus dem Dungeon entfernt</h4>
+                    <h4 class="ml-2">Du bist in diesem Dungeon kein Dungeon Master mehr und alle deine Avatare wurden entfernt</h4>
+                    <h4 class="ml-2">Solltest du gebannt worden sein, kannst du dem Dungeon nicht erneut beitreten</h4>
+                    <hr />
+                    <a class="btn btn-primary mt-2" href="/">Zurück zur Startseite</a>
+                </section>
+            }
+            else if (PageContent == 1)
+            {
+                <section>
+                    <h4 class="ml-2">Du wurdest als Dungeon Master entfernt</h4>
+                    <h4 class="ml-2">Dies passiert, wenn ein anderer Dungeon Master oder der Besitzer dich von der Liste der Dungeon Master nimmt</h4>
+                    <h4 class="ml-2">Deine Avatare des Dungeons wurden nicht entfernt und du kannst weiterhin in diesem Dungeon spielen</h4>
+                    <hr />
+                    <a class="btn btn-primary mt-2" href="/">Zurück zur Startseite</a>
+                </section>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public int PageContent { get; set; }
+
+}

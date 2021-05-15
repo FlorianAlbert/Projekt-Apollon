@@ -10,7 +10,7 @@ using Apollon.Mud.Shared.UserManagement.Registration;
 using Apollon.Mud.Shared.UserManagement.Password;
 using Apollon.Mud.Client.Data.Account;
 
-namespace Apollon.Mud.Client.Services.Implementiations
+namespace Apollon.Mud.Client.Services.Implementations
 {
     public class AuthorizationService : IAuthorizationService
     {
@@ -78,41 +78,6 @@ namespace Apollon.Mud.Client.Services.Implementiations
         }
 
         /// <summary>
-        /// The user can register with
-        /// a password and a email.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="secret"></param>
-        /// <returns>wether the registration was successfull</returns>
-        public async Task<bool> Register(string userId, string secret)
-        {
-            RegistrationRequestDto userCredentials = new RegistrationRequestDto
-            {
-                UserEmail = userId,
-                Password = secret
-            };
-
-            CancellationToken cancellationToken = CancellationTokenSource.Token;
-
-            var response = await HttpClient.PostAsJsonAsync("api/user/registration/request", userCredentials, cancellationToken);
-            return response.StatusCode == HttpStatusCode.OK;
-        }
-
-        /// <summary>
-        /// After confirming the email with the link, the registration is done.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns>wether the confirmation was successfull</returns>
-        public async Task<bool> ConfirmRegistration(Guid userId, string token)
-        {
-            CancellationToken cancellationToken = CancellationTokenSource.Token;
-
-            var response = await HttpClient.PostAsync("api/user/registration/confirmation/" + userId + "/" + token, null, cancellationToken);
-
-            return response.StatusCode == HttpStatusCode.OK;
-        }
-
-        /// <summary>
         /// The player will leave the game with the avatar.
         /// </summary>
         public void LogOut()
@@ -121,41 +86,6 @@ namespace Apollon.Mud.Client.Services.Implementiations
             CurrentUserContext.Token = string.Empty;
             CurrentUserContext.DungeonUserContext = null;
             AuthenticationProvider.NotifyStateChanged();
-        }
-
-        /// <summary>
-        /// The reset password is sent to the user by email.
-        /// </summary>
-        /// <param name="userEmail"></param>
-        /// <returns>wether the request was successfull</returns>
-        public async Task<bool> RequestPasswordReset(string userEmail)
-        {
-            CancellationToken cancellationToken = CancellationTokenSource.Token;
-            RequestPasswordResetDto resetDto =new RequestPasswordResetDto();
-            resetDto.UserEmail = userEmail;
-
-            var response = await HttpClient.PostAsJsonAsync("/api/password/reset", resetDto, cancellationToken);
-            return response.StatusCode == HttpStatusCode.OK;
-        }
-
-        /// <summary>
-        /// The user is able to set a new password.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="token"></param>
-        /// <param name="secret"></param>
-        /// <returns>wether the reset was successfull</returns>
-        public async Task<bool> ResetPassword(Guid userId, string token, string secret)
-        {
-            CancellationToken cancellationToken = CancellationTokenSource.Token;
-            PasswortResetConfirmationDto confirmationDto = new PasswortResetConfirmationDto
-            {
-                NewPassword = secret,
-                Token = token
-            };
-
-            var response = await HttpClient.PostAsJsonAsync("/api/user/password/confirm/" + userId, confirmationDto, cancellationToken);
-            return response.StatusCode == HttpStatusCode.OK;
         }
     }
 }

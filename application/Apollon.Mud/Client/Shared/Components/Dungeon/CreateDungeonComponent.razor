@@ -3,6 +3,7 @@
 @using Apollon.Mud.Shared.Dungeon.Room
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 @inject Apollon.Mud.Client.Services.Interfaces.IRoomService RoomService
+@inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
 @inject Apollon.Mud.Client.Data.Account.UserContext userContext
 
 <div class="card">
@@ -281,15 +282,22 @@
         if (validDungeon)
         {
             DungeonDto submitDungeon;
+
             if (DungeonId != Guid.Empty) submitDungeon = CurrentDungeon;
+
             else submitDungeon = new DungeonDto();
+
             submitDungeon.DungeonName = dungeonModel.Name;
             submitDungeon.DungeonDescription = dungeonModel.Description;
             submitDungeon.DungeonEpoch = dungeonModel.Epoch;
             submitDungeon.DefaultRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonModel.DefaultRoom));
             submitDungeon.Visibility = dungeonModel.Visibility.Equals("Private") ? 0 : 1;
             submitDungeon.Status = dungeonModel.Status.Equals("Approved") ? 0 : 1;
+
+            if (submitDungeon.Status == 1) await GameService.KickAll(DungeonId);
+
             submitDungeon.DungeonOwner = userContext.DungeonUserContext;
+
             if (DungeonId == Guid.Empty)
             {
                 var responseGuid = await DungeonService.CreateNewDungeon(submitDungeon);

@@ -1,42 +1,218 @@
-﻿
+﻿@using Apollon.Mud.Shared.Game.Chat
+@using Apollon.Mud.Shared.Dungeon
+@using Apollon.Mud.Shared.Dungeon.Avatar
+@using Apollon.Mud.Client.Data
+
+@inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+@inject Apollon.Mud.Client.Services.Interfaces.IChatService ChatService
+@inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
+@inject Apollon.Mud.Client.Data.Account.UserContext UserContext
+
+@implements IDisposable
+
 <div class="card ms-2 me-2 bg-secondary" style="display: flex; flex-direction: column; height: 87vh">
     <div style="flex-shrink: 0;">
-        <select class="form-select" aria-label="MessageSelect" >
-            <option selected>Nachricht an:</option>
-            <option value="1">Alle Spieler</option>
-            <option value="2">Spieler 1</option>
-            <option value="3">Spieler 2</option>
+        <select class="form-select" aria-label="MessageSelect" @bind="chosenRecipient">
+            <option value="NoRecipient" hidden selected>Nachricht an:</option>
+            @if (IsDungeonMaster)
+            {
+                <option value="All">Alle</option>
+                @foreach (AvatarDto avatarDto in ChatPartners)
+                {
+                    <option value="@avatarDto.Name">@avatarDto.Name</option>
+                }
+            }
+            else
+            {
+                <option value="Room">Raum</option>
+                @foreach (AvatarDto avatarDto in ChatPartners)
+                {
+                    <option value="@avatarDto.Name">@avatarDto.Name</option>
+                }
+            }
         </select>
     </div>
     <div class="panel panel-body bg-white mt-2" id="chat" style="overflow-y:auto; height: 100%">
         <ul class="chat">
-            @for (int i = 0; i < 15; i++)
+            @foreach (ChatMessage message in Messages)
             {
-                <li class="left clearfix">
-                    <div class="chat-body clearfix">
-                        <div class="header">
-                            <strong class="primary-font">from</strong>
-                            <small class="pull-right text-muted">
-                                <span class="glyphicon glyphicon-time"></span>to:
-                            </small>
+                if (message.MessageIncoming)
+                {
+                    <li class="left clearfix">
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong class="primary-font">Von</strong>
+                                <span>@message.SenderName</span>
+                                <small class="pull-right text-muted">
+                                    <span class="glyphicon glyphicon-time">An: Dich</span>
+                                </small>
+                            </div>
+                            <p>
+                                @message.MessageText
+                            </p>
                         </div>
-                        <p>
-                            message
-                        </p>
-                    </div>
-                </li>
+                    </li>
+                }
+                else
+                {
+                    <li class="left clearfix">
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong class="primary-font">An</strong>
+                                <span>@message.RecipientName</span>
+                                <small class="pull-right text-muted">
+                                    <span class="glyphicon glyphicon-time"></span>Von: Dir
+                                </small>
+                            </div>
+                            <p>
+                                @message.MessageText
+                            </p>
+                        </div>
+                    </li>
+                }
+
             }
         </ul>
     </div>
     <div class="chat mt-2 mb-2" style="flex-shrink: 0;">
         <div class="prompt d-flex">
-            <input id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
-            <button id="send" class="btn btn-primary ms-2">Senden</button>
+            <input @bind="inputMessage" id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
+            @if (chosenRecipient != "NoRecipient")
+            {
+                <button @onclick="SendMessage" id="send" class="btn btn-primary ms-2">Senden</button>
+            }
+            else
+            {
+                <button id="send" class="btn btn-primary ms-2" disabled>Senden</button>
+            }
         </div>
-        <span> </span>
+        <span></span>
     </div>
 </div>
 
 @code {
 
+    #region General Attributes
+    /// <summary>
+    /// The unique dungeon identifier
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public Queue<ChatMessage> Messages { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    string chosenRecipient = "NoRecipient";
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    string inputMessage = "";
+
+    /// <summary>
+    /// True when the user is Dungeon Master
+    /// </summary>
+    public bool IsDungeonMaster { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public DungeonDto Dungeon { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private List<AvatarDto> _ChatPartners;
+
+    public List<AvatarDto> ChatPartners
+    {
+        get { return _ChatPartners ??= new List<AvatarDto>(); }
+        set { _ChatPartners = value; }
+    }
+
+    #endregion
+
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
+    protected async override Task OnInitializedAsync()
+    {
+        if (Messages is null) Messages = new Queue<ChatMessage>();
+
+        if (DungeonId != Guid.Empty)
+        {
+            var dungeon = await DungeonService.GetDungeon(DungeonId);
+            if (dungeon is not null)
+            {
+                Dungeon = dungeon;
+                IsDungeonMaster = Dungeon.DungeonMasters.Contains(UserContext.DungeonUserContext);
+            }
+        }
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public async void SendMessage()
+    {
+        ChatMessageDto message = new ChatMessageDto();
+        message.Message = inputMessage;
+        message.RecipientName = chosenRecipient;
+
+        bool success;
+        switch (chosenRecipient)
+        {
+            case "All":
+                success = await ChatService.PostGlobalMessage(message);
+                break;
+            case "Room":
+                success = await ChatService.PostRoomMessage(message);
+                break;
+            default:
+                success = await ChatService.PostWhisperMessage(message);
+                break;
+        }
+        if (success) Messages.Enqueue(new ChatMessage(chosenRecipient, inputMessage, false));
+        StateHasChanged();
+    }
+
+
+    /// <inheritdoc cref="IClientChatHubContract.ReceiveChatMessage"/>
+    public async Task ReceiveChatMessage(string senderName, string message)
+    {
+        Messages.Enqueue(new ChatMessage(senderName, message, true));
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="partnerList"></param>
+    /// <returns></returns>
+    public async Task UpdateChatPartners(ICollection<AvatarDto> partnerList)
+    {
+        //TODO Doppelte Überprüfung?
+        ChatPartners = partnerList.ToList();
+        ChatPartners.Where(x => x.Owner.Id == UserContext.DungeonUserContext.Id)
+            .ToList()
+            .ForEach(x => ChatPartners.Remove(x));
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void Dispose()
+    {
+        GameService.LeaveGame();
+    }
 }

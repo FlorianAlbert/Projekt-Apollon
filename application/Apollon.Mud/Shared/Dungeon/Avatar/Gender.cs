@@ -7,7 +7,7 @@
     {
         Male = 0,
         Female = 1,
-        Diverse = 2,
+        Divers = 2,
         Neutral = 3
     }
 }

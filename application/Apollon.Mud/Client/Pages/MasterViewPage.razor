@@ -1,0 +1,262 @@
+﻿@page "/dungeon/master/"
+@page "/dungeon/master/{DungeonId:guid}"
+
+@using Apollon.Mud.Client.Shared.Components.MasterView
+@using Apollon.Mud.Client.Shared.Components
+@using Apollon.Mud.Shared.Dungeon.Avatar
+@using Apollon.Mud.Shared.Game.DungeonMaster
+@using System.Net
+@using Microsoft.AspNetCore.SignalR.Client
+
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
+
+<AuthorizeView>
+    <Authorized>
+        @if (successfullConnection is null)
+        {
+            <ConnectingToServerComponent />
+        }
+        //else if (successfullConnection == true)
+        //{
+            <div class="MasterViewLayout" id="MasterViewLayout" style="overflow-x:hidden">
+                <div class="row">
+                    <nav class="navbar navbar-light bg-secondary" style="height:6vh">
+                        <div class="col-8">
+                            <div class="container">
+                                <div class="d-flex justify-content-center"></div>
+                                <div class="d-flex justify-content-center">
+                                    <button class="btn btn-primary ms-5" @onclick="PlayerListButtonClicked">Spielerliste</button>
+                                    <button class="btn btn-primary ms-5" @onclick="RequestsButtonClicked">Anfragen</button>
+                                    <button class="btn btn-primary ms-5" @onclick="ConfigurationButtonClicked">Konfiguration</button>
+                                    <button class="btn btn-primary ms-5" @onclick="EnterRequestsButtonClicked">Offene Anfragen</button>
+                                    <button class="btn btn-danger ms-10" @onclick="EndConnectionButtonClicked">Beenden</button>
+                                </div>
+                                <div class="d-flex justify-content-center"></div>
+                            </div>
+                        </div>
+                        <div class="col-4 text-center">
+                            <h4 class="text-light">Chat</h4>
+                        </div>
+                    </nav>
+                </div>
+                <div class="row">
+                    <div class="col-8" style="max-height:87vh">
+                        <div class="content">
+                            @switch (masterPage)
+                            {
+                                case 0:
+                                    <MasterPlayerListComponent DungeonId="DungeonId" @ref="PlayerListChildComponent" />
+                                    break;
+                                case 1:
+                                    <MasterRequestComponent DungeonId="DungeonId" @ref="RequestChildComponent" />
+                                    break;
+                                case 2:
+                                    <MasterConfigurationComponent DungeonId="DungeonId" />
+                                    break;
+                                case 3:
+                                    <MasterViewEnterRequestsComponent DungeonId="DungeonId" />
+                                    break;
+                            }
+                        </div>
+                    </div>
+                    <div class="col-4" style="max-height:87vh; padding-left:0;">
+                        <div class="bg-secondary">
+                            <ChatComponent @ref="ChatChildComponent" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @*}
+        else
+        {
+            <ServerConnectionFailedComponent />
+        }*@
+
+    </Authorized>
+    <NotAuthorized>
+        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code
+{
+    /// <summary>
+    /// Enables the page when the connection to the server was successfull
+    /// </summary>
+    bool? successfullConnection;
+
+    /// <summary>
+    /// The ID of the Dungeon this Master is handling
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// Switches between the different master views
+    /// </summary>
+    private int masterPage = 2;
+
+    /// <summary>
+    /// The component where the dungeon master handles all open requests
+    /// </summary>
+    public MasterRequestComponent RequestChildComponent { get; set; }
+
+    #region Hubs
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public HubConnection GameHubConnection { get; set; }
+
+    /// <summary>
+    /// The Connection to the ChatHub
+    /// </summary>
+    public HubConnection ChatHubConnection { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public ChatComponent ChatChildComponent { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public MasterPlayerListComponent PlayerListChildComponent { get; set; }
+    #endregion
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
+    protected override async Task OnInitializedAsync()
+    {
+        //TODO einkommentieren sobald möglich
+        //ChatHubConnection = new HubConnectionBuilder()
+        //    .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/chat")
+        //    .Build();
+
+        //ChatHubConnection.On<string, string>("ReceiveMessage", ReceiveChatMessage);
+
+        //GameHubConnection = new HubConnectionBuilder()
+        //    .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/game")
+        //    .Build();
+
+        //GameHubConnection.On<ICollection<AvatarDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
+        //GameHubConnection.On<DungeonMasterRequestDto>("ReceiveRequest", ProcessSpecialAction);
+        //GameHubConnection.On<ICollection<AvatarDto>>("ReceiveAvatarList", ProcessAvatarList);
+
+        //await ChatHubConnection.StartAsync();
+        //await GameHubConnection.StartAsync();
+
+        //var enterRequest = await GameService.EnterDungeon(true, DungeonId, null, ChatHubConnection.ConnectionId, GameHubConnection.ConnectionId);
+
+        //successfullConnection = enterRequest == HttpStatusCode.OK;
+        successfullConnection = true;
+
+        StateHasChanged();
+    }
+
+    #region Hub Methods
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public async Task ReceiveChatMessage(string sender, string message)
+    {
+        ChatChildComponent.ReceiveChatMessage(sender, message);
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="avatars"></param>
+    /// <returns></returns>
+    public void UpdateChatPartnerList(ICollection<AvatarDto> avatars)
+    {
+        ChatChildComponent.UpdateChatPartners(avatars);
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="requestDto"></param>
+    public void ProcessSpecialAction(DungeonMasterRequestDto requestDto)
+    {
+        RequestChildComponent.AddMasterRequest(requestDto);
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="avatars"></param>
+    public void ProcessAvatarList(ICollection<AvatarDto> avatars)
+    {
+        if (masterPage == 0) PlayerListChildComponent.UpdateAvatars(avatars);
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
+    public async Task NotifyUserKicked()
+    {
+        NavManager.NavigateTo("/dungeon/master/kickedmessage/0");
+    }
+
+    #endregion
+
+
+    #region Page Switch Methods
+    /// <summary>
+    /// This function navigates the User to the Playerlist of the Dungeon
+    /// </summary>
+    public void PlayerListButtonClicked()
+    {
+        masterPage = 0;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// This function navigates the User to the Requests of the Dungeon
+    /// </summary>
+    public void RequestsButtonClicked()
+    {
+        masterPage = 1;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// This function navigates the User to the Configuration of the Dungeon
+    /// </summary>
+    public void ConfigurationButtonClicked()
+    {
+        masterPage = 2;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// This function navigates the User to the Enter Requests page of the dungeon
+    /// </summary>
+    public void EnterRequestsButtonClicked()
+    {
+        masterPage = 3;
+        StateHasChanged();
+    }
+    #endregion
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void EndConnectionButtonClicked()
+    {
+        //TODO Route zum Beenden aufrufen
+        NavManager.NavigateTo("/");
+    }
+}

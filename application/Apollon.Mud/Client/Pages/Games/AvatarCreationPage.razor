@@ -1,5 +1,5 @@
-﻿@page "/Avatar/Creation"
-@page "/Avatar/Creation/{DungeonId:guid}"
+﻿@page "/dungeon/avatar/creation"
+@page "/dungeon/avatar/creation/{DungeonId:guid}"
 
 @using Apollon.Mud.Shared.Dungeon.Avatar
 @using Apollon.Mud.Client.Data.Models.Game
@@ -11,80 +11,89 @@
 @inject Apollon.Mud.Client.Services.Interfaces.IClassService ClassService
 @inject Apollon.Mud.Client.Services.Interfaces.IRaceService RaceService
 
-<div style="height:93vh">
-    <div class="container d-flex justify-content-center">
-        <div class="card mt-5" style="width:30rem">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-5">
-                        <h5>Avatar Auswahl</h5>
-                    </div>
-                    <div class="col">
+<AuthorizeView>
+    <Authorized Context="other">
+        <div style="height:93vh">
+            <div class="container d-flex justify-content-center">
+                <div class="card mt-5" style="width:30rem">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-5">
+                                <h5>Avatar Auswahl</h5>
+                            </div>
+                            <div class="col">
 
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-sm btn-primary" @onclick="@AvatarListButtonClicked">Avatarliste</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col">
-                        <button class="btn btn-sm btn-primary" @onclick="@AvatarListButtonClicked">Avatarliste</button>
+                    <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
+                        <h4 class="ml-2">Hier kannst du einen neuen Avatar erstellen</h4>
+                        <hr />
+                        @if (AvatarNameAlreadyExists)
+                        {
+                            <label class="text-danger mt-1"><strong>Ein Avatar mit diesem Namen existiert bereits, bitte wähle einen Anderen</strong></label>
+                        }
+                        <EditForm EditContext="@avatarContext" OnSubmit="@HandleAvatarSubmit" novalidate>
+                            <DataAnnotationsValidator />
+
+                            <div class="form-group mt-5">
+                                <label for="Input_Name">Avatarname</label>
+                                <div class="d-flex justify-content-center">
+                                    <InputText class="form-control" type="text" placeholder="Avatarname" id="Avatarname" @bind-Value="avatarModel.Name" />
+                                </div>
+                            </div>
+                            <div class="text-danger">
+                                <ValidationMessage For=@(() => avatarModel.Name) />
+                            </div>
+
+                            <label class="mt-5" for="Input_Name">Wähle ein Geschlecht:</label>
+                            <select class="form-select" aria-label="Default select example" @bind="avatarModel.Gender">
+                                <option value="NoGender" selected hidden></option>
+                                <option value="0">Männlich</option>
+                                <option value="1">Weiblich</option>
+                                <option value="2">Divers</option>
+                                <option value="3">Neutral</option>
+                            </select>
+
+                            <label class="mt-5" for="Input_Name">Wähle eine Klasse:</label>
+                            <select class="form-select" aria-label="Default select example" @bind="avatarModel.Class">
+                                <option value="NoClass" selected hidden></option>
+                                @if (!(dungeonClasses is null))
+                                {
+                                    @foreach (ClassDto dungeonClass in dungeonClasses)
+                                    {
+                                        <option value="@dungeonClass.Name">@dungeonClass.Name</option>
+                                    }
+                                }
+                            </select>
+
+                            <label class="mt-5" for="Input_Name">Wähle eine Rasse:</label>
+                            <select class="form-select" aria-label="Default select example" @bind="avatarModel.Race">
+                                <option value="NoRace" selected hidden></option>
+                                @if (!(dungeonRaces is null))
+                                {
+                                    @foreach (RaceDto dungeonRace in dungeonRaces)
+                                    {
+                                        <option value="@dungeonRace.Name">@dungeonRace.Name</option>
+                                    }
+                                }
+                            </select>
+
+                            <button class="btn btn-primary mt-5" type="submit">Erstellen</button>
+                        </EditForm>
                     </div>
                 </div>
             </div>
-            <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
-                <h4 class="ml-2">Hier kannst du einen neuen Avatar erstellen</h4>
-                <hr />
-                @if (AvatarNameAlreadyExists)
-                {
-                    <label class="text-danger mt-1"><strong>Ein Avatar mit diesem Namen existiert bereits, bitte wähle einen Anderen</strong></label>
-                }
-                <EditForm EditContext="@avatarContext" OnSubmit="@HandleAvatarSubmit" novalidate>
-                    <DataAnnotationsValidator />
-
-                    <div class="form-group mt-5">
-                        <label for="Input_Name">Avatarname</label>
-                        <div class="d-flex justify-content-center">
-                            <InputText class="form-control" type="text" placeholder="Avatarname" id="Avatarname" @bind-Value="avatarModel.Name" />
-                        </div>
-                    </div>
-                    <div class="text-danger">
-                        <ValidationMessage For=@(() => avatarModel.Name) />
-                    </div>
-
-                    <label class="mt-5" for="Input_Name">Wähle ein Geschlecht:</label>
-                    <select class="form-select" aria-label="Default select example" @bind="avatarModel.Gender">
-                        <option value="0" selected hidden></option>
-                        <option value="1">Männlich</option>
-                        <option value="2">Weiblich</option>
-                        <option value="3">Divers</option>
-                    </select>
-
-                    <label class="mt-5" for="Input_Name">Wähle eine Klasse:</label>
-                    <select class="form-select" aria-label="Default select example" @bind="avatarModel.Class">
-                        <option value="NoClass" selected hidden></option>
-                        @if (!(dungeonClasses is null))
-                        {
-                            @foreach (ClassDto dungeonClass in dungeonClasses)
-                            {
-                                <option value="@dungeonClass.Name">@dungeonClass.Name</option>
-                            }
-                        }
-                    </select>
-
-                    <label class="mt-5" for="Input_Name">Wähle eine Rasse:</label>
-                    <select class="form-select" aria-label="Default select example" @bind="avatarModel.Race">
-                        <option value="NoRace" selected hidden></option>
-                        @if (!(dungeonRaces is null))
-                        {
-                            @foreach (RaceDto dungeonRace in dungeonRaces)
-                            {
-                                <option value="@dungeonRace.Name">@dungeonRace.Name</option>
-                            }
-                        }
-                    </select>
-
-                    <button class="btn btn-primary mt-5" type="submit">Erstellen</button>
-                </EditForm>
-            </div>
         </div>
-    </div>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent />
+    </NotAuthorized>
+</AuthorizeView>
+
 @code {
     /// <summary>
     /// The Model to validate the "Avatar" Form
@@ -178,7 +187,7 @@
             }
             else if (response.Item2) AvatarNameAlreadyExists = true;
         }
-        NavManager.NavigateTo("/Avatar/Selection/" + DungeonId);
+        NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
     }
 
     /// <summary>
@@ -186,6 +195,6 @@
     /// </summary>
     public void AvatarListButtonClicked()
     {
-        NavManager.NavigateTo("/Avatar/Selection/" + DungeonId);
+        NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
     }
 }

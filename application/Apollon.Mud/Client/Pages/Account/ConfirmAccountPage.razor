@@ -1,7 +1,9 @@
 ﻿@page "/Identity/Account/ConfirmAccount/{id:guid}/{token}"
-@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
-@inject NavigationManager navManager
+
 @using Apollon.Mud.Client.Data.Models.Account
+
+@inject Apollon.Mud.Client.Services.Interfaces.IUserService UserService
+@inject NavigationManager navManager
 
 <div class="container d-flex justify-content-center">
     <div class="card mt-5" style="width:45rem">
@@ -19,21 +21,12 @@
             }
             else if (successfullConfirmation == false)
             {
-                @*<section>
-                    <h4 class="ml-2">Deine E-Mail wurde erfolgreich bestätigt</h4>
-                    <h4 class="ml-2">Viel Spaß in der Welt des Projekt Apollon!</h4>
-                    <hr />
-                    <button class="btn btn-primary mt-2">Jetzt Anmelden</button>
-                </section>
-            } //TODO Rausschmeißen?
-            else
-            {*@
                 <section>
                     <h4 class="ml-2">Deine E-Mail Adresse konnte leider nicht bestätigt werden</h4>
-                    <h4 class="ml-2">Versuche über den Button einen neuen Link zu erhalten</h4>
+                    @*<h4 class="ml-2">Versuche über den Button einen neuen Link zu erhalten</h4>*@
                     <hr />
 
-                    <EditForm EditContext="@resendEmailContext" OnSubmit="@HandleResendSubmit" novalidate>
+                    @*<EditForm EditContext="@resendEmailContext" OnSubmit="@HandleResendSubmit" novalidate>
                         <DataAnnotationsValidator />
 
                         <div class="form-group mt-2">
@@ -55,7 +48,7 @@
                             <ValidationMessage For=@(() => resendEmailModel.EmailVerification) />
                         </div>
                         <button class="btn btn-primary mt-5" type="submit">E-Mail erneut senden</button>
-                    </EditForm>
+                    </EditForm>*@
 
 
                     <p></p>
@@ -101,7 +94,7 @@
     protected override async Task OnInitializedAsync()
     {
         resendEmailContext = new EditContext(resendEmailModel);
-        successfullConfirmation = await authorizationService.ConfirmRegistration(Id, Token);
+        successfullConfirmation = await UserService.ConfirmUserRegistration(Id, Token);
         if(successfullConfirmation.Value is true)
         {
             navManager.NavigateTo("/Identity/Account/Confirmation");

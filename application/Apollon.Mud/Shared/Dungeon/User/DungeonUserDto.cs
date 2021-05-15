@@ -33,6 +33,11 @@ namespace Apollon.Mud.Shared.Dungeon.User
         [JsonProperty("EmailConfirmed")]
         public bool EmailConfirmed { get; set; }
 
+        /// <summary>
+        /// Checks if the Object is equal to the calling User
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object? obj)
         {
             if (obj is DungeonUserDto dUDto)
