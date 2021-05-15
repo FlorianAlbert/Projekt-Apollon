@@ -101,7 +101,7 @@ namespace Apollon.Mud.Server.Inbound
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IGameDbService, GameDbService>();
             services.AddSingleton<ITokenService, TokenService>();
-            services.AddScoped<IMasterService, IMasterService>();
+            services.AddScoped<IMasterService, MasterService>();
             services.AddScoped<IPlayerService, PlayerService>();
 
             services.AddAuthentication(auth =>
