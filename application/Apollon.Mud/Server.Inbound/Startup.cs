@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Apollon.Mud.Server.Domain.DbContext;
 using Apollon.Mud.Server.Domain.Implementations.Chat;
+using Apollon.Mud.Server.Domain.Implementations.Game;
 using Apollon.Mud.Server.Domain.Implementations.Shared;
 using Apollon.Mud.Server.Domain.Interfaces.Chat;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
@@ -19,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Apollon.Mud.Server.Domain.Implementations.UserManagement;
+using Apollon.Mud.Server.Domain.Interfaces.Game;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -99,6 +101,8 @@ namespace Apollon.Mud.Server.Inbound
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IGameDbService, GameDbService>();
             services.AddSingleton<ITokenService, TokenService>();
+            services.AddScoped<IMasterService, IMasterService>();
+            services.AddScoped<IPlayerService, PlayerService>();
 
             services.AddAuthentication(auth =>
             {
