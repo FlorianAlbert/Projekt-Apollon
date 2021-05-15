@@ -49,6 +49,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Authorize(Roles = "Player")]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> CreateNew([FromBody] DungeonDto dungeonDto)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -60,6 +61,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (user is null) return BadRequest();
 
             if (dungeonDto is null) return BadRequest();
+
+            if ((await GameConfigService.GetAll<Dungeon>()).Any(x => x.DungeonName == dungeonDto.DungeonName))
+                return Conflict();
 
             var newDungeon = new Dungeon(dungeonDto.DungeonEpoch, dungeonDto.DungeonDescription, dungeonDto.DungeonName)
             {
@@ -124,7 +128,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 newDefaultRoom = null;
             }
 
-            dungeonToUpdate.Status = (Status)dungeonDto.Status;                        // TODO: Wenn auf Pending wechselt, alle Avatare kicken
+            dungeonToUpdate.Status = (Status)dungeonDto.Status;                        // TODO: Wenn auf Pending wechselt, alle Avatare kicken --- wird clientseitig gehandlet
             dungeonToUpdate.Visibility = (Visibility)dungeonDto.Visibility;
             dungeonToUpdate.DungeonName = dungeonDto.DungeonName;
             dungeonToUpdate.DungeonDescription = dungeonDto.DungeonDescription;

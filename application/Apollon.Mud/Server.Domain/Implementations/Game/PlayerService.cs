@@ -7,9 +7,17 @@ using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Server.Model.ModelExtensions;
 using Apollon.Mud.Server.Outbound.Hubs;
+using Apollon.Mud.Shared.Dungeon.Avatar;
+using Apollon.Mud.Shared.Dungeon.Room;
+using Apollon.Mud.Shared.Dungeon.User;
 using Apollon.Mud.Shared.Game.Chat;
+using Apollon.Mud.Shared.Game.DungeonMaster;
 using Apollon.Mud.Shared.HubContract;
 using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.SignalR;
@@ -55,7 +63,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             var normalizedMessage = message.NormalizeString();
 
-            var answer = string.Empty;
+            string answer;
             switch (normalizedMessage)
             {
                 case "hilfe":
@@ -93,6 +101,10 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                     await HubContext.Clients.Client(avatarConnection.GameConnectionId).NotifyDungeonLeft(false);
 
                     return;
+                case "verstaue":
+                    await Store(dungeon.Id, avatar.Id);
+
+                    return;
                 default:
                     var match = Regex.Match(message, "(untersuche )((\\w|\\d)+(\\w|\\d|\\s)*)");
                     if (match.Success)
@@ -102,7 +114,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         return;
                     }
 
-                    match = Regex.Match(message, "(gehe )(n(ord(en)?)?|s(\u00FCd(en)?)?|o(st(en)?)?|w(est(en)?)?)");
+                    match = Regex.Match(message, "(gehe )((\\w|\\d)+)");
                     if (match.Success)
                     {
                         await Move(match.Groups[2].Value, dungeon.Id, avatar.Id);
@@ -110,18 +122,575 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         return;
                     }
 
+                    match = Regex.Match(message, "(nimm )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    if (match.Success)
+                    {
+                        await Take(match.Groups[2].Value, dungeon.Id, avatar.Id);
+
+                        return;
+                    }
+
+                    match = Regex.Match(message, "(halte )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    if (match.Success)
+                    {
+                        await Hold(match.Groups[2].Value, dungeon.Id, avatar.Id);
+
+                        return;
+                    }
+
+                    match = Regex.Match(message, "(wirf )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    if (match.Success)
+                    {
+                        await ThrowAway(match.Groups[2].Value, dungeon.Id, avatar.Id);
+
+                        return;
+                    }
+
+                    match = Regex.Match(message, "(konsumiere )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    if (match.Success)
+                    {
+                        await Consume(match.Groups[2].Value, dungeon.Id, avatar.Id);
+
+                        return;
+                    }
+
+                    match = Regex.Match(message, "(ziehe )((\\w|\\d)+(\\w|\\d|\\s)*)( an)");
+                    if (match.Success)
+                    {
+                        await Wear(match.Groups[2].Value, dungeon.Id, avatar.Id);
+
+                        return;
+                    }
+
+                    foreach (var requestable in room.SpecialActions)
+                    {
+                        if (requestable.Status is Status.Pending) continue;
+                        match = Regex.Match(message, requestable.MessageRegex);
+                        if (!match.Success) continue;
+                        await SpecialAction(match.Groups[0].Value, dungeon.Id, avatar.Id);
+
+                        break;
+                    }
+
                     return;
             }
         }
 
-        private async Task<string> GenerateRoomDescription(Guid dungeonId, Guid roomId)
+        private async Task SpecialAction(string input, Guid dungeonId, Guid avatarId)
         {
-            throw new NotImplementedException();
+            var avatar = await GameDbService.Get<Avatar>(avatarId);
+
+            if (avatar is null) return;
+
+            var avatarConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
+
+            if (avatarConnection is null) return;
+
+            var dungeonMasterConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeonId);
+
+            if (dungeonMasterConnection is null)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Im Moment gibt es wohl keinen Dungeon Master... Benutze wenn möglich die automatisierten Befehle!\n");
+
+                return;
+            }
+
+            await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+                .ReceiveRequest(new DungeonMasterRequestDto
+                {
+                    Avatar = new AvatarDto
+                    {
+                        Id = avatar.Id,
+                        Name = avatar.Name,
+                        Gender = (int)avatar.ChosenGender,
+                        CurrentHealth = avatar.CurrentHealth,
+                        CurrentRoom = new RoomDto
+                        {
+                            Id = avatar.CurrentRoom.Id,
+                            Name = avatar.CurrentRoom.Name,
+                            Description = avatar.CurrentRoom.Description
+                        }
+                    },
+                    Request = input
+                });
+
+            await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+                .ReceiveGameMessage("Deine Anfrage wird so schnell wie möglich vom Dungeon Master bearbeitet. Du wirst benachrichtigt sobald das Ergebnis bereit steht!\n");
         }
 
-        private async Task Move(string value, Guid id, Guid avatarId)
+        private async Task Wear(string itemName, Guid dungeonId, Guid avatarId)
         {
-            throw new NotImplementedException();
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
+
+            if (avatar is null) return;
+
+            var avatarConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
+
+            if (avatarConnection is null) return;
+
+            var itemToWear = avatar.Inventory.FirstOrDefault(x => x.Name.NormalizeString() == itemName.NormalizeString());
+            if (itemToWear is null || itemToWear.Status is Status.Pending)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("In deinem Inventar existiert kein Item mit diesem Namen!\n");
+
+                return;
+            }
+
+            if (itemToWear is not Wearable wearable)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage($"{ itemToWear.Name } kannst du nicht anziehen!\n");
+
+                return;
+            }
+
+            if (avatar.Armor is not null)
+            {
+                var wornWearable = await GameDbService.Get<Wearable>(avatar.Armor.Id);
+
+                avatar.Armor = wearable;
+
+                avatar.Inventory.Remove(wearable);
+
+                avatar.Inventory.Add(wornWearable);
+
+                if (!avatar.Inventory.Contains(wornWearable))
+                {
+                    var room = await GameDbService.Get<Room>(avatar.CurrentRoom.Id);
+
+                    if (room is null)
+                    {
+                        await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                            .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                                "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                        return;
+                    }
+
+                    room.Inspectables.Add(wornWearable);
+
+                    if (!await GameDbService.NewOrUpdate(room))
+                    {
+                        await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                            .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                                "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                        return;
+                    }
+
+                    await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                        .ReceiveGameMessage($"In deinem Inventar war nicht mehr genügend Platz, deshalb wurde deine zuvor getragene R\u00FCstung { wornWearable.Name } im Raum abgelegt!\n");
+                }
+
+                if (!await GameDbService.NewOrUpdate(avatar))
+                {
+                    await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                        .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                            "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                    return;
+                }
+
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage($"Du trägst nun { itemToWear.Name } als Rüstung!\n");
+            }
+        }
+
+        private async Task Consume(string itemName, Guid dungeonId, Guid avatarId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
+
+            if (avatar is null) return;
+
+            var avatarConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
+
+            if (avatarConnection is null) return;
+
+            var takeable = avatar.Inventory.FirstOrDefault(x => x.Name.NormalizeString() == itemName.NormalizeString());
+            if (takeable is null || takeable.Status is Status.Pending)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("In deinem Inventar existiert kein Item mit diesem Namen!\n");
+
+                return;
+            }
+
+            if (takeable is not Consumable consumable)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage($"{ takeable.Name } kann nicht konsumiert werden!\n");
+
+                return;
+            }
+
+            avatar.Inventory.Remove(consumable);
+
+            if (!await GameDbService.NewOrUpdate(avatar))
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                        "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                return;
+            }
+
+            await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                .ReceiveGameMessage($"{ consumable.EffectDescription }\n");
+        }
+
+        private async Task ThrowAway(string itemName, Guid dungeonId, Guid avatarId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
+
+            if (avatar is null) return;
+
+            var avatarConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
+
+            if (avatarConnection is null) return;
+
+            var itemToThrowAway = avatar.Inventory.FirstOrDefault(x => x.Name.NormalizeString() == itemName.NormalizeString());
+            if (itemToThrowAway is null || itemToThrowAway.Status is Status.Pending)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("In deinem Inventar existiert kein Item mit diesem Namen!\n");
+
+                return;
+            }
+
+            var room = await GameDbService.Get<Room>(avatar.CurrentRoom.Id);
+
+            if (room is null)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                        "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                return;
+            }
+
+            room.Inspectables.Add(itemToThrowAway);
+
+            if (!await GameDbService.NewOrUpdate(room))
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                        "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                return;
+            }
+
+            avatar.Inventory.Remove(itemToThrowAway);
+
+            if (!await GameDbService.NewOrUpdate(avatar))
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                        "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                return;
+            }
+
+            await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                .ReceiveGameMessage($"{ itemToThrowAway.Name } befindet sich jetzt wieder im Raum!\n");
+        }
+
+        private async Task Store(Guid dungeonId, Guid avatarId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
+
+            if (avatar is null) return;
+
+            var avatarConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
+
+            if (avatarConnection is null) return;
+
+            if (avatar.HoldingItem is null || avatar.HoldingItem.Status is Status.Pending)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Du hältst im Moment gar kein Item in der Hand!\n");
+
+                return;
+            }
+
+            var itemToStore = await GameDbService.Get<Takeable>(avatar.HoldingItem.Id);
+
+            if (itemToStore is null)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                        "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                return;
+            }
+
+            avatar.Inventory.Add(avatar.HoldingItem);
+
+            if (!avatar.Inventory.Contains(avatar.HoldingItem))
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("In deinem Inventar ist nicht genügend Platz, um dieses Item noch unterzubringen!\n");
+
+                return;
+            }
+
+            avatar.HoldingItem = null;
+
+            if (!await GameDbService.NewOrUpdate(avatar))
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                        "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                return;
+            }
+
+            await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                .ReceiveGameMessage($"{ itemToStore.Name } befindet sich nun wieder in deinem Inventar!\n");
+        }
+
+        private async Task Hold(string itemName, Guid dungeonId, Guid avatarId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
+
+            if (avatar is null) return;
+
+            var avatarConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
+
+            if (avatarConnection is null) return;
+
+            var itemToHold = avatar.Inventory.FirstOrDefault(x => x.Name.NormalizeString() == itemName.NormalizeString());
+            if (itemToHold is null || itemToHold.Status is Status.Pending)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("In deinem Inventar existiert kein Item mit diesem Namen!\n");
+
+                return;
+            }
+
+            if (avatar.HoldingItem is not null)
+            {
+                var heldItem = await GameDbService.Get<Takeable>(avatar.HoldingItem.Id);
+
+                avatar.HoldingItem = itemToHold;
+
+                avatar.Inventory.Remove(itemToHold);
+
+                avatar.Inventory.Add(heldItem);
+
+                if (!avatar.Inventory.Contains(heldItem))
+                {
+                    var room = await GameDbService.Get<Room>(avatar.CurrentRoom.Id);
+
+                    if (room is null)
+                    {
+                        await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                            .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                                "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                        return;
+                    }
+
+                    room.Inspectables.Add(heldItem);
+
+                    if (!await GameDbService.NewOrUpdate(room))
+                    {
+                        await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                            .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                                "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                        return;
+                    }
+
+                    await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                        .ReceiveGameMessage($"In deinem Inventar war nicht mehr genügend Platz, deshalb wurde dein zuvor gehaltenes Item { heldItem.Name } im Raum abgelegt!\n");
+                }
+
+                if (!await GameDbService.NewOrUpdate(avatar))
+                {
+                    await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                        .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                            "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                    return;
+                }
+
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage($"Du hältst nun { itemToHold.Name } in der Hand!\n");
+            }
+        }
+
+        private async Task Take(string itemName, Guid dungeonId, Guid avatarId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
+
+            if (avatar is null) return;
+
+            var avatarConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
+
+            if (avatarConnection is null) return;
+
+            var inspectable = avatar.CurrentRoom.Inspectables.FirstOrDefault(x => x.Name.NormalizeString() == itemName.NormalizeString());
+
+            if (inspectable is null || inspectable.Status is Status.Pending)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Hier gibt es kein Objekt mit diesem Namen!\n");
+
+                return;
+            }
+
+            if (inspectable is not Takeable takeable)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage($"{ inspectable.Name } kannst du leider nicht aufnehmen!\n");
+
+                return;
+            }
+
+            var room = await GameDbService.Get<Room>(avatar.CurrentRoom.Id);
+
+            if (room is null)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Fehler - Kein Objekt gefunden!\n");
+
+                return;
+            }
+
+            avatar.Inventory.Add(takeable);
+
+            if (!await GameDbService.NewOrUpdate(avatar))
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                        "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                return;
+            }
+
+            if (!avatar.Inventory.Contains(takeable))
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Dein Inventar kann dieses Item nicht mehr aufnehmen! Es ist wohl zu schwer!\n");
+
+                return;
+            }
+
+            room.Inspectables.Remove(takeable);
+
+            if (!await GameDbService.NewOrUpdate(room))
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                        "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+            await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                .ReceiveGameMessage($"Dein Inventar enthält nun { takeable.Name }!\n");
+
+        }
+
+        private async Task<string> GenerateRoomDescription(Guid dungeonId, Guid roomId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var room = dungeon?.ConfiguredRooms.FirstOrDefault(x => x.Id == roomId);
+
+            if (room is null) return "Fehler - Keine Raumbeschreibung gefunden!\n";
+
+            var description = $"\t{ room.Description }\n";
+
+            if (room.Inspectables.Count != 0)
+            {
+                description += "\n\tGegenstände:\n";
+                description = room.Inspectables.Where(x => x.Status is Status.Approved).Aggregate(description,
+                    (current, inspectable) => current + $"\t\t{ inspectable.Name }\n");
+            }
+
+            if (room.Avatars.Count == 0) return description;
+
+            description += "\n\tAvatare:\n";
+            description = room.Avatars.Where(x => x.Status is Status.Approved).Aggregate(description,
+                (current, avatar) => current + $"\t\t{ avatar.Name }\n");
+
+            return description;
+        }
+
+        private async Task Move(string direction, Guid dungeonId, Guid avatarId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
+
+            if (avatar is null) return;
+
+            var avatarConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
+
+            if (avatarConnection is null) return;
+
+            Room newRoom;
+            switch (direction.NormalizeString())
+            {
+                case "n":
+                case "nord":
+                case "norden":
+                    newRoom = avatar.CurrentRoom.NeighborNorth;
+                    break;
+                case "s":
+                case "s\u00FCd":
+                case "s\u00FCden":
+                    newRoom = avatar.CurrentRoom.NeighborSouth;
+                    break;
+                case "o":
+                case "ost":
+                case "osten":
+                    newRoom = avatar.CurrentRoom.NeighborEast;
+                    break;
+                case "w":
+                case "west":
+                case "westen":
+                    newRoom = avatar.CurrentRoom.NeighborWest;
+                    break;
+                default:
+                    await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                        .ReceiveGameMessage("Eine solche Himmelsrichtung ist leider nicht bekannt!\n");
+                    return;
+            }
+
+            if (newRoom is null || newRoom.Status is Status.Pending)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("In dieser Himmelsrichtung ist leider kein Raum vorhanden!\n");
+
+                return;
+            }
+
+            var oldRoom = avatar.CurrentRoom;
+
+            avatar.CurrentRoom = newRoom;
+
+            if (!await GameDbService.NewOrUpdate(avatar)) return;
+
+            var roomDescription = await GenerateRoomDescription(dungeon.Id, newRoom.Id);
+
+            await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                .ReceiveGameMessage(roomDescription);
+
+            await NotifyAvatarLeftRoom(avatar.Name, dungeon.Id, oldRoom.Id);
+
+            await NotifyAvatarEnteredRoom(avatar.Name, dungeon.Id, avatar.CurrentRoom.Id);
         }
 
         private async Task InspectObject(string inspectableName, Guid dungeonId, Connection avatarConnection)
@@ -135,9 +704,9 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 return;
             }
 
-            var inspectable = dungeon.ConfiguredInspectables.FirstOrDefault(x => x.Name.NormalizeString() == inspectableName);
+            var inspectable = dungeon.ConfiguredInspectables.FirstOrDefault(x => x.Name.NormalizeString() == inspectableName.NormalizeString());
 
-            if (inspectable is null)
+            if (inspectable is null || inspectable.Status is Status.Pending)
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"Hier gibt es kein untersuchbares Objekt mit dem Namen { inspectableName }!\n");
             }
@@ -161,37 +730,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             ConnectionService.RemoveConnectionByAvatarId(avatarId);
 
-            var avatarsToNotify = dungeon.RegisteredAvatars.Where(x => x.CurrentRoom == avatar.CurrentRoom && x.Status == Status.Approved).ToList();
-
-            var avatarsToNotifyConnectionIds =
-                from avatarToNotify
-                        in avatarsToNotify
-                select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
-                into avatarToNotifyConnection
-                where avatarToNotifyConnection is not null
-                select avatarToNotifyConnection.GameConnectionId;
-
-            var roomChatPartnerDtos = avatarsToNotify.Select(x => new ChatPartnerDto
-            {
-                AvatarId = x.Id,
-                AvatarName = x.Name
-            }).ToList();
-
-            var dungeonChatPartnerDtos = dungeon.RegisteredAvatars
-                .Where(x => x.Status == Status.Approved)
-                .Select(x => new ChatPartnerDto
-                {
-                    AvatarId = x.Id,
-                    AvatarName = x.Name
-                }).ToList();
-
-            await HubContext.Clients.Clients(avatarsToNotifyConnectionIds)
-                .ReceiveChatPartnerList(roomChatPartnerDtos);
-
-            var dungeonMasterConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeon.Id);
-
-            if (dungeonMasterConnection is not null) await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
-                .ReceiveChatPartnerList(dungeonChatPartnerDtos);
+            await NotifyAvatarLeftDungeon(avatar.Name, dungeon.Id, avatar.CurrentRoom.Id);
 
             return true;
         }
@@ -200,9 +739,12 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
         {
             var avatar = await GameDbService.Get<Avatar>(avatarId);
 
-            return avatar is null
-                ? "Fehler - Kein Inventar gefunden!\n"
-                : avatar.Inventory.Aggregate(string.Empty, (s, t) => s + $"\t- { t.Name }\n");
+            if (avatar is null) return "Fehler - Kein Inventar gefunden!\n";
+
+            return avatar.Inventory.Count == 0
+                ? "\tMaximalgewicht: 100\n\tInventar ist leer"
+                : avatar.Inventory.Where(x => x.Status is Status.Approved)
+                    .Aggregate("\tMaximalgewicht: 100\n", (s, t) => s + $"\t- { t.Name } (Gewicht: { t.Weight })\n");
         }
 
         private async Task<string> GenerateAvatarProperties(Guid avatarId)
@@ -230,14 +772,14 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (room is null) return "Fehler - Keine Hilfe gefunden!\n";
 
-            return room.SpecialActions.Where(specialAction => specialAction.Status is not Status.Pending)
+            return room.SpecialActions.Where(specialAction => specialAction.Status is Status.Approved)
                 .Aggregate("\t- Hilfe --- Gibt eine Hilfe zu den m\u00F6glichen Befehlen des Raumes aus\n" +
                            "\t- Schaue --- Gibt Beschreibung des Raumes aus\n" +
                            "\t- Untersuche <Objekt> --- Gibt Beschreibung des zu untersuchenden Objektes aus\n" +
                            "\t- Gehe <Himmelsrichtung> --- Bewegt den Avatar in den Raum in der gew\u00FCnschten Himmelsrichtung\n" +
-                           "\t- Nimm <Gegenstand> --- Nimmt den gew\u00FCnschten Gegenstand in den Inventar auf\n" +
+                           "\t- Nimm <Gegenstand> --- Nimmt den gew\u00FCnschten Gegenstand aus dem Raum in den Inventar auf\n" +
                            "\t- Halte <Gegenstand> --- L\u00E4sst den Avatar den gew\u00FCnschten Gegenstand aus dem Inventar in der Hand halten\n" +
-                           "\t- Verstaue <Gegenstand> --- Bef\u00F6rdert den gehaltenen Gegenstand zur\u00FCck in den Inventar\n" +
+                           "\t- Verstaue --- Bef\u00F6rdert den gehaltenen Gegenstand zur\u00FCck in den Inventar\n" +
                            "\t- Wirf <Gegenstand> --- Bef\u00F6rdert einen Gegenstand aus der Hand zur\u00FCck in den aktuellen Raum\n" +
                            "\t- Konsumiere <Nahrung> --- L\u00E4sst den Avatar den gew\u00FCnschten Gegenstand aus der Hand konsumieren\n" +
                            "\t- Ziehe <Kleidungsst\u00FCck> an --- L\u00E4sst den Avatar das gew\u00FCnschte Kleidungsst\u00FCck anziehen\n" +
@@ -246,6 +788,279 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                            "\t- Beende --- L\u00E4sst den Avatar das Spiel verlassen\n",
                     (current, specialAction) =>
                         current + $"\t- {specialAction.PatternForPlayer} --- Befehl, der von Dungeon Master bearbeitet wird\n");
+        }
+
+        public async Task NotifyAvatarLeftRoom(string avatarName, Guid dungeonId, Guid roomId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var room = dungeon?.ConfiguredRooms.FirstOrDefault(x => x.Id == roomId);
+
+            if (room is null || room.Status is Status.Pending) return;
+
+            var avatarsToNotify = dungeon.RegisteredAvatars.Where(x => x.CurrentRoom == room && x.Status == Status.Approved).ToList();
+
+            var avatarsToNotifyConnectionIds =
+                (from avatarToNotify
+                    in avatarsToNotify
+                select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
+                into avatarToNotifyConnection
+                where avatarToNotifyConnection is not null
+                select avatarToNotifyConnection.GameConnectionId).ToList();
+
+            var roomChatPartnerDtos = avatarsToNotify.Select(x => new ChatPartnerDto
+            {
+                AvatarId = x.Id,
+                AvatarName = x.Name
+            }).ToList();
+
+            var dungeonMasterConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeonId);
+
+            if (dungeonMasterConnection is not null) roomChatPartnerDtos.Add(new ChatPartnerDto
+            {
+                AvatarId = null,
+                AvatarName = "Dungeon Master"
+            });
+
+            await HubContext.Clients.Clients(avatarsToNotifyConnectionIds)
+                .ReceiveChatPartnerList(roomChatPartnerDtos);
+
+            await HubContext.Clients.Clients(avatarsToNotifyConnectionIds)
+                .ReceiveGameMessage($"{ avatarName } verlässt den Raum!\n");
+        }
+
+        public async Task NotifyAvatarEnteredRoom(string avatarName, Guid dungeonId, Guid roomId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var room = dungeon?.ConfiguredRooms.FirstOrDefault(x => x.Id == roomId);
+
+            if (room is null || room.Status is Status.Pending) return;
+
+            var avatarsToNotify = dungeon.RegisteredAvatars.Where(x => x.CurrentRoom == room && x.Status == Status.Approved).ToList();
+
+            var avatarsToNotifyConnectionIdsChat =
+                from avatarToNotify
+                    in avatarsToNotify
+                select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
+                into avatarToNotifyConnection
+                where avatarToNotifyConnection is not null
+                select avatarToNotifyConnection.GameConnectionId;
+
+            var avatarsToNotifyConnectionIdsMessage =
+                from avatarToNotify
+                    in avatarsToNotify
+                where avatarToNotify.Name != avatarName
+                select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
+                into avatarToNotifyConnection
+                where avatarToNotifyConnection is not null
+                select avatarToNotifyConnection.GameConnectionId;
+
+            var roomChatPartnerDtos = avatarsToNotify.Select(x => new ChatPartnerDto
+            {
+                AvatarId = x.Id,
+                AvatarName = x.Name
+            }).ToList();
+
+            var dungeonMasterConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeonId);
+
+            if (dungeonMasterConnection is not null) roomChatPartnerDtos.Add(new ChatPartnerDto
+            {
+                AvatarId = null,
+                AvatarName = "Dungeon Master"
+            });
+
+            await HubContext.Clients.Clients(avatarsToNotifyConnectionIdsChat)
+                .ReceiveChatPartnerList(roomChatPartnerDtos);
+
+            await HubContext.Clients.Clients(avatarsToNotifyConnectionIdsMessage)
+                .ReceiveGameMessage($"{ avatarName } betritt den Raum!\n");
+        }
+
+        public async Task NotifyDungeonMasterEntering(string avatarName, Guid dungeonId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            if (dungeon is null) return;
+
+            var dungeonMasterConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeonId);
+
+            if (dungeonMasterConnection is not null)
+            {
+                foreach (var room in dungeon.ConfiguredRooms)
+                {
+                    var roomAvatars = room.Avatars.Where(x => x.Status is Status.Approved).ToList();
+
+                    var roomAvatarsConnectionIds =
+                        (from avatarToNotify
+                            in roomAvatars
+                        select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
+                        into avatarToNotifyConnection
+                        where avatarToNotifyConnection is not null
+                        select avatarToNotifyConnection.GameConnectionId).ToList();
+
+                    var roomChatPartnerDtos = roomAvatars.Select(x => new ChatPartnerDto
+                    {
+                        AvatarId = x.Id,
+                        AvatarName = x.Name
+                    }).ToList();
+
+                    roomChatPartnerDtos.Add(new ChatPartnerDto
+                    {
+                        AvatarId = null,
+                        AvatarName = "Dungeon Master"
+                    });
+
+                    await HubContext.Clients.Clients(roomAvatarsConnectionIds)
+                        .ReceiveGameMessage("Ein Dungeon Master hat das Dungeon betreten!\n");
+
+                    await HubContext.Clients.Clients(roomAvatarsConnectionIds)
+                        .ReceiveChatPartnerList(roomChatPartnerDtos);
+                }
+
+                var dungeonAvatars = dungeon.RegisteredAvatars.Where(x => x.Status is Status.Approved).ToList();
+
+                var dungeonChatPartnerDtos = dungeonAvatars.Select(x => new ChatPartnerDto
+                {
+                    AvatarId = x.Id,
+                    AvatarName = x.Name
+                }).ToList();
+
+                await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+                    .ReceiveChatPartnerList(dungeonChatPartnerDtos);
+
+                await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+                    .ReceiveAvatarList(dungeonAvatars.Select(x =>
+                        new AvatarDto
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            Status = (int)x.Status,
+                            Owner = new DungeonUserDto
+                            {
+                                Id = Guid.Parse(x.Owner.Id),
+                                Email = x.Owner.Email,
+                                LastActive = x.Owner.LastActive
+                            }
+                        }).ToList());
+            }
+        }
+
+        public async Task NotifyDungeonMasterLeaving(string avatarName, Guid dungeonId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            if (dungeon is null) return;
+
+            foreach (var room in dungeon.ConfiguredRooms)
+            {
+                var roomAvatars = room.Avatars.Where(x => x.Status is Status.Approved).ToList();
+
+                var roomAvatarsConnectionIds =
+                    (from avatarToNotify
+                        in roomAvatars
+                    select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
+                    into avatarToNotifyConnection
+                    where avatarToNotifyConnection is not null
+                    select avatarToNotifyConnection.GameConnectionId).ToList();
+
+                var roomChatPartnerDtos = roomAvatars.Select(x => new ChatPartnerDto
+                {
+                    AvatarId = x.Id,
+                    AvatarName = x.Name
+                }).ToList();
+
+                await HubContext.Clients.Clients(roomAvatarsConnectionIds)
+                    .ReceiveGameMessage("Der Dungeon Master hat das Dungeon verlassen!\n");
+
+                await HubContext.Clients.Clients(roomAvatarsConnectionIds)
+                    .ReceiveChatPartnerList(roomChatPartnerDtos);
+            }
+
+        }
+
+        public async Task NotifyAvatarEnteredDungeon(string avatarName, Guid dungeonId, Guid roomId)
+        {
+            await NotifyAvatarEnteredRoom(avatarName, dungeonId, roomId);
+
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var room = dungeon?.ConfiguredRooms.FirstOrDefault(x => x.Id == roomId);
+
+            if (room is null || room.Status is Status.Pending) return;
+
+            var dungeonMasterConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeon.Id);
+
+            if (dungeonMasterConnection is not null)
+            {
+                var dungeonChatPartnerDtos = dungeon.RegisteredAvatars
+                    .Where(x => x.Status == Status.Approved)
+                    .Select(x => new ChatPartnerDto
+                    {
+                        AvatarId = x.Id,
+                        AvatarName = x.Name
+                    }).ToList();
+
+                await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+                    .ReceiveChatPartnerList(dungeonChatPartnerDtos);
+
+                await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+                    .ReceiveAvatarList(dungeon.RegisteredAvatars.Where(x => x.Status is Status.Approved).Select(x =>
+                        new AvatarDto
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            Status = (int)x.Status,
+                            Owner = new DungeonUserDto
+                            {
+                                Id = Guid.Parse(x.Owner.Id),
+                                Email = x.Owner.Email,
+                                LastActive = x.Owner.LastActive
+                            }
+                        }).ToList());
+            }
+        }
+
+        public async Task NotifyAvatarLeftDungeon(string avatarName, Guid dungeonId, Guid roomId)
+        {
+            await NotifyAvatarLeftRoom(avatarName, dungeonId, roomId);
+
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var room = dungeon?.ConfiguredRooms.FirstOrDefault(x => x.Id == roomId);
+
+            if (room is null || room.Status is Status.Pending) return;
+
+            var dungeonMasterConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeon.Id);
+
+            if (dungeonMasterConnection is not null)
+            {
+                var dungeonChatPartnerDtos = dungeon.RegisteredAvatars
+                    .Where(x => x.Status == Status.Approved)
+                    .Select(x => new ChatPartnerDto
+                    {
+                        AvatarId = x.Id,
+                        AvatarName = x.Name
+                    }).ToList();
+
+                await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+                    .ReceiveChatPartnerList(dungeonChatPartnerDtos);
+
+                await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+                    .ReceiveAvatarList(dungeon.RegisteredAvatars.Where(x => x.Status is Status.Approved).Select(x =>
+                        new AvatarDto
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            Status = (int)x.Status,
+                            Owner = new DungeonUserDto
+                            {
+                                Id = Guid.Parse(x.Owner.Id),
+                                Email = x.Owner.Email,
+                                LastActive = x.Owner.LastActive
+                            }
+                        }).ToList());
+            }
         }
     }
 }

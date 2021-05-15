@@ -130,13 +130,13 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             foreach (var avatar in activeAvatars)
             {
-                var connection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
-
-                if (connection is null) continue;
-
                 avatar.Status = Status.Pending;
 
                 if (!await GameDbService.NewOrUpdate(avatar)) continue;
+
+                var connection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
+
+                if (connection is null) continue;
 
                 ConnectionService.RemoveConnectionByAvatarId(avatar.Id);
 

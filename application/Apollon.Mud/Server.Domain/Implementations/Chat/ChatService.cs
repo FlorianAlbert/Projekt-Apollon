@@ -48,7 +48,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
             foreach (var avatar in senderAvatar.CurrentRoom.Avatars)
             {
                 Connection recipientConnection;
-                if (avatar.Status == Status.Approved && 
+                if (avatar.Status == Status.Approved && avatar.Id != senderAvatar.Id && 
                     (recipientConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id)) is not null)
                     recipientChatConnectionIds.Add(recipientConnection.ChatConnectionId);
             }
@@ -57,7 +57,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
         }
 
         /// <inheritdoc cref="IChatService.PostWhisperMessage"/>
-        public async Task PostWhisperMessage(Guid dungeonId, Guid? senderAvatarId, string recipientName, string message)      // TODO: In UML anpassen
+        public async Task PostWhisperMessage(Guid dungeonId, Guid? senderAvatarId, string recipientName, string message)
         {
             Connection recipientConnection;
             string senderName;
@@ -82,9 +82,14 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
 
                 var senderAvatar = await GameDbService.Get<Avatar>(senderAvatarId.Value);
 
-                if (senderAvatar is null || recipientAvatar is null ||
-                    (recipientConnection = ConnectionService.GetConnectionByAvatarId(recipientAvatar.Id)) is null)
-                    return;
+                if (senderAvatar is null || recipientAvatar is null && recipientName != "Dungeon Master") return;
+
+
+                recipientConnection = recipientAvatar is null 
+                    ? ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeonId) 
+                    : ConnectionService.GetConnectionByAvatarId(recipientAvatar.Id);
+
+                if (recipientConnection is null) return;
 
                 senderName = senderAvatar.Name;
             }

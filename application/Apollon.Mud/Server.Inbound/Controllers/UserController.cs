@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+using Apollon.Mud.Server.Model.ModelExtensions;
 using Apollon.Mud.Shared.Dungeon.User;
 using Apollon.Mud.Shared.UserManagement.Password;
 using Apollon.Mud.Shared.UserManagement.Registration;
@@ -41,9 +42,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Route("registration/request")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> RegistrateUser([FromBody] RegistrationRequestDto registrationRequestDto)
         {
             if (registrationRequestDto is null) return BadRequest();
+
+            if ((await _userService.GetAllUsers()).Any(x =>
+                x.Email.NormalizeString() == registrationRequestDto.UserEmail.NormalizeString()))
+                return Conflict();
 
             var succeeded = await _userService.RequestUserRegistration(registrationRequestDto.UserEmail,
                 registrationRequestDto.Password);
