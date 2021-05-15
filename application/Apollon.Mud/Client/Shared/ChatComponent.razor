@@ -6,8 +6,10 @@
 @inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 @inject Apollon.Mud.Client.Services.Interfaces.IChatService ChatService
+@inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
 @inject Apollon.Mud.Client.Data.Account.UserContext UserContext
 
+@implements IDisposable
 
 <div class="card ms-2 me-2 bg-secondary" style="display: flex; flex-direction: column; height: 87vh">
     <div style="flex-shrink: 0;">
@@ -197,5 +199,13 @@
             .ToList()
             .ForEach(x => ChatPartners.Remove(x));
         StateHasChanged();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void Dispose()
+    {
+        GameService.LeaveGame();
     }
 }

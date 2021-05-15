@@ -65,6 +65,12 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <returns></returns>
         Task<HttpStatusCode> AnswerDungeonMasterRequest(string message, AvatarDto avatar);
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <returns></returns>
+        void LeaveGame();
+
 
     }
 }
