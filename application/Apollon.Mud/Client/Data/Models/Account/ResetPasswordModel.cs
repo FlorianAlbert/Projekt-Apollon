@@ -15,6 +15,8 @@ namespace Apollon.Mud.Client.Data.Models.Account
         /// </summary>
         [Required]
         [MinLength(8, ErrorMessage = "Dein Passwort muss mindestens 8 Zeichen lang sein")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{1,50}", 
+            ErrorMessage = "Du musst mindestens einen Groß-, einen Kleinbuchstaben, ein Sonderzeichen sowie eine Zahl eingeben")]
         public string NewPassword { get; set; }
 
         /// <summary>
