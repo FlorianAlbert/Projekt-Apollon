@@ -101,23 +101,35 @@
     /// <summary>
     /// Removes the chosen request from the open Requests and adds the user to the whitelist
     /// </summary>
-    private void AcceptUser()
+    private async void AcceptUser()
     {
-        OpenRequestList.Remove(OpenRequest);
-        Dungeon.OpenRequests.Remove(OpenRequest);
-        Dungeon.WhiteList.Add(OpenRequest);
-        DungeonService.UpdateDungeon(Dungeon);
+        var success = await DungeonService.SubmitEnterRequest(DungeonId, OpenRequest.Id, true);
+        if (success)
+        {
+            OpenRequestList.Remove(OpenRequest);
+            Dungeon.OpenRequests.Remove(OpenRequest);
+            Dungeon.WhiteList.Add(OpenRequest);
+            DungeonService.UpdateDungeon(Dungeon);
+            OpenRequest = null;
+        }
+
+
     }
 
     /// <summary>
     /// Removes the chosen request from the open requests and adds the user to the blacklist
     /// </summary>
-    private void RemoveUser()
+    private async void RemoveUser()
     {
-        OpenRequestList.Remove(OpenRequest);
-        Dungeon.OpenRequests.Remove(OpenRequest);
-        //Dungeon.BlackList.Add(OpenRequest); //TODO machen wir das??
-        DungeonService.UpdateDungeon(Dungeon);
+        var success = await DungeonService.SubmitEnterRequest(DungeonId, OpenRequest.Id, false);
+        if (success)
+        {
+            OpenRequestList.Remove(OpenRequest);
+            Dungeon.OpenRequests.Remove(OpenRequest);
+            Dungeon.BlackList.Add(OpenRequest);
+            DungeonService.UpdateDungeon(Dungeon);
+            OpenRequest = null;
+        }
     }
 
 }

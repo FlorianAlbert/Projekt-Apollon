@@ -70,6 +70,7 @@ namespace Apollon.Mud.Client.Services.Implementations
                 AuthorizationResponseDto responseDto = await response.Content.ReadFromJsonAsync<AuthorizationResponseDto>();
                 CurrentUserContext.DungeonUserContext = responseDto.DungeonUserDto;
                 CurrentUserContext.Token = responseDto.Token;
+                CurrentUserContext.DungeonUserContext.IsAdmin = responseDto.DungeonUserDto.IsAdmin;
                 CurrentUserContext.IsAuthorized = true;
                 AuthenticationProvider.NotifyStateChanged();
                 return true;

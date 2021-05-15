@@ -67,6 +67,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
                 {
                     User = user,
                     Token = token,
+                    IsAdmin = await _userDbService.IsUserInRole(user.Id, Roles.Admin.ToString()),
                     Status = LoginResultStatus.OK
                 };
             }

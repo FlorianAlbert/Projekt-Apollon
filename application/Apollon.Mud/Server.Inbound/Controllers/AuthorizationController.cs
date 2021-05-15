@@ -54,6 +54,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     {
                         Email = loginResult.User.Email,
                         EmailConfirmed = loginResult.User.EmailConfirmed,
+                        IsAdmin = loginResult.IsAdmin,
                         LastActive = loginResult.User.LastActive,
                         Id = Guid.Parse(loginResult.User.Id)
                     }

@@ -5,6 +5,7 @@
 @using Apollon.Mud.Client.Shared.Components
 @using Apollon.Mud.Shared.HubContract
 @using Apollon.Mud.Shared.Dungeon.Avatar
+@using Apollon.Mud.Shared.Game.Chat
 @using Apollon.Mud.Shared.Game.DungeonMaster
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Net
@@ -17,11 +18,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (successfullConnection is null)
-        {
-            <ConnectingToServerComponent />
-        }
-        else if (successfullConnection == true)
+        @if (successfullConnection)
         {
             <div class="MasterViewLayout" id="MasterViewLayout" style="overflow-x:hidden">
                 <div class="row">
@@ -99,7 +96,7 @@
     /// <summary>
     /// Enables the page when the connection to the server was successfull
     /// </summary>
-    bool? successfullConnection;
+    bool successfullConnection = true;
 
     /// <summary>
     /// The ID of the Dungeon this Master is handling
@@ -147,8 +144,8 @@
     protected override async Task OnInitializedAsync()
     {
         ChatHubConnection = new HubConnectionBuilder()
-            .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/chat")
-            .Build();
+        .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/chat")
+        .Build();
 
         ChatHubConnection.On<string, string>("ReceiveMessage", ReceiveChatMessage);
 
@@ -156,7 +153,7 @@
             .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/game")
             .Build();
 
-        GameHubConnection.On<ICollection<AvatarDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
+        GameHubConnection.On<ICollection<ChatPartnerDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
         GameHubConnection.On<DungeonMasterRequestDto>("ReceiveRequest", ProcessSpecialAction);
         GameHubConnection.On<ICollection<AvatarDto>>("ReceiveAvatarList", ProcessAvatarList);
 
@@ -166,7 +163,7 @@
         var enterRequest = await GameService.EnterDungeon(true, DungeonId, null, ChatHubConnection.ConnectionId, GameHubConnection.ConnectionId);
 
         successfullConnection = enterRequest == HttpStatusCode.OK;
-        successfullConnection = true; //TODO entfernen
+
 
         StateHasChanged();
     }
@@ -184,7 +181,7 @@
     /// </summary>
     /// <param name="avatars"></param>
     /// <returns></returns>
-    public void UpdateChatPartnerList(ICollection<AvatarDto> avatars)
+    public void UpdateChatPartnerList(ICollection<ChatPartnerDto> avatars)
     {
         ChatChildComponent.UpdateChatPartners(avatars);
     }

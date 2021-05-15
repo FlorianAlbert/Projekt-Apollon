@@ -2,11 +2,12 @@
 @layout AdminLayout
 
 @using Apollon.Mud.Shared.Dungeon.User
+@using System.Net
 
 @inject Apollon.Mud.Client.Services.Interfaces.IUserService UserService
 @inject Apollon.Mud.Client.Data.Account.UserContext UserContext
 
-<AuthorizeView Roles="Admin">
+<AuthorizeView>
     <Authorized>
         @if (UserContext.DungeonUserContext.IsAdmin)
         {
@@ -43,7 +44,7 @@
                                         <td>@user.LastActive</td>
                                         <td>
                                             <div class="form-check form-switch d-flex justify-content-center">
-                                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" value="@user.IsAdmin">
+                                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="@user.IsAdmin" @onclick="() => ChangeAdminRights(user)">
                                             </div>
                                         </td>
                                         <td><button class="btn btn-sm btn-danger">X</button></td>
@@ -60,7 +61,6 @@
         {
             <h3>Diese Seite ist nur für Admins zugänglich!</h3>
         }
-
     </Authorized>
     <NotAuthorized>
         <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent />
@@ -104,5 +104,17 @@
         }
     }
 
+    /// <summary>
+    /// Inverts the Admin rights of the given user
+    /// </summary>
+    /// <param name="userDto">The user to give / take Admin rights</param>
+    private async void ChangeAdminRights(DungeonUserDto userDto)
+    {
+        bool oldState = userDto.IsAdmin;
+        var success = await UserService.ChangeUserAdmin(userDto.Id, !userDto.IsAdmin);
+        if (success == HttpStatusCode.OK) allUsers.Find(x => x.Id == userDto.Id).IsAdmin = !oldState;
+        else allUsers.Find(x => x.Id == userDto.Id).IsAdmin = oldState;
+        StateHasChanged();
+    }
 
 }

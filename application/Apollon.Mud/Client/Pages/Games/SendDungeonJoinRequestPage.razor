@@ -9,37 +9,57 @@
         <div style="height:93vh">
             <div class="container d-flex justify-content-center">
                 <div class="card mt-5" style="width:40rem">
-                    <div class="card-header">
-                        <div class="row">
-                            <h3>@RequestedDungeon.DungeonName</h3>
-                        </div>
-                    </div>
-                    <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
-                        <div class="list-group" style="overflow-y:auto; height:100%">
-
-                            <h4>Beschreibung:</h4>
-                            <p>@RequestedDungeon.DungeonDescription</p>
-                            <hr class="featurette-divider" />
-                            <h4>Epoche:</h4>
-                            <p>@RequestedDungeon.DungeonEpoch</p>
-                            <hr class="featurette-divider" />
+                    @if (RequestedDungeon is not null)
+                    {
+                        <div class="card-header">
                             <div class="row">
-                                <div class="col">
-                                    <button class="btn btn-danger" href="/dungeons">Abbrechen</button>
-                                </div>
-                                <div class="col">
-                                    <button class="btn btn-primary" @onclick="SendRequest">Anfragen</button>
-                                </div>
 
+                                <h3>@RequestedDungeon.DungeonName</h3>
                             </div>
                         </div>
-                    </div>
+                        <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
+                            <div class="list-group" style="overflow-y:auto; height:100%">
+                                @if (sendError)
+                                {
+                                    <div class="text-danger">Beim Senden der Anfrage ist ein Fehler aufgetreten, bitte versuche es später erneut</div>
+                                }
+                                <h4>Beschreibung:</h4>
+                                <p>@RequestedDungeon.DungeonDescription</p>
+                                <hr class="featurette-divider" />
+                                <h4>Epoche:</h4>
+                                <p>@RequestedDungeon.DungeonEpoch</p>
+                                <hr class="featurette-divider" />
+                                <div class="row">
+                                    <div class="col">
+                                        <button class="btn btn-danger" href="/dungeons">Abbrechen</button>
+                                    </div>
+                                    @if (!successfullRequest)
+                                    {
+                                        <div class="col">
+                                            <button class="btn btn-primary" @onclick="SendRequest" disabled="@sendError">Anfragen</button>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col">
+                                            <button class="btn btn-outline-success" >Anfrage ausstehend...</button>
+                                        </div>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <h3 class="text-muted">Das ist nicht der Dungeon, nach dem du Suchst</h3>
+                    }
                 </div>
             </div>
         </div>
     </Authorized>
     <NotAuthorized>
-        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent/>
+        <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent />
     </NotAuthorized>
 </AuthorizeView>
 
@@ -56,6 +76,16 @@
     public DungeonDto RequestedDungeon { get; set; }
 
     /// <summary>
+    /// Informs the user about an error that occured while sending the request
+    /// </summary>
+    bool sendError = false;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    bool successfullRequest = false;
+
+    /// <summary>
     /// When initialized the Method requests all Avatars belonging to user on this dungeon and saves them locally
     /// </summary>
     protected async override Task OnInitializedAsync()
@@ -68,8 +98,10 @@
     /// <summary>
     /// Sends a request to the dungeon master to join this dungeon
     /// </summary>
-    private void SendRequest()
+    private async void SendRequest()
     {
-        //TODO Anfrage absenden, nur wie?
+        var response = await DungeonService.OpenEnterRequest(DungeonId);
+        if (!response) sendError = true;
+        else successfullRequest = true;
     }
 }

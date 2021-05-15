@@ -84,12 +84,9 @@
     /// </summary>
     protected async override Task OnInitializedAsync()
     {
-
         var response = await DungeonService.GetAllDungeons();
         if (!(response is null)) allDungeons = response.ToList();
-
         StateHasChanged();
-
     }
 
     /// <summary>
