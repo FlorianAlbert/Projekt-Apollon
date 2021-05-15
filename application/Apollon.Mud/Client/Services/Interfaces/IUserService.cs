@@ -88,6 +88,6 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <param name="userId"></param>
         /// <param name="approved"></param>
         /// <returns></returns>
-        Task<bool> ChangeUserAdmin(Guid userId, bool approved);
+        Task<HttpStatusCode> ChangeUserAdmin(Guid userId, bool approved);
     }
 }

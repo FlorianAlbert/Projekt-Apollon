@@ -177,7 +177,7 @@ namespace Apollon.Mud.Client.Services.Implementations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PostAsJsonAsync("/api/user/admin/" + userId + "?approved=" + approved.ToString(), cancellationToken);
+            var response = await HttpClient.PostAsJsonAsync("/api/user/admin/" + userId + "?approved=" + approved.ToString().ToLower(), cancellationToken);
             return response.StatusCode;
         }
     }
