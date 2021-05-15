@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
-using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Server.Model.ModelExtensions;
 using Apollon.Mud.Server.Outbound.Hubs;
@@ -109,7 +109,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                     var match = Regex.Match(message, "(untersuche )((\\w|\\d)+(\\w|\\d|\\s)*)");
                     if (match.Success)
                     {
-                        await InspectObject(match.Groups[2].Value, dungeon.Id, avatarConnection);
+                        await InspectObject(match.Groups[2].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
@@ -162,6 +162,14 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         return;
                     }
 
+                    match = Regex.Match(message, "(sprich )((\\w|\\d)+(\\w|\\d|\\s)*)( an)");
+                    if (match.Success)
+                    {
+                        await Talk(match.Groups[2].Value, dungeon.Id, avatar.Id);
+
+                        return;
+                    }
+
                     foreach (var requestable in room.SpecialActions)
                     {
                         if (requestable.Status is Status.Pending) continue;
@@ -174,6 +182,37 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
                     return;
             }
+        }
+
+        private async Task Talk(string npcName, Guid dungeonId, Guid avatarId)
+        {
+            var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
+
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
+
+            if (avatar is null) return;
+
+            var avatarConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
+
+            if (avatarConnection is null) return;
+
+            var inspectable = avatar.CurrentRoom.Inspectables.FirstOrDefault(x => x.Name.NormalizeString() == npcName.NormalizeString());
+
+            if (inspectable is null || inspectable.Status is Status.Pending)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"Hier gibt es keinen NPC mit dem Namen { npcName }!\n");
+
+                return;
+            }
+
+            if (inspectable is not Npc npc)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"Mit { inspectable.Name } kannst du nicht sprechen!\n");
+
+                return;
+            }
+
+            await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"{ npc.Text }\n");
         }
 
         private async Task SpecialAction(string input, Guid dungeonId, Guid avatarId)
@@ -693,23 +732,28 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             await NotifyAvatarEnteredRoom(avatar.Name, dungeon.Id, avatar.CurrentRoom.Id);
         }
 
-        private async Task InspectObject(string inspectableName, Guid dungeonId, Connection avatarConnection)
+        private async Task InspectObject(string inspectableName, Guid dungeonId, Guid avatarId)
         {
             var dungeon = await GameDbService.Get<Dungeon>(dungeonId);
 
-            if (dungeon is null)
-            {
-                await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage("Fehler - Kein untersuchbares Objekt gefunden!\n");
+            var avatar = dungeon?.RegisteredAvatars.FirstOrDefault(x => x.Id == avatarId);
 
-                return;
-            }
+            if (avatar is null) return;
 
-            var inspectable = dungeon.ConfiguredInspectables.FirstOrDefault(x => x.Name.NormalizeString() == inspectableName.NormalizeString());
+            var avatarConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id);
+
+            if (avatarConnection is null) return;
+
+            var inspectable = avatar.CurrentRoom.Inspectables.FirstOrDefault(x => x.Name.NormalizeString() == inspectableName.NormalizeString());
 
             if (inspectable is null || inspectable.Status is Status.Pending)
             {
                 await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"Hier gibt es kein untersuchbares Objekt mit dem Namen { inspectableName }!\n");
+
+                return;
             }
+
+            await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"{ inspectable.Description }\n");
         }
 
         private async Task<bool> LeaveDungeon(Guid dungeonId, Guid avatarId)
@@ -783,6 +827,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                            "\t- Wirf <Gegenstand> --- Bef\u00F6rdert einen Gegenstand aus der Hand zur\u00FCck in den aktuellen Raum\n" +
                            "\t- Konsumiere <Nahrung> --- L\u00E4sst den Avatar den gew\u00FCnschten Gegenstand aus der Hand konsumieren\n" +
                            "\t- Ziehe <Kleidungsst\u00FCck> an --- L\u00E4sst den Avatar das gew\u00FCnschte Kleidungsst\u00FCck anziehen\n" +
+                           "\t- Sprich <NPC> an --- L\u00E4sst den Avatar den gew\u00FCnschten NPC ansprechen\n" +
                            "\t- Eigenschaften --- Gibt die Eigenschaften des eigenen Avatars aus\n" +
                            "\t- Inventar --- Gibt den aktuellen Inhalt des Inventars aus\n" +
                            "\t- Beende --- L\u00E4sst den Avatar das Spiel verlassen\n",
