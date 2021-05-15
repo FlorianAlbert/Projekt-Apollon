@@ -105,13 +105,16 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userService.GetAllUsers();
-            var userDtos = users.Select(x => new DungeonUserDto()
+            var userDtoTasks = users.Select(async x => new DungeonUserDto()
             {
                 Email = x.Email,
                 EmailConfirmed = x.EmailConfirmed,
                 LastActive = x.LastActive,
-                Id = Guid.Parse(x.Id)
-            }).ToArray();
+                Id = Guid.Parse(x.Id),
+                IsAdmin = await _userService.IsUserInAdminRole(x.Id)
+            });
+
+            var userDtos = await Task.WhenAll(userDtoTasks);
             return Ok(userDtos);
         }
 
@@ -134,7 +137,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 Email = user.Email,
                 EmailConfirmed = user.EmailConfirmed,
                 LastActive = user.LastActive,
-                Id = Guid.Parse(user.Id)
+                Id = Guid.Parse(user.Id),
+                IsAdmin = await _userService.IsUserInAdminRole(user.Id)
             };
             return Ok(userDto);
         }
@@ -201,6 +205,23 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (succeeded) return Ok();
             return BadRequest();
+        }
+
+        [HttpPut]
+        [Route("admin/{userId}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ChangeUserAdmin([FromRoute] Guid userId, bool approved)
+        {
+            if (await _userService.IsUserInAdminRole(userId.ToString()) && !approved)
+            {
+                if (!await _userService.CanDeleteAdmin()) return Conflict();
+            }
+
+            if (await _userService.MakeAdmin(userId.ToString(), approved)) return Ok();
+
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
         #endregion
     }
