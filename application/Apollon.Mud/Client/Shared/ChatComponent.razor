@@ -128,7 +128,14 @@
     /// <summary>
     /// TODO
     /// </summary>
-    public List<AvatarDto> ChatPartners { get; set; }
+    private List<AvatarDto> _ChatPartners;
+
+    public List<AvatarDto> ChatPartners
+    {
+        get { return _ChatPartners ??= new List<AvatarDto>(); }
+        set { _ChatPartners = value; }
+    }
+
     #endregion
 
 
