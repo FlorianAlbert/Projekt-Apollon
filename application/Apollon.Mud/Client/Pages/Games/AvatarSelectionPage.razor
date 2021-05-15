@@ -24,7 +24,7 @@
                                 {
                                     <button class="btn btn-danger btn-sm" @onclick="MasterViewButtonClicked" role="button">Masteransicht</button>
                                 }
-                                else if (Dungeon.CurrentMaster is not null)
+                                else if (Dungeon is not null && Dungeon.CurrentMaster is not null)
                                 {
                                     <button class="btn btn-danger btn-sm" role="button" disabled>
                                         <TooltipComponent Text="Ein Master spielt bereits">Masteransicht</TooltipComponent>
