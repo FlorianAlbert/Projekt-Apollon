@@ -247,6 +247,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         Name = avatar.Name,
                         Gender = (int)avatar.ChosenGender,
                         Status = (int)avatar.Status,
+                        CurrentHealth = avatar.CurrentHealth,
                         Owner = new DungeonUserDto
                         {
                             Id = Guid.Parse(avatar.Owner.Id),
@@ -275,7 +276,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         {
                             Id = avatar.CurrentRoom.Id,
                             Name = avatar.CurrentRoom.Name,
-                            Status = (int)avatar.CurrentRoom.Status
+                            Status = (int)avatar.CurrentRoom.Status,
+                            Description = avatar.CurrentRoom.Description
                         }
                     },
                     Request = input
