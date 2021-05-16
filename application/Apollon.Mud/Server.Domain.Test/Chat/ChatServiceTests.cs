@@ -161,7 +161,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var connectionService = Substitute.For<IConnectionService>();
             connectionService.GetConnectionByAvatarId(avatar.Id).Returns(recipientConnection);
-            connectionService.GetDungeonMasterConnectionByDungeonId(dungeon.Id).Returns(recipientConnection);
+            connectionService.GetDungeonMasterConnectionByDungeonId(dungeon.Id).Returns(senderConnection);
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
