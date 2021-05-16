@@ -328,18 +328,25 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         .ReceiveGameMessage($"In deinem Inventar war nicht mehr genügend Platz, deshalb wurde deine zuvor getragene R\u00FCstung { wornWearable.Name } im Raum abgelegt!\n");
                 }
 
-                if (!await GameDbService.NewOrUpdate(avatar))
-                {
-                    await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                        .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
-                                            "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
 
-                    return;
-                }
-
-                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                    .ReceiveGameMessage($"Du trägst nun { itemToWear.Name } als Rüstung!\n");
             }
+            else
+            {
+                avatar.Armor = wearable;
+
+                avatar.Inventory.Remove(wearable);
+            }
+            if (!await GameDbService.NewOrUpdate(avatar))
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                        "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                return;
+            }
+
+            await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                .ReceiveGameMessage($"Du trägst nun { itemToWear.Name } als Rüstung!\n");
         }
 
         private async Task Consume(string itemName, Guid dungeonId, Guid avatarId)
@@ -755,14 +762,23 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             var inspectable = avatar.CurrentRoom.Inspectables.FirstOrDefault(x => x.Name.NormalizeString() == inspectableName.NormalizeString());
 
-            if (inspectable is null || inspectable.Status is Status.Pending)
+            if (inspectable?.Status is Status.Approved)
             {
-                await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"Hier gibt es kein untersuchbares Objekt mit dem Namen { inspectableName }!\n");
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"{ inspectable.Description }\n");
 
                 return;
             }
 
-            await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"{ inspectable.Description }\n");
+            var avatarToInspect = avatar.CurrentRoom.Avatars.FirstOrDefault(x => x.Name.NormalizeString() == inspectableName.NormalizeString());
+
+            if (avatarToInspect?.Status is Status.Approved)
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"{ avatarToInspect.Description }\n");
+
+                return;
+            }
+
+            await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage($"Hier gibt es kein untersuchbares Objekt mit dem Namen { inspectableName }!\n");
         }
 
         private async Task<bool> LeaveDungeon(Guid dungeonId, Guid avatarId)
@@ -857,10 +873,10 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             var avatarsToNotifyConnectionIds =
                 (from avatarToNotify
                     in avatarsToNotify
-                select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
+                 select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
                 into avatarToNotifyConnection
-                where avatarToNotifyConnection is not null
-                select avatarToNotifyConnection.GameConnectionId).ToList();
+                 where avatarToNotifyConnection is not null
+                 select avatarToNotifyConnection.GameConnectionId).ToList();
 
             var roomChatPartnerDtos = avatarsToNotify.Select(x => new ChatPartnerDto
             {
@@ -943,17 +959,17 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
             {
                 foreach (var room in dungeon.ConfiguredRooms)
                 {
-                    if(room.Status is Status.Pending) continue;
+                    if (room.Status is Status.Pending) continue;
 
                     var roomAvatars = room.Avatars.Where(x => x.Status is Status.Approved).ToList();
 
                     var roomAvatarsConnectionIds =
                         (from avatarToNotify
                             in roomAvatars
-                        select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
+                         select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
                         into avatarToNotifyConnection
-                        where avatarToNotifyConnection is not null
-                        select avatarToNotifyConnection.GameConnectionId).ToList();
+                         where avatarToNotifyConnection is not null
+                         select avatarToNotifyConnection.GameConnectionId).ToList();
 
                     var roomChatPartnerDtos = roomAvatars.Select(x => new ChatPartnerDto
                     {
@@ -1036,10 +1052,10 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                 var roomAvatarsConnectionIds =
                     (from avatarToNotify
                         in roomAvatars
-                    select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
+                     select ConnectionService.GetConnectionByAvatarId(avatarToNotify.Id)
                     into avatarToNotifyConnection
-                    where avatarToNotifyConnection is not null
-                    select avatarToNotifyConnection.GameConnectionId).ToList();
+                     where avatarToNotifyConnection is not null
+                     select avatarToNotifyConnection.GameConnectionId).ToList();
 
                 var roomChatPartnerDtos = roomAvatars.Select(x => new ChatPartnerDto
                 {
