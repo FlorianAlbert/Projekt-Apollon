@@ -375,3 +375,5 @@ MigrationBackup/
 /website/yarn-error.log*
 
 *.db
+*.db-shm
+*.db-wal

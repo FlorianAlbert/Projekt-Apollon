@@ -79,7 +79,7 @@
     </div>
     <div class="chat mt-2 mb-2" style="flex-shrink: 0;">
         <div class="prompt d-flex">
-            <input @bind-value="inputMessage" @bind-value:event="oninput" id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
+            <input @bind-value="inputMessage" @bind-value:event="oninput" id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" @onkeyup="@CheckForEnter">
             @if (chosenRecipient != "NoRecipient" && inputMessage != "")
             {
                 <button @onclick="SendMessage" id="send" class="btn btn-primary ms-2">Senden</button>
@@ -221,5 +221,14 @@
     public void Dispose()
     {
         GameService.LeaveGame();
+    }
+
+    /// <summary>
+    /// This Method enables the user to send chat messages by pressing enter
+    /// </summary>
+    /// <param name="e"></param>
+    public void CheckForEnter(KeyboardEventArgs args)
+    {
+        if (chosenRecipient != "NoRecipient" && inputMessage != "" && args.Key == "Enter") SendMessage();
     }
 }
