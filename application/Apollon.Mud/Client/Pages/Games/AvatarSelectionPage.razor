@@ -181,7 +181,7 @@
 
         if (Dungeon.DungeonMasters is not null)
         {
-            UserIsDungeonMaster = Dungeon.DungeonMasters.Contains(UserContext.DungeonUserContext);
+            UserIsDungeonMaster = Dungeon.DungeonMasters.Any(u => u.Id == UserContext.DungeonUserContext.Id);
         }
         StateHasChanged();
     }

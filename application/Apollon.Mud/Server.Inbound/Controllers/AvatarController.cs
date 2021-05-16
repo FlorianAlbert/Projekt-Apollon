@@ -17,6 +17,7 @@ using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Shared.Dungeon.Race;
 using Apollon.Mud.Shared.Dungeon.Room;
+using Apollon.Mud.Shared.Dungeon.User;
 using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -172,7 +173,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Status = (int) x.Armor.Status
                 },
                 CurrentHealth = x.CurrentHealth,
-                Gender = (int) x.ChosenGender
+                Gender = (int) x.ChosenGender,
+                Owner = x.Owner is null ? null : new DungeonUserDto()
+                {
+                    Id = Guid.Parse(x.Owner.Id),
+                    Email = x.Owner.Email,
+                    LastActive = x.Owner.LastActive
+                }
             }).ToArray();
 
             return Ok(avatarDtos);
@@ -244,7 +251,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Status = (int)x.Armor.Status
                 },
                 CurrentHealth = x.CurrentHealth,
-                Gender = (int)x.ChosenGender
+                Gender = (int)x.ChosenGender,
+                Owner = x.Owner is null ? null : new DungeonUserDto()
+                {
+                    Id = Guid.Parse(x.Owner.Id),
+                    Email = x.Owner.Email,
+                    LastActive = x.Owner.LastActive
+                }
             }).ToArray();
 
             return Ok(userAvatarDtos);
@@ -270,6 +283,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 Id = avatar.Id,
                 Status = (int)avatar.Status,
                 Name = avatar.Name,
+                Owner = avatar.Owner is null ? null : new DungeonUserDto()
+                {
+                    Id = Guid.Parse(avatar.Owner.Id),
+                    Email = avatar.Owner.Email,
+                    LastActive = avatar.Owner.LastActive
+                },
                 Race = new RaceDto
                 {
                     Id = avatar.ChosenRace.Id,

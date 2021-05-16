@@ -4,8 +4,10 @@
 
 @using Apollon.Mud.Shared.Dungeon
 @using Apollon.Mud.Client.Data.Account
+@using System.Net
 
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+@inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
 @inject Apollon.Mud.Client.Data.Account.UserContext UserContext
 
 <AuthorizeView>
@@ -102,11 +104,20 @@
     {
         if (!(dungeonToDelete is null))
         {
-            if (!(dungeonToDelete.Id == Guid.Empty))
+            var successfullKicked = await GameService.KickAll(dungeonToDelete.Id);
+            if (successfullKicked == HttpStatusCode.OK)
             {
-                await DungeonService.DeleteDungeon(dungeonToDelete.Id);
-                allDungeons.Remove(dungeonToDelete);
-                StateHasChanged();
+                dungeonToDelete.Status = 1;
+                var successfullStatusUpdate = await DungeonService.UpdateDungeon(dungeonToDelete);
+                if (successfullStatusUpdate is null)
+                {
+                    var successfullDelete = await DungeonService.DeleteDungeon(dungeonToDelete.Id);
+                    if (successfullDelete)
+                    {
+                        allDungeons.Remove(dungeonToDelete);
+                        StateHasChanged();
+                    }
+                }
             }
         }
     }
