@@ -2,10 +2,13 @@
 @using Apollon.Mud.Shared.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Room
 @using Apollon.Mud.Shared.Dungeon.Class
+@using Apollon.Mud.Shared.Dungeon.Race
 
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 @inject Apollon.Mud.Client.Services.Interfaces.IRoomService RoomService
 @inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
+@inject Apollon.Mud.Client.Services.Interfaces.IClassService ClassService
+@inject Apollon.Mud.Client.Services.Interfaces.IRaceService RaceService
 @inject Apollon.Mud.Client.Data.Account.UserContext userContext
 
 <div class="card">
@@ -124,7 +127,10 @@
                     <div class="col">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" @bind="dungeonModel.Status">
-                                @if (DungeonMustBeInactive )
+                                @if (DungeonMustBeInactive || 
+                                    dungeonRooms.All(x => x.Status == 1) || 
+                                    dungeonClasses.All(x => x.Status == 1) || 
+                                    dungeonRaces.All(x => x.Status == 1))
                                 {
                                     <option value="Pending" selected>Inaktiv</option>
                                     <option value="Approved" disabled>Aktiv</option>
@@ -197,7 +203,7 @@
     /// <summary>
     /// The List containing the Npcs of the Dungeon
     /// </summary>
-    List<RoomDto> dungeonRaces = new List<RoomDto>();
+    List<RaceDto> dungeonRaces = new List<RaceDto>();
 
     /// <summary>
     /// The Guid of the dungeon
@@ -247,6 +253,8 @@
                     dungeonModel.DefaultRoom = CurrentDungeon.DefaultRoom.Name;
                 }
             }
+            dungeonClasses = (await ClassService.GetAllClasses(DungeonId))?.ToList() ?? new List<ClassDto>();
+            dungeonRaces = (await RaceService.GetAllRaces(DungeonId))?.ToList() ?? new List<RaceDto>();
         }
         StateHasChanged();
     }
