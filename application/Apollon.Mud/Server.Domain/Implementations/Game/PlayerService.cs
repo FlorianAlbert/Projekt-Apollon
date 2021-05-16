@@ -257,7 +257,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                     Request = input
                 });
 
-            await HubContext.Clients.Client(dungeonMasterConnection.GameConnectionId)
+            await HubContext.Clients.Client(avatarConnection.GameConnectionId)
                 .ReceiveGameMessage("Deine Anfrage wird so schnell wie möglich vom Dungeon Master bearbeitet. Du wirst benachrichtigt sobald das Ergebnis bereit steht!\n");
         }
 
