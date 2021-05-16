@@ -905,6 +905,7 @@
                 {
                     var oldRoom = await RoomService.GetRoom(submitRoom.Id, DungeonId);
                     if (oldRoom is not null) WriteBackRoom(oldRoom);
+                    else await OnRoomSavedOrLoaded.InvokeAsync();
                 }
                 else await OnRoomSavedOrLoaded.InvokeAsync();
             }

@@ -513,6 +513,7 @@
             {
                 var response = await ClassService.UpdateClass(submitClass, DungeonId);
                 if (!(response is null)) WriteBackClass(response);
+                else await OnClassSavedOrLoaded.InvokeAsync();
             }
             StateHasChanged();
         }

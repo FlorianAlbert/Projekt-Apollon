@@ -11,6 +11,8 @@
 @inject Apollon.Mud.Client.Services.Interfaces.IRaceService RaceService
 @inject Apollon.Mud.Client.Data.Account.UserContext userContext
 
+@implements IDisposable
+
 <div class="card">
     <div class="card-header">
         <h2>Allgemeines</h2>
@@ -127,10 +129,10 @@
                     <div class="col">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" @bind="dungeonModel.Status">
-                                @if (DungeonMustBeInactive || 
-                                    dungeonRooms.All(x => x.Status == 1) || 
-                                    dungeonClasses.All(x => x.Status == 1) || 
-                                    dungeonRaces.All(x => x.Status == 1))
+                                @if (DungeonMustBeInactive ||
+                                   dungeonRooms.All(x => x.Status == 1) ||
+                                   dungeonClasses.All(x => x.Status == 1) ||
+                                   dungeonRaces.All(x => x.Status == 1))
                                 {
                                     <option value="Pending" selected>Inaktiv</option>
                                     <option value="Approved" disabled>Aktiv</option>
@@ -218,7 +220,7 @@
     public EventCallback<Guid> OnDungeonSavedOrLoaded { get; set; }
 
     /// <summary>
-    /// The Dungeon that is being edited 
+    /// The Dungeon that is being edited
     /// </summary>
     public DungeonDto CurrentDungeon { get; set; }
 
@@ -289,6 +291,26 @@
     }
 
     /// <summary>
+    /// Reloads the classes of this very dungeon
+    /// </summary>
+    public async void ReloadDungeonClasses()
+    {
+        var classList = await ClassService.GetAllClasses(DungeonId);
+        if (classList is not null) dungeonClasses = classList.ToList();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Reloads the races of this very dungeon
+    /// </summary>
+    public async void ReloadDungeonRaces()
+    {
+        var raceList = await RaceService.GetAllRaces(DungeonId);
+        if (raceList is not null) dungeonRaces = raceList.ToList();
+        StateHasChanged();
+    }
+
+    /// <summary>
     /// Handles the submition of a created Npc, validates the data and saves them locally and on the server
     /// </summary>
     /// <returns></returns>
@@ -348,6 +370,14 @@
 
             }
         }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void Dispose()
+    {
+        HandleDungeonSubmit();
     }
 }
 
