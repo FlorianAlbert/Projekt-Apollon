@@ -10,16 +10,22 @@
 
 <div class="row bg-white">
     <div class="col-4">
-        <div style="display: flex; flex-direction: column; height: 87vh">
-            <div class="list-group" style="overflow-y:auto; height:100%">
-                <div class="row">
-                    <div class="col">
-                        <button class="btn btn-info" @onclick=" () => ChangeListContent(true)">Spieler</button>
-                    </div>
-                    <div class="col">
-                        <button class="btn btn-warning" @onclick="() => ChangeListContent(false)">Master</button>
-                    </div>
+        <div class="card" style="display: flex; flex-direction: column; height: 87vh">
+            <div class="card-header text-center">
+                <div class="btn-group">
+                    @if (showMasters)
+                    {
+                        <button class="btn btn-outline-info" @onclick="() => ChangeListContent(false)">Spieler</button>
+                        <button class="btn btn-outline-info active">Master</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-info active" >Spieler</button>
+                        <button class="btn btn-outline-info" @onclick=" () => ChangeListContent(true)">Master</button>
+                    }
                 </div>
+            </div>
+            <div class="list-group border-dark" style="overflow-y:auto; height:100%">
                 @if (showMasters)
                 {
                     @foreach (DungeonUserDto user in Dungeon.DungeonMasters)
@@ -61,11 +67,20 @@
                             <div class="col">
                                 <h3>Name: @OpenUser.Email.Split("@")[0]</h3>
                             </div>
-                            @if (showMasters && OpenUser != Dungeon.DungeonOwner)
+                            @if (showMasters)
                             {
-                                <div class="col">
-                                    <button class="btn btn-warning btn-sm float-end me-3" type="button" @onclick="RemoveDungeonMaster">Master entfernen</button>
-                                </div>
+                                @if (OpenUser != Dungeon.DungeonOwner)
+                                {
+                                    <div class="col">
+                                        <button class="btn btn-warning btn-sm float-end me-3" type="button" @onclick="RemoveDungeonMaster">Master entfernen</button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col">
+                                        <button class="btn btn-warning btn-sm float-end me-3" type="button" disabled>Master entfernen</button>
+                                    </div>
+                                }
                             }
                             else
                             {
@@ -95,7 +110,7 @@
                             </thead>
                             <tbody>
                                 @{int avatarIndex = 1;}
-                                @foreach (AvatarDto avatar in UserAvatarDictionary[OpenUser])
+                                @foreach (AvatarDto avatar in UserAvatarDictionary[OpenUser.Id])
                                 {
                                     <tr>
                                         <th scope="row">@avatarIndex</th>
@@ -154,7 +169,7 @@
     /// <summary>
     /// A Dictionary getting every Avatar of each user
     /// </summary>
-    public Dictionary<DungeonUserDto, ICollection<AvatarDto>> UserAvatarDictionary { get; set; } = new Dictionary<DungeonUserDto, ICollection<AvatarDto>>();
+    public Dictionary<Guid, ICollection<AvatarDto>> UserAvatarDictionary { get; set; } = new Dictionary<Guid, ICollection<AvatarDto>>();
 
     /// <summary>
     /// The user that is currently opened
@@ -176,14 +191,14 @@
         if (dungeon is not null)
         {
             Dungeon = dungeon;
-            AllPlayersList = dungeon.WhiteList.ToList();
+            AllPlayersList = dungeon.WhiteList.Where(x => !dungeon.DungeonMasters.Contains(x)).ToList();
             var avatars = await AvatarService.GetAllAvatars(DungeonId);
             if (avatars is not null) DungeonAvatars = avatars.ToList();
-            foreach (DungeonUserDto user in AllPlayersList)
+            foreach (DungeonUserDto user in dungeon.WhiteList)
             {
                 var userAvatars = await AvatarService.GetAllAvatarsForUser(DungeonId);
-                if (userAvatars is not null) UserAvatarDictionary.Add(user, userAvatars.ToList());
-                else UserAvatarDictionary.Add(user, new List<AvatarDto>());
+                if (userAvatars is not null) UserAvatarDictionary.Add(user.Id, userAvatars.ToList());
+                else UserAvatarDictionary.Add(user.Id, new List<AvatarDto>());
             }
         }
     }
@@ -198,8 +213,8 @@
         foreach (AvatarDto avatar in avatarList)
         {
             if (!DungeonAvatars.Contains(avatar)) DungeonAvatars.Add(avatar);
-            UserAvatarDictionary[avatar.Owner].Remove(avatar);
-            UserAvatarDictionary[avatar.Owner].Add(avatar);
+            UserAvatarDictionary[avatar.Owner.Id].Remove(avatar);
+            UserAvatarDictionary[avatar.Owner.Id].Add(avatar);
         }
     }
 
@@ -212,8 +227,8 @@
         var userAvatars = await AvatarService.GetAllAvatarsForUser(DungeonId);
         if (userAvatars is not null)
         {
-            UserAvatarDictionary[user].Clear();
-            UserAvatarDictionary[user] = userAvatars.ToList();
+            UserAvatarDictionary[user.Id].Clear();
+            UserAvatarDictionary[user.Id] = userAvatars.ToList();
         }
         OpenUser = user;
     }
@@ -229,7 +244,7 @@
         {
             Dungeon.WhiteList.Remove(OpenUser);
             AllPlayersList.Remove(OpenUser);
-            UserAvatarDictionary.Remove(OpenUser);
+            UserAvatarDictionary.Remove(OpenUser.Id);
             DungeonService.UpdateDungeon(Dungeon);
             OpenUser = null;
         }
@@ -247,7 +262,7 @@
             Dungeon.WhiteList.Remove(OpenUser);
             Dungeon.BlackList.Add(OpenUser);
             AllPlayersList.Remove(OpenUser);
-            UserAvatarDictionary.Remove(OpenUser);
+            UserAvatarDictionary.Remove(OpenUser.Id);
             DungeonService.UpdateDungeon(Dungeon);
         }
     }
@@ -277,6 +292,7 @@
     private void ChangeListContent(bool masterOrPlayer)
     {
         showMasters = masterOrPlayer;
+        OpenUser = null;
         StateHasChanged();
     }
 }

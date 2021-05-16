@@ -81,5 +81,13 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <param name="changePasswordDto"></param>
         /// <returns></returns>
         Task<bool> ChangePassword(string oldPassword, string newPassword);
+
+        /// <summary>
+        /// Changes the Admin Role of a user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="approved"></param>
+        /// <returns></returns>
+        Task<HttpStatusCode> ChangeUserAdmin(Guid userId, bool approved);
     }
 }

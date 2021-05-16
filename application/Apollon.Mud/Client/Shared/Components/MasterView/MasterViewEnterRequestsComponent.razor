@@ -4,11 +4,11 @@
 
 <div class="row bg-white">
     <div class="col-4">
-        <div style="display: flex; flex-direction: column; height: 87vh">
+        <div class="card" style="display: flex; flex-direction: column; height: 87vh">
+            <div class="card-header">
+                <h5>Anfragende Spieler:</h5>
+            </div>
             <div class="list-group" style="overflow-y:auto; height:100%">
-                <button type="button" class="list-group-item list-group-item-action" style="height:100px">
-                    <h5>Anfragende Spieler:</h5>
-                </button>
                 @if (OpenRequestList is not null && OpenRequestList.Count > 0)
                 {
                     @foreach (DungeonUserDto request in OpenRequestList)
@@ -101,23 +101,35 @@
     /// <summary>
     /// Removes the chosen request from the open Requests and adds the user to the whitelist
     /// </summary>
-    private void AcceptUser()
+    private async void AcceptUser()
     {
-        OpenRequestList.Remove(OpenRequest);
-        Dungeon.OpenRequests.Remove(OpenRequest);
-        Dungeon.WhiteList.Add(OpenRequest);
-        DungeonService.UpdateDungeon(Dungeon);
+        var success = await DungeonService.SubmitEnterRequest(DungeonId, OpenRequest.Id, true);
+        if (success)
+        {
+            OpenRequestList.Remove(OpenRequest);
+            Dungeon.OpenRequests.Remove(OpenRequest);
+            Dungeon.WhiteList.Add(OpenRequest);
+            DungeonService.UpdateDungeon(Dungeon);
+            OpenRequest = null;
+        }
+
+
     }
 
     /// <summary>
     /// Removes the chosen request from the open requests and adds the user to the blacklist
     /// </summary>
-    private void RemoveUser()
+    private async void RemoveUser()
     {
-        OpenRequestList.Remove(OpenRequest);
-        Dungeon.OpenRequests.Remove(OpenRequest);
-        //Dungeon.BlackList.Add(OpenRequest); //TODO machen wir das??
-        DungeonService.UpdateDungeon(Dungeon);
+        var success = await DungeonService.SubmitEnterRequest(DungeonId, OpenRequest.Id, false);
+        if (success)
+        {
+            OpenRequestList.Remove(OpenRequest);
+            Dungeon.OpenRequests.Remove(OpenRequest);
+            Dungeon.BlackList.Add(OpenRequest);
+            DungeonService.UpdateDungeon(Dungeon);
+            OpenRequest = null;
+        }
     }
 
 }

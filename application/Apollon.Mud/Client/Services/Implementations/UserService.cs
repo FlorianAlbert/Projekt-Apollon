@@ -166,6 +166,20 @@ namespace Apollon.Mud.Client.Services.Implementations
             var response = await HttpClient.PostAsJsonAsync("/api/user/password/change/", changePasswordDto, cancellationToken);
             return response.StatusCode == HttpStatusCode.OK;
         }
+
+        /// <summary>
+        /// Changes the Admin Role of a user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="approved"></param>
+        /// <returns></returns>
+        public async Task<HttpStatusCode> ChangeUserAdmin(Guid userId, bool approved)
+        {
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.PutAsJsonAsync("/api/user/admin/" + userId + "?approved=" + approved.ToString().ToLower(), cancellationToken);
+            return response.StatusCode;
+        }
     }
 }
 

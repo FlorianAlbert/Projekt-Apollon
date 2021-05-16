@@ -37,10 +37,10 @@ namespace Apollon.Mud.Client.Services.Implementations
         }
 
         /// <summary>
-        /// TODO
+        /// Sends a user command to the backend
         /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
+        /// <param name="message">The command of the user</param>
+        /// <returns>The HTTP Status Code the server returned</returns>
         public async Task<HttpStatusCode> SendCommand(string message)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -51,17 +51,17 @@ namespace Apollon.Mud.Client.Services.Implementations
         }
 
         /// <summary>
-        /// TODO
+        /// Sends a request to enter the Dungeon to the Backend
         /// </summary>
-        /// <param name="AsMaster"></param>
-        /// <param name="dungeonId"></param>
-        /// <param name="avatarId"></param>
-        /// <param name="chatId"></param>
-        /// <param name="gameId"></param>
-        /// <returns></returns>
+        /// <param name="AsMaster">Wether the user joins as a DM</param>
+        /// <param name="dungeonId">The Dungeon to join</param>
+        /// <param name="avatarId">The avatar to join with, null if Dungeon Master</param>
+        /// <param name="chatId">The ID of the ChatHub connection</param>
+        /// <param name="gameId">The ID of the GameHub connection</param>
+        /// <returns>The Statuscode returned by the server</returns>
         public async Task<HttpStatusCode> EnterDungeon(bool AsMaster, Guid dungeonId, Guid? avatarId, string chatId, string gameId)
         {
-            EnterDungeonDto enterDto = new EnterDungeonDto()
+            EnterDungeonDto enterDto = new()
             {
                 AsDungeonMaster = AsMaster,
                 DungeonId = dungeonId,
@@ -130,11 +130,11 @@ namespace Apollon.Mud.Client.Services.Implementations
         /// TODO
         /// </summary>
         /// <returns></returns>
-        public void LeaveGame()
+        public async Task LeaveGame()
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            HttpClient.PostAsync("api/game/leave", null, cancellationToken);
+            HttpClient.PostAsJsonAsync<object>("api/game/leave", null, cancellationToken);
         }
     }
 }

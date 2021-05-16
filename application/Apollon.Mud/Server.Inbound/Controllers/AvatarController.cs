@@ -79,10 +79,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 (Gender)avatar.Gender)
             {
                 CurrentRoom = (await GameConfigService.Get<Dungeon>(dungeonId)).DefaultRoom,
-                Status = (Status)avatar.Status,
-                Owner = user,
-                Dungeon = avatarDungeon
+                Dungeon = avatarDungeon,
+                Owner = user
             };
+            newAvatar.Status = (Status)avatar.Status;
 
             if (await GameConfigService.NewOrUpdate(newAvatar)) return Ok(newAvatar.Id);
 

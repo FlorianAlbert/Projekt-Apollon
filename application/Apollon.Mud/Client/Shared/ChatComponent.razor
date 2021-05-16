@@ -2,6 +2,7 @@
 @using Apollon.Mud.Shared.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Avatar
 @using Apollon.Mud.Client.Data
+@using Apollon.Mud.Shared.HubContract
 
 @inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
@@ -18,17 +19,17 @@
             @if (IsDungeonMaster)
             {
                 <option value="All">Alle</option>
-                @foreach (AvatarDto avatarDto in ChatPartners)
+                @foreach (ChatPartnerDto avatarDto in ChatPartners)
                 {
-                    <option value="@avatarDto.Name">@avatarDto.Name</option>
+                    <option value="@avatarDto.AvatarName">@avatarDto.AvatarName</option>
                 }
             }
             else
             {
                 <option value="Room">Raum</option>
-                @foreach (AvatarDto avatarDto in ChatPartners)
+                @foreach (ChatPartnerDto avatarDto in ChatPartners)
                 {
-                    <option value="@avatarDto.Name">@avatarDto.Name</option>
+                    <option value="@avatarDto.AvatarName">@avatarDto.AvatarName</option>
                 }
             }
         </select>
@@ -78,7 +79,7 @@
     <div class="chat mt-2 mb-2" style="flex-shrink: 0;">
         <div class="prompt d-flex">
             <input @bind="inputMessage" id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
-            @if (chosenRecipient != "NoRecipient")
+            @if (chosenRecipient != "NoRecipient" && inputMessage != "")
             {
                 <button @onclick="SendMessage" id="send" class="btn btn-primary ms-2">Senden</button>
             }
@@ -94,6 +95,13 @@
 @code {
 
     #region General Attributes
+
+    /// <summary>
+    /// The unqiue identifier of the users avatar
+    /// </summary>
+    [Parameter]
+    public Guid? AvatarId { get; set; }
+
     /// <summary>
     /// The unique dungeon identifier
     /// </summary>
@@ -101,38 +109,39 @@
     public Guid DungeonId { get; set; }
 
     /// <summary>
-    /// TODO
+    /// List of all Avatars of the dungeon
     /// </summary>
     public Queue<ChatMessage> Messages { get; set; }
 
     /// <summary>
-    /// TODO
+    /// String of the selected Recipient
     /// </summary>
     string chosenRecipient = "NoRecipient";
 
     /// <summary>
-    /// TODO
+    /// String of the message written in the input
     /// </summary>
     string inputMessage = "";
 
     /// <summary>
     /// True when the user is Dungeon Master
     /// </summary>
+    [Parameter]
     public bool IsDungeonMaster { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The DungeonDto of the current Dungeon
     /// </summary>
     public DungeonDto Dungeon { get; set; }
 
     /// <summary>
     /// TODO
     /// </summary>
-    private List<AvatarDto> _ChatPartners;
+    private List<ChatPartnerDto> _ChatPartners;
 
-    public List<AvatarDto> ChatPartners
+    public List<ChatPartnerDto> ChatPartners
     {
-        get { return _ChatPartners ??= new List<AvatarDto>(); }
+        get { return _ChatPartners ??= new List<ChatPartnerDto>(); }
         set { _ChatPartners = value; }
     }
 
@@ -140,7 +149,7 @@
 
 
     /// <summary>
-    /// TODO
+    /// Called when the component is initialized, this method receives data from the backend and saves them locally
     /// </summary>
     /// <returns></returns>
     protected async override Task OnInitializedAsync()
@@ -150,17 +159,13 @@
         if (DungeonId != Guid.Empty)
         {
             var dungeon = await DungeonService.GetDungeon(DungeonId);
-            if (dungeon is not null)
-            {
-                Dungeon = dungeon;
-                IsDungeonMaster = Dungeon.DungeonMasters.Contains(UserContext.DungeonUserContext);
-            }
+            if (dungeon is not null) Dungeon = dungeon;
         }
         StateHasChanged();
     }
 
     /// <summary>
-    /// TODO
+    /// Sends the inputMessage to the selected Recipient
     /// </summary>
     public async void SendMessage()
     {
@@ -185,7 +190,6 @@
         StateHasChanged();
     }
 
-
     /// <inheritdoc cref="IClientChatHubContract.ReceiveChatMessage"/>
     public async Task ReceiveChatMessage(string senderName, string message)
     {
@@ -198,13 +202,11 @@
     /// </summary>
     /// <param name="partnerList"></param>
     /// <returns></returns>
-    public async Task UpdateChatPartners(ICollection<AvatarDto> partnerList)
+    public async Task UpdateChatPartners(ICollection<ChatPartnerDto> partnerList)
     {
         //TODO Doppelte Überprüfung?
         ChatPartners = partnerList.ToList();
-        ChatPartners.Where(x => x.Owner.Id == UserContext.DungeonUserContext.Id)
-            .ToList()
-            .ForEach(x => ChatPartners.Remove(x));
+        ChatPartners.Remove(ChatPartners.Find(x => x.AvatarId == AvatarId));
         StateHasChanged();
     }
 

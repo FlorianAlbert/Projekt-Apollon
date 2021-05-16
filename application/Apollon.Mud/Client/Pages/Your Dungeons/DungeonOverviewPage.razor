@@ -33,7 +33,7 @@
 <AuthorizeView>
     <Authorized>
         <div class="container" style="min-height: 93vh; text-align:center">
-            <h3>Dungeon Übersicht</h3>
+            <h2 class="text-white mt-4">Dungeon Übersicht</h2>
             <div class="card mt-5">
                 <div class="card-header">Dungeon Infos</div>
                 <div class="card-body">
@@ -226,7 +226,7 @@
                                         <th scope="row">@takeableIndex</th>
                                         <td>@takeableDto.Name</td>
                                         <td>@takeableDto.Description</td>
-                                        <th>@takeableDto.Weight</th>
+                                        <td>@takeableDto.Weight</td>
                                         <td>@takeableDto.Status</td>
                                     </tr>
                                     takeableIndex++;
@@ -256,8 +256,8 @@
                                         <th scope="row">@consumableIndex</th>
                                         <td>@consumableDto.Name</td>
                                         <td>@consumableDto.Description</td>
-                                        <th>@consumableDto.Weight</th>
-                                        <th>@consumableDto.EffectDescription</th>
+                                        <td>@consumableDto.Weight</td>
+                                        <td>@consumableDto.EffectDescription</td>
                                         <td>@consumableDto.Status</td>
                                     </tr>
                                     consumableIndex++;
@@ -287,8 +287,8 @@
                                         <th scope="row">@usableIndex</th>
                                         <td>@usableDto.Name</td>
                                         <td>@usableDto.Description</td>
-                                        <th>@usableDto.Weight</th>
-                                        <th>@usableDto.DamageBoost</th>
+                                        <td>@usableDto.Weight</td>
+                                        <td>@usableDto.DamageBoost</td>
                                         <td>@usableDto.Status</td>
                                     </tr>
                                     usableIndex++;
@@ -318,8 +318,8 @@
                                         <th scope="row">@wearableIndex</th>
                                         <td>@wearableDto.Name</td>
                                         <td>@wearableDto.Description</td>
-                                        <th>@wearableDto.Weight</th>
-                                        <th>@wearableDto.ProtectionBoost</th>
+                                        <td>@wearableDto.Weight</td>
+                                        <td>@wearableDto.ProtectionBoost</td>
                                         <td>@wearableDto.Status</td>
                                     </tr>
                                     wearableIndex++;
@@ -387,7 +387,7 @@
                     </table>
                 </div>
             </div>
-            <div class="card mt-5">
+            <div class="card mt-5 mb-5">
                 <div class="card-header">Räume</div>
                 <div class="card-body">
                     <table class="table">

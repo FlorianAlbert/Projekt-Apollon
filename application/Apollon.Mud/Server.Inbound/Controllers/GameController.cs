@@ -79,7 +79,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
 
             var sessionIdClaim = User.Claims.FirstOrDefault(x => x.Type == "SessionId");
-            if (sessionIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var sessionId)) return BadRequest();
+            if (sessionIdClaim is null || !Guid.TryParse(sessionIdClaim.Value, out var sessionId)) return BadRequest();
 
             var userConnection = _connectionService.GetConnection(userId, sessionId);
             if (userConnection is null) return BadRequest();
@@ -107,7 +107,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
 
             var sessionIdClaim = User.Claims.FirstOrDefault(x => x.Type == "SessionId");
-            if (sessionIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var sessionId)) return BadRequest();
+            if (sessionIdClaim is null || !Guid.TryParse(sessionIdClaim.Value, out var sessionId)) return BadRequest();
 
             var user = await _userDbService.GetUser(userId);
             if (user is null) return BadRequest();
@@ -223,7 +223,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
 
             var sessionIdClaim = User.Claims.FirstOrDefault(x => x.Type == "SessionId");
-            if (sessionIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var sessionId)) return BadRequest();
+            if (sessionIdClaim is null || !Guid.TryParse(sessionIdClaim.Value, out var sessionId)) return BadRequest();
 
             var user = await _userDbService.GetUser(userId);
             if (user is null) return BadRequest();
@@ -255,7 +255,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
 
             var sessionIdClaim = User.Claims.FirstOrDefault(x => x.Type == "SessionId");
-            if (sessionIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var sessionId)) return BadRequest();
+            if (sessionIdClaim is null || !Guid.TryParse(sessionIdClaim.Value, out var sessionId)) return BadRequest();
 
             var user = await _userDbService.GetUser(userId);
             if (user is null) return BadRequest();

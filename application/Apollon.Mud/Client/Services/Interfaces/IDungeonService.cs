@@ -75,6 +75,6 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// </summary>
         /// <param name="dungeonId"></param>
         /// <returns>True if sending it to the Backend was successfull, else false</returns>
-        Task<bool> SubmitEnterRequest(Guid dungeonId);
+        Task<bool> SubmitEnterRequest(Guid dungeonId, Guid requestUserId, bool granted);
     }
 }
