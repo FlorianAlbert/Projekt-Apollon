@@ -22,8 +22,6 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
     {
         private Inventory _Inventory;
 
-        private int _HealthDifference;
-
         public Avatar()
         {
             Id = Guid.NewGuid();
@@ -50,6 +48,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
             ChosenGender = chosenGender;
 
             MaxHealth = ChosenRace.DefaultHealth + ChosenClass.DefaultHealth;
+            CurrentHealth = MaxHealth;
 
             // CHECK: überprüfen ob Referenz oder Kopie genommen wird
             Inventory = chosenClass.StartInventory;
@@ -89,19 +88,27 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// The maximum health value of the avatar
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public int MaxHealth { get; }
+        public int MaxHealth { get; set; }
+
+        private int _CurrentHealth;
 
         /// <summary>
         /// The actual health value of the avatar
         /// </summary>
         public int CurrentHealth 
         {
-            get => MaxHealth - _HealthDifference;
+            get => _CurrentHealth;
             set
             {
-                if (value <= 0) _HealthDifference = MaxHealth;
-                else if (value >= MaxHealth) _HealthDifference = 0;
-                else _HealthDifference = MaxHealth - value;
+                _CurrentHealth = value;
+                if (_CurrentHealth <= 0)
+                {
+                    _CurrentHealth = 0;
+                }
+                else if (_CurrentHealth >= MaxHealth)
+                {
+                    _CurrentHealth = MaxHealth;
+                }
             }
         }
 
