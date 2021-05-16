@@ -9,138 +9,156 @@
 @inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
 
 <div class="row bg-white">
-    <div class="col-4">
-        <div class="card" style="display: flex; flex-direction: column; height: 87vh">
-            <div class="card-header text-center">
-                <div class="btn-group">
+    @if (Dungeon is not null)
+    {
+        <div class="col-4">
+            <div class="card" style="display: flex; flex-direction: column; height: 87vh">
+                <div class="card-header text-center">
+                    <div class="btn-group">
+                        @if (showMasters)
+                        {
+                            <button class="btn btn-outline-info" @onclick="() => ChangeListContent(false)">Spieler</button>
+                            <button class="btn btn-outline-info active">Master</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-info active">Spieler</button>
+                            <button class="btn btn-outline-info" @onclick=" () => ChangeListContent(true)">Master</button>
+                        }
+                    </div>
+                </div>
+                <div class="list-group border-dark" style="overflow-y:auto; height:100%">
+
+
+
                     @if (showMasters)
                     {
-                        <button class="btn btn-outline-info" @onclick="() => ChangeListContent(false)">Spieler</button>
-                        <button class="btn btn-outline-info active">Master</button>
-                    }
-                    else
-                    {
-                        <button class="btn btn-outline-info active" >Spieler</button>
-                        <button class="btn btn-outline-info" @onclick=" () => ChangeListContent(true)">Master</button>
-                    }
-                </div>
-            </div>
-            <div class="list-group border-dark" style="overflow-y:auto; height:100%">
-                @if (showMasters)
-                {
-                    @foreach (DungeonUserDto user in Dungeon.DungeonMasters)
-                    {
-                        <button type="button" class="list-group-item list-group-item-action" @onclick="( () => ChangeUser(user))">
-                            <h5>Spieler: @user.Email.Split("@")[0]</h5>
-                        </button>
-                    }
-                }
-                else
-                {
-                    @foreach (DungeonUserDto user in AllPlayersList)
-                    {
-                        @if (Dungeon.DungeonMasters.Contains(user))
+                        @foreach (DungeonUserDto user in Dungeon.DungeonMasters)
                         {
-                            <button type="button" class="list-group-item list-group-item-action" @onclick="( () => ChangeUser(user))">
+                            <button type="button" class="list-group-item list-group-item-action" @onclick="(() => ChangeUser(user))">
                                 <h5>Spieler: @user.Email.Split("@")[0]</h5>
                             </button>
                         }
-
                     }
-                }
+                    else
+                    {
+                        @foreach (DungeonUserDto user in Dungeon.WhiteList)
+                        {
+                            @if (!Dungeon.DungeonMasters.Contains(user))
+                            {
+                                <button type="button" class="list-group-item list-group-item-action" @onclick="(() => ChangeUser(user))">
+                                    <h5>Spieler: @user.Email.Split("@")[0]</h5>
+                                </button>
+                            }
 
+                        }
+                    }
+
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-8">
-        <div style="display: flex; flex-direction: column; height: 87vh">
+        <div class="col-8">
+            <div style="display: flex; flex-direction: column; height: 87vh">
 
-            @if (AllPlayersList is null || AllPlayersList.Count == 0)
-            {
-                <h5 class="text-muted">Dem Dungeon sind noch keine Spieler beigetreten</h5>
-            }
-            else if (OpenUser is not null)
-            {
-                <div class="card mt-5">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col">
-                                <h3>Name: @OpenUser.Email.Split("@")[0]</h3>
-                            </div>
-                            @if (showMasters)
-                            {
-                                @if (OpenUser != Dungeon.DungeonOwner)
+                @if (Dungeon.WhiteList.Where(x => Dungeon.DungeonMasters.Contains(x)).Count() == 0)
+                {
+                    <h5 class="text-muted">Dem Dungeon sind noch keine Spieler beigetreten</h5>
+                }
+                else if (OpenUser is not null)
+                {
+                    <div class="card mt-5">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col">
+                                    <h3>Name: @OpenUser.Email.Split("@")[0]</h3>
+                                </div>
+                                @if (showMasters)
                                 {
-                                    <div class="col">
-                                        <button class="btn btn-warning btn-sm float-end me-3" type="button" @onclick="RemoveDungeonMaster">Master entfernen</button>
-                                    </div>
+                                    @if (OpenUser.Id != Dungeon.DungeonOwner.Id)
+                                    {
+                                        <div class="col">
+                                            <button class="btn btn-warning btn-sm float-end me-3" type="button" @onclick="RemoveDungeonMaster">Master entfernen</button>
+                                        </div>
+                                        <div class="col">
+                                            <button class="btn btn-primary btn-sm float-end me-3" type="button" @onclick="KickUser">Kicken</button>
+                                        </div>
+                                        <div class="col">
+                                            <button class="btn btn-danger btn-sm float-end" type="button" @onclick="BanUser">Verbannen</button>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col">
+                                            <button class="btn btn-warning btn-sm float-end me-3" type="button" disabled>Master entfernen</button>
+                                        </div>
+                                        <div class="col">
+                                            <button class="btn btn-primary btn-sm float-end me-3" type="button" disabled>Kicken</button>
+                                        </div>
+                                        <div class="col">
+                                            <button class="btn btn-danger btn-sm float-end" type="button" disabled>Verbannen</button>
+                                        </div>
+                                    }
                                 }
                                 else
                                 {
                                     <div class="col">
-                                        <button class="btn btn-warning btn-sm float-end me-3" type="button" disabled>Master entfernen</button>
+                                        <button class="btn btn-warning btn-sm float-end me-3" type="button" @onclick="AddDungeonMaster">Master ernennen</button>
+                                    </div>
+                                    <div class="col">
+                                        <button class="btn btn-primary btn-sm float-end me-3" type="button" @onclick="KickUser">Kicken</button>
+                                    </div>
+                                    <div class="col">
+                                        <button class="btn btn-danger btn-sm float-end" type="button" @onclick="BanUser">Verbannen</button>
                                     </div>
                                 }
-                            }
-                            else
-                            {
-                                <div class="col">
-                                    <button class="btn btn-warning btn-sm float-end me-3" type="button" @onclick="AddDungeonMaster">Master ernennen</button>
-                                </div>
-                            }
-                            <div class="col">
-                                <button class="btn btn-primary btn-sm float-end me-3" type="button" @onclick="KickUser">Kicken</button>
-                            </div>
-                            <div class="col">
-                                <button class="btn btn-danger btn-sm float-end" type="button" @onclick="BanUser">Verbannen</button>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <table class="table text-center">
-                            <thead>
-                                <tr>
-                                    <th scope="col"></th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Klasse</th>
-                                    <th scope="col">Rasse</th>
-                                    <th scope="col">Raum</th>
-                                    <th scope="col">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @{int avatarIndex = 1;}
-                                @foreach (AvatarDto avatar in UserAvatarDictionary[OpenUser.Id])
-                                {
+                        <div class="card-body">
+                            <table class="table text-center">
+                                <thead>
                                     <tr>
-                                        <th scope="row">@avatarIndex</th>
-                                        <td>@avatar.Name</td>
-                                        <td>@avatar.Class.Name</td>
-                                        <td>@avatar.Race.Name</td>
-                                        <td>@avatar.CurrentRoom.Name</td>
-                                        @if (avatar.Status == 0)
-                                        {
-                                            <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>
-                                        }
-                                        else
-                                        {
-                                            <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
-                                        }
+                                        <th scope="col"></th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Klasse</th>
+                                        <th scope="col">Rasse</th>
+                                        <th scope="col">Raum</th>
+                                        <th scope="col">Status</th>
                                     </tr>
-                                    avatarIndex++;
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @{int avatarIndex = 1;}
+                                    @foreach (AvatarDto avatar in UserAvatarDictionary[OpenUser.Id])
+                                    {
+                                        <tr>
+                                            <th scope="row">@avatarIndex</th>
+                                            <td>@avatar.Name</td>
+                                            <td>@avatar.Class.Name</td>
+                                            <td>@avatar.Race.Name</td>
+                                            <td>@avatar.CurrentRoom.Name</td>
+                                            @if (avatar.Status == 0)
+                                            {
+                                                <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                            }
+                                            else
+                                            {
+                                                <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                            }
+                                        </tr>
+                                        avatarIndex++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-            }
-            else
-            {
-                <h5 class="text-muted">Wähle einen Spieler aus!</h5>
-            }
+                }
+                else
+                {
+                    <h5 class="text-muted">Wähle einen Spieler aus!</h5>
+                }
 
+            </div>
         </div>
-    </div>
+    }
 </div>
 
 @code {
@@ -148,12 +166,12 @@
     /// <summary>
     /// The Avatars created in this dungeon
     /// </summary>
-    public List<AvatarDto> DungeonAvatars { get; set; } = new List<AvatarDto>();
+    //public List<AvatarDto> DungeonAvatars { get; set; } = new List<AvatarDto>();
 
     /// <summary>
     /// The List of Players that joined this Dungeon, active and inactive
     /// </summary>
-    public List<DungeonUserDto> AllPlayersList { get; set; } = new List<DungeonUserDto>();
+    //public List<Guid> AllPlayersList { get; set; } = new List<Guid>();
 
     /// <summary>
     /// The ID of the Dungeon this Master is handling
@@ -191,9 +209,7 @@
         if (dungeon is not null)
         {
             Dungeon = dungeon;
-            AllPlayersList = dungeon.WhiteList.Where(x => !dungeon.DungeonMasters.Contains(x)).ToList();
-            var avatars = await AvatarService.GetAllAvatars(DungeonId);
-            if (avatars is not null) DungeonAvatars = avatars.ToList();
+            //dungeon.WhiteList.Where(x => !dungeon.DungeonMasters.Contains(x)).ToList().ForEach(g => AllPlayersList.Add(g.Id));
             foreach (DungeonUserDto user in dungeon.WhiteList)
             {
                 var userAvatars = await AvatarService.GetAllAvatarsForUser(DungeonId);
@@ -201,6 +217,7 @@
                 else UserAvatarDictionary.Add(user.Id, new List<AvatarDto>());
             }
         }
+        StateHasChanged();
     }
 
     /// <summary>
@@ -212,9 +229,17 @@
     {
         foreach (AvatarDto avatar in avatarList)
         {
-            if (!DungeonAvatars.Contains(avatar)) DungeonAvatars.Add(avatar);
-            UserAvatarDictionary[avatar.Owner.Id].Remove(avatar);
-            UserAvatarDictionary[avatar.Owner.Id].Add(avatar);
+            if (UserAvatarDictionary.ContainsKey(avatar.Owner.Id))
+            {
+                UserAvatarDictionary[avatar.Owner.Id].Remove(avatar);
+                UserAvatarDictionary[avatar.Owner.Id].Add(avatar);
+            }
+            else
+            {
+                UserAvatarDictionary.Add(avatar.Owner.Id, new List<AvatarDto>());
+                UserAvatarDictionary[avatar.Owner.Id].Add(avatar);
+            }
+            StateHasChanged();
         }
     }
 
@@ -231,6 +256,7 @@
             UserAvatarDictionary[user.Id] = userAvatars.ToList();
         }
         OpenUser = user;
+        StateHasChanged();
     }
 
     /// <summary>
@@ -243,11 +269,11 @@
         if (success == HttpStatusCode.OK)
         {
             Dungeon.WhiteList.Remove(OpenUser);
-            AllPlayersList.Remove(OpenUser);
             UserAvatarDictionary.Remove(OpenUser.Id);
             DungeonService.UpdateDungeon(Dungeon);
             OpenUser = null;
         }
+        StateHasChanged();
     }
 
     /// <summary>
@@ -256,15 +282,11 @@
     private async void BanUser()
     {
         if (Dungeon.DungeonMasters.Contains(OpenUser)) Dungeon.DungeonMasters.Remove(OpenUser);
-        var success = await GameService.KickAvatar(OpenUser.Id);
-        if (success == HttpStatusCode.OK)
-        {
-            Dungeon.WhiteList.Remove(OpenUser);
-            Dungeon.BlackList.Add(OpenUser);
-            AllPlayersList.Remove(OpenUser);
-            UserAvatarDictionary.Remove(OpenUser.Id);
-            DungeonService.UpdateDungeon(Dungeon);
-        }
+        Dungeon.WhiteList.Remove(OpenUser);
+        Dungeon.BlackList.Add(OpenUser);
+        UserAvatarDictionary.Remove(OpenUser.Id);
+        DungeonService.UpdateDungeon(Dungeon);
+        StateHasChanged();
     }
 
     /// <summary>
@@ -274,6 +296,7 @@
     {
         if (Dungeon.DungeonMasters.Contains(OpenUser)) Dungeon.DungeonMasters.Remove(OpenUser);
         DungeonService.UpdateDungeon(Dungeon);
+        StateHasChanged();
     }
 
     /// <summary>
@@ -283,6 +306,7 @@
     {
         if (!Dungeon.DungeonMasters.Contains(OpenUser)) Dungeon.DungeonMasters.Add(OpenUser);
         DungeonService.UpdateDungeon(Dungeon);
+        StateHasChanged();
     }
 
     /// <summary>
