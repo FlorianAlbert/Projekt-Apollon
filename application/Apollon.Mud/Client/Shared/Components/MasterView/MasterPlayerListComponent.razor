@@ -53,10 +53,16 @@
                         }
                         @foreach (DungeonUserDto user in Dungeon.BlackList)
                         {
-                            <button type="button" class="list-group-item list-group-item-action bg-secondary" >
-                                <h5>Spieler: @user.Email.Split("@")[0]</h5>
-                                <div class="btn btn-danger" @onclick="() => UnbanUser(user)">Entbannen</div>
-                            </button>
+                            <div class="list-group-item list-group-item-action bg-secondary">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5>Spieler: @user.Email.Split("@")[0]</h5>
+                                    </div>
+                                    <div class="col">
+                                        <div class="btn btn-danger float-end" @onclick="() => UnbanUser(user)">Entbannen</div>
+                                    </div>
+                                </div>
+                            </div>
                         }
                     }
 
