@@ -27,24 +27,26 @@
 
             @if (OpenRequestList is null || OpenRequestList.Count == 0)
             {
-                <h3 class="text-muted">Keine offenen Anfragen</h3>
+                <h3 class="text-muted mt-5">Keine offenen Anfragen</h3>
             }
             else
             {
-                <div class="row bg-secondary">
-                    <div class="col">
-                        <h5>Name: @OpenRequest.Email.Trim('@')[0]</h5>
+                @if (OpenRequest is not null)
+                {
+                    <div class="card mt-5">
+                        <div class="card-header"><h5>Name: @OpenRequest.Email.Trim('@')[0]</h5></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <button class="btn btn-primary btn-sm float-end me-3" type="button" @onclick="AcceptUser">Annehmen</button>
+                                </div>
+                                <div class="col">
+                                    <button class="btn btn-danger btn-sm float-end" type="button" @onclick="RemoveUser">Ablehnen</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <button class="btn btn-primary btn-sm float-end me-3" type="button" @onclick="AcceptUser">Annehmen</button>
-                        <button class="btn btn-danger btn-sm float-end" type="button" @onclick="RemoveUser">Ablehnen</button>
-                    </div>
-                </div>
-
-                <ul class="list-group" style="overflow-y:auto; height:100%">
-                </ul>
+                }
             }
 
         </div>
@@ -109,8 +111,8 @@
             OpenRequestList.Remove(OpenRequest);
             Dungeon.OpenRequests.Remove(OpenRequest);
             Dungeon.WhiteList.Add(OpenRequest);
-            DungeonService.UpdateDungeon(Dungeon);
             OpenRequest = null;
+            StateHasChanged();
         }
 
 
@@ -129,6 +131,7 @@
             Dungeon.BlackList.Add(OpenRequest);
             DungeonService.UpdateDungeon(Dungeon);
             OpenRequest = null;
+            StateHasChanged();
         }
     }
 

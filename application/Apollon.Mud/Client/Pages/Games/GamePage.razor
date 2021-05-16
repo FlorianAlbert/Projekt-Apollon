@@ -198,6 +198,7 @@
         {
             TerminalMessages.Enqueue("Fehler: Die Verbindung konnte nicht hergestellt werden!");
         }
+        await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
         StateHasChanged();
     }
 
@@ -222,7 +223,7 @@
             TerminalMessages.Enqueue(" > " + UserInput + "\n");
             UserInput = string.Empty;
         }
-
+        StateHasChanged();
         await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
     }
 
