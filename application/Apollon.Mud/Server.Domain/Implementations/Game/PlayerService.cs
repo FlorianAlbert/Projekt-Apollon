@@ -328,18 +328,25 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         .ReceiveGameMessage($"In deinem Inventar war nicht mehr genügend Platz, deshalb wurde deine zuvor getragene R\u00FCstung { wornWearable.Name } im Raum abgelegt!\n");
                 }
 
-                if (!await GameDbService.NewOrUpdate(avatar))
-                {
-                    await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                        .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
-                                            "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
-
-                    return;
-                }
-
-                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                    .ReceiveGameMessage($"Du trägst nun { itemToWear.Name } als Rüstung!\n");
+                
             }
+            else
+            {
+                avatar.Armor = wearable;
+
+                avatar.Inventory.Remove(wearable);
+            }
+            if (!await GameDbService.NewOrUpdate(avatar))
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                        "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                return;
+            }
+
+            await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                .ReceiveGameMessage($"Du trägst nun { itemToWear.Name } als Rüstung!\n");
         }
 
         private async Task Consume(string itemName, Guid dungeonId, Guid avatarId)
