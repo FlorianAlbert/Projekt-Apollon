@@ -166,7 +166,7 @@
             .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/chat")
             .Build();
 
-        ChatHubConnection.On<string, string>("ReceiveMessage", ReceiveChatMessage);
+        ChatHubConnection.On<string, string>("ReceiveChatMessage", ReceiveChatMessage);
 
         GameHubConnection = new HubConnectionBuilder()
             .WithUrl(Config["LoginConfiguration:BaseUri"] + ":" + Config["LoginConfiguration:Port"] + "/hubs/game")
