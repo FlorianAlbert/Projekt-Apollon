@@ -11,6 +11,7 @@ using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Server.Model.Implementations.User;
 using Apollon.Mud.Shared.Game;
 using Apollon.Mud.Shared.Game.Chat;
 using Apollon.Mud.Shared.Game.DungeonMaster;
@@ -200,7 +201,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             var dungeon = await _gameDbService.Get<Dungeon>(dungeonId);
             if (dungeon is null) return BadRequest();
 
-            if (!dungeon.DungeonMasters.Contains(user)) return Forbid();
+            if (!dungeon.DungeonMasters.Contains(user) && !await _userDbService.IsUserInRole(user.Id, Roles.Admin.ToString())) return Forbid();
             
             await _masterService.KickAllAvatars(dungeonId);
             return Ok();
