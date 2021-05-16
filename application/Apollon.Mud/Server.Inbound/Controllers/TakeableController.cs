@@ -93,7 +93,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             takeableToUpdate.Status = (Status)takeableDto.Status;
             takeableToUpdate.Weight = takeableToUpdate.Weight;
             
-            if (await GameConfigService.NewOrUpdate(takeableToUpdate)) return Ok(takeableToUpdate.Id);
+            if (await GameConfigService.NewOrUpdate(takeableToUpdate)) return Ok();
 
             takeableToUpdate = await GameConfigService.Get<Takeable>(takeableDto.Id);
 

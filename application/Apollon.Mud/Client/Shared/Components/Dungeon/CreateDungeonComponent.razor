@@ -1,16 +1,23 @@
 ﻿@using Apollon.Mud.Client.Data.Models.Dungeon
 @using Apollon.Mud.Shared.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Room
+@using Apollon.Mud.Shared.Dungeon.Class
+@using Apollon.Mud.Shared.Dungeon.Race
+
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 @inject Apollon.Mud.Client.Services.Interfaces.IRoomService RoomService
+@inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
+@inject Apollon.Mud.Client.Services.Interfaces.IClassService ClassService
+@inject Apollon.Mud.Client.Services.Interfaces.IRaceService RaceService
 @inject Apollon.Mud.Client.Data.Account.UserContext userContext
+
+@implements IDisposable
 
 <div class="card">
     <div class="card-header">
         <h2>Allgemeines</h2>
     </div>
     <div class="card-body">
-
         <EditForm EditContext="@dungeonContext" OnSubmit="@HandleDungeonSubmit" novalidate>
             <DataAnnotationsValidator />
 
@@ -20,6 +27,10 @@
                         <h5 class="mt-1">Name</h5>
                     </div>
                     <div class="col">
+                        @if (DungeonNameAlreadyExists)
+                        {
+                            <label class="text-danger mt-1"><strong>Ein Dungeon mit diesem Namen existiert bereits, bitte wähle einen Anderen</strong></label>
+                        }
                         <div class="d-flex justify-content-center">
                             <InputText class="form-control" placeholder="Name" id="Name" @bind-Value="dungeonModel.Name" />
                         </div>
@@ -51,7 +62,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputTextArea class="form-control" placeholder="Text" @bind-Value="dungeonModel.Epoch" />
+                            <InputTextArea class="form-control" placeholder="Epoche" @bind-Value="dungeonModel.Epoch" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonModel.Epoch) />
@@ -118,7 +129,10 @@
                     <div class="col">
                         <div class="d-flex justify-content-center">
                             <select class="form-select" @bind="dungeonModel.Status">
-                                @if (DungeonMustBeInactive)
+                                @if (DungeonMustBeInactive ||
+                                   dungeonRooms.All(x => x.Status == 1) ||
+                                   dungeonClasses.All(x => x.Status == 1) ||
+                                   dungeonRaces.All(x => x.Status == 1))
                                 {
                                     <option value="Pending" selected>Inaktiv</option>
                                     <option value="Approved" disabled>Aktiv</option>
@@ -184,6 +198,16 @@
     List<RoomDto> dungeonRooms = new List<RoomDto>();
 
     /// <summary>
+    /// The List containing the Npcs of the Dungeon
+    /// </summary>
+    List<ClassDto> dungeonClasses = new List<ClassDto>();
+
+    /// <summary>
+    /// The List containing the Npcs of the Dungeon
+    /// </summary>
+    List<RaceDto> dungeonRaces = new List<RaceDto>();
+
+    /// <summary>
     /// The Guid of the dungeon
     /// </summary>
     [Parameter]
@@ -196,9 +220,14 @@
     public EventCallback<Guid> OnDungeonSavedOrLoaded { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The Dungeon that is being edited
     /// </summary>
     public DungeonDto CurrentDungeon { get; set; }
+
+    /// <summary>
+    /// When true shows a message to the user, that there already is a dungeon with this name
+    /// </summary>
+    public bool DungeonNameAlreadyExists { get; set; }
 
     /// <summary>
     /// Called when the component is initialized, this method instantiates the EditContext of the form, receives data from the backend and saves them locally
@@ -226,6 +255,8 @@
                     dungeonModel.DefaultRoom = CurrentDungeon.DefaultRoom.Name;
                 }
             }
+            dungeonClasses = (await ClassService.GetAllClasses(DungeonId))?.ToList() ?? new List<ClassDto>();
+            dungeonRaces = (await RaceService.GetAllRaces(DungeonId))?.ToList() ?? new List<RaceDto>();
         }
         StateHasChanged();
     }
@@ -260,34 +291,63 @@
     }
 
     /// <summary>
+    /// Reloads the classes of this very dungeon
+    /// </summary>
+    public async void ReloadDungeonClasses()
+    {
+        var classList = await ClassService.GetAllClasses(DungeonId);
+        if (classList is not null) dungeonClasses = classList.ToList();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Reloads the races of this very dungeon
+    /// </summary>
+    public async void ReloadDungeonRaces()
+    {
+        var raceList = await RaceService.GetAllRaces(DungeonId);
+        if (raceList is not null) dungeonRaces = raceList.ToList();
+        StateHasChanged();
+    }
+
+    /// <summary>
     /// Handles the submition of a created Npc, validates the data and saves them locally and on the server
     /// </summary>
     /// <returns></returns>
     private async Task HandleDungeonSubmit()
     {
+        DungeonNameAlreadyExists = false;
         if (DungeonMustBeInactive) dungeonModel.Status = "Pending";
         var validDungeon = dungeonContext.Validate();
         if (validDungeon)
         {
             DungeonDto submitDungeon;
+
             if (DungeonId != Guid.Empty) submitDungeon = CurrentDungeon;
+
             else submitDungeon = new DungeonDto();
+
             submitDungeon.DungeonName = dungeonModel.Name;
             submitDungeon.DungeonDescription = dungeonModel.Description;
             submitDungeon.DungeonEpoch = dungeonModel.Epoch;
             submitDungeon.DefaultRoom = dungeonRooms.Find(r => r.Name.Equals(dungeonModel.DefaultRoom));
             submitDungeon.Visibility = dungeonModel.Visibility.Equals("Private") ? 0 : 1;
             submitDungeon.Status = dungeonModel.Status.Equals("Approved") ? 0 : 1;
+
+            if (submitDungeon.Status == 1) await GameService.KickAll(DungeonId);
+
             submitDungeon.DungeonOwner = userContext.DungeonUserContext;
+
             if (DungeonId == Guid.Empty)
             {
                 var responseGuid = await DungeonService.CreateNewDungeon(submitDungeon);
-                if (responseGuid != Guid.Empty)
+                if (responseGuid.Item1 != Guid.Empty)
                 {
-                    await OnDungeonSavedOrLoaded.InvokeAsync(responseGuid);
-                    DungeonId = responseGuid;
+                    await OnDungeonSavedOrLoaded.InvokeAsync(responseGuid.Item1);
+                    DungeonId = responseGuid.Item1;
                     CurrentDungeon = await DungeonService.GetDungeon(DungeonId) ?? new DungeonDto();
                 }
+                else if (responseGuid.Item2) DungeonNameAlreadyExists = true;
             }
             else
             {
@@ -310,6 +370,14 @@
 
             }
         }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void Dispose()
+    {
+        HandleDungeonSubmit();
     }
 }
 

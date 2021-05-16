@@ -1,0 +1,168 @@
+﻿@using Apollon.Mud.Client.Data.Models.Game
+@using Apollon.Mud.Shared.Game.DungeonMaster
+@using System.Net
+@using System.ComponentModel.DataAnnotations;
+
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+@inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
+
+<div class="row bg-white" style="padding:0;">
+    <div class="col-4">
+        <div class="card" style="display: flex; flex-direction: column; height: 87vh">
+            <div class="list-group" style="overflow-y:auto; max-height:100%">
+                @foreach (DungeonMasterRequestDto request in RequestQueue)
+                {
+                    <button type="button" class="list-group-item list-group-item-action" @onclick=" () => OpenRequest(request)">
+                        <h5>@request.Avatar.Name</h5>
+                        <span> </span>
+                        <h6>@request.Request</h6>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-8">
+        <div style="display: flex; flex-direction: column; height: 87vh">
+            <div class="container mt-3" style="height:100% ">
+                @if (RequestQueue.Count == 0)
+                {
+                    <h5 class="text-muted">Es gibt keine offenen Anfragen</h5>
+                }
+                else if (CurrentRequest is not null && CurrentRequest.Avatar is not null)
+                {
+                    <h3>@CurrentRequest.Avatar.Name möchte: </h3>
+                    <h5>@CurrentRequest.Request</h5>
+                    @if (sendError)
+                    {
+                        <h5 class="text-danger">Beim Senden ist ein Fehler aufgetreten, bitte versuche es erneut</h5>
+                    }
+                    <span>Raumbeschreibung: </span>
+                    <span placeholder="Raumbeschreibung">@CurrentRequest.Avatar.CurrentRoom.Description</span>
+                    <hr class="featurette-divider" />
+                    <EditForm EditContext="@masterRequestContext" OnSubmit="@HandleActionAnswerSubmit" novalidate>
+                        <DataAnnotationsValidator />
+                        <InputTextArea class="form-control  mb-5" placeholder="Reaktion" @bind-Value="masterRequestModel.RequestAnswer" />
+                        <ValidationMessage For=@(() => masterRequestModel.RequestAnswer) />
+                        <p>Lebenspunkte</p>
+                        <input type="range" class="form-range" min="0" max="@(CurrentRequest.Avatar.Class.DefaultHealth + CurrentRequest.Avatar.Race.DefaultHealth)" step="1" @bind="masterRequestModel.HealthChange" />
+                        <input class="form-control mb-3" style="width:3.5rem" @bind="masterRequestModel.HealthChange" disabled />
+                        <ValidationMessage For=@(() => masterRequestModel.HealthChange) />
+                        <button class="btn btn-success mt-5" style="width:15rem" type="submit">Bestätigen</button>
+                    </EditForm>
+                }
+                else
+                {
+                    <h5 class="text-muted">Wähle eine Anfrage</h5>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// The ID of the Dungeon this Master is handling
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// The List open requests, inherited by its parent
+    /// </summary>
+    [Parameter]
+    public List<DungeonMasterRequestDto> ParentRequestQueue { get; set; }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    [Parameter]
+    public EventCallback<DungeonMasterRequestDto> RequestRemoved { get; set; }
+
+    /// <summary>
+    /// TODO Abhilfe
+    /// </summary>
+    MasterRequestModel masterRequestModel = new MasterRequestModel();
+
+    /// <summary>
+    /// TODO Abhilfe
+    /// </summary>
+    EditContext masterRequestContext;
+
+    /// <summary>
+    /// The currently opened Request
+    /// </summary>
+    public DungeonMasterRequestDto CurrentRequest { get; set; }
+
+    /// <summary>
+    /// Informs the master about a failed sending
+    /// </summary>
+    bool sendError;
+
+    /// <summary>
+    /// The list of open Requests
+    /// </summary>
+    private List<DungeonMasterRequestDto> _RequestQueue;
+
+    public List<DungeonMasterRequestDto> RequestQueue
+    {
+        get { return _RequestQueue ??= new List<DungeonMasterRequestDto>(); }
+        set { _RequestQueue = value; }
+    }
+
+    /// <summary>
+    /// TODO Abhilfe
+    /// </summary>
+    protected async override Task OnInitializedAsync()
+    {
+        masterRequestContext = new EditContext(masterRequestModel);
+
+        RequestQueue = ParentRequestQueue;
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleActionAnswerSubmit()
+    {
+        sendError = false;
+        var validAnswer = masterRequestContext.Validate();
+        if (validAnswer)
+        {
+            var avatar = CurrentRequest.Avatar;
+            avatar.CurrentHealth = int.Parse(masterRequestModel.HealthChange);
+            var response = await GameService.AnswerDungeonMasterRequest(masterRequestModel.RequestAnswer, avatar);
+            if (response == HttpStatusCode.OK)
+            {
+                RequestQueue.Remove(CurrentRequest);
+                await RequestRemoved.InvokeAsync(CurrentRequest);
+                CurrentRequest = null;
+            }
+            else sendError = true;
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="requestDto"></param>
+    /// <returns></returns>
+    public async Task AddMasterRequest(DungeonMasterRequestDto requestDto)
+    {
+        if (requestDto is not null) RequestQueue.Add(requestDto);
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="requestDto"></param>
+    /// <returns></returns>
+    private async Task OpenRequest(DungeonMasterRequestDto requestDto)
+    {
+        CurrentRequest = requestDto;
+        masterRequestModel.HealthChange = requestDto.Avatar.CurrentHealth.ToString();
+        StateHasChanged();
+    }
+}

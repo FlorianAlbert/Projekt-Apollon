@@ -1,5 +1,6 @@
 ﻿using Apollon.Mud.Client.Data.Account;
 using Apollon.Mud.Client.Services.Interfaces;
+using Apollon.Mud.Shared;
 using Apollon.Mud.Shared.Dungeon;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Apollon.Mud.Client.Services.Implementiations
+namespace Apollon.Mud.Client.Services.Implementations
 {
     
     public class DungeonService : IDungeonService
@@ -41,7 +42,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         /// </summary>
         /// <param name="dungeonDto">The Dungeon to create</param>
         /// <returns>The Guid if the DB Transaction was successfull, otherwise an empty Guid</returns>
-        public async Task<Guid> CreateNewDungeon(DungeonDto dungeonDto)
+        public async Task<(Guid, bool)> CreateNewDungeon(DungeonDto dungeonDto)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
@@ -50,9 +51,10 @@ namespace Apollon.Mud.Client.Services.Implementiations
             {
                 var responseGuid = response.Content.ReadFromJsonAsync<Guid>();
                 responseGuid.Wait();
-                return responseGuid.Result;
+                return (responseGuid.Result, false);
             }
-            return Guid.Empty;
+            if (response.StatusCode == HttpStatusCode.Conflict) return (Guid.Empty, true);
+            return (Guid.Empty, false);
         }
 
         /// <summary>
@@ -129,6 +131,40 @@ namespace Apollon.Mud.Client.Services.Implementiations
             if(response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<DungeonDto>();
 
             return null;
+        }
+
+        /// <summary>
+        /// Opens a request of a user to enter a private Dungeon
+        /// </summary>
+        /// <param name="dungeonId"></param>
+        /// <returns>True if submitting the request was successfull, else false</returns>
+        public async Task<bool> OpenEnterRequest(Guid dungeonId)
+        {
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.PostAsJsonAsync("api/dungeons/" + dungeonId + "/request", cancellationToken);
+
+            return response.StatusCode == HttpStatusCode.OK;
+        }
+
+        /// <summary>
+        /// Answers a users request to enter a private dungeon
+        /// </summary>
+        /// <param name="dungeonId"></param>
+        /// <returns>True if sending it to the Backend was successfull, else false</returns>
+        public async Task<bool> SubmitEnterRequest(Guid dungeonId, Guid requestUserId, bool granted)
+        {
+            SubmitDungeonEnterRequestDto submit = new()
+            {
+                GrantAccess = granted,
+                RequestUserId = requestUserId
+            };
+
+            CancellationToken cancellationToken = CancellationTokenSource.Token;
+
+            var response = await HttpClient.PostAsJsonAsync("api/dungeons/" + dungeonId + "/submitRequest", submit, cancellationToken);
+
+            return response.StatusCode == HttpStatusCode.OK;
         }
     }
 }

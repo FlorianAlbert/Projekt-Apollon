@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Apollon.Mud.Server.Domain.Interfaces.Game;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
@@ -39,11 +40,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         private ILogger<RoomController> _logger;
 
-        public RoomController(ILogger<RoomController> logger, IGameDbService gameDbService, IUserService userService)
+        private IMasterService MasterService { get; }
+
+        public RoomController(ILogger<RoomController> logger, IGameDbService gameDbService, IUserService userService, IMasterService masterService)
         {
             _logger = logger;
             GameConfigService = gameDbService;
             UserService = userService;
+            MasterService = masterService;
         }
 
         [HttpGet]
@@ -244,20 +248,20 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         public async Task<IActionResult> DeleteRoom([FromRoute] Guid dungeonId, [FromRoute] Guid roomId)
         {
             var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
-
             if (dungeon is null) return BadRequest();
 
-            if (dungeon.Status is Status.Approved) return Forbid();
+            var room = dungeon.ConfiguredRooms.FirstOrDefault(r => r.Id == roomId);
+            if (dungeon.Status is Status.Approved && room.Status is Status.Approved) return Forbid();
 
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
-
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
 
             var user = await UserService.GetUser(userId);
-
             if (user is null) return BadRequest();
 
             if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
+
+            await MasterService.MoveAvatarsToDefaultRoom(roomId, dungeonId);
 
             if (await GameConfigService.Delete<Room>(roomId)) return Ok();
 
@@ -450,6 +454,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             var room = dungeon.ConfiguredRooms.FirstOrDefault(x => x.Id == roomDto.Id);
 
             if (room is null) return BadRequest();
+            if (dungeon.DefaultRoom == room && (Status) roomDto.Status is Status.Pending && dungeon.Status is Status.Approved) return BadRequest();
 
             Room neighborEast;
             Room neighborSouth;
@@ -484,6 +489,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 neighborSouth?.NeighborNorth is not null && neighborSouth.NeighborNorth != room ||
                 neighborWest?.NeighborEast is not null && neighborWest.NeighborEast != room)
                 return Conflict();
+
+            var moveAvatarsToDefault = room.Status == Status.Approved && (Status) roomDto.Status == Status.Pending;
 
             room.Description = roomDto.Description;
             room.Name = roomDto.Name;
@@ -587,9 +594,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 }
             }
 
-            if (await GameConfigService.NewOrUpdate(room)) return Ok();
+            if (moveAvatarsToDefault) await MasterService.MoveAvatarsToDefaultRoom(room.Id, dungeonId);
+            if (await GameConfigService.NewOrUpdate(room))return Ok();
+
 
             return BadRequest();
         }
+
+        
     }
 }

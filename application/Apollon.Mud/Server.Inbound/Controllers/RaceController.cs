@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Apollon.Mud.Server.Domain.Interfaces.Game;
 using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
 using Apollon.Mud.Server.Model.Implementations;
@@ -22,10 +23,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         private IUserService UserService { get; }
 
-        public RaceController(IGameDbService gameConfigService, IUserService userService)
+        private IMasterService MasterService { get; }
+
+        public RaceController(IGameDbService gameConfigService, IUserService userService, IMasterService masterService)
         {
             GameConfigService = gameConfigService;
             UserService = userService;
+            MasterService = masterService;
         }
 
         [HttpPost]
@@ -92,8 +96,17 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             raceToUpdate.DefaultProtection = raceDto.DefaultProtection;
             raceToUpdate.DefaultDamage = raceDto.DefaultDamage;
             raceToUpdate.Status = (Status) raceDto.Status;
-            
-            if (await GameConfigService.NewOrUpdate(raceToUpdate)) return Ok(raceToUpdate.Id);
+
+            if (await GameConfigService.NewOrUpdate(raceToUpdate))
+            {
+                if (raceToUpdate.Status is not Status.Pending) return Ok();
+                foreach (var avatar in raceToUpdate.Avatars)
+                {
+                    if(avatar.Status is Status.Pending) continue;
+                    await MasterService.KickAvatar(avatar.Id, dungeonId);
+                }
+                return Ok();
+            }
 
             raceToUpdate = await GameConfigService.Get<Race>(raceDto.Id);
             var oldRaceDto = new RaceDto

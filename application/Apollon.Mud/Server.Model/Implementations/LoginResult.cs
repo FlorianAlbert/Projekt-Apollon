@@ -20,6 +20,11 @@ namespace Apollon.Mud.Server.Model.Implementations
         public DungeonUser User { get; set; }
 
         /// <summary>
+        /// Wether the user is an Admin
+        /// </summary>
+        public bool IsAdmin { get; set; }
+
+        /// <summary>
         /// Status of the login
         /// </summary>
         public LoginResultStatus Status { get; set; }

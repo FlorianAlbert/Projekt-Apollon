@@ -1,16 +1,13 @@
 ﻿using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
-using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
-using Apollon.Mud.Server.Model.Implementations.Dungeons.Classes;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Consumables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Usables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Npcs;
-using Apollon.Mud.Server.Model.Implementations.Dungeons.Races;
 using Apollon.Mud.Shared.Dungeon.Avatar;
 using Apollon.Mud.Shared.Dungeon.Class;
 using Apollon.Mud.Shared.Dungeon.Inspectable;
@@ -19,14 +16,13 @@ using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Shared.Dungeon.Race;
-using Apollon.Mud.Shared.Dungeon.Requestable;
 using Apollon.Mud.Shared.Dungeon.Room;
+using Apollon.Mud.Shared.Dungeon.User;
 using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -52,6 +48,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> CreateNew([FromBody] AvatarDto avatar, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(u => u.Type == "UserId");
@@ -75,48 +72,18 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (avatarRace is null || avatarClass is null) return BadRequest();
 
+            if (avatarDungeon.RegisteredAvatars.Any(x => x.Name == avatar.Name) || avatar.Name == "Dungeon Master") return Conflict();
+
             var newAvatar = new Avatar(avatar.Name,
                 avatarRace,
                 avatarClass,
                 (Gender)avatar.Gender)
             {
                 CurrentRoom = (await GameConfigService.Get<Dungeon>(dungeonId)).DefaultRoom,
-                Status = (Status)avatar.Status,
-                Owner = user,
-                Dungeon = avatarDungeon
+                Dungeon = avatarDungeon,
+                Owner = user
             };
-
-            //foreach(TakeableDto takeable in avatar.Class.InventoryTakeableDtos)
-            //{
-            //    newAvatar.Inventory.Add(new Takeable(takeable.Weight, takeable.Description, takeable.Name)
-            //    {
-            //        Status = (Status)takeable.Status
-            //    });
-            //}
-            //foreach (UsableDto usable in avatar.Class.InventoryUsableDtos)
-            //{
-            //    newAvatar.Inventory.Add(new Usable(usable.Name, usable.Description, usable.Weight, usable.DamageBoost)
-            //    {
-            //        Status = (Status)usable.Status
-            //    });
-            //}
-            //foreach (WearableDto wearable in avatar.Class.InventoryWearableDtos)
-            //{
-            //    newAvatar.Inventory.Add(new Wearable(wearable.Name, wearable.Description, wearable.Weight, wearable.ProtectionBoost)
-            //    {
-            //        Status = (Status)wearable.Status
-            //    });
-            //}
-            //foreach (ConsumableDto consumable in avatar.Class.InventoryConsumableDtos)
-            //{
-            //    newAvatar.Inventory.Add(new Consumable(consumable.Name, 
-            //                            consumable.Description, 
-            //                            consumable.Weight, 
-            //                            consumable.EffectDescription)
-            //                            {
-            //                                Status = (Status)consumable.Status
-            //                            });
-            //}
+            newAvatar.Status = (Status)avatar.Status;
 
             if (await GameConfigService.NewOrUpdate(newAvatar)) return Ok(newAvatar.Id);
 
@@ -191,14 +158,14 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Description = x.CurrentRoom.Description,
                     Status = (int) x.CurrentRoom.Status
                 },
-                HoldingItem = new TakeableDto
+                HoldingItem = x.HoldingItem is null ? null : new TakeableDto
                 {
                     Id = x.HoldingItem.Id,
                     Name = x.HoldingItem.Name,
                     Description = x.HoldingItem.Description,
                     Status = (int) x.HoldingItem.Status
                 },
-                Armor = new WearableDto
+                Armor = x.Armor is null ? null : new WearableDto
                 {
                     Id = x.Armor.Id,
                     Name = x.Armor.Name,
@@ -206,7 +173,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Status = (int) x.Armor.Status
                 },
                 CurrentHealth = x.CurrentHealth,
-                Gender = (int) x.ChosenGender
+                Gender = (int) x.ChosenGender,
+                Owner = x.Owner is null ? null : new DungeonUserDto()
+                {
+                    Id = Guid.Parse(x.Owner.Id),
+                    Email = x.Owner.Email,
+                    LastActive = x.Owner.LastActive
+                }
             }).ToArray();
 
             return Ok(avatarDtos);
@@ -278,7 +251,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Status = (int)x.Armor.Status
                 },
                 CurrentHealth = x.CurrentHealth,
-                Gender = (int)x.ChosenGender
+                Gender = (int)x.ChosenGender,
+                Owner = x.Owner is null ? null : new DungeonUserDto()
+                {
+                    Id = Guid.Parse(x.Owner.Id),
+                    Email = x.Owner.Email,
+                    LastActive = x.Owner.LastActive
+                }
             }).ToArray();
 
             return Ok(userAvatarDtos);
@@ -304,6 +283,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 Id = avatar.Id,
                 Status = (int)avatar.Status,
                 Name = avatar.Name,
+                Owner = avatar.Owner is null ? null : new DungeonUserDto()
+                {
+                    Id = Guid.Parse(avatar.Owner.Id),
+                    Email = avatar.Owner.Email,
+                    LastActive = avatar.Owner.LastActive
+                },
                 Race = new RaceDto
                 {
                     Id = avatar.ChosenRace.Id,
@@ -366,7 +351,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 },
                 Gender = (int)avatar.ChosenGender,
                 CurrentHealth = avatar.CurrentHealth,
-                HoldingItem = new TakeableDto
+                HoldingItem = avatar.HoldingItem is null ? null : new TakeableDto
                 {
                     Id = avatar.HoldingItem.Id,
                     Status = (int)avatar.HoldingItem.Status,
@@ -374,7 +359,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Name = avatar.HoldingItem.Name,
                     Weight = avatar.HoldingItem.Weight
                 },
-                Armor = new WearableDto
+                Armor = avatar.Armor is null ? null : new WearableDto
                 {
                     Id = avatar.Armor.Id,
                     Status = (int)avatar.Armor.Status,

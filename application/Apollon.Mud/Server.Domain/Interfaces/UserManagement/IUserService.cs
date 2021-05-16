@@ -70,5 +70,26 @@ namespace Apollon.Mud.Server.Domain.Interfaces.UserManagement
         /// <param name="newPassword"></param>
         /// <returns></returns>
         Task<bool> ChangePassword(Guid userId, string oldPassword, string newPassword);
+
+        /// <summary>
+        /// Changes the password of the user with the given userId to the new password.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="oldPassword"></param>
+        /// <param name="newPassword"></param>
+        /// <returns></returns>
+        Task<bool> IsUserInAdminRole(string userId);
+
+        /// <summary>
+        /// Checks wether there is more than one admin registered
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> CanDeleteAdmin();
+
+        /// <summary>
+        /// Checks wether there is more than one admin registered
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> MakeAdmin(string userId, bool approved);
     }
 }

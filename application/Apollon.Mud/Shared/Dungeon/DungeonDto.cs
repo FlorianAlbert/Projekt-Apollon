@@ -63,6 +63,12 @@ namespace Apollon.Mud.Shared.Dungeon
         public ICollection<DungeonUserDto> DungeonMasters { get; set; }
 
         /// <summary>
+        /// The current Dungeon Master playing the game
+        /// </summary>
+        [JsonProperty("DungeonMasters")]
+        public DungeonUserDto CurrentMaster { get; set; }
+
+        /// <summary>
         /// The owner of the dungeon.
         /// </summary>
         [JsonProperty("DungeonOwner")]
@@ -85,6 +91,12 @@ namespace Apollon.Mud.Shared.Dungeon
         /// </summary>
         [JsonProperty("OpenRequests")]
         public ICollection<DungeonUserDto> OpenRequests { get; set; }
+
+        /// <summary>
+        /// The Timestamp when the dungeon got played by an avatar the last time
+        /// </summary>
+        [JsonProperty("LastActive")]
+        public DateTime LastActive { get; set; }
 
     }
 }

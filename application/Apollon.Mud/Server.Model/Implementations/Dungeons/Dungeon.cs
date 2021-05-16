@@ -147,5 +147,10 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons
         /// Name of the dungeon
         /// </summary>
         public string DungeonName { get; set; }
+
+        /// <summary>
+        /// Time the dungeon got played by an avatar the last time
+        /// </summary>
+        public DateTime LastActive { get; set; }
     }
 }

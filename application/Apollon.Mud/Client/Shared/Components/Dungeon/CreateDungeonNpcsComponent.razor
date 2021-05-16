@@ -114,7 +114,7 @@
                     <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
                 </div>
                 <div class="col">
-                    @if (!(chosenNpc == "NoNpc"))
+                    @if (!(chosenNpc == "NoNpc") && !IsDungeonMasterConfigurating)
                     {
                         <button class="btn btn-danger float-end" type="button" @onclick="RemoveNpcButtonClicked">Entfernen</button>
                     }

@@ -91,7 +91,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             wearableToUpdate.ProtectionBoost = wearableDto.ProtectionBoost;
             wearableToUpdate.Weight = wearableDto.Weight;
             
-            if (await GameConfigService.NewOrUpdate(wearableToUpdate)) return Ok(wearableToUpdate.Id);
+            if (await GameConfigService.NewOrUpdate(wearableToUpdate)) return Ok();
 
             wearableToUpdate = await GameConfigService.Get<Wearable>(wearableDto.Id);
 

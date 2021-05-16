@@ -28,7 +28,7 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// </summary>
         /// <param name="dungeonDto">The Dungeon to create</param>
         /// <returns>The Guid if the DB Transaction was successfull, otherwise an empty Guid</returns>
-        Task<Guid> CreateNewDungeon(DungeonDto dungeonDto);
+        Task<(Guid, bool)> CreateNewDungeon(DungeonDto dungeonDto);
 
         /// <summary>
         /// Updates the given Dungeon in the Database
@@ -62,5 +62,19 @@ namespace Apollon.Mud.Client.Services.Interfaces
         /// <param name="dungeonId">The ID of the requested dungeon</param>
         /// <returns>The requested dungeon, otherwise null</returns>
         Task<DungeonDto> GetDungeon(Guid dungeonId);
+
+        /// <summary>
+        /// Opens a request of a user to enter a private Dungeon
+        /// </summary>
+        /// <param name="dungeonId"></param>
+        /// <returns>True if submitting the request was successfull, else false</returns>
+        Task<bool> OpenEnterRequest(Guid dungeonId);
+
+        /// <summary>
+        /// Answers a users request to enter a private dungeon
+        /// </summary>
+        /// <param name="dungeonId"></param>
+        /// <returns>True if sending it to the Backend was successfull, else false</returns>
+        Task<bool> SubmitEnterRequest(Guid dungeonId, Guid requestUserId, bool granted);
     }
 }

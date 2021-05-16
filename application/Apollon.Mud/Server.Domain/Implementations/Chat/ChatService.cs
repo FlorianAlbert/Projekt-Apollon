@@ -48,7 +48,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
             foreach (var avatar in senderAvatar.CurrentRoom.Avatars)
             {
                 Connection recipientConnection;
-                if (avatar.Status == Status.Approved && 
+                if (avatar.Status == Status.Approved && avatar.Id != senderAvatar.Id &&
                     (recipientConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id)) is not null)
                     recipientChatConnectionIds.Add(recipientConnection.ChatConnectionId);
             }
@@ -57,37 +57,43 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
         }
 
         /// <inheritdoc cref="IChatService.PostWhisperMessage"/>
-        public async Task PostWhisperMessage(Guid dungeonId, Guid? senderAvatarId, string recipientName, string message)      // TODO: In UML anpassen
+        public async Task PostWhisperMessage(Guid dungeonId, Guid? senderAvatarId, string recipientName, string message)
         {
             Connection recipientConnection;
+            Avatar recipientAvatar;
             string senderName;
 
             if (senderAvatarId is null)
             {
-                if ((recipientConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeonId)) is null) return;
+                if (ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeonId) is null) return;
                 senderName = "Dungeon Master";
             }
             else
             {
-                Avatar recipientAvatar;
-                try
-                {
-                    var avatars = await GameDbService.GetAll<Avatar>();
-                    recipientAvatar = avatars.SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
-                }
-                catch (InvalidOperationException)
-                {
-                    return;
-                }
 
                 var senderAvatar = await GameDbService.Get<Avatar>(senderAvatarId.Value);
-
-                if (senderAvatar is null || recipientAvatar is null ||
-                    (recipientConnection = ConnectionService.GetConnectionByAvatarId(recipientAvatar.Id)) is null)
-                    return;
-
+                if (senderAvatar is null) return;
                 senderName = senderAvatar.Name;
             }
+
+            
+            try
+            {
+                var avatars = await GameDbService.GetAll<Avatar>();
+                recipientAvatar = avatars.SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
+            }
+            catch (InvalidOperationException)
+            {
+                return;
+            }
+
+            if (recipientAvatar is null && recipientName != "Dungeon Master") return;
+
+            recipientConnection = recipientAvatar is null
+                    ? ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeonId)
+                    : ConnectionService.GetConnectionByAvatarId(recipientAvatar.Id);
+
+            if (recipientConnection is null) return;
 
             await ChatHubContext.Clients.Client(recipientConnection.ChatConnectionId)
                 .ReceiveChatMessage(senderName, message);

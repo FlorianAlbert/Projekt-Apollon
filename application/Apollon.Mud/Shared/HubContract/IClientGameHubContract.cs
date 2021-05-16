@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Apollon.Mud.Shared.Dungeon.Avatar;
+using Apollon.Mud.Shared.Game.Chat;
 using Apollon.Mud.Shared.Game.DungeonMaster;
 
 namespace Apollon.Mud.Shared.HubContract
@@ -39,12 +40,18 @@ namespace Apollon.Mud.Shared.HubContract
         /// </summary>
         /// <param name="chatPartners">The current list of Chat partners</param>
         /// <returns></returns>
-        Task ReceiveChatPartnerList(ICollection<AvatarDto> chatPartners);
+        Task ReceiveChatPartnerList(ICollection<ChatPartnerDto> chatPartners);
 
         /// <summary>
         /// Method to notify the client his avatar got kicked
         /// </summary>
         /// <returns></returns>
         Task NotifyKicked();
+
+        /// <summary>
+        /// Method to notify the client his avatar left the dungeon successfully
+        /// </summary>
+        /// <returns></returns>
+        Task NotifyDungeonLeft(bool success);
     }
 }

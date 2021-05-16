@@ -5,6 +5,7 @@ using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
 using Apollon.Mud.Shared.Dungeon.Race;
 using Apollon.Mud.Shared.Dungeon.Room;
+using Apollon.Mud.Shared.Dungeon.User;
 using Newtonsoft.Json;
 
 namespace Apollon.Mud.Shared.Dungeon.Avatar
@@ -74,6 +75,12 @@ namespace Apollon.Mud.Shared.Dungeon.Avatar
         /// </summary>
         [JsonProperty("CurrentRoom")]
         public RoomDto CurrentRoom { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonProperty("Owner")]
+        public DungeonUserDto Owner { get; set; }
 
     }
 }

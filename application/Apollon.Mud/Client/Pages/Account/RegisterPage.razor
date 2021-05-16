@@ -1,8 +1,10 @@
 ﻿@page "/Identity/Account/Register"
-@inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService authorizationService
-@inject NavigationManager NavManager
-@using Apollon.Mud.Client.Data.Models.Account
 
+@using Apollon.Mud.Client.Data.Models.Account
+@using System.Net
+
+@inject Apollon.Mud.Client.Services.Interfaces.IUserService UserService
+@inject NavigationManager NavManager
 
 <div class="container d-flex justify-content-center">
     <div class="card mt-5" style="width:45rem">
@@ -16,9 +18,13 @@
                 @if (showErrorMessage)
                 {
                     <div class="text-danger">
-                        <h4>Bei der Verbindung zum Server ist etwas schiefgegangen</h4>
+                        <h5>Bei der Verbindung zum Server ist etwas schiefgegangen</h5>
                         <h5>Dies tut uns sehr leid, wir arbeiten daran es zu beheben</h5>
                     </div>
+                }
+                @if (doubleNameError)
+                {
+                    <h5 class="text-danger">Es existiert bereits ein Account mit dieser E-Mail</h5>
                 }
                 <EditForm EditContext="@registerContext" OnSubmit="@HandleRegisterSubmit" novalidate>
                     <DataAnnotationsValidator />
@@ -70,6 +76,11 @@
     bool showErrorMessage = false;
 
     /// <summary>
+    /// Shows the user that there already is an user with this Email
+    /// </summary>
+    bool doubleNameError = false;
+
+    /// <summary>
     /// The Model to validate the "Register" Form
     /// </summary>
     private RegisterModel registerModel = new RegisterModel();
@@ -93,24 +104,20 @@
     /// <returns>The Task that writes the user credentials into the DB</returns>
     private async Task HandleRegisterSubmit()
     {
+        showErrorMessage = false;
+        doubleNameError = false;
         var validLogin = registerContext.Validate();
         if (validLogin)
         {
-            showErrorMessage = false;
-            bool response = await authorizationService.Register(registerModel.Email, registerModel.Password);
-            if (response)
+            var response = await UserService.RegistrateUser(registerModel.Email, registerModel.Password);
+            if (response == HttpStatusCode.OK)
             {
                 NavManager.NavigateTo("/Identity/Account/Register/VerifyEmail");
             }
-            else
-            {
-                showErrorMessage = true;
-            }
+            else if (response == HttpStatusCode.Conflict) doubleNameError = true;
+            else showErrorMessage = true;
         }
-        else
-        {
-            //TODO User Benachrichtigen
-        }
+        StateHasChanged();
     }
 
 }

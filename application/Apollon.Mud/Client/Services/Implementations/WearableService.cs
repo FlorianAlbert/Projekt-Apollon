@@ -9,7 +9,7 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Apollon.Mud.Client.Services.Implementiations
+namespace Apollon.Mud.Client.Services.Implementations
 {
     public class WearableService : IWearableService
     {

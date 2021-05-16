@@ -90,7 +90,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             usableToUpdate.Weight = usableDto.Weight;
             usableToUpdate.DamageBoost = usableDto.DamageBoost;
             
-            if (await GameConfigService.NewOrUpdate(usableToUpdate)) return Ok(usableToUpdate.Id);
+            if (await GameConfigService.NewOrUpdate(usableToUpdate)) return Ok();
 
             usableToUpdate = await GameConfigService.Get<Usable>(usableDto.Id);
 

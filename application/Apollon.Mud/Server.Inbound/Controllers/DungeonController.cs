@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
+using Apollon.Mud.Server.Domain.Interfaces.Game;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms;
 using Apollon.Mud.Shared.Dungeon.Room;
 using Apollon.Mud.Shared.Dungeon.User;
@@ -29,15 +31,18 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         private IUserService UserService { get; }
 
+        private IMasterService MasterService { get; }
+
         /// <summary>
         /// Creates a new instance of DungeonController
         /// </summary>
         /// <param name="gameDbService">The GameDbService to communicate with the database</param>
         /// <param name="userService">The UserService to get user informations</param>
-        public DungeonController(IGameDbService gameDbService, IUserService userService)
+        public DungeonController(IGameDbService gameDbService, IUserService userService, IMasterService masterService)
         {
             GameConfigService = gameDbService;
             UserService = userService;
+            MasterService = masterService;
         }
 
         /// <summary>
@@ -49,6 +54,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Authorize(Roles = "Player")]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> CreateNew([FromBody] DungeonDto dungeonDto)
         {
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
@@ -61,11 +67,15 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (dungeonDto is null) return BadRequest();
 
+            if ((await GameConfigService.GetAll<Dungeon>()).Any(x => x.DungeonName == dungeonDto.DungeonName))
+                return Conflict();
+
             var newDungeon = new Dungeon(dungeonDto.DungeonEpoch, dungeonDto.DungeonDescription, dungeonDto.DungeonName)
             {
                 Status = (Status)dungeonDto.Status,
                 Visibility = (Visibility)dungeonDto.Visibility,
-                DungeonOwner = user
+                DungeonOwner = user,
+                LastActive = DateTime.UtcNow
             };
             newDungeon.WhiteList.Add(user);
             newDungeon.DungeonMasters.Add(user);
@@ -103,7 +113,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (dungeonToUpdate is null) return BadRequest();
 
-            if (!dungeonToUpdate.DungeonMasters.Contains(user)) return Unauthorized();
+            if (!dungeonToUpdate.DungeonMasters.Contains(user) && !await UserService.IsUserInAdminRole(user.Id)) return Unauthorized();
 
             var newDungeonOwner = await UserService.GetUser(dungeonDto.DungeonOwner.Id);
 
@@ -124,7 +134,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 newDefaultRoom = null;
             }
 
-            dungeonToUpdate.Status = (Status)dungeonDto.Status;                        // TODO: Wenn auf Pending wechselt, alle Avatare kicken
+            dungeonToUpdate.Status = (Status)dungeonDto.Status;                        // TODO: Wenn auf Pending wechselt, alle Avatare kicken --- wird clientseitig gehandlet
             dungeonToUpdate.Visibility = (Visibility)dungeonDto.Visibility;
             dungeonToUpdate.DungeonName = dungeonDto.DungeonName;
             dungeonToUpdate.DungeonDescription = dungeonDto.DungeonDescription;
@@ -148,11 +158,12 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var dungeonMasterTasks =
                     dungeonDto.DungeonMasters.Select(async x => await UserService.GetUser(x.Id));
-                var dungeonMasters = await Task.WhenAll(dungeonMasterTasks);
-                foreach (var dungeonMaster in dungeonMasters)
-                {
-                    if (dungeonMaster is not null) dungeonToUpdate.DungeonMasters.Add(dungeonMaster);
-                }
+            var dungeonMasters = await Task.WhenAll(dungeonMasterTasks);
+            foreach (var dungeonMaster in dungeonMasters)
+            {
+                if (dungeonMaster is not null) dungeonToUpdate.DungeonMasters.Add(dungeonMaster);
+            }
+            dungeonToUpdate.DungeonMasters.Add(dungeonToUpdate.DungeonOwner);
 
 
             dungeonDto.WhiteList ??= new List<DungeonUserDto>
@@ -164,20 +175,29 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             };
 
             var whiteListTasks = dungeonDto.WhiteList.Select(async x => await UserService.GetUser(x.Id));
-                var dungeonWhiteList = await Task.WhenAll(whiteListTasks);
-                foreach (var dungeonUser in dungeonWhiteList)
-                {
-                    if (dungeonUser is not null) dungeonToUpdate.WhiteList.Add(dungeonUser);
-                }
-            
+            var dungeonWhiteList = await Task.WhenAll(whiteListTasks);
+            foreach (var dungeonUser in dungeonWhiteList)
+            {
+                if (dungeonUser is not null) dungeonToUpdate.WhiteList.Add(dungeonUser);
+            }
+            dungeonToUpdate.WhiteList.Add(dungeonToUpdate.DungeonOwner);
+
 
             if (dungeonDto.BlackList is not null)
             {
                 var blackListTasks = dungeonDto.BlackList.Select(async x => await UserService.GetUser(x.Id));
                 var dungeonBlackList = await Task.WhenAll(blackListTasks);
-                foreach (var dungeonUser in dungeonBlackList)           //TODO: Alle aktiven Avatare der user kicken und alle Avatare des users im dungeon löschen
+                foreach (var dungeonUser in dungeonBlackList)           //TODO: alle Avatare des users im dungeon löschen?
                 {
-                    if (dungeonUser is not null) dungeonToUpdate.BlackList.Add(dungeonUser);
+                    if (dungeonUser is null || dungeonUser == dungeonToUpdate.DungeonOwner) continue;
+
+                    dungeonToUpdate.BlackList.Add(dungeonUser);
+                    var userAvatar = (await GameConfigService.GetAll<Avatar>()).
+                        Where(a => a.Owner == dungeonUser && a.Status == Status.Approved);
+                    foreach (var avatar in userAvatar)
+                    {
+                        await MasterService.KickAvatar(avatar.Id, avatar.Dungeon.Id);
+                    }
                 }
             }
 
@@ -296,12 +316,49 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     DungeonEpoch = x.DungeonEpoch,
                     Visibility = (int)x.Visibility,
                     Status = (int)x.Status,
+                    BlackList = x.BlackList.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
+                    WhiteList = x.WhiteList.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
+                    DungeonMasters = x.DungeonMasters.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
+                    OpenRequests = x.OpenRequests.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
                     DungeonOwner = new DungeonUserDto
                     {
                         Email = x.DungeonOwner.Email,
                         Id = Guid.Parse(x.DungeonOwner.Id)
                     },
-                    DefaultRoom = defaultRoom
+                    DefaultRoom = defaultRoom,
+                    CurrentMaster = x.CurrentDungeonMaster is null ? null : 
+                    new DungeonUserDto()
+                    {
+                        Email = x.CurrentDungeonMaster.Email,
+                        EmailConfirmed = x.CurrentDungeonMaster.EmailConfirmed,
+                        Id = Guid.Parse(x.CurrentDungeonMaster.Id),
+                        LastActive = x.CurrentDungeonMaster.LastActive
+                    },
+                    LastActive = x.LastActive
                 };
             }).ToArray();
 
@@ -350,12 +407,48 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     DungeonEpoch = x.DungeonEpoch,
                     Visibility = (int) x.Visibility,
                     Status = (int) x.Status,
+                    BlackList = x.BlackList.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
+                    WhiteList = x.WhiteList.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
+                    DungeonMasters = x.DungeonMasters.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
+                    OpenRequests = x.OpenRequests.Select(u => new DungeonUserDto()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = Guid.Parse(u.Id),
+                        LastActive = u.LastActive
+                    }).ToList(),
                     DungeonOwner = new DungeonUserDto
                     {
                         Email = x.DungeonOwner.Email,
                         Id = Guid.Parse(x.DungeonOwner.Id)
                     },
-                    DefaultRoom = defaultRoom
+                    DefaultRoom = defaultRoom,
+                    LastActive = x.LastActive,
+                    CurrentMaster = x.CurrentDungeonMaster is null ? null : new DungeonUserDto()
+                    {
+                        Email = x.CurrentDungeonMaster.Email,
+                        EmailConfirmed = x.CurrentDungeonMaster.EmailConfirmed,
+                        Id = Guid.Parse(x.CurrentDungeonMaster.Id),
+                        LastActive = x.CurrentDungeonMaster.LastActive
+                    }
                 };
             }).ToArray();
 
@@ -398,12 +491,48 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 DungeonEpoch = dungeon.DungeonEpoch,
                 Visibility = (int)dungeon.Visibility,
                 Status = (int)dungeon.Status,
+                BlackList = dungeon.BlackList.Select(u => new DungeonUserDto()
+                {
+                    Email = u.Email,
+                    EmailConfirmed = u.EmailConfirmed,
+                    Id = Guid.Parse(u.Id),
+                    LastActive = u.LastActive
+                }).ToList(),
+                WhiteList = dungeon.WhiteList.Select(u => new DungeonUserDto()
+                {
+                    Email = u.Email,
+                    EmailConfirmed = u.EmailConfirmed,
+                    Id = Guid.Parse(u.Id),
+                    LastActive = u.LastActive
+                }).ToList(),
+                DungeonMasters = dungeon.DungeonMasters.Select(u => new DungeonUserDto()
+                {
+                    Email = u.Email,
+                    EmailConfirmed = u.EmailConfirmed,
+                    Id = Guid.Parse(u.Id),
+                    LastActive = u.LastActive
+                }).ToList(),
+                OpenRequests = dungeon.OpenRequests.Select(u => new DungeonUserDto()
+                {
+                    Email = u.Email,
+                    EmailConfirmed = u.EmailConfirmed,
+                    Id = Guid.Parse(u.Id),
+                    LastActive = u.LastActive
+                }).ToList(),
                 DungeonOwner = new DungeonUserDto
                 {
                     Email = dungeon.DungeonOwner.Email,
                     Id = Guid.Parse(dungeon.DungeonOwner.Id)
                 },
-                DefaultRoom = defaultRoom
+                DefaultRoom = defaultRoom,
+                LastActive = dungeon.LastActive,
+                CurrentMaster = dungeon.CurrentDungeonMaster is null ? null : new DungeonUserDto()
+                {
+                    Email = dungeon.CurrentDungeonMaster.Email,
+                    EmailConfirmed = dungeon.CurrentDungeonMaster.EmailConfirmed,
+                    Id = Guid.Parse(dungeon.CurrentDungeonMaster.Id),
+                    LastActive = dungeon.CurrentDungeonMaster.LastActive
+                }
             };
 
             return Ok(dungeonDto);
@@ -504,7 +633,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 }
             }
 
-            return Ok();
+            dungeon.OpenRequests.Remove(requestingUser);
+
+            if (await GameConfigService.NewOrUpdate(dungeon)) return Ok();
+            return BadRequest();
         }
     }
 }

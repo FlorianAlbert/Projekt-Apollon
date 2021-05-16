@@ -66,8 +66,16 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
-            var firstAvatarInRoom = new Avatar {Status = Status.Approved};
-            var secondAvatarInRoom = new Avatar {Status = Status.Pending};
+            var firstAvatarInRoom = new Avatar
+            {
+                Dungeon = new Dungeon(string.Empty, string.Empty, string.Empty),
+                Status = Status.Approved
+            };
+            var secondAvatarInRoom = new Avatar
+            {
+                Dungeon = new Dungeon(string.Empty, string.Empty, string.Empty),
+                Status = Status.Pending
+            };
 
             var chatConnectionId = _Fixture.Create<string>();
 
@@ -128,31 +136,49 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
         [Fact]
         public async Task PostWhisperMessage_SenderAvatarIdIsNull_Succeeds()
         {
-            var dungeonId = _Fixture.Create<Guid>();
+            var dungeon = new Dungeon(string.Empty, string.Empty, string.Empty);
             var message = _Fixture.Create<string>();
             var recipientName = _Fixture.Create<string>();
 
             var chatConnectionId = _Fixture.Create<string>();
 
-            var connection = _Fixture.Build<Connection>()
+            var senderConnection = _Fixture.Build<Connection>()
+                .With(x => x.DungeonId, dungeon.Id)
+                .Create();
+
+            var avatar = new Avatar
+            {
+                Name = recipientName,
+                Dungeon = dungeon
+            };
+            avatar.Status = Status.Approved;
+
+            var recipientConnection = _Fixture.Build<Connection>()
+                .With(x => x.AvatarId, avatar.Id)
                 .With(x => x.ChatConnectionId, chatConnectionId)
-                .With(x => x.DungeonId, dungeonId)
+                .With(x => x.DungeonId, dungeon.Id)
                 .Create();
 
             var connectionService = Substitute.For<IConnectionService>();
-            connectionService.GetDungeonMasterConnectionByDungeonId(dungeonId).Returns(connection);
+            connectionService.GetConnectionByAvatarId(avatar.Id).Returns(recipientConnection);
+            connectionService.GetDungeonMasterConnectionByDungeonId(dungeon.Id).Returns(senderConnection);
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
             var gameDbService = Substitute.For<IGameDbService>();
 
+            gameDbService.GetAll<Avatar>().Returns(new List<Avatar>
+            {
+                avatar
+            });
+
             var chatService = new ChatService(gameDbService, connectionService, hubContext);
 
-            await chatService.PostWhisperMessage(dungeonId, null, recipientName, message);
+            await chatService.PostWhisperMessage(dungeon.Id, null, recipientName, message);
 
             await gameDbService.DidNotReceive().Get<Avatar>(Arg.Any<Guid>());
-            connectionService.DidNotReceive().GetConnectionByAvatarId(Arg.Any<Guid>());
-            await hubContext.Received().Clients.Client(chatConnectionId).ReceiveChatMessage("Dungeon Master", message);
+            connectionService.Received().GetConnectionByAvatarId(avatar.Id);
+            _ = hubContext.Received().Clients;
         }
 
         /*[Fact] ToDo anpassen
@@ -235,9 +261,7 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
             await chatService.PostWhisperMessage(dungeonId, avatarId, recipientName, message);
 
             await gameDbService.Received().Get<Avatar>(avatarId);
-            gameDbService.Received().GetAll<Avatar>()
-                .Result
-                .SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
+            await gameDbService.DidNotReceive().GetAll<Avatar>();
             connectionService.DidNotReceive().GetConnectionByAvatarId(Arg.Any<Guid>());
             await hubContext.DidNotReceive().Clients.Client(Arg.Any<string>()).ReceiveChatMessage(Arg.Any<string>(), message);
         }
@@ -254,7 +278,10 @@ namespace Apollon.Mud.Server.Domain.Test.Chat
 
             var hubContext = Substitute.For<IHubContext<ChatHub, IClientChatHubContract>>();
 
-            var recipientAvatar = new Avatar();
+            var recipientAvatar = new Avatar
+            {
+                Dungeon = new Dungeon(string.Empty, string.Empty, string.Empty)
+            };
             recipientAvatar.Status = Status.Approved;
             recipientAvatar.Dungeon = new Dungeon(string.Empty, string.Empty, string.Empty);
 
