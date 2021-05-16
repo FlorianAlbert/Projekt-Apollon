@@ -343,7 +343,7 @@
                     <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
                 </div>
                 <div class="col">
-                    @if (!(chosenClass == "NoClass"))
+                    @if (!(chosenClass == "NoClass") && !IsDungeonMasterConfigurating)
                     {
                         <button class="btn btn-danger float-end" type="button" @onclick="RemoveClassButtonClicked">Entfernen</button>
                     }
@@ -513,6 +513,7 @@
             {
                 var response = await ClassService.UpdateClass(submitClass, DungeonId);
                 if (!(response is null)) WriteBackClass(response);
+                else await OnClassSavedOrLoaded.InvokeAsync();
             }
             StateHasChanged();
         }

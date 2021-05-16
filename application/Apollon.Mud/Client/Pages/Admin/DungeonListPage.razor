@@ -47,7 +47,7 @@
                                             <h5 class="float-end">Zuletzt aktiv: </h5>
                                         </div>
                                         <div class="col">
-                                            <div class="float-start"><strong>@dungeon.LastActive</strong></div>
+                                            <div class="float-start"><strong>@(TimeZoneInfo.ConvertTimeFromUtc(dungeon.LastActive, TimeZoneInfo.Local))</strong></div>
                                         </div>
                                     </div>
                                 </div>

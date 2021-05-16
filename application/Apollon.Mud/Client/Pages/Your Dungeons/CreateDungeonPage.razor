@@ -137,6 +137,7 @@
     public void ClassSavedOrLoaded()
     {
         dungeonHasClass = true;
+        ChildDungeonComponent.ReloadDungeonClasses();
         if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
     }
 
@@ -146,6 +147,7 @@
     public void RaceSavedOrLoaded()
     {
         dungeonHasRace = true;
+        ChildDungeonComponent.ReloadDungeonRaces();
         if (dungeonHasRoom && dungeonHasRace && dungeonHasClass) dungeonMustBeInactive = false;
     }
 

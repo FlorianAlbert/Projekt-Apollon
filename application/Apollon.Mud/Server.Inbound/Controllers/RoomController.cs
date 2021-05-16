@@ -454,7 +454,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             var room = dungeon.ConfiguredRooms.FirstOrDefault(x => x.Id == roomDto.Id);
 
             if (room is null) return BadRequest();
-            if (dungeon.DefaultRoom == room && (Status) roomDto.Status is Status.Pending) return BadRequest(); //ToDo klären ob Conflict nicht besser wäre.
+            if (dungeon.DefaultRoom == room && (Status) roomDto.Status is Status.Pending && dungeon.Status is Status.Approved) return BadRequest();
 
             Room neighborEast;
             Room neighborSouth;

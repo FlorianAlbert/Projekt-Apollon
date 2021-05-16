@@ -82,7 +82,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpDelete]
         [Route("delete/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

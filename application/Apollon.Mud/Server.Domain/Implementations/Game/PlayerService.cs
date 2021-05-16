@@ -246,11 +246,37 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         Id = avatar.Id,
                         Name = avatar.Name,
                         Gender = (int)avatar.ChosenGender,
+                        Status = (int)avatar.Status,
                         CurrentHealth = avatar.CurrentHealth,
+                        Owner = new DungeonUserDto
+                        {
+                            Id = Guid.Parse(avatar.Owner.Id),
+                            Email = avatar.Owner.Email,
+                            LastActive = avatar.Owner.LastActive
+                        },
+                        Class = new ClassDto
+                        {
+                            Id = avatar.ChosenClass.Id,
+                            Name = avatar.ChosenClass.Name,
+                            Status = (int)avatar.ChosenClass.Status,
+                            DefaultDamage = avatar.ChosenClass.DefaultDamage,
+                            DefaultHealth = avatar.ChosenClass.DefaultHealth,
+                            DefaultProtection = avatar.ChosenClass.DefaultProtection
+                        },
+                        Race = new RaceDto
+                        {
+                            Id = avatar.ChosenRace.Id,
+                            Name = avatar.ChosenRace.Name,
+                            Status = (int)avatar.ChosenRace.Status,
+                            DefaultDamage = avatar.ChosenRace.DefaultDamage,
+                            DefaultHealth = avatar.ChosenRace.DefaultHealth,
+                            DefaultProtection = avatar.ChosenRace.DefaultProtection
+                        },
                         CurrentRoom = new RoomDto
                         {
                             Id = avatar.CurrentRoom.Id,
                             Name = avatar.CurrentRoom.Name,
+                            Status = (int)avatar.CurrentRoom.Status,
                             Description = avatar.CurrentRoom.Description
                         }
                     },
