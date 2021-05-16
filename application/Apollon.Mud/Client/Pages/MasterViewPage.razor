@@ -60,7 +60,7 @@
                                     <MasterPlayerListComponent DungeonId="DungeonId" @ref="PlayerListChildComponent" />
                                     break;
                                 case 1:
-                                    <MasterRequestComponent DungeonId="DungeonId" @ref="RequestChildComponent" RequestRemoved="RemoveRequestFromParentList"/>
+                                    <MasterRequestComponent DungeonId="DungeonId" @ref="RequestChildComponent" RequestRemoved="RemoveRequestFromParentList" ParentRequestQueue="RequestQueue"/>
                                     break;
                                 case 2:
                                     <MasterConfigurationComponent DungeonId="DungeonId" />
@@ -202,7 +202,7 @@
     /// <param name="requestDto"></param>
     public void ProcessSpecialAction(DungeonMasterRequestDto requestDto)
     {
-        if (masterPage == 1) RequestQueue.Add(requestDto);
+        if (masterPage == 1) RequestChildComponent.AddMasterRequest(requestDto);
         else RequestQueue.Add(requestDto);
     }
 
