@@ -417,72 +417,75 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AvatarTakeable",
+                name: "AvatarTakeables",
                 columns: table => new
                 {
-                    InventoryAvatarsId = table.Column<string>(type: "TEXT", nullable: false),
-                    InventoryId = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    AvatarId = table.Column<string>(type: "TEXT", nullable: false),
+                    TakeableId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AvatarTakeable", x => new { x.InventoryAvatarsId, x.InventoryId });
+                    table.PrimaryKey("PK_AvatarTakeables", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AvatarTakeable_Avatars_InventoryAvatarsId",
-                        column: x => x.InventoryAvatarsId,
+                        name: "FK_AvatarTakeables_Avatars_AvatarId",
+                        column: x => x.AvatarId,
                         principalTable: "Avatars",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AvatarTakeable_Inspectables_InventoryId",
-                        column: x => x.InventoryId,
+                        name: "FK_AvatarTakeables_Inspectables_TakeableId",
+                        column: x => x.TakeableId,
                         principalTable: "Inspectables",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClassTakeable",
+                name: "ClassTakeables",
                 columns: table => new
                 {
-                    ClassesId = table.Column<string>(type: "TEXT", nullable: false),
-                    StartInventoryId = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ClassId = table.Column<string>(type: "TEXT", nullable: false),
+                    TakeableId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClassTakeable", x => new { x.ClassesId, x.StartInventoryId });
+                    table.PrimaryKey("PK_ClassTakeables", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ClassTakeable_Classes_ClassesId",
-                        column: x => x.ClassesId,
+                        name: "FK_ClassTakeables_Classes_ClassId",
+                        column: x => x.ClassId,
                         principalTable: "Classes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ClassTakeable_Inspectables_StartInventoryId",
-                        column: x => x.StartInventoryId,
+                        name: "FK_ClassTakeables_Inspectables_TakeableId",
+                        column: x => x.TakeableId,
                         principalTable: "Inspectables",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "InspectableRoom",
+                name: "RoomInspectables",
                 columns: table => new
                 {
-                    InspectablesId = table.Column<string>(type: "TEXT", nullable: false),
-                    RoomsId = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    RoomId = table.Column<string>(type: "TEXT", nullable: false),
+                    InspectableId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InspectableRoom", x => new { x.InspectablesId, x.RoomsId });
+                    table.PrimaryKey("PK_RoomInspectables", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_InspectableRoom_Inspectables_InspectablesId",
-                        column: x => x.InspectablesId,
+                        name: "FK_RoomInspectables_Inspectables_InspectableId",
+                        column: x => x.InspectableId,
                         principalTable: "Inspectables",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_InspectableRoom_Rooms_RoomsId",
-                        column: x => x.RoomsId,
+                        name: "FK_RoomInspectables_Rooms_RoomId",
+                        column: x => x.RoomId,
                         principalTable: "Rooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -585,9 +588,14 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AvatarTakeable_InventoryId",
-                table: "AvatarTakeable",
-                column: "InventoryId");
+                name: "IX_AvatarTakeables_AvatarId",
+                table: "AvatarTakeables",
+                column: "AvatarId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AvatarTakeables_TakeableId",
+                table: "AvatarTakeables",
+                column: "TakeableId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Classes_DungeonId",
@@ -595,9 +603,14 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 column: "DungeonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClassTakeable_StartInventoryId",
-                table: "ClassTakeable",
-                column: "StartInventoryId");
+                name: "IX_ClassTakeables_ClassId",
+                table: "ClassTakeables",
+                column: "ClassId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClassTakeables_TakeableId",
+                table: "ClassTakeables",
+                column: "TakeableId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DungeonDungeonUser_BlackListId",
@@ -636,11 +649,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 column: "DungeonOwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InspectableRoom_RoomsId",
-                table: "InspectableRoom",
-                column: "RoomsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Inspectables_DungeonId",
                 table: "Inspectables",
                 column: "DungeonId");
@@ -654,6 +662,16 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 name: "IX_RequestableRoom_SpecialActionsId",
                 table: "RequestableRoom",
                 column: "SpecialActionsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RoomInspectables_InspectableId",
+                table: "RoomInspectables",
+                column: "InspectableId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RoomInspectables_RoomId",
+                table: "RoomInspectables",
+                column: "RoomId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rooms_DungeonId",
@@ -796,10 +814,10 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "AvatarTakeable");
+                name: "AvatarTakeables");
 
             migrationBuilder.DropTable(
-                name: "ClassTakeable");
+                name: "ClassTakeables");
 
             migrationBuilder.DropTable(
                 name: "DungeonDungeonUser");
@@ -814,10 +832,10 @@ namespace Apollon.Mud.Server.Domain.Migrations
                 name: "DungeonDungeonUser3");
 
             migrationBuilder.DropTable(
-                name: "InspectableRoom");
+                name: "RequestableRoom");
 
             migrationBuilder.DropTable(
-                name: "RequestableRoom");
+                name: "RoomInspectables");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

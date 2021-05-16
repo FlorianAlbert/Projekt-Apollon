@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Apollon.Mud.Server.Domain.Migrations
 {
     [DbContext(typeof(DungeonDbContext))]
-    [Migration("20210515135333_Initial")]
+    [Migration("20210516111154_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -186,6 +186,75 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("Inspectable");
                 });
 
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.RoomInspectable", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InspectableId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoomId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InspectableId");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("RoomInspectables");
+                });
+
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.AvatarTakeable", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AvatarId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TakeableId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AvatarId");
+
+                    b.HasIndex("TakeableId");
+
+                    b.ToTable("AvatarTakeables");
+                });
+
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.ClassTakeable", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClassId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TakeableId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("TakeableId");
+
+                    b.ToTable("ClassTakeables");
+                });
+
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Races.Race", b =>
                 {
                     b.Property<string>("Id")
@@ -349,36 +418,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("AvatarTakeable", b =>
-                {
-                    b.Property<string>("InventoryAvatarsId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("InventoryId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("InventoryAvatarsId", "InventoryId");
-
-                    b.HasIndex("InventoryId");
-
-                    b.ToTable("AvatarTakeable");
-                });
-
-            modelBuilder.Entity("ClassTakeable", b =>
-                {
-                    b.Property<string>("ClassesId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("StartInventoryId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ClassesId", "StartInventoryId");
-
-                    b.HasIndex("StartInventoryId");
-
-                    b.ToTable("ClassTakeable");
-                });
-
             modelBuilder.Entity("DungeonDungeonUser", b =>
                 {
                     b.Property<string>("BlackListDungeonsId")
@@ -437,21 +476,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.HasIndex("OpenRequestsId");
 
                     b.ToTable("DungeonDungeonUser3");
-                });
-
-            modelBuilder.Entity("InspectableRoom", b =>
-                {
-                    b.Property<string>("InspectablesId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("RoomsId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("InspectablesId", "RoomsId");
-
-                    b.HasIndex("RoomsId");
-
-                    b.ToTable("InspectableRoom");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -743,6 +767,63 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.Navigation("Dungeon");
                 });
 
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.RoomInspectable", b =>
+                {
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Inspectable", "Inspectable")
+                        .WithMany("Rooms")
+                        .HasForeignKey("InspectableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "Room")
+                        .WithMany("Inspectables")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Inspectable");
+
+                    b.Navigation("Room");
+                });
+
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.AvatarTakeable", b =>
+                {
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars.Avatar", "Avatar")
+                        .WithMany("Inventory")
+                        .HasForeignKey("AvatarId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", "Takeable")
+                        .WithMany("InventoryAvatars")
+                        .HasForeignKey("TakeableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Avatar");
+
+                    b.Navigation("Takeable");
+                });
+
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.ClassTakeable", b =>
+                {
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", "Class")
+                        .WithMany("StartInventory")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", "Takeable")
+                        .WithMany("Classes")
+                        .HasForeignKey("TakeableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Takeable");
+                });
+
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Races.Race", b =>
                 {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
@@ -785,36 +866,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.Navigation("NeighborNorth");
 
                     b.Navigation("NeighborWest");
-                });
-
-            modelBuilder.Entity("AvatarTakeable", b =>
-                {
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars.Avatar", null)
-                        .WithMany()
-                        .HasForeignKey("InventoryAvatarsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", null)
-                        .WithMany()
-                        .HasForeignKey("InventoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ClassTakeable", b =>
-                {
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", null)
-                        .WithMany()
-                        .HasForeignKey("ClassesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", null)
-                        .WithMany()
-                        .HasForeignKey("StartInventoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("DungeonDungeonUser", b =>
@@ -873,21 +924,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", null)
                         .WithMany()
                         .HasForeignKey("OpenRequestsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("InspectableRoom", b =>
-                {
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Inspectable", null)
-                        .WithMany()
-                        .HasForeignKey("InspectablesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", null)
-                        .WithMany()
-                        .HasForeignKey("RoomsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -958,9 +994,16 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars.Avatar", b =>
+                {
+                    b.Navigation("Inventory");
+                });
+
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", b =>
                 {
                     b.Navigation("Avatars");
+
+                    b.Navigation("StartInventory");
                 });
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", b =>
@@ -978,6 +1021,11 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.Navigation("RegisteredAvatars");
                 });
 
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Inspectable", b =>
+                {
+                    b.Navigation("Rooms");
+                });
+
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Races.Race", b =>
                 {
                     b.Navigation("Avatars");
@@ -986,6 +1034,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", b =>
                 {
                     b.Navigation("Avatars");
+
+                    b.Navigation("Inspectables");
 
                     b.Navigation("NeighborEast");
 
@@ -1003,7 +1053,11 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", b =>
                 {
+                    b.Navigation("Classes");
+
                     b.Navigation("HoldingItemAvatars");
+
+                    b.Navigation("InventoryAvatars");
                 });
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables.Wearable", b =>

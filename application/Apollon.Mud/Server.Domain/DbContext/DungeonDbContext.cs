@@ -143,7 +143,8 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasKey(e => e.Id);
             builder.Entity<Room>()
                 .HasMany(e => e.Inspectables)
-                .WithOne(x => x.Room);
+                .WithOne(x => x.Room)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Room>()
                 .HasMany(e => e.SpecialActions)
                 .WithMany(x => x.Rooms);
@@ -186,7 +187,8 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasKey(e => e.Id);
             builder.Entity<Class>()
                 .HasMany(e => e.StartInventory)
-                .WithOne(x => x.Class);
+                .WithOne(x => x.Class)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Class>()
                 .HasOne(x => x.Dungeon)
                 .WithMany(x => x.ConfiguredClasses)
@@ -221,7 +223,8 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasKey(e => e.Id);
             builder.Entity<Inspectable>()
                 .HasMany(x => x.Rooms)
-                .WithOne(x => x.Inspectable);
+                .WithOne(x => x.Inspectable)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Inspectable>()
                 .HasOne(x => x.Dungeon)
                 .WithMany(x => x.ConfiguredInspectables)
@@ -236,7 +239,8 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasKey(x => x.Id);
             builder.Entity<Avatar>()
                 .HasMany(e => e.Inventory)
-                .WithOne(x => x.Avatar);
+                .WithOne(x => x.Avatar)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Avatar>()
                 .HasOne(e => e.Armor)
                 .WithMany(x => x.ArmorAvatars)
@@ -298,14 +302,16 @@ namespace Apollon.Mud.Server.Domain.DbContext
 
             builder.Entity<Takeable>()
                 .HasMany(x => x.Classes)
-                .WithOne(x => x.Takeable); 
+                .WithOne(x => x.Takeable)
+                .OnDelete(DeleteBehavior.Cascade); 
             builder.Entity<Takeable>()
                 .HasMany(x => x.HoldingItemAvatars)
                 .WithOne(x => x.HoldingItem)
                 .OnDelete(DeleteBehavior.SetNull); 
             builder.Entity<Takeable>()
                 .HasMany(x => x.InventoryAvatars)
-                .WithOne(x => x.Takeable);
+                .WithOne(x => x.Takeable)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Takeable>()
                 .Property(x => x.Id)
                 .HasConversion(
@@ -344,28 +350,40 @@ namespace Apollon.Mud.Server.Domain.DbContext
                 .HasKey(x => x.Id);
             builder.Entity<AvatarTakeable>()
                 .HasOne(x => x.Avatar)
-                .WithMany(x => x.Inventory);
+                .WithMany(x => x.Inventory)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
             builder.Entity<AvatarTakeable>()
                 .HasOne(x => x.Takeable)
-                .WithMany(x => x.InventoryAvatars);
+                .WithMany(x => x.InventoryAvatars)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(); ;
 
             builder.Entity<ClassTakeable>()
                 .HasKey(x => x.Id);
             builder.Entity<ClassTakeable>()
                 .HasOne(x => x.Class)
-                .WithMany(x => x.StartInventory);
+                .WithMany(x => x.StartInventory)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(); ;
             builder.Entity<ClassTakeable>()
                 .HasOne(x => x.Takeable)
-                .WithMany(x => x.Classes);
+                .WithMany(x => x.Classes)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(); ;
 
             builder.Entity<RoomInspectable>()
                 .HasKey(x => x.Id);
             builder.Entity<RoomInspectable>()
                 .HasOne(x => x.Room)
-                .WithMany(x => x.Inspectables);
+                .WithMany(x => x.Inspectables)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(); ;
             builder.Entity<RoomInspectable>()
                 .HasOne(x => x.Inspectable)
-                .WithMany(x => x.Rooms);
+                .WithMany(x => x.Rooms)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(); ;
 
             base.OnModelCreating(builder);
         }
