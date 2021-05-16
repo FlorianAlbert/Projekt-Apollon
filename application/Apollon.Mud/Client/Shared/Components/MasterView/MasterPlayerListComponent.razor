@@ -50,7 +50,13 @@
                                     <h5>Spieler: @user.Email.Split("@")[0]</h5>
                                 </button>
                             }
-
+                        }
+                        @foreach (DungeonUserDto user in Dungeon.BlackList)
+                        {
+                            <button type="button" class="list-group-item list-group-item-action bg-secondary" >
+                                <h5>Spieler: @user.Email.Split("@")[0]</h5>
+                                <div class="btn btn-danger" @onclick="() => UnbanUser(user)">Entbannen</div>
+                            </button>
                         }
                     }
 
@@ -127,24 +133,27 @@
                                 </thead>
                                 <tbody>
                                     @{int avatarIndex = 1;}
-                                    @foreach (AvatarDto avatar in UserAvatarDictionary[OpenUser.Id])
+                                    @if (UserAvatarDictionary.ContainsKey(OpenUser.Id))
                                     {
-                                        <tr>
-                                            <th scope="row">@avatarIndex</th>
-                                            <td>@avatar.Name</td>
-                                            <td>@avatar.Class.Name</td>
-                                            <td>@avatar.Race.Name</td>
-                                            <td>@avatar.CurrentRoom.Name</td>
-                                            @if (avatar.Status == 0)
-                                            {
-                                                <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>
-                                            }
-                                            else
-                                            {
-                                                <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
-                                            }
-                                        </tr>
-                                        avatarIndex++;
+                                        @foreach (AvatarDto avatar in UserAvatarDictionary[OpenUser.Id])
+                                        {
+                                            <tr>
+                                                <th scope="row">@avatarIndex</th>
+                                                <td>@avatar.Name</td>
+                                                <td>@avatar.Class.Name</td>
+                                                <td>@avatar.Race.Name</td>
+                                                <td>@avatar.CurrentRoom.Name</td>
+                                                @if (avatar.Status == 0)
+                                                {
+                                                    <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                                }
+                                                else
+                                                {
+                                                    <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                                }
+                                            </tr>
+                                            avatarIndex++;
+                                        }
                                     }
                                 </tbody>
                             </table>
@@ -209,12 +218,12 @@
         if (dungeon is not null)
         {
             Dungeon = dungeon;
-            //dungeon.WhiteList.Where(x => !dungeon.DungeonMasters.Contains(x)).ToList().ForEach(g => AllPlayersList.Add(g.Id));
+            var dungeonAvatars = await AvatarService.GetAllAvatars(DungeonId);
             foreach (DungeonUserDto user in dungeon.WhiteList)
             {
-                var userAvatars = await AvatarService.GetAllAvatarsForUser(DungeonId);
-                if (userAvatars is not null) UserAvatarDictionary.Add(user.Id, userAvatars.ToList());
-                else UserAvatarDictionary.Add(user.Id, new List<AvatarDto>());
+                if (UserAvatarDictionary.ContainsKey(user.Id)) UserAvatarDictionary[user.Id] = dungeonAvatars.Where(x => x.Owner.Id == user.Id).ToList();
+
+                else UserAvatarDictionary.Add(user.Id, dungeonAvatars.Where(x => x.Owner.Id == user.Id).ToList());
             }
         }
         StateHasChanged();
@@ -227,11 +236,22 @@
     /// <returns></returns>
     public async Task UpdateAvatars(ICollection<AvatarDto> avatarList)
     {
+        foreach (ICollection<AvatarDto> avatarCollection in UserAvatarDictionary.Values)
+        {
+            foreach (AvatarDto avatar in avatarCollection)
+            {
+                if (!avatarList.Any(x => x.Id == avatar.Id)) avatar.Status = 1;
+            }
+        }
         foreach (AvatarDto avatar in avatarList)
         {
             if (UserAvatarDictionary.ContainsKey(avatar.Owner.Id))
             {
-                UserAvatarDictionary[avatar.Owner.Id].Remove(avatar);
+                if (UserAvatarDictionary[avatar.Owner.Id].Any(x => x.Id == avatar.Id))
+                {
+                    var oldAvatar = UserAvatarDictionary[avatar.Owner.Id].FirstOrDefault(x => x.Id == avatar.Id);
+                    UserAvatarDictionary[avatar.Owner.Id].Remove(oldAvatar);
+                }
                 UserAvatarDictionary[avatar.Owner.Id].Add(avatar);
             }
             else
@@ -239,8 +259,8 @@
                 UserAvatarDictionary.Add(avatar.Owner.Id, new List<AvatarDto>());
                 UserAvatarDictionary[avatar.Owner.Id].Add(avatar);
             }
-            StateHasChanged();
         }
+        StateHasChanged();
     }
 
     /// <summary>
@@ -249,12 +269,6 @@
     /// <param name="user"></param>
     private async void ChangeUser(DungeonUserDto user)
     {
-        var userAvatars = await AvatarService.GetAllAvatarsForUser(DungeonId);
-        if (userAvatars is not null)
-        {
-            UserAvatarDictionary[user.Id].Clear();
-            UserAvatarDictionary[user.Id] = userAvatars.ToList();
-        }
         OpenUser = user;
         StateHasChanged();
     }
@@ -265,14 +279,15 @@
     private async void KickUser()
     {
         if (Dungeon.DungeonMasters.Contains(OpenUser)) Dungeon.DungeonMasters.Remove(OpenUser);
-        var success = await GameService.KickAvatar(OpenUser.Id);
-        if (success == HttpStatusCode.OK)
+        var activeAvatar = UserAvatarDictionary[OpenUser.Id].FirstOrDefault(x => x.Status == 0);
+        if (activeAvatar is not null)
         {
-            Dungeon.WhiteList.Remove(OpenUser);
-            UserAvatarDictionary.Remove(OpenUser.Id);
-            DungeonService.UpdateDungeon(Dungeon);
-            OpenUser = null;
+            var success = await GameService.KickAvatar(activeAvatar.Id);
         }
+        Dungeon.WhiteList.Remove(OpenUser);
+        UserAvatarDictionary.Remove(OpenUser.Id);
+        DungeonService.UpdateDungeon(Dungeon);
+        OpenUser = null;
         StateHasChanged();
     }
 
@@ -317,6 +332,17 @@
     {
         showMasters = masterOrPlayer;
         OpenUser = null;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="user"></param>
+    private void UnbanUser(DungeonUserDto user)
+    {
+        Dungeon.BlackList.Remove(user);
+        DungeonService.UpdateDungeon(Dungeon);
         StateHasChanged();
     }
 }
