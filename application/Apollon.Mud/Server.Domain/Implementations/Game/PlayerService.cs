@@ -108,66 +108,66 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
                     return;
                 default:
-                    var match = Regex.Match(message, "((u|U)(n|N)(t|T)(e|E)(r|R)(s|S)(u|U)(c|C)(h|H)(e|E) )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    var match = Regex.Match(normalizedMessage, "(untersuche )((\\w|\\d)+(\\w|\\d|\\s)*)");
                     if (match.Success)
                     {
-                        await InspectObject(match.Groups[12].Value, dungeon.Id, avatar.Id);
+                        await InspectObject(match.Groups[2].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "((g|G)(e|E)(h|H)(e|E) )((\\w|\\d)+)");
+                    match = Regex.Match(normalizedMessage, "(gehe )((\\w|\\d)+)");
                     if (match.Success)
                     {
-                        await Move(match.Groups[6].Value, dungeon.Id, avatar.Id);
+                        await Move(match.Groups[2].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "((n|N)(i|I)(m|M)(m|M) )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    match = Regex.Match(normalizedMessage, "(nimm )((\\w|\\d)+(\\w|\\d|\\s)*)");
                     if (match.Success)
                     {
-                        await Take(match.Groups[6].Value, dungeon.Id, avatar.Id);
+                        await Take(match.Groups[2].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "((h|H)(a|A)(l|L)(t|T)(e|E) )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    match = Regex.Match(normalizedMessage, "(halte )((\\w|\\d)+(\\w|\\d|\\s)*)");
                     if (match.Success)
                     {
-                        await Hold(match.Groups[7].Value, dungeon.Id, avatar.Id);
+                        await Hold(match.Groups[2].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "((w|W)(i|I)(r|R)(f|F) )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    match = Regex.Match(normalizedMessage, "(wirf )((\\w|\\d)+(\\w|\\d|\\s)*)");
                     if (match.Success)
                     {
-                        await ThrowAway(match.Groups[6].Value, dungeon.Id, avatar.Id);
+                        await ThrowAway(match.Groups[2].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "((k|K)(o|O)(n|N)(s|S)(u|U)(m|M)(i|I)(e|E)(r|R)(e|E) )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    match = Regex.Match(normalizedMessage, "(konsumiere )((\\w|\\d)+(\\w|\\d|\\s)*)");
                     if (match.Success)
                     {
-                        await Consume(match.Groups[12].Value, dungeon.Id, avatar.Id);
+                        await Consume(match.Groups[2].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "((z|Z)(i|I)(e|E)(h|H)(e|E) )((\\w|\\d)+(\\w|\\d|\\s)*)( (a|A)(n|N))");
+                    match = Regex.Match(normalizedMessage, "(ziehe )((\\w|\\d)+(\\w|\\d|\\s)*)( an)");
                     if (match.Success)
                     {
-                        await Wear(match.Groups[7].Value, dungeon.Id, avatar.Id);
+                        await Wear(match.Groups[2].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "((s|S)(p|P)(r|R)(i|I)(c|C)(h|H) )((\\w|\\d)+(\\w|\\d|\\s)*)( (a|A)(n|N))");
+                    match = Regex.Match(normalizedMessage, "(sprich )((\\w|\\d)+(\\w|\\d|\\s)*)( an)");
                     if (match.Success)
                     {
-                        await Talk(match.Groups[8].Value, dungeon.Id, avatar.Id);
+                        await Talk(match.Groups[2].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
