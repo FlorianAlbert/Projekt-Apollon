@@ -179,7 +179,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         if (!match.Success) continue;
                         await SpecialAction(match.Groups[0].Value, dungeon.Id, avatar.Id);
 
-                        break;
+                        return;
                     }
 
                     await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage("Diesen Befehl gibt es nicht!");
