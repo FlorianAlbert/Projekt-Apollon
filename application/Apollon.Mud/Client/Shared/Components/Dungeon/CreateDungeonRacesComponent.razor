@@ -219,7 +219,7 @@
             if (!(dungeonRaceCollection is null) && dungeonRaceCollection.Count != 0)
             {
                 dungeonRaces = dungeonRaceCollection.ToList();
-                await OnRaceSavedOrLoaded.InvokeAsync();
+                if (dungeonRaces.Any(x => x.Status == 0)) await OnRaceSavedOrLoaded.InvokeAsync();
             }
         }
         StateHasChanged();
@@ -253,7 +253,7 @@
                 if (response != Guid.Empty)
                 {
                     submitRace.Id = response;
-                    await OnRaceSavedOrLoaded.InvokeAsync();
+                    if (dungeonRaces.Any(x => x.Status == 0)) await OnRaceSavedOrLoaded.InvokeAsync();
                     dungeonRaces.Add(submitRace);
                     chosenRace = dungeonRaceModel.Name;
                 }

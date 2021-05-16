@@ -462,7 +462,7 @@
             if (!(dungeonClassCollection is null) && dungeonClassCollection.Count != 0)
             {
                 dungeonClasses = dungeonClassCollection.ToList();
-                await OnClassSavedOrLoaded.InvokeAsync();
+                if(dungeonClasses.Any(x => x.Status == 0)) await OnClassSavedOrLoaded.InvokeAsync();
             }
             dungeonTakeables = (await TakeableService.GetAllTakeables(DungeonId))?.ToList() ?? new List<TakeableDto>();
             dungeonWearables = (await WearableService.GetAllWearables(DungeonId))?.ToList() ?? new List<WearableDto>();
@@ -504,7 +504,7 @@
                 if (response != Guid.Empty)
                 {
                     submitClass.Id = response;
-                    await OnClassSavedOrLoaded.InvokeAsync();
+                    if (dungeonClasses.Any(x => x.Status == 0)) await OnClassSavedOrLoaded.InvokeAsync();
                     dungeonClasses.Add(submitClass);
                     chosenClass = dungeonClassModel.Name;
                 }

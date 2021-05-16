@@ -217,9 +217,10 @@
     public async void ReadAndSendInput()
     {
         TerminalMessages.Enqueue(" > " + UserInput + "\n");
-        UserInput = string.Empty;
 
         var response = await GameService.SendCommand(UserInput);
+
+        UserInput = string.Empty;
 
         if (response != HttpStatusCode.OK) TerminalMessages.Enqueue(" >> Deine Nachricht konnte nicht zum Server gesendet werden, bitte versuche es erneut\n");
         StateHasChanged();
