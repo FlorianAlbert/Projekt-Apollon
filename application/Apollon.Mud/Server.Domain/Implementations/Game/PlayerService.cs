@@ -857,7 +857,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                            "\t- Inventar --- Gibt den aktuellen Inhalt des Inventars aus\n" +
                            "\t- Beende --- L\u00E4sst den Avatar das Spiel verlassen\n",
                     (current, specialAction) =>
-                        current + $"\t- {specialAction.PatternForPlayer} --- Befehl, der von Dungeon Master bearbeitet wird\n");
+                        current + $"\t- {specialAction.PatternForPlayer} --- Befehl, der vom Dungeon Master bearbeitet wird\n");
         }
 
         public async Task NotifyAvatarLeftRoom(string avatarName, Guid dungeonId, Guid roomId)

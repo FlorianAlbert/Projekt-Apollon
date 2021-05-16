@@ -60,7 +60,7 @@
                                     <MasterPlayerListComponent DungeonId="DungeonId" @ref="PlayerListChildComponent" />
                                     break;
                                 case 1:
-                                    <MasterRequestComponent DungeonId="DungeonId" @ref="RequestChildComponent" />
+                                    <MasterRequestComponent DungeonId="DungeonId" @ref="RequestChildComponent" RequestRemoved="RemoveRequestFromParentList" ParentRequestQueue="RequestQueue"/>
                                     break;
                                 case 2:
                                     <MasterConfigurationComponent DungeonId="DungeonId" />
@@ -112,6 +112,17 @@
     /// The component where the dungeon master handles all open requests
     /// </summary>
     public MasterRequestComponent RequestChildComponent { get; set; }
+
+    /// <summary>
+    /// The list of open Requests
+    /// </summary>
+    private List<DungeonMasterRequestDto> _RequestQueue;
+
+    public List<DungeonMasterRequestDto> RequestQueue
+    {
+        get { return _RequestQueue ??= new List<DungeonMasterRequestDto>(); }
+        set { _RequestQueue = value; }
+    }
 
     #region Hubs
 
@@ -191,7 +202,8 @@
     /// <param name="requestDto"></param>
     public void ProcessSpecialAction(DungeonMasterRequestDto requestDto)
     {
-        RequestChildComponent.AddMasterRequest(requestDto);
+        if (masterPage == 1) RequestChildComponent.AddMasterRequest(requestDto);
+        else RequestQueue.Add(requestDto);
     }
 
     /// <summary>
@@ -201,6 +213,15 @@
     public void ProcessAvatarList(ICollection<AvatarDto> avatars)
     {
         if (masterPage == 0) PlayerListChildComponent.UpdateAvatars(avatars);
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <param name="requestDto"></param>
+    public void RemoveRequestFromParentList(DungeonMasterRequestDto requestDto)
+    {
+        RequestQueue.Remove(requestDto);
     }
     #endregion
 
