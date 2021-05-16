@@ -108,8 +108,8 @@
                         <option value="Inspectable">Untersuchbar</option>
                         <option value="Takeable">Aufnehmbar</option>
                         <option value="Consumable">Konsumierbar</option>
-                        <option value="Usable">Nutzbar</option>
-                        <option value="Wearable">Kleidung</option>
+                        <option value="Usable">Verwendbar</option>
+                        <option value="Wearable">Tragbar</option>
                     </select>
                 </div>
                 <div class="col">
@@ -1047,6 +1047,11 @@
         dungeonRoomModel.RoomWest = "NoRoom";
         dungeonRoomModel.RoomSouth = "NoRoom";
         dungeonRoomModel.Status = string.Empty;
+        dungeonRoomModel.Inspectables.Clear();
+        dungeonRoomModel.Takeables.Clear();
+        dungeonRoomModel.Consumables.Clear();
+        dungeonRoomModel.Usables.Clear();
+        dungeonRoomModel.Wearables.Clear();
         roomRequestables.Clear();
         roomNpcs.Clear();
         roomItemCount = 0;
@@ -1079,6 +1084,11 @@
             dungeonRoomModel.RoomWest = "NoRoom";
             dungeonRoomModel.RoomSouth = "NoRoom";
             dungeonRoomModel.Status = string.Empty;
+            dungeonRoomModel.Inspectables.Clear();
+            dungeonRoomModel.Takeables.Clear();
+            dungeonRoomModel.Consumables.Clear();
+            dungeonRoomModel.Usables.Clear();
+            dungeonRoomModel.Wearables.Clear();
             roomRequestables.Clear();
             roomNpcs.Clear();
             roomItemCount = 0;
