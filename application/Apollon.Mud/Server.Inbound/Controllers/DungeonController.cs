@@ -113,7 +113,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (dungeonToUpdate is null) return BadRequest();
 
-            if (!dungeonToUpdate.DungeonMasters.Contains(user)) return Unauthorized();
+            if (!dungeonToUpdate.DungeonMasters.Contains(user) && !await UserService.IsUserInAdminRole(user.Id)) return Unauthorized();
 
             var newDungeonOwner = await UserService.GetUser(dungeonDto.DungeonOwner.Id);
 
