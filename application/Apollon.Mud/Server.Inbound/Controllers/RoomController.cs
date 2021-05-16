@@ -26,6 +26,7 @@ using Apollon.Mud.Shared.Dungeon.Room;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
+using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables;
 using Apollon.Mud.Shared.Implementations.Dungeons;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
@@ -339,7 +340,18 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == consumableDto.Id) is Consumable consumable) room.Inspectables.Add(consumable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == consumableDto.Id) is Consumable
+                        consumable)
+                    {
+                        var roomInspectable = new RoomInspectable
+                        {
+                            Id = Guid.NewGuid(),
+                            Inspectable = consumable,
+                            Room = room
+                        };
+
+                        room.Inspectables.Add(roomInspectable);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -351,7 +363,17 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == wearableDto.Id) is Wearable wearable) room.Inspectables.Add(wearable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == wearableDto.Id) is Wearable wearable)
+                    {
+                        var roomInspectable = new RoomInspectable
+                        {
+                            Id = Guid.NewGuid(),
+                            Inspectable = wearable,
+                            Room = room
+                        };
+
+                        room.Inspectables.Add(roomInspectable);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -363,7 +385,17 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == usableDto.Id) is Usable usable) room.Inspectables.Add(new usable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == usableDto.Id) is Usable usable)
+                    {
+                        var roomInspectable = new RoomInspectable
+                        {
+                            Id = Guid.NewGuid(),
+                            Inspectable = usable,
+                            Room = room
+                        };
+
+                        room.Inspectables.Add(roomInspectable);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -375,7 +407,17 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == takeableDto.Id) is Takeable takeable) room.Inspectables.Add(takeable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == takeableDto.Id) is Takeable takeable)
+                    {
+                        var roomInspectable = new RoomInspectable
+                        {
+                            Id = Guid.NewGuid(),
+                            Inspectable = takeable,
+                            Room = room
+                        };
+
+                        room.Inspectables.Add(roomInspectable);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -387,7 +429,17 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == npcDto.Id) is Npc npc) room.Inspectables.Add(npc);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == npcDto.Id) is Npc npc)
+                    {
+                        var roomInspectable = new RoomInspectable
+                        {
+                            Id = Guid.NewGuid(),
+                            Inspectable = npc,
+                            Room = room
+                        };
+
+                        room.Inspectables.Add(roomInspectable);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -401,7 +453,17 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 {
                     var inspectable = dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == inspectableDto.Id);
 
-                    if (inspectable is not null) room.Inspectables.Add(inspectable);
+                    if (inspectable is not null)
+                    {
+                        var roomInspectable = new RoomInspectable
+                        {
+                            Id = Guid.NewGuid(),
+                            Inspectable = inspectable,
+                            Room = room
+                        };
+
+                        room.Inspectables.Add(roomInspectable);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -508,7 +570,18 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == consumableDto.Id) is Consumable consumable) room.Inspectables.Add(consumable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == consumableDto.Id) is Consumable
+                        consumable)
+                    {
+                        var roomInspectable = new RoomInspectable
+                        {
+                            Id = Guid.NewGuid(),
+                            Inspectable = consumable,
+                            Room = room
+                        };
+
+                        room.Inspectables.Add(roomInspectable);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -520,7 +593,17 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == wearableDto.Id) is Wearable wearable) room.Inspectables.Add(wearable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == wearableDto.Id) is Wearable wearable)
+                    {
+                        var roomInspectable = new RoomInspectable
+                        {
+                            Id = Guid.NewGuid(),
+                            Inspectable = wearable,
+                            Room = room
+                        };
+
+                        room.Inspectables.Add(roomInspectable);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -532,7 +615,17 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == usableDto.Id) is Usable usable) room.Inspectables.Add(usable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == usableDto.Id) is Usable usable)
+                    {
+                        var roomInspectable = new RoomInspectable
+                        {
+                            Id = Guid.NewGuid(),
+                            Inspectable = usable,
+                            Room = room
+                        };
+
+                        room.Inspectables.Add(roomInspectable);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -544,7 +637,17 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == takeableDto.Id) is Takeable takeable) room.Inspectables.Add(takeable);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == takeableDto.Id) is Takeable takeable)
+                    {
+                        var roomInspectable = new RoomInspectable
+                        {
+                            Id = Guid.NewGuid(),
+                            Inspectable = takeable,
+                            Room = room
+                        };
+
+                        room.Inspectables.Add(roomInspectable);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -556,7 +659,17 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 try
                 {
-                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == npcDto.Id) is Npc npc) room.Inspectables.Add(npc);
+                    if (dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == npcDto.Id) is Npc npc)
+                    {
+                        var roomInspectable = new RoomInspectable
+                        {
+                            Id = Guid.NewGuid(),
+                            Inspectable = npc,
+                            Room = room
+                        };
+
+                        room.Inspectables.Add(roomInspectable);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -570,7 +683,17 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 {
                     var inspectable = dungeon.ConfiguredInspectables.SingleOrDefault(c => c.Id == inspectableDto.Id);
 
-                    if (inspectable is not null) room.Inspectables.Add(inspectable);
+                    if (inspectable is not null)
+                    {
+                        var roomInspectable = new RoomInspectable
+                        {
+                            Id = Guid.NewGuid(),
+                            Inspectable = inspectable,
+                            Room = room
+                        };
+
+                        room.Inspectables.Add(roomInspectable);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {

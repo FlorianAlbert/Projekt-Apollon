@@ -76,28 +76,68 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 var consumable = await GameConfigService.Get<Consumable>(consumableDto.Id);
 
-                if (consumable is not null) newClass.StartInventory.Add(consumable);
+                if (consumable is not null)
+                {
+                    var classTakeable = new ClassTakeable
+                    {
+                        Id = Guid.NewGuid(),
+                        Class = newClass,
+                        Takeable = consumable
+                    };
+
+                    newClass.StartInventory.Add(classTakeable);
+                }
             }
 
             foreach (var takeableDto in classDto.InventoryTakeableDtos)
             {
                 var takeable = await GameConfigService.Get<Takeable>(takeableDto.Id);
 
-                if (takeable is not null) newClass.StartInventory.Add(takeable);
+                if (takeable is not null)
+                {
+                    var classTakeable = new ClassTakeable
+                    {
+                        Id = Guid.NewGuid(),
+                        Class = newClass,
+                        Takeable = takeable
+                    };
+
+                    newClass.StartInventory.Add(classTakeable);
+                }
             }
 
             foreach (var usableDto in classDto.InventoryUsableDtos)
             {
                 var usable = await GameConfigService.Get<Usable>(usableDto.Id);
 
-                if (usable is not null) newClass.StartInventory.Add(usable);
+                if (usable is not null)
+                {
+                    var classTakeable = new ClassTakeable
+                    {
+                        Id = Guid.NewGuid(),
+                        Class = newClass,
+                        Takeable = usable
+                    };
+
+                    newClass.StartInventory.Add(classTakeable);
+                }
             }
 
             foreach (var wearableDto in classDto.InventoryWearableDtos)
             {
                 var wearable = await GameConfigService.Get<Wearable>(wearableDto.Id);
 
-                if (wearable is not null) newClass.StartInventory.Add(wearable);
+                if (wearable is not null)
+                {
+                    var classTakeable = new ClassTakeable
+                    {
+                        Id = Guid.NewGuid(),
+                        Class = newClass,
+                        Takeable = wearable
+                    };
+
+                    newClass.StartInventory.Add(classTakeable);
+                }
             }
 
             if (await GameConfigService.NewOrUpdate(newClass)) return Ok(newClass.Id);
@@ -147,28 +187,68 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             {
                 var consumable = await GameConfigService.Get<Consumable>(consumableDto.Id);
 
-                if (consumable is not null) classToUpdate.StartInventory.Add(consumable);
+                if (consumable is not null)
+                {
+                    var classTakeable = new ClassTakeable
+                    {
+                        Id = Guid.NewGuid(),
+                        Class = classToUpdate,
+                        Takeable = consumable
+                    };
+
+                    classToUpdate.StartInventory.Add(classTakeable);
+                }
             }
 
             foreach (var takeableDto in classDto.InventoryTakeableDtos)
             {
                 var takeable = await GameConfigService.Get<Takeable>(takeableDto.Id);
 
-                if (takeable is not null) classToUpdate.StartInventory.Add(takeable);
+                if (takeable is not null)
+                {
+                    var classTakeable = new ClassTakeable
+                    {
+                        Id = Guid.NewGuid(),
+                        Class = classToUpdate,
+                        Takeable = takeable
+                    };
+
+                    classToUpdate.StartInventory.Add(classTakeable);
+                }
             }
 
             foreach (var usableDto in classDto.InventoryUsableDtos)
             {
                 var usable = await GameConfigService.Get<Usable>(usableDto.Id);
 
-                if (usable is not null) classToUpdate.StartInventory.Add(usable);
+                if (usable is not null)
+                {
+                    var classTakeable = new ClassTakeable
+                    {
+                        Id = Guid.NewGuid(),
+                        Class = classToUpdate,
+                        Takeable = usable
+                    };
+
+                    classToUpdate.StartInventory.Add(classTakeable);
+                }
             }
 
             foreach (var wearableDto in classDto.InventoryWearableDtos)
             {
                 var wearable = await GameConfigService.Get<Wearable>(wearableDto.Id);
 
-                if (wearable is not null) classToUpdate.StartInventory.Add(wearable);
+                if (wearable is not null)
+                {
+                    var classTakeable = new ClassTakeable
+                    {
+                        Id = Guid.NewGuid(),
+                        Class = classToUpdate,
+                        Takeable = wearable
+                    };
+
+                    classToUpdate.StartInventory.Add(classTakeable);
+                }
             }
 
             if (await GameConfigService.NewOrUpdate(classToUpdate))
