@@ -138,12 +138,31 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         {
                             Id = x.Id,
                             Name = x.Name,
+                            Gender = (int)x.ChosenGender,
                             Status = (int)x.Status,
                             Owner = new DungeonUserDto
                             {
                                 Id = Guid.Parse(x.Owner.Id),
                                 Email = x.Owner.Email,
                                 LastActive = x.Owner.LastActive
+                            },
+                            Class = new ClassDto
+                            {
+                                Id = x.ChosenClass.Id,
+                                Name = x.ChosenClass.Name,
+                                Status = (int)x.ChosenClass.Status
+                            },
+                            Race = new RaceDto
+                            {
+                                Id = x.ChosenRace.Id,
+                                Name = x.ChosenRace.Name,
+                                Status = (int)x.ChosenRace.Status
+                            },
+                            CurrentRoom = new RoomDto
+                            {
+                                Id = x.CurrentRoom.Id,
+                                Name = x.CurrentRoom.Name,
+                                Status = (int)x.CurrentRoom.Status
                             }
                         }).ToList());
             }
