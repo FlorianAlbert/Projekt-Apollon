@@ -343,7 +343,7 @@
                     <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
                 </div>
                 <div class="col">
-                    @if (!(chosenClass == "NoClass"))
+                    @if (!(chosenClass == "NoClass") && !IsDungeonMasterConfigurating)
                     {
                         <button class="btn btn-danger float-end" type="button" @onclick="RemoveClassButtonClicked">Entfernen</button>
                     }

@@ -100,7 +100,7 @@
                     <button class="btn btn-success" style="width:20rem" type="button" @onclick="HandleActionSubmit">Speichern</button>
                 </div>
                 <div class="col">
-                    @if (!(chosenAction == "NoAction"))
+                    @if (!(chosenAction == "NoAction") && !IsDungeonMasterConfigurating)
                     {
                         <button class="btn btn-danger float-end" type="button" @onclick="RemoveActionButtonClicked">Entfernen</button>
                     }

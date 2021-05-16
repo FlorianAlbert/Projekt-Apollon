@@ -643,7 +643,7 @@
                     <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
                 </div>
                 <div class="col">
-                    @if (!(chosenRoom == "NoRoom"))
+                    @if (!(chosenRoom == "NoRoom") && !IsDungeonMasterConfigurating)
                     {
                         <button class="btn btn-danger float-end" type="button" @onclick="RemoveRoomButtonClicked">Entfernen</button>
                     }
