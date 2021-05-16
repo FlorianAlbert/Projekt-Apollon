@@ -9,6 +9,7 @@
 @inject Apollon.Mud.Client.Services.Interfaces.IChatService ChatService
 @inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
 @inject Apollon.Mud.Client.Data.Account.UserContext UserContext
+@inject IJSRuntime JSRuntime
 
 @implements IDisposable
 
@@ -78,7 +79,7 @@
     </div>
     <div class="chat mt-2 mb-2" style="flex-shrink: 0;">
         <div class="prompt d-flex">
-            <input @bind="inputMessage" id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
+            <input @bind-value="inputMessage" @bind-value:event="oninput" id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
             @if (chosenRecipient != "NoRecipient" && inputMessage != "")
             {
                 <button @onclick="SendMessage" id="send" class="btn btn-primary ms-2">Senden</button>
@@ -161,6 +162,7 @@
             var dungeon = await DungeonService.GetDungeon(DungeonId);
             if (dungeon is not null) Dungeon = dungeon;
         }
+        await JSRuntime.InvokeVoidAsync("goToBottom", "chat");
         StateHasChanged();
     }
 
@@ -187,7 +189,9 @@
                 break;
         }
         if (success) Messages.Enqueue(new ChatMessage(chosenRecipient, inputMessage, false));
+        inputMessage = "";
         StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("goToBottom", "chat");
     }
 
     /// <inheritdoc cref="IClientChatHubContract.ReceiveChatMessage"/>
@@ -195,6 +199,7 @@
     {
         Messages.Enqueue(new ChatMessage(senderName, message, true));
         StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("goToBottom", "chat");
     }
 
     /// <summary>

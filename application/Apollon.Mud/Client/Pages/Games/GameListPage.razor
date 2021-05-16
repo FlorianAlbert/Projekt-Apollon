@@ -58,13 +58,13 @@
                                         {
                                             <button class="btn btn-danger float-end" disabled>Gesperrt</button>
                                         }
-                                        else if (dungeon.OpenRequests is not null && dungeon.OpenRequests.Contains(UserContext.DungeonUserContext))
-                                        {
-                                            <button class="btn btn-outline-success float-end" disabled>Ausstehend</button>
-                                        }
                                         else if (dungeon.Visibility == 1 || (dungeon.WhiteList is not null && dungeon.WhiteList.Contains(UserContext.DungeonUserContext)))
                                         {
                                             <button class="btn btn-success float-end" @onclick="() => JoinDungeonButtonClicked(dungeon)">Beitreten</button>
+                                        }
+                                        else if (dungeon.OpenRequests is not null && dungeon.OpenRequests.Contains(UserContext.DungeonUserContext))
+                                        {
+                                            <button class="btn btn-outline-success float-end" disabled>Ausstehend</button>
                                         }
                                         else if (dungeon.Visibility == 0)
                                         {
