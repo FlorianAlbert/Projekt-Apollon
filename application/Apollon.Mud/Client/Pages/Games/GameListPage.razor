@@ -62,7 +62,7 @@
                                         {
                                             <button class="btn btn-success float-end" @onclick="() => JoinDungeonButtonClicked(dungeon)">Beitreten</button>
                                         }
-                                        else if (dungeon.OpenRequests is not null && dungeon.OpenRequests.Contains(UserContext.DungeonUserContext))
+                                        else if (dungeon.OpenRequests is not null && dungeon.OpenRequests.Any(u => u.Id == UserContext.DungeonUserContext.Id))
                                         {
                                             <button class="btn btn-outline-success float-end" disabled>Ausstehend</button>
                                         }

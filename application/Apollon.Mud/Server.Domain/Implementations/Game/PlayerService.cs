@@ -108,66 +108,66 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
                     return;
                 default:
-                    var match = Regex.Match(message, "(untersuche )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    var match = Regex.Match(message, "((u|U)(n|N)(t|T)(e|E)(r|R)(s|S)(u|U)(c|C)(h|H)(e|E) )((\\w|\\d)+(\\w|\\d|\\s)*)");
                     if (match.Success)
                     {
-                        await InspectObject(match.Groups[2].Value, dungeon.Id, avatar.Id);
+                        await InspectObject(match.Groups[12].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "(gehe )((\\w|\\d)+)");
+                    match = Regex.Match(message, "((g|G)(e|E)(h|H)(e|E) )((\\w|\\d)+)");
                     if (match.Success)
                     {
-                        await Move(match.Groups[2].Value, dungeon.Id, avatar.Id);
+                        await Move(match.Groups[6].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "(nimm )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    match = Regex.Match(message, "((n|N)(i|I)(m|M)(m|M) )((\\w|\\d)+(\\w|\\d|\\s)*)");
                     if (match.Success)
                     {
-                        await Take(match.Groups[2].Value, dungeon.Id, avatar.Id);
+                        await Take(match.Groups[6].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "(halte )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    match = Regex.Match(message, "((h|H)(a|A)(l|L)(t|T)(e|E) )((\\w|\\d)+(\\w|\\d|\\s)*)");
                     if (match.Success)
                     {
-                        await Hold(match.Groups[2].Value, dungeon.Id, avatar.Id);
+                        await Hold(match.Groups[7].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "(wirf )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    match = Regex.Match(message, "((w|W)(i|I)(r|R)(f|F) )((\\w|\\d)+(\\w|\\d|\\s)*)");
                     if (match.Success)
                     {
-                        await ThrowAway(match.Groups[2].Value, dungeon.Id, avatar.Id);
+                        await ThrowAway(match.Groups[6].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "(konsumiere )((\\w|\\d)+(\\w|\\d|\\s)*)");
+                    match = Regex.Match(message, "((k|K)(o|O)(n|N)(s|S)(u|U)(m|M)(i|I)(e|E)(r|R)(e|E) )((\\w|\\d)+(\\w|\\d|\\s)*)");
                     if (match.Success)
                     {
-                        await Consume(match.Groups[2].Value, dungeon.Id, avatar.Id);
+                        await Consume(match.Groups[12].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "(ziehe )((\\w|\\d)+(\\w|\\d|\\s)*)( an)");
+                    match = Regex.Match(message, "((z|Z)(i|I)(e|E)(h|H)(e|E) )((\\w|\\d)+(\\w|\\d|\\s)*)( (a|A)(n|N))");
                     if (match.Success)
                     {
-                        await Wear(match.Groups[2].Value, dungeon.Id, avatar.Id);
+                        await Wear(match.Groups[7].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
 
-                    match = Regex.Match(message, "(sprich )((\\w|\\d)+(\\w|\\d|\\s)*)( an)");
+                    match = Regex.Match(message, "((s|S)(p|P)(r|R)(i|I)(c|C)(h|H) )((\\w|\\d)+(\\w|\\d|\\s)*)( (a|A)(n|N))");
                     if (match.Success)
                     {
-                        await Talk(match.Groups[2].Value, dungeon.Id, avatar.Id);
+                        await Talk(match.Groups[8].Value, dungeon.Id, avatar.Id);
 
                         return;
                     }
@@ -182,6 +182,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         break;
                     }
 
+                    await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage("Diesen Befehl gibt es nicht!");
                     return;
             }
         }
@@ -557,19 +558,25 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                     await HubContext.Clients.Client(avatarConnection.GameConnectionId)
                         .ReceiveGameMessage($"In deinem Inventar war nicht mehr genügend Platz, deshalb wurde dein zuvor gehaltenes Item { heldItem.Name } im Raum abgelegt!\n");
                 }
-
-                if (!await GameDbService.NewOrUpdate(avatar))
-                {
-                    await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                        .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
-                                            "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
-
-                    return;
-                }
-
-                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
-                    .ReceiveGameMessage($"Du hältst nun { itemToHold.Name } in der Hand!\n");
             }
+            else
+            {
+                avatar.HoldingItem = itemToHold;
+
+                avatar.Inventory.Remove(itemToHold);
+            }
+
+            if (!await GameDbService.NewOrUpdate(avatar))
+            {
+                await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                    .ReceiveGameMessage("Fehler - Da lief wohl etwas schief...\n" +
+                                        "Benachrichtige bitte einen der Verantwortlichen, die im Impressum aufgeführt sind und erläutere den Fehler!\n");
+
+                return;
+            }
+
+            await HubContext.Clients.Client(avatarConnection.GameConnectionId)
+                .ReceiveGameMessage($"Du hältst nun { itemToHold.Name } in der Hand!\n");
         }
 
         private async Task Take(string itemName, Guid dungeonId, Guid avatarId)
