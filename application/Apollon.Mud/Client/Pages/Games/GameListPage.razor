@@ -54,15 +54,15 @@
                                         <div class="row">
                                             <p class="card-text">Epoche: @dungeon.DungeonEpoch</p>
                                         </div>
-                                        @if (dungeon.BlackList is not null && dungeon.BlackList.Contains(UserContext.DungeonUserContext))
+                                        @if (dungeon.BlackList is not null && dungeon.BlackList.Any(u => u.Id == UserContext.DungeonUserContext.Id))
                                         {
                                             <button class="btn btn-danger float-end" disabled>Gesperrt</button>
                                         }
-                                        else if (dungeon.OpenRequests is not null && dungeon.OpenRequests.Contains(UserContext.DungeonUserContext))
+                                        else if (dungeon.OpenRequests is not null && dungeon.OpenRequests.Any(u => u.Id == UserContext.DungeonUserContext.Id))
                                         {
                                             <button class="btn btn-outline-success float-end" disabled>Ausstehend</button>
                                         }
-                                        else if (dungeon.Visibility == 1 || (dungeon.WhiteList is not null && dungeon.WhiteList.Contains(UserContext.DungeonUserContext)))
+                                        else if (dungeon.Visibility == 1 || (dungeon.WhiteList is not null && dungeon.WhiteList.Any(u => u.Id == UserContext.DungeonUserContext.Id)))
                                         {
                                             <button class="btn btn-success float-end" @onclick="() => JoinDungeonButtonClicked(dungeon)">Beitreten</button>
                                         }
@@ -126,7 +126,7 @@
     /// <param name="dungeon"> The dungeon the user wants to join </param>
     private async void JoinDungeonButtonClicked(DungeonDto dungeon)
     {
-        if (!dungeon.WhiteList.Contains(UserContext.DungeonUserContext))
+        if (dungeon.WhiteList.All(u => u.Id != UserContext.DungeonUserContext.Id))
         {
             var success = await DungeonService.OpenEnterRequest(dungeon.Id);
             if (success) NavManager.NavigateTo("/dungeon/avatar/selection/" + dungeon.Id);
