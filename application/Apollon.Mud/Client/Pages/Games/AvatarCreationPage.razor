@@ -65,11 +65,11 @@
                                 {
                                     @foreach (ClassDto dungeonClass in dungeonClasses)
                                     {
-                                        @if(dungeonClass.Status == 0)
+                                        @if (dungeonClass.Status == 0)
                                         {
                                             <option value="@dungeonClass.Name">@dungeonClass.Name</option>
                                         }
-                                        
+
                                     }
                                 }
                             </select>
@@ -81,10 +81,10 @@
                                 {
                                     @foreach (RaceDto dungeonRace in dungeonRaces)
                                     {
-                                         @if (dungeonRace.Status == 0)
-                                         {
+                                        @if (dungeonRace.Status == 0)
+                                        {
                                             <option value="@dungeonRace.Name">@dungeonRace.Name</option>
-                                         }
+                                        }
                                     }
                                 }
                             </select>
@@ -192,10 +192,10 @@
             {
                 submitAvatar.Id = response.Item1;
                 userAvatars.Add(submitAvatar);
+                NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
             }
             else if (response.Item2) AvatarNameAlreadyExists = true;
         }
-        NavManager.NavigateTo("dungeon/avatar/selection/" + DungeonId);
     }
 
     /// <summary>
