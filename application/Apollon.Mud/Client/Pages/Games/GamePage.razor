@@ -174,7 +174,7 @@
 
         GameHubConnection.On<ICollection<ChatPartnerDto>>("ReceiveChatPartnerList", UpdateChatPartnerList);
         GameHubConnection.On("NotifyKicked", NotifyUserKicked);
-        GameHubConnection.On<bool>("NotfiyDungeonLeft", NotifyUserLeft);
+        GameHubConnection.On<bool>("NotifyDungeonLeft", NotifyUserLeft);
         GameHubConnection.On<string>("ReceiveGameMessage", ReceiveGameMessage);
 
         await ChatHubConnection.StartAsync();
