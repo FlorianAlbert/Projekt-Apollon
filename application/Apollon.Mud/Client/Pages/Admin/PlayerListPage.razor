@@ -43,7 +43,7 @@
                                             {
                                                 <td><div class="spinner-grow text-danger text-muted" role="status" style="width: 1rem; height: 1rem"></div></td>
                                             }
-                                            <td>@user.LastActive</td>
+                                            <td>@(TimeZoneInfo.ConvertTimeFromUtc(user.LastActive, TimeZoneInfo.Local))</td>
                                             <td>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input" disabled type="checkbox" id="flexSwitchCheckDefault" @bind="@user.IsAdmin" @onclick="() => ChangeAdminRights(user)">
@@ -66,7 +66,7 @@
                                             {
                                                 <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
                                             }
-                                            <td>@user.LastActive</td>
+                                            <td>@(TimeZoneInfo.ConvertTimeFromUtc(user.LastActive, TimeZoneInfo.Local))</td>
                                             <td>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="@user.IsAdmin" @onclick="() => ChangeAdminRights(user)">
@@ -124,9 +124,12 @@
         {
             if (!(userToDelete.Id == Guid.Empty))
             {
-                await UserService.DeleteUser(userToDelete.Id);
-                allUsers.Remove(userToDelete);
-                StateHasChanged();
+                var response = await UserService.DeleteUser(userToDelete.Id);
+                if(response)
+                {
+                    allUsers.Remove(userToDelete);
+                    StateHasChanged();
+                }
             }
         }
     }
