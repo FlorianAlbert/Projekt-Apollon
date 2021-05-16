@@ -45,7 +45,7 @@
                         <ValidationMessage For=@(() => masterRequestModel.RequestAnswer) />
                         <p>Lebenspunkte</p>
                         <input type="range" class="form-range" min="0" max="@CurrentRequest.Avatar.Class.DefaultHealth + @CurrentRequest.Avatar.Race.DefaultHealth" step="1" @bind="@masterRequestModel.HealthChange" @bind:event="oninput" />
-                        <InputNumber class="form-control mb-3" style="width:3.5rem" @bind-Value="masterRequestModel.HealthChange" />
+                        <input class="form-control mb-3" style="width:3.5rem" @bind="masterRequestModel.HealthChange" disabled />
                         <ValidationMessage For=@(() => masterRequestModel.HealthChange) />
                         <button class="btn btn-success mt-5" style="width:15rem" type="submit">Bestätigen</button>
                     </EditForm>
@@ -130,7 +130,7 @@
         if (validAnswer)
         {
             var avatar = CurrentRequest.Avatar;
-            avatar.CurrentHealth = masterRequestModel.HealthChange;
+            avatar.CurrentHealth = int.Parse(masterRequestModel.HealthChange);
             var response = await GameService.AnswerDungeonMasterRequest(masterRequestModel.RequestAnswer, avatar);
             if (response == HttpStatusCode.OK)
             {
@@ -162,7 +162,7 @@
     private async Task OpenRequest(DungeonMasterRequestDto requestDto)
     {
         CurrentRequest = requestDto;
-        masterRequestModel.HealthChange = requestDto.Avatar.CurrentHealth;
+        masterRequestModel.HealthChange = requestDto.Avatar.CurrentHealth.ToString();
         StateHasChanged();
     }
 }

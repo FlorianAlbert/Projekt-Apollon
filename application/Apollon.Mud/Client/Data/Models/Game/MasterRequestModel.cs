@@ -17,6 +17,6 @@ namespace Apollon.Mud.Client.Data.Models.Game
         /// The new HP of the player 
         /// </summary>
         [Required(ErrorMessage = "Du musst die neuen Avatar HP angeben")]
-        public int HealthChange { get; set; }
+        public string HealthChange { get; set; }
     }
 }
