@@ -633,7 +633,10 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                 }
             }
 
-            return Ok();
+            dungeon.OpenRequests.Remove(requestingUser);
+
+            if (await GameConfigService.NewOrUpdate(dungeon)) return Ok();
+            return BadRequest();
         }
     }
 }
