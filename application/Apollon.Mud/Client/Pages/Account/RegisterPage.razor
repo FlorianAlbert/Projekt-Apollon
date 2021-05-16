@@ -18,13 +18,13 @@
                 @if (showErrorMessage)
                 {
                     <div class="text-danger">
-                        <h4>Bei der Verbindung zum Server ist etwas schiefgegangen</h4>
+                        <h5>Bei der Verbindung zum Server ist etwas schiefgegangen</h5>
                         <h5>Dies tut uns sehr leid, wir arbeiten daran es zu beheben</h5>
                     </div>
                 }
-                @if (showErrorMessage)
+                @if (doubleNameError)
                 {
-                    <h4 class="text-danger">Es existiert bereits ein Account mit dieser E-Mail</h4>
+                    <h5 class="text-danger">Es existiert bereits ein Account mit dieser E-Mail</h5>
                 }
                 <EditForm EditContext="@registerContext" OnSubmit="@HandleRegisterSubmit" novalidate>
                     <DataAnnotationsValidator />

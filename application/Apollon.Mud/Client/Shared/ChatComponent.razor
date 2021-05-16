@@ -126,6 +126,7 @@
     /// <summary>
     /// True when the user is Dungeon Master
     /// </summary>
+    [Parameter]
     public bool IsDungeonMaster { get; set; }
 
     /// <summary>
@@ -158,11 +159,7 @@
         if (DungeonId != Guid.Empty)
         {
             var dungeon = await DungeonService.GetDungeon(DungeonId);
-            if (dungeon is not null)
-            {
-                Dungeon = dungeon;
-                IsDungeonMaster = Dungeon.DungeonMasters.Contains(UserContext.DungeonUserContext);
-            }
+            if (dungeon is not null) Dungeon = dungeon;
         }
         StateHasChanged();
     }

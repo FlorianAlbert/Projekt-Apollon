@@ -30,26 +30,53 @@
                                 @{int userIndex = 1;}
                                 @foreach (DungeonUserDto user in allUsers)
                                 {
-                                    <tr>
-                                        <th scope="row">@userIndex</th>
-                                        <td>@user.Email.Split("@")[0]</td>
-                                        @if (user.EmailConfirmed)
-                                        {
-                                            <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>
-                                        }
-                                        else
-                                        {
-                                            <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
-                                        }
-                                        <td>@user.LastActive</td>
-                                        <td>
-                                            <div class="form-check form-switch d-flex justify-content-center">
-                                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="@user.IsAdmin" @onclick="() => ChangeAdminRights(user)">
-                                            </div>
-                                        </td>
-                                        <td><button class="btn btn-sm btn-danger">X</button></td>
-                                    </tr>
-                                    userIndex++;
+                                    @if (user.Id == UserContext.DungeonUserContext.Id)
+                                    {
+                                        <tr>
+                                            <th scope="row">@userIndex</th>
+                                            <td>@user.Email.Split("@")[0]</td>
+                                            @if (user.EmailConfirmed)
+                                            {
+                                                <td><div class="spinner-grow text-success text-muted" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                            }
+                                            else
+                                            {
+                                                <td><div class="spinner-grow text-danger text-muted" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                            }
+                                            <td>@user.LastActive</td>
+                                            <td>
+                                                <div class="form-check form-switch d-flex justify-content-center">
+                                                    <input class="form-check-input" disabled type="checkbox" id="flexSwitchCheckDefault" @bind="@user.IsAdmin" @onclick="() => ChangeAdminRights(user)">
+                                                </div>
+                                            </td>
+                                            <td><button class="btn btn-sm btn-danger" disabled>X</button></td>
+                                        </tr>
+                                        userIndex++;
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <th scope="row">@userIndex</th>
+                                            <td>@user.Email.Split("@")[0]</td>
+                                            @if (user.EmailConfirmed)
+                                            {
+                                                <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                            }
+                                            else
+                                            {
+                                                <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                            }
+                                            <td>@user.LastActive</td>
+                                            <td>
+                                                <div class="form-check form-switch d-flex justify-content-center">
+                                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="@user.IsAdmin" @onclick="() => ChangeAdminRights(user)">
+                                                </div>
+                                            </td>
+                                            <td><button class="btn btn-sm btn-danger">X</button></td>
+                                        </tr>
+                                        userIndex++;
+                                    }
+
                                 }
                             </tbody>
                         </table>

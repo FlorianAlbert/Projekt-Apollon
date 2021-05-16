@@ -1,5 +1,4 @@
-﻿@page "/dungeon/master/"
-@page "/dungeon/master/{DungeonId:guid}"
+﻿@page "/dungeon/master/{DungeonId:guid}"
 
 @using Apollon.Mud.Client.Shared.Components.MasterView
 @using Apollon.Mud.Client.Shared.Components
@@ -74,7 +73,7 @@
                     </div>
                     <div class="col-4" style="max-height:87vh; padding-left:0;">
                         <div class="bg-secondary">
-                            <ChatComponent @ref="ChatChildComponent" />
+                            <ChatComponent @ref="ChatChildComponent" DungeonId="DungeonId" IsDungeonMaster="true"/>
                         </div>
                     </div>
                 </div>
