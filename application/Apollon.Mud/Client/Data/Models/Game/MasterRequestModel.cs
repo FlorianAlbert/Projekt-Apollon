@@ -17,7 +17,6 @@ namespace Apollon.Mud.Client.Data.Models.Game
         /// The new HP of the player 
         /// </summary>
         [Required(ErrorMessage = "Du musst die neuen Avatar HP angeben")]
-        [Range(0,99, ErrorMessage = "Gib einen gültigen Wert (0-99) an")]
         public int HealthChange { get; set; }
     }
 }

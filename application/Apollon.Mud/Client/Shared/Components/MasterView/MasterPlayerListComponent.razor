@@ -285,10 +285,10 @@
     private async void KickUser()
     {
         if (Dungeon.DungeonMasters.Contains(OpenUser)) Dungeon.DungeonMasters.Remove(OpenUser);
-        var activeAvatar = UserAvatarDictionary[OpenUser.Id].FirstOrDefault(x => x.Status == 0);
-        if (activeAvatar is not null)
+        var activeAvatars = UserAvatarDictionary[OpenUser.Id].Where(x => x.Status == 0);
+        foreach(AvatarDto avatar in activeAvatars)
         {
-            var success = await GameService.KickAvatar(activeAvatar.Id);
+            await GameService.KickAvatar(avatar.Id);
         }
         Dungeon.WhiteList.Remove(OpenUser);
         UserAvatarDictionary.Remove(OpenUser.Id);
