@@ -234,7 +234,7 @@
                     <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
                 </div>
                 <div class="col">
-                    @if (!(chosenItem == "NoItem"))
+                    @if (!(chosenItem == "NoItem") && !IsDungeonMasterConfigurating)
                     {
                         <button class="btn btn-danger float-end" type="button" @onclick="RemoveItemButtonClicked">Entfernen</button>
                     }

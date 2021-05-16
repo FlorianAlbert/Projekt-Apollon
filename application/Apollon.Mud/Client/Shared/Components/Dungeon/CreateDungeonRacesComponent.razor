@@ -150,7 +150,7 @@
                     <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
                 </div>
                 <div class="col">
-                    @if (!(chosenRace == "NoRace"))
+                    @if (!(chosenRace == "NoRace") && !IsDungeonMasterConfigurating)
                     {
                         <button class="btn btn-danger float-end" type="button" @onclick="RemoveRaceButtonClicked">Entfernen</button>
                     }
