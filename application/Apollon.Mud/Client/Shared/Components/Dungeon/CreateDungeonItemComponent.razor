@@ -596,7 +596,7 @@
     /// <param name="args">Event Arguments</param>
     private EventCallback ItemSelectionChanged()
     {
-        if (!chosenItem.Equals(dungeonItemModel.Name) && !chosenItem.Equals("NoItem"))
+        if (chosenItem.Substring(0, (chosenItem.Length - 2)) != dungeonItemModel.Name && !chosenItem.Equals("NoItem"))
         {
             dungeonItemModel.Name = chosenItem.Substring(0, (chosenItem.Length - 2));
             int itemType = int.Parse(chosenItem.Substring(chosenItem.Length - 1));
@@ -610,7 +610,6 @@
                         dungeonItemModel.Description = newInspectable.Description;
                         dungeonItemModel.Status = newInspectable.Status == 0 ? "Approved" : "Pending";
                     }
-
                     break;
                 case 2:
                     chosenItemCategory = "Takeable";
@@ -666,6 +665,7 @@
     /// <param name="args"></param>
     private void NameFieldLostFocus(System.EventArgs args)
     {
+        StateHasChanged();
         var checkInspectable = dungeonInspectables.Find(i => i.Name.Equals(dungeonItemModel.Name));
         if (checkInspectable is null)
         {

@@ -34,10 +34,10 @@
                                     {
                                         <tr>
                                             <th scope="row">@userIndex</th>
-                                            <td>@user.Email.Split("@")[0]</td>
+                                            <td>@user.Email</td>
                                             @if (user.EmailConfirmed)
                                             {
-                                                <td><div class="spinner-grow text-success text-muted" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                                <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>
                                             }
                                             else
                                             {
@@ -57,7 +57,7 @@
                                     {
                                         <tr>
                                             <th scope="row">@userIndex</th>
-                                            <td>@user.Email.Split("@")[0]</td>
+                                            <td>@user.Email</td>
                                             @if (user.EmailConfirmed)
                                             {
                                                 <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>

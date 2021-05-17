@@ -14,7 +14,7 @@
                     @foreach (DungeonUserDto request in OpenRequestList)
                     {
                         <button type="button" class="list-group-item list-group-item-action" @onclick="( () => ChangeRequest(request))">
-                            <h5>Spieler: @request.Email.Trim('@')[0]</h5>
+                            <h5>Spieler: @request.Email.Split('@')[0]</h5>
                             <span> </span>
                         </button>
                     }
@@ -34,7 +34,7 @@
                 @if (OpenRequest is not null)
                 {
                     <div class="card mt-5">
-                        <div class="card-header"><h5>Name: @OpenRequest.Email.Trim('@')[0]</h5></div>
+                        <div class="card-header"><h5>Name: @OpenRequest.Email.Split('@')[0]</h5></div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col">

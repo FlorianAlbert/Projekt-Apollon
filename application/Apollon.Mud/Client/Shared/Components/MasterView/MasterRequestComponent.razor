@@ -42,11 +42,12 @@
                     <EditForm EditContext="@masterRequestContext" OnSubmit="@HandleActionAnswerSubmit" novalidate>
                         <DataAnnotationsValidator />
                         <InputTextArea class="form-control  mb-5" placeholder="Reaktion" @bind-Value="masterRequestModel.RequestAnswer" />
-                        <ValidationMessage For=@(() => masterRequestModel.RequestAnswer) />
+                        <div class="text-danger">
+                            <ValidationMessage For=@(() => masterRequestModel.RequestAnswer) />
+                        </div>
                         <p>Lebenspunkte</p>
                         <input type="range" class="form-range" min="0" max="@(CurrentRequest.Avatar.Class.DefaultHealth + CurrentRequest.Avatar.Race.DefaultHealth)" step="1" @bind="masterRequestModel.HealthChange" />
                         <input class="form-control mb-3" style="width:3.5rem" @bind="masterRequestModel.HealthChange" disabled />
-                        <ValidationMessage For=@(() => masterRequestModel.HealthChange) />
                         <button class="btn btn-success mt-5" style="width:15rem" type="submit">Bestätigen</button>
                     </EditForm>
                 }
