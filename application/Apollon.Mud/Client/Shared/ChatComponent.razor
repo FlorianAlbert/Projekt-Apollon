@@ -209,7 +209,6 @@
     /// <returns></returns>
     public async Task UpdateChatPartners(ICollection<ChatPartnerDto> partnerList)
     {
-        //TODO Doppelte Überprüfung?
         ChatPartners = partnerList.ToList();
         ChatPartners.Remove(ChatPartners.Find(x => x.AvatarId == AvatarId));
         StateHasChanged();
