@@ -700,11 +700,24 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                     (current, inspectable) => current + $"\t\t{ inspectable.Name }\n");
             }
 
-            if (room.Avatars.Count == 0) return description;
+            if (room.Avatars.Count != 0)
+            {
+                description += "\n\tAvatare:\n";
+                description = room.Avatars.Where(x => x.Status is Status.Approved).Aggregate(description,
+                    (current, avatar) => current + $"\t\t{ avatar.Name }\n");
+            }
 
-            description += "\n\tAvatare:\n";
-            description = room.Avatars.Where(x => x.Status is Status.Approved).Aggregate(description,
-                (current, avatar) => current + $"\t\t{ avatar.Name }\n");
+            if (room.NeighborNorth is null &&
+                room.NeighborEast is null &&
+                room.NeighborSouth is null &&
+                room.NeighborWest is null) return description;
+
+            description += "\n\tSichtbare Ausg\u00E4nge:\n";
+
+            if (room.NeighborNorth != null) description += "\t\tNorden\n";
+            if (room.NeighborEast != null) description += "\t\tOsten\n";
+            if (room.NeighborSouth != null) description += "\t\tS\u00FCden\n";
+            if (room.NeighborWest != null) description += "\t\tWesten\n";
 
             return description;
         }
