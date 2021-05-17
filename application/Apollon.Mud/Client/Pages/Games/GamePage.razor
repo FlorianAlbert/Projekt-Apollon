@@ -198,8 +198,8 @@
         {
             TerminalMessages.Enqueue("Fehler: Die Verbindung konnte nicht hergestellt werden!");
         }
-        await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
         StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
     }
 
     /// <summary>
@@ -250,6 +250,7 @@
     {
         TerminalMessages.Enqueue(message);
         StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
     }
 
     /// <inheritdoc cref="IClientGameHubContract.ReceiveChatPartnerList"/>
@@ -263,6 +264,7 @@
     {
         NavigationManager.NavigateTo("/dungeon/kickedmessage");
         StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
     }
 
     /// <inheritdoc cref="IClientGameHubContract.NotifyDungeonLeft(bool)"/>
@@ -271,6 +273,7 @@
         if (success) TerminalMessages.Enqueue("Verbindung erfolgreich getrennt. Sie können den Dungeon jetzt verlassen");
         else TerminalMessages.Enqueue("Beim Trennen der Verbindung ist ein Fehler aufgetreten, bitte versuche es erneut");
         StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
     }
 
     #endregion
