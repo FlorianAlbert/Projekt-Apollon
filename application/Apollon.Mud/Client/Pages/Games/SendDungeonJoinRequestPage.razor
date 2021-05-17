@@ -31,7 +31,7 @@
                                 <hr class="featurette-divider" />
                                 <div class="row">
                                     <div class="col">
-                                        <button class="btn btn-danger" href="/dungeons">Abbrechen</button>
+                                        <button class="btn btn-danger" @onclick="LeavePage">Abbrechen</button>
                                     </div>
                                     @if (!successfullRequest)
                                     {
@@ -103,5 +103,14 @@
         var response = await DungeonService.OpenEnterRequest(DungeonId);
         if (!response) sendError = true;
         else successfullRequest = true;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    private void LeavePage()
+    {
+        NavManager.NavigateTo("/dungeons");
     }
 }
