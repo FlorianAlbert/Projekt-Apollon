@@ -34,7 +34,7 @@
                                 <h5>Du suchst Tipps und Tricks fürs Spielen?</h5>
                             </div>
                             <div class="col text-start">
-                                <button class="btn btn-primary mt-2">Zur Hilfe</button>
+                                <button class="btn btn-primary mt-2" >Zur Hilfe</button>
                             </div>
                         </div>
                     </div>
@@ -191,7 +191,7 @@
         {
             TerminalMessages.Enqueue("Epoche: \n" + dungeon.DungeonEpoch + "\n");
             TerminalMessages.Enqueue("Beschreibung: \n" + dungeon.DungeonDescription + "\n");
-            TerminalMessages.Enqueue("Raumbeschreibung: \n" + dungeon.DefaultRoom.Description + "\n");
+            TerminalMessages.Enqueue("Raumbeschreibung: \n" + avatar.CurrentRoom + "\n");
             TerminalMessages.Enqueue("Hallo " + avatar.Name + "\n");
         }
         else
