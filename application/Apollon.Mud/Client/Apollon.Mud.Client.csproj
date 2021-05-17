@@ -6,21 +6,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\Images\Wiki\Bild1.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild9.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild10.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild11.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild12.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild13.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild14.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild15.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild2.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild3.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild4.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild5.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild6.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild7.jpg" />
-    <None Include="wwwroot\Images\Wiki\Bild8.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild1.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild9.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild10.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild11.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild12.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild13.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild14.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild15.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild2.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild3.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild4.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild5.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild6.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild7.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild8.jpg" />
   </ItemGroup>
 
   <ItemGroup>
