@@ -276,7 +276,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (dungeonToDelete.DungeonOwner != user) return Unauthorized();
+            if (dungeonToDelete.DungeonOwner != user && !await UserService.IsUserInAdminRole(user.Id)) return Unauthorized();
 
             if (await GameConfigService.Delete<Dungeon>(dungeonId)) return Ok();
 
