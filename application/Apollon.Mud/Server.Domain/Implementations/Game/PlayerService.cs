@@ -182,7 +182,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         return;
                     }
 
-                    await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage("Diesen Befehl gibt es nicht!");
+                    await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage("Diesen Befehl gibt es nicht! Gib \"Hilfe\" ein um Informationen über alle verfügbaren Befehle zu erhalten.");
                     return;
             }
         }
