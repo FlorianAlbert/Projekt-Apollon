@@ -33,9 +33,18 @@
                         {
                             <div class="col-md-4">
                                 <div class="card mb-4 box-shadow border-secondary" style="height:15rem">
-                                    <h5 class="card-header" style="height:2.5rem">@dungeon.DungeonName</h5>
+                                    <div class="card-header">
+                                        <div class="row">
+                                            <div class="col">
+                                                <h5>@dungeon.DungeonName</h5>
+                                            </div>
+                                            <div class="col">
+                                                <small class="text-muted float-end">@(TimeZoneInfo.ConvertTimeFromUtc(dungeon.LastActive, TimeZoneInfo.Local))</small>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="card-body">
-                                        <p class="card-text" style="height:7.5rem">@dungeon.DungeonDescription</p>
+                                        <p class="card-text" style="height:7rem">@dungeon.DungeonDescription</p>
                                         <div class="row">
                                             <div class="col">
                                                 <div class="d-flex justify-content-between align-items-center">
@@ -52,7 +61,6 @@
                                                             </button>
                                                         }
                                                     </div>
-                                                    @*<small class="text-muted">@dungeon.LastActive</small>*@
                                                 </div>
                                             </div>
                                             <div class="col">
@@ -70,16 +78,25 @@
                         {
                             <div class="col-md-4">
                                 <div class="card mb-4 box-shadow text-muted" style="height:15rem">
-                                    <h5 class="card-header" style="height:2.5rem">@dungeon.DungeonName</h5>
+                                    <div class="card-header">
+                                        <div class="row">
+                                            <div class="col">
+                                                <h5>@dungeon.DungeonName</h5>
+                                            </div>
+                                            <div class="col">
+                                                <small class="text-muted float-end">@(TimeZoneInfo.ConvertTimeFromUtc(dungeon.LastActive, TimeZoneInfo.Local))</small>
+                                            </div>
+                                        </div> 
+                                    </div>
                                     <div class="card-body">
-                                        <p class="card-text" style="height:7.5rem">@dungeon.DungeonDescription</p>
+                                        <p class="card-text" style="height:7rem">@dungeon.DungeonDescription</p>
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="btn-group">
                                                 <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ViewDungeonButtonClicked(dungeon)">Anzeigen</button>
                                                 <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => EditDungeonButtonClicked(dungeon)">Bearbeiten</button>
                                                 <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => DeleteDungeonButtonClicked(dungeon)">Löschen</button>
                                             </div>
-                                            @*<small class="text-muted">@dungeon.LastActive</small>*@
+                                            
                                         </div>
                                     </div>
                                 </div>
