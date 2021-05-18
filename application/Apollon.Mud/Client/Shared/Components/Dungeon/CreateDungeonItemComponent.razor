@@ -75,26 +75,50 @@
 
             <hr class="featurette-divider" />
 
+            @if (activateCategory)
+            {
+                <div class="form-group mt-2">
+                    <div class="row">
+                        <div class="col-3">
+                            <h5 class="mt-1">Kategorie</h5>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" aria-label="Default select example" @bind="chosenItemCategory">
+                                    <option selected value="Inspectable">Untersuchbar</option>
+                                    <option value="Takeable">Aufnehmbar</option>
+                                    <option value="Consumable">Konsumierbar</option>
+                                    <option value="Usable">Verwendbar</option>
+                                    <option value="Wearable">Tragbar</option>
+                                </select>
 
-            <div class="form-group mt-2">
-                <div class="row">
-                    <div class="col-3">
-                        <h5 class="mt-1">Kategorie</h5>
-                    </div>
-                    <div class="col">
-                        <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" @bind="chosenItemCategory">
-                                <option selected value="Inspectable">Untersuchbar</option>
-                                <option value="Takeable">Aufnehmbar</option>
-                                <option value="Consumable">Konsumierbar</option>
-                                <option value="Usable">Verwendbar</option>
-                                <option value="Wearable">Tragbar</option>
-                            </select>
-
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="form-group mt-2">
+                    <div class="row">
+                        <div class="col-3">
+                            <h5 class="mt-1">Kategorie</h5>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <select class="form-select" aria-label="Default select example" @bind="chosenItemCategory" disabled>
+                                    <option selected value="Inspectable">Untersuchbar</option>
+                                    <option value="Takeable">Aufnehmbar</option>
+                                    <option value="Consumable">Konsumierbar</option>
+                                    <option value="Usable">Verwendbar</option>
+                                    <option value="Wearable">Tragbar</option>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
 
             <div class="form-group mt-5">
                 <div class="row">
@@ -280,6 +304,11 @@
     /// The string bound to the item selection, NoItem means no Item is selected
     /// </summary>
     string chosenItem = "NoItem";
+
+    /// <summary>
+    /// Prevents the user from changing the category of an already existing
+    /// </summary>
+    bool activateCategory = true;
     #endregion
 
     #region Validation model
@@ -598,6 +627,7 @@
     {
         if (chosenItem.Substring(0, (chosenItem.Length - 2)) != dungeonItemModel.Name && !chosenItem.Equals("NoItem"))
         {
+            activateCategory = false;
             dungeonItemModel.Name = chosenItem.Substring(0, (chosenItem.Length - 2));
             int itemType = int.Parse(chosenItem.Substring(chosenItem.Length - 1));
             switch (itemType)
@@ -751,6 +781,7 @@
         dungeonItemModel.ProtectionBoost = null;
         dungeonItemModel.EffectDescription = string.Empty;
         dungeonItemModel.Status = string.Empty;
+        activateCategory = true;
     }
 
     /// <summary>
@@ -763,7 +794,7 @@
         if (chosenItemCategory == "Inspectable")
         {
             var inspectableToDelete = dungeonInspectables.Find(i => i.Name.Equals(chosenItem.Substring(0, (chosenItem.Length - 2))));
-            if(!(inspectableToDelete is null))
+            if (!(inspectableToDelete is null))
             {
                 if (!(inspectableToDelete.Id == Guid.Empty))
                 {
@@ -820,7 +851,7 @@
                 }
             }
         }
-        if(shouldFieldsBeEmptied)
+        if (shouldFieldsBeEmptied)
         {
             await ItemsChanged.InvokeAsync(chosenItemCategory);
             chosenItem = "NoItem";
@@ -832,6 +863,7 @@
             dungeonItemModel.ProtectionBoost = null;
             dungeonItemModel.EffectDescription = string.Empty;
             dungeonItemModel.Status = string.Empty;
+            activateCategory = true;
             StateHasChanged();
         }
     }
