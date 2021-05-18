@@ -1,6 +1,6 @@
 import React from 'react';
 import Etienne from '../../../images/Etienne.jpg';
-import Leon from '../../../images/Leon.png';
+import Leon from '../../../images/Leon.jpg';
 import Paul from '../../../images/Paul.png';
 import Dani from '../../../images/Dani.png';
 import Flo from '../../../images/Flo.png';
