@@ -7,7 +7,7 @@ using Apollon.Mud.Shared.Dungeon.Npc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Apollon.Mud.Client.Data.Models
+namespace Apollon.Mud.Client.Data.Models.Dungeon
 {
     /// <summary>
     /// This is the Model to validate the form a user has to fill out when creating or changing a Race of a dungeon
@@ -54,27 +54,27 @@ namespace Apollon.Mud.Client.Data.Models
         /// <summary>
         /// This is the list of purely investigable items.
         /// </summary>
-        public List<InspectableDto> Inspectables { get; set; }
+        public List<InspectableDto> Inspectables { get; set; } = new List<InspectableDto>();
 
         /// <summary>
         /// This is the list of pickable items
         /// </summary>
-        public List<TakeableDto> Takeables { get; set; }
+        public List<TakeableDto> Takeables { get; set; } = new List<TakeableDto>();
 
         /// <summary>
         /// This is the list of purely consumable items
         /// </summary>
-        public List<ConsumableDto> Consumables { get; set; }
+        public List<ConsumableDto> Consumables { get; set; } = new List<ConsumableDto>();
 
         /// <summary>
         /// This is the list of wearable items
         /// </summary>
-        public List<WearableDto> Wearables { get; set; }
+        public List<WearableDto> Wearables { get; set; } = new List<WearableDto>();
 
         /// <summary>
         /// This is the list of purely usable items
         /// </summary>
-        public List<UsableDto> Usables { get; set; }
+        public List<UsableDto> Usables { get; set; } = new List<UsableDto>();
 
         /// <summary>
         /// This is the list of NPC

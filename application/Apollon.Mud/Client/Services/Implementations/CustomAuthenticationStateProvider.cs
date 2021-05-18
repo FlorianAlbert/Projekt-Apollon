@@ -1,4 +1,5 @@
 ﻿using Apollon.Mud.Client.Data;
+using Apollon.Mud.Client.Data.Account;
 using Microsoft.AspNetCore.Components.Authorization;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Apollon.Mud.Client.Services.Implementiations
+namespace Apollon.Mud.Client.Services.Implementations
 {
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {

@@ -1,4 +1,4 @@
-﻿@using Apollon.Mud.Client.Data.Models
+﻿@using Apollon.Mud.Client.Data.Models.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Class
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 @using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
@@ -27,7 +27,10 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <select class="form-select" aria-label="Default select example" @bind="chosenClass" @onselect="@ClassSelectionChanged()" @onselect:stopPropagation="true">
+                            <select class="form-select" aria-label="Default select example" 
+                                    @bind="chosenClass" 
+                                    @onselect="@ClassSelectionChanged()" 
+                                    @onselect:stopPropagation="true">
                                 <option value="NoClass" selected hidden>Neue Klasse</option>
                                 @if (!(dungeonClasses is null))
                                 {
@@ -37,7 +40,12 @@
                                     }
                                 }
                             </select>
-                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" @onclick="NewClassButtonClicked"><TooltipComponent Text="Neue Klasse erstellen"><strong>+</strong></TooltipComponent></button>
+                            <button class="btn btn-outline-primary ms-3" style="width:3rem; font-size:20px" type="button" 
+                                    @onclick="NewClassButtonClicked">
+                                    <TooltipComponent Text="Neue Klasse erstellen">
+                                    <strong>+</strong>
+                                    </TooltipComponent>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -84,7 +92,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Lebenspunkte" @bind-Value="dungeonClassModel.Health" />
+                            <InputNumber class="form-control" placeholder="Lebenspunkte" @bind-Value="dungeonClassModel.Health" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Health) />
@@ -100,7 +108,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Schaden" @bind-Value="dungeonClassModel.Damage" />
+                            <InputNumber class="form-control" placeholder="Schaden" @bind-Value="dungeonClassModel.Damage" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Damage) />
@@ -116,7 +124,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Verteidigung" @bind-Value="@dungeonClassModel.Protection" />
+                            <InputNumber class="form-control" placeholder="Verteidigung" @bind-Value="@dungeonClassModel.Protection" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonClassModel.Protection) />
@@ -128,6 +136,7 @@
             <div class="row mt-5">
                 <div class="col-3">
                     <h5 class="mt-1">Startitems</h5>
+                    <span class="text-muted">Max. Inventargröße: 100</span>
                 </div>
                 <div class="col">
                     <select class="form-select" @bind="chosenItem">
@@ -135,19 +144,31 @@
 
                         @foreach (TakeableDto takeable in dungeonTakeables)
                         {
-                            <option value="@takeable.Name">@takeable.Name</option>
+                            @if (dungeonClassModel.InventoryTakeableDtos.Find(i => i.Id == takeable.Id) is null)
+                            {
+                                 <option value="@takeable.Name">@takeable.Name</option>
+                            } 
                         }
                         @foreach (ConsumableDto consumable in dungeonConsumables)
                         {
-                            <option value="@consumable.Name">@consumable.Name</option>
+                            @if (dungeonClassModel.InventoryConsumableDtos.Find(i => i.Id == consumable.Id) is null)
+                            {
+                                <option value="@consumable.Name">@consumable.Name</option>
+                            }
                         }
                         @foreach (UsableDto usable in dungeonUsables)
                         {
-                            <option value="@usable.Name">@usable.Name</option>
+                            @if (dungeonClassModel.InventoryUsableDtos.Find(i => i.Id == usable.Id) is null)
+                            {
+                                <option value="@usable.Name">@usable.Name</option>
+                            }              
                         }
                         @foreach (WearableDto wearable in dungeonWearables)
                         {
-                            <option value="@wearable.Name">@wearable.Name</option>
+                            @if (dungeonClassModel.InventoryWearableDtos.Find(i => i.Id == wearable.Id) is null)
+                            {
+                                <option value="@wearable.Name">@wearable.Name</option>
+                            }
                         }
                     </select>
                 </div>
@@ -158,15 +179,15 @@
                     }
                     else
                     {
-                        if (chosenItem == "NoItem")
+                        if (defaultItemCount > 5)
                         {
-                            <TooltipComponent Text="Wähle ein Item aus">
+                            <TooltipComponent Text="Maximum erreicht">
                                 <button class="btn btn-outline-secondary float-end" type="button" disabled>Item hinzufügen</button>
                             </TooltipComponent>
                         }
                         else
                         {
-                            <TooltipComponent Text="Maximum erreicht">
+                            <TooltipComponent Text="Wähle ein Item aus">
                                 <button class="btn btn-outline-secondary float-end" type="button" disabled>Item hinzufügen</button>
                             </TooltipComponent>
                         }
@@ -192,7 +213,8 @@
                                     </div>
                                 </div>
                                 <div class="col-1">
-                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveTakeableButtonClicked(takeable))">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button"
+                                            @onclick="(() => RemoveTakeableButtonClicked(takeable))">
                                         <TooltipComponent Text="Item entfernen">
                                             <span style="vertical-align:middle"><strong>-</strong></span>
                                         </TooltipComponent>
@@ -220,7 +242,8 @@
                                     </div>
                                 </div>
                                 <div class="col-1">
-                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveConsumableButtonClicked(consumable))">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" 
+                                            @onclick="(() => RemoveConsumableButtonClicked(consumable))">
                                         <TooltipComponent Text="Item entfernen">
                                             <span style="vertical-align:middle"><strong>-</strong></span>
                                         </TooltipComponent>
@@ -248,7 +271,8 @@
                                     </div>
                                 </div>
                                 <div class="col-1">
-                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" @onclick="(() => RemoveUsableButtonClicked(usable))">
+                                    <button class="btn btn-outline-secondary " style="width:1.75rem; height:1.75rem; padding: 0" type="button" 
+                                            @onclick="(() => RemoveUsableButtonClicked(usable))">
                                         <TooltipComponent Text="Item entfernen">
                                             <span style="vertical-align:middle"><strong>-</strong></span>
                                         </TooltipComponent>
@@ -319,7 +343,7 @@
                     <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
                 </div>
                 <div class="col">
-                    @if (!(chosenClass == "NoClass"))
+                    @if (!(chosenClass == "NoClass") && !IsDungeonMasterConfigurating)
                     {
                         <button class="btn btn-danger float-end" type="button" @onclick="RemoveClassButtonClicked">Entfernen</button>
                     }
@@ -435,11 +459,15 @@
         if (DungeonId != Guid.Empty)
         {
             var dungeonClassCollection = await ClassService.GetAllClasses(DungeonId);
-            if (!(dungeonClassCollection is null))
+            if (!(dungeonClassCollection is null) && dungeonClassCollection.Count != 0)
             {
                 dungeonClasses = dungeonClassCollection.ToList();
                 await OnClassSavedOrLoaded.InvokeAsync();
             }
+            dungeonTakeables = (await TakeableService.GetAllTakeables(DungeonId))?.ToList() ?? new List<TakeableDto>();
+            dungeonWearables = (await WearableService.GetAllWearables(DungeonId))?.ToList() ?? new List<WearableDto>();
+            dungeonUsables = (await UsableService.GetAllUsables(DungeonId))?.ToList() ?? new List<UsableDto>();
+            dungeonConsumables = (await ConsumableService.GetAllConsumables(DungeonId))?.ToList() ?? new List<ConsumableDto>();
         }
         StateHasChanged();
     }
@@ -450,7 +478,6 @@
     /// <returns></returns>
     private async Task HandleClassSubmit()
     {
-        ///TODO Als Task erstellen, damit es parallel läuft
         var validClass = classContext.Validate();
         if (validClass && DungeonId != Guid.Empty)
         {
@@ -463,9 +490,9 @@
             }
             submitClass.Name = dungeonClassModel.Name;
             submitClass.Description = dungeonClassModel.Description;
-            submitClass.DefaultHealth = int.Parse(dungeonClassModel.Health);
-            submitClass.DefaultDamage = int.Parse(dungeonClassModel.Damage);
-            submitClass.DefaultProtection = int.Parse(dungeonClassModel.Protection);
+            submitClass.DefaultHealth = dungeonClassModel.Health ?? 1;
+            submitClass.DefaultDamage = dungeonClassModel.Damage ?? 1;
+            submitClass.DefaultProtection = dungeonClassModel.Protection ?? 1;
             submitClass.InventoryTakeableDtos = dungeonClassModel.InventoryTakeableDtos;
             submitClass.InventoryConsumableDtos = dungeonClassModel.InventoryConsumableDtos;
             submitClass.InventoryUsableDtos = dungeonClassModel.InventoryUsableDtos;
@@ -486,6 +513,7 @@
             {
                 var response = await ClassService.UpdateClass(submitClass, DungeonId);
                 if (!(response is null)) WriteBackClass(response);
+                else await OnClassSavedOrLoaded.InvokeAsync();
             }
             StateHasChanged();
         }
@@ -523,11 +551,14 @@
             {
                 defaultItemCount++;
             }
+            chosenItem = "NoItem";
+            StateHasChanged();
         }
+
     }
 
     /// <summary>
-    /// TODO
+    /// This function removes the selected Takeable of a class
     /// </summary>
     private EventCallback RemoveTakeableButtonClicked(TakeableDto item)
     {
@@ -538,7 +569,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// This function removes the selected Takeable of a class
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
@@ -604,9 +635,9 @@
             dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
             dungeonClassModel.Name = newClass.Name;
             dungeonClassModel.Description = newClass.Description;
-            dungeonClassModel.Health = newClass.DefaultHealth.ToString();
-            dungeonClassModel.Protection = newClass.DefaultProtection.ToString();
-            dungeonClassModel.Damage = newClass.DefaultDamage.ToString();
+            dungeonClassModel.Health = newClass.DefaultHealth;
+            dungeonClassModel.Protection = newClass.DefaultProtection;
+            dungeonClassModel.Damage = newClass.DefaultDamage;
             dungeonClassModel.Status = newClass.Status == 0 ? "Approved" : "Pending";
             if (!(newClass.InventoryTakeableDtos is null))
             {
@@ -678,9 +709,9 @@
         chosenClass = "NoClass";
         dungeonClassModel.Name = string.Empty;
         dungeonClassModel.Description = string.Empty;
-        dungeonClassModel.Health = string.Empty;
-        dungeonClassModel.Protection = string.Empty;
-        dungeonClassModel.Damage = string.Empty;
+        dungeonClassModel.Health = null;
+        dungeonClassModel.Protection = null;
+        dungeonClassModel.Damage = null;
         dungeonClassModel.Status = string.Empty;
         defaultItemCount = 1;
         dungeonClassModel.InventoryTakeableDtos = new List<TakeableDto>();
@@ -707,9 +738,9 @@
             chosenClass = "NoClass";
             dungeonClassModel.Name = string.Empty;
             dungeonClassModel.Description = string.Empty;
-            dungeonClassModel.Health = string.Empty;
-            dungeonClassModel.Protection = string.Empty;
-            dungeonClassModel.Damage = string.Empty;
+            dungeonClassModel.Health = null;
+            dungeonClassModel.Protection = null;
+            dungeonClassModel.Damage = null;
             dungeonClassModel.Status = string.Empty;
             defaultItemCount = 1;
             dungeonClassModel.InventoryTakeableDtos = new List<TakeableDto>();
@@ -717,10 +748,6 @@
             dungeonClassModel.InventoryUsableDtos = new List<UsableDto>();
             dungeonClassModel.InventoryWearableDtos = new List<WearableDto>();
             StateHasChanged();
-        }
-        else
-        {
-            //TODO Maybe Nutzer hinweisen
         }
     }
 

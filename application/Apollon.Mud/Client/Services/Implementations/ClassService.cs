@@ -1,4 +1,4 @@
-﻿using Apollon.Mud.Client.Data;
+﻿using Apollon.Mud.Client.Data.Account;
 using Apollon.Mud.Client.Services.Interfaces;
 using Apollon.Mud.Shared.Dungeon.Class;
 using System;
@@ -10,7 +10,7 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Apollon.Mud.Client.Services.Implementiations
+namespace Apollon.Mud.Client.Services.Implementations
 {
     public class ClassService : IClassService
     {
@@ -65,7 +65,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.PutAsJsonAsync("api/classes", classDto, cancellationToken);
+            var response = await HttpClient.PutAsJsonAsync("api/classes/" + dungeonId, classDto, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.BadRequest) return await response.Content.ReadFromJsonAsync<ClassDto>();
 
@@ -96,7 +96,7 @@ namespace Apollon.Mud.Client.Services.Implementiations
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
 
-            var response = await HttpClient.GetAsync("api/classes" + dungeonId, cancellationToken);
+            var response = await HttpClient.GetAsync("api/classes/" + dungeonId, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.OK) return await response.Content.ReadFromJsonAsync<ICollection<ClassDto>>();
 

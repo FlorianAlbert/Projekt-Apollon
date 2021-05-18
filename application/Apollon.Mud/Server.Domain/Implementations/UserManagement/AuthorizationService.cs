@@ -61,10 +61,13 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             {
                 var token = await GenerateToken(user);
 
+                await _userDbService.UpdateUserTimestamp(user);
+
                 return new LoginResult
                 {
                     User = user,
                     Token = token,
+                    IsAdmin = await _userDbService.IsUserInRole(user.Id, Roles.Admin.ToString()),
                     Status = LoginResultStatus.OK
                 };
             }
@@ -86,13 +89,13 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             var key = Encoding.ASCII.GetBytes(_tokenSecret);
             var listClaims = new List<Claim>()
             {
-                new Claim("UserId", user.Id),
-                new Claim("SessionId", Guid.NewGuid().ToString())
+                new("UserId", user.Id),
+                new("SessionId", Guid.NewGuid().ToString())
             };
 
             foreach (var role in Enum.GetNames<Roles>())
             {
-                if (await _userManager.IsInRoleAsync(user, role))
+                if (await _userDbService.IsUserInRole(user.Id, role))
                 {
                     listClaims.Add(new Claim(ClaimTypes.Role, role));
                 }

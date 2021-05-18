@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Apollon.Mud.Shared.Dungeon.Avatar;
+using Apollon.Mud.Shared.Game.Chat;
 using Apollon.Mud.Shared.Game.DungeonMaster;
 
 namespace Apollon.Mud.Shared.HubContract
@@ -12,20 +14,44 @@ namespace Apollon.Mud.Shared.HubContract
         /// <summary>
         /// Receive a specific message.
         /// </summary>
-        /// <param name="message"></param>
-        void ReceiveGameMessage(string message);
+        /// <param name="message">The incoming game message</param>
+        /// <returns></returns>
+        Task ReceiveGameMessage(string message);
 
         /// <summary>
-        /// ToDo Abhilfe
+        /// Method for DungeonMaster to receive
+        /// a SpecialAction Request
         /// </summary>
-        /// <param name="dungeonMasterRequestDto"></param>
-        void ReceiveRequest(DungeonMasterRequestDto dungeonMasterRequestDto);
+        /// <param name="dungeonMasterRequestDto">The incoming request</param>
+        /// <returns></returns>
+        Task ReceiveRequest(DungeonMasterRequestDto dungeonMasterRequestDto);
 
         /// <summary>
         /// Method for showing the avatar list, 
-        /// which will list all avatars in the dungeon. ToDo Abhilfe
+        /// which will list all avatars in the dungeon.
         /// </summary>
-        /// <param name="avatars"></param>
-        void ReceiveAvatarList(ICollection<AvatarDto> avatars);
+        /// <param name="avatars">The current list of Avatars</param>
+        /// <returns></returns>
+        Task ReceiveAvatarList(ICollection<AvatarDto> avatars);
+
+        /// <summary>
+        /// Method to list all the avatars the user
+        /// can currently chat with
+        /// </summary>
+        /// <param name="chatPartners">The current list of Chat partners</param>
+        /// <returns></returns>
+        Task ReceiveChatPartnerList(ICollection<ChatPartnerDto> chatPartners);
+
+        /// <summary>
+        /// Method to notify the client his avatar got kicked
+        /// </summary>
+        /// <returns></returns>
+        Task NotifyKicked();
+
+        /// <summary>
+        /// Method to notify the client his avatar left the dungeon successfully
+        /// </summary>
+        /// <returns></returns>
+        Task NotifyDungeonLeft(bool success);
     }
 }

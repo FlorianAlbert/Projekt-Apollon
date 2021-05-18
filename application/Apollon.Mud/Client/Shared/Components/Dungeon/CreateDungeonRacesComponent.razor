@@ -1,4 +1,4 @@
-﻿@using Apollon.Mud.Client.Data.Models
+﻿@using Apollon.Mud.Client.Data.Models.Dungeon
 @using Apollon.Mud.Shared.Dungeon.Race
 @inject Apollon.Mud.Client.Services.Interfaces.IRaceService RaceService;
 
@@ -77,7 +77,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Lebenspunkte" type="number<Int64>" @bind-Value="dungeonRaceModel.Health" />
+                            <InputNumber class="form-control" placeholder="Lebenspunkte" @bind-Value="dungeonRaceModel.Health" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRaceModel.Health) />
@@ -93,7 +93,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Schaden" type="number" @bind-Value="dungeonRaceModel.Damage" />
+                            <InputNumber class="form-control" placeholder="Schaden" @bind-Value="dungeonRaceModel.Damage" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRaceModel.Damage) />
@@ -109,7 +109,7 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-center">
-                            <InputText class="form-control" placeholder="Verteidigung" type="number" @bind-Value="dungeonRaceModel.Protection" />
+                            <InputNumber class="form-control" placeholder="Verteidigung" @bind-Value="dungeonRaceModel.Protection" />
                         </div>
                         <div class="text-danger">
                             <ValidationMessage For=@(() => dungeonRaceModel.Protection) />
@@ -150,7 +150,7 @@
                     <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
                 </div>
                 <div class="col">
-                    @if (!(chosenRace == "NoRace"))
+                    @if (!(chosenRace == "NoRace") && !IsDungeonMasterConfigurating)
                     {
                         <button class="btn btn-danger float-end" type="button" @onclick="RemoveRaceButtonClicked">Entfernen</button>
                     }
@@ -216,7 +216,7 @@
         if (!(DungeonId == Guid.Empty))
         {
             var dungeonRaceCollection = await RaceService.GetAllRaces(DungeonId);
-            if (!(dungeonRaceCollection is null))
+            if (!(dungeonRaceCollection is null) && dungeonRaceCollection.Count != 0)
             {
                 dungeonRaces = dungeonRaceCollection.ToList();
                 await OnRaceSavedOrLoaded.InvokeAsync();
@@ -243,9 +243,9 @@
             }
             submitRace.Name = dungeonRaceModel.Name;
             submitRace.Description = dungeonRaceModel.Description;
-            submitRace.DefaultHealth = int.Parse(dungeonRaceModel.Health);
-            submitRace.DefaultDamage = int.Parse(dungeonRaceModel.Damage);
-            submitRace.DefaultProtection = int.Parse(dungeonRaceModel.Protection);
+            submitRace.DefaultHealth = dungeonRaceModel.Health ?? 1;
+            submitRace.DefaultDamage = dungeonRaceModel.Damage ?? 1;
+            submitRace.DefaultProtection = dungeonRaceModel.Protection ?? 1;
             submitRace.Status = dungeonRaceModel.Status.Equals("Approved") ? 0 : 1;
             if (newRace)
             {
@@ -261,10 +261,8 @@
             else
             {
                 var response = await RaceService.UpdateRace(submitRace, DungeonId);
-                if (!(response is null))
-                {
-                    WriteBackRace(response);
-                }
+                if (!(response is null))  WriteBackRace(response);
+                else await OnRaceSavedOrLoaded.InvokeAsync();
             }
         }
         else
@@ -283,9 +281,9 @@
         {
             dungeonRaceModel.Name = chosenRace;
             dungeonRaceModel.Description = newRace.Description;
-            dungeonRaceModel.Health = newRace.DefaultHealth.ToString();
-            dungeonRaceModel.Protection = newRace.DefaultProtection.ToString();
-            dungeonRaceModel.Damage = newRace.DefaultDamage.ToString();
+            dungeonRaceModel.Health = newRace.DefaultHealth;
+            dungeonRaceModel.Protection = newRace.DefaultProtection;
+            dungeonRaceModel.Damage = newRace.DefaultDamage;
             dungeonRaceModel.Status = newRace.Status == 0 ? "Approved" : "Pending";
         }
     }
@@ -329,9 +327,9 @@
         chosenRace = "NoRace";
         dungeonRaceModel.Name = string.Empty;
         dungeonRaceModel.Description = string.Empty;
-        dungeonRaceModel.Health = string.Empty;
-        dungeonRaceModel.Protection = string.Empty;
-        dungeonRaceModel.Damage = string.Empty;
+        dungeonRaceModel.Health = null;
+        dungeonRaceModel.Protection = null;
+        dungeonRaceModel.Damage = null;
         dungeonRaceModel.Status = string.Empty;
     }
 
@@ -352,9 +350,9 @@
                 chosenRace = "NoRace";
                 dungeonRaceModel.Name = string.Empty;
                 dungeonRaceModel.Description = string.Empty;
-                dungeonRaceModel.Health = string.Empty;
-                dungeonRaceModel.Protection = string.Empty;
-                dungeonRaceModel.Damage = string.Empty;
+                dungeonRaceModel.Health = null;
+                dungeonRaceModel.Protection = null;
+                dungeonRaceModel.Damage = null;
                 dungeonRaceModel.Status = string.Empty;
                 dungeonRaces.Remove(raceToDelete);
                 StateHasChanged();

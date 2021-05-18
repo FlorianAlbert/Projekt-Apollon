@@ -6,11 +6,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--<Content Include="Shared\ChatComponent.razor.css" />-->
+    <None Include="wwwroot\Images\Wiki\Creation\Bild1.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild9.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild10.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild11.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild12.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild13.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild14.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild15.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild2.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild3.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild4.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild5.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild6.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild7.jpg" />
+    <None Include="wwwroot\Images\Wiki\Creation\Bild8.jpg" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-preview2.20160.5" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.6" />
   </ItemGroup>
 
   <ItemGroup>

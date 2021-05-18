@@ -1,8 +1,9 @@
 ﻿@page "/Identity/Account/Login"
+
+@using Apollon.Mud.Client.Data.Models.Account
+
 @inject Apollon.Mud.Client.Services.Interfaces.IAuthorizationService AuthorizationService
 @inject NavigationManager NavManager
-
-@using Apollon.Mud.Client.Data.Models
 
 
 
@@ -56,7 +57,7 @@
 
 @code {
     /// <summary>
-    /// TODO Wie davor
+    /// Informs the user about an occured server error
     /// </summary>
     bool loginFailure = false;
 

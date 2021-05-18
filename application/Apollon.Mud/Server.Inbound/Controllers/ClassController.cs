@@ -12,6 +12,7 @@ using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Consumable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Usable;
 using Apollon.Mud.Shared.Dungeon.Inspectable.Takeable.Wearable;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Apollon.Mud.Server.Domain.Interfaces.Game;
 
 namespace Apollon.Mud.Server.Inbound.Controllers
 {
@@ -30,10 +32,13 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
         private IUserService UserService { get; }
 
-        public ClassController(IGameDbService gameDbService, IUserService userService)
+        private IMasterService MasterService { get; }
+
+        public ClassController(IGameDbService gameDbService, IUserService userService, IMasterService masterService)
         {
             GameConfigService = gameDbService;
             UserService = userService;
+            MasterService = masterService;
         }
 
         [HttpPost]
@@ -41,6 +46,8 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [Authorize(Roles = "Player, Admin")]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateNew([FromBody] ClassDto classDto, [FromRoute] Guid dungeonId)
         {
             var userIdClaim = User.Claims.FirstOrDefault(u => u.Type == "UserId");
@@ -55,24 +62,45 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (!classDungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
-            var newClass = new Class(classDto.Name, 
-                classDto.Description, 
-                classDto.DefaultHealth, 
-                classDto.DefaultProtection, 
+            var newClass = new Class(classDto.Name,
+                classDto.Description,
+                classDto.DefaultHealth,
+                classDto.DefaultProtection,
                 classDto.DefaultDamage)
-                { Status = (Status)classDto.Status };
-
-            classDungeon.ConfiguredClasses.Add(newClass);
-
-            if (await GameConfigService.NewOrUpdate(newClass))
             {
-                if (await GameConfigService.NewOrUpdate(classDungeon))
-                {
-                    return Ok(newClass.Id);
-                }
-                await GameConfigService.Delete<Class>(newClass.Id);
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                Status = (Status)classDto.Status,
+                Dungeon = classDungeon
+            };
+
+            foreach (var consumableDto in classDto.InventoryConsumableDtos)
+            {
+                var consumable = await GameConfigService.Get<Consumable>(consumableDto.Id);
+
+                if (consumable is not null) newClass.StartInventory.Add(consumable);
             }
+
+            foreach (var takeableDto in classDto.InventoryTakeableDtos)
+            {
+                var takeable = await GameConfigService.Get<Takeable>(takeableDto.Id);
+
+                if (takeable is not null) newClass.StartInventory.Add(takeable);
+            }
+
+            foreach (var usableDto in classDto.InventoryUsableDtos)
+            {
+                var usable = await GameConfigService.Get<Usable>(usableDto.Id);
+
+                if (usable is not null) newClass.StartInventory.Add(usable);
+            }
+
+            foreach (var wearableDto in classDto.InventoryWearableDtos)
+            {
+                var wearable = await GameConfigService.Get<Wearable>(wearableDto.Id);
+
+                if (wearable is not null) newClass.StartInventory.Add(wearable);
+            }
+
+            if (await GameConfigService.NewOrUpdate(newClass)) return Ok(newClass.Id);
 
             return BadRequest();
         }
@@ -83,9 +111,9 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Update([FromBody] ClassDto classDto, [FromRoute] Guid dungeonId)
         {
-
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
 
             if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId)) return BadRequest();
@@ -94,13 +122,15 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (!(await GameConfigService.Get<Dungeon>(dungeonId)).DungeonMasters.Contains(user)) return Unauthorized();
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
-            var classToUpdate = await GameConfigService.Get<Class>(classDto.Id);
+            if (dungeon is null) return BadRequest();
+
+            if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
+
+            var classToUpdate = dungeon.ConfiguredClasses.FirstOrDefault(x => x.Id == classDto.Id);
 
             if (classToUpdate is null) return BadRequest();
-
-            var classDungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
             classToUpdate.Status = (Status)classDto.Status;
             classToUpdate.Name = classDto.Name;
@@ -108,42 +138,48 @@ namespace Apollon.Mud.Server.Inbound.Controllers
             classToUpdate.DefaultHealth = classDto.DefaultHealth;
             classToUpdate.DefaultProtection = classDto.DefaultProtection;
             classToUpdate.Description = classDto.Description;
+
             classToUpdate.StartInventory.Clear();
-            foreach(ConsumableDto consumable in classDto.InventoryConsumableDtos)
+
+            if (!await GameConfigService.NewOrUpdate(classToUpdate)) return BadRequest();
+
+            foreach (var consumableDto in classDto.InventoryConsumableDtos)
             {
-                classToUpdate.StartInventory.Add(
-                    new Consumable(consumable.Name, consumable.Description, consumable.Weight, consumable.EffectDescription)
-                    { Status = (Status)consumable.Status });
-            }
-            foreach (WearableDto wearable in classDto.InventoryWearableDtos)
-            {
-                classToUpdate.StartInventory.Add(
-                    new Wearable(wearable.Name, wearable.Description, wearable.Weight, wearable.ProtectionBoost)
-                    { Status = (Status)wearable.Status });
-            }
-            foreach (UsableDto usable in classDto.InventoryUsableDtos)
-            {
-                classToUpdate.StartInventory.Add(
-                    new Usable(usable.Name, usable.Description, usable.Weight, usable.DamageBoost)
-                    { Status = (Status)usable.Status });
-            }
-            foreach (TakeableDto takeable in classDto.InventoryTakeableDtos)
-            {
-                classToUpdate.StartInventory.Add(
-                    new Takeable(takeable.Weight, takeable.Description, takeable.Name)
-                    { Status = (Status)takeable.Status });
+                var consumable = await GameConfigService.Get<Consumable>(consumableDto.Id);
+
+                if (consumable is not null) classToUpdate.StartInventory.Add(consumable);
             }
 
-            classDungeon.ConfiguredClasses.Add(classToUpdate);
+            foreach (var takeableDto in classDto.InventoryTakeableDtos)
+            {
+                var takeable = await GameConfigService.Get<Takeable>(takeableDto.Id);
+
+                if (takeable is not null) classToUpdate.StartInventory.Add(takeable);
+            }
+
+            foreach (var usableDto in classDto.InventoryUsableDtos)
+            {
+                var usable = await GameConfigService.Get<Usable>(usableDto.Id);
+
+                if (usable is not null) classToUpdate.StartInventory.Add(usable);
+            }
+
+            foreach (var wearableDto in classDto.InventoryWearableDtos)
+            {
+                var wearable = await GameConfigService.Get<Wearable>(wearableDto.Id);
+
+                if (wearable is not null) classToUpdate.StartInventory.Add(wearable);
+            }
 
             if (await GameConfigService.NewOrUpdate(classToUpdate))
             {
-                if (await GameConfigService.NewOrUpdate(classDungeon))
+                if (classToUpdate.Status is not Status.Pending) return Ok();
+                foreach (var avatar in classToUpdate.Avatars)
                 {
-                    return Ok();
+                    if (avatar.Status is Status.Pending) continue;
+                    await MasterService.KickAvatar(avatar.Id, dungeonId);
                 }
-                await GameConfigService.Delete<Class>(classToUpdate.Id);
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                return Ok();
             }
 
             var oldClass = await GameConfigService.Get<Class>(classDto.Id);
@@ -163,7 +199,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight
                 }).ToList(),
                 InventoryUsableDtos = oldClass.StartInventory.OfType<Usable>().Select(x => new UsableDto
@@ -171,7 +207,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight,
                     DamageBoost = x.DamageBoost
                 }).ToList(),
@@ -180,7 +216,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight,
                     EffectDescription = x.EffectDescription
                 }).ToList(),
@@ -189,7 +225,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
                     Id = x.Id,
                     Status = (int)x.Status,
                     Description = x.Description,
-                    Name = x.Description,
+                    Name = x.Name,
                     Weight = x.Weight,
                     ProtectionBoost = x.ProtectionBoost
                 }).ToList(),
@@ -207,9 +243,11 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Delete([FromRoute] Guid dungeonId, [FromRoute] Guid classId)
         {
-            if (await GameConfigService.Get<Dungeon>(dungeonId) is null) return BadRequest();
+            var dungeon = await GameConfigService.Get<Dungeon>(dungeonId);
 
-            if ((await GameConfigService.Get<Dungeon>(dungeonId)).Status is Status.Approved) return Forbid();
+            if (dungeon is null) return BadRequest();
+
+            if (dungeon.Status is Status.Approved) return Forbid();
 
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "UserId");
 
@@ -219,11 +257,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (user is null) return BadRequest();
 
-            if (!(await GameConfigService.Get<Dungeon>(dungeonId)).DungeonMasters.Contains(user)) return Unauthorized();
-
-            var classToDelete = await GameConfigService.Get<Class>(classId);
-
-            if (classToDelete is null) return BadRequest();
+            if (!dungeon.DungeonMasters.Contains(user)) return Unauthorized();
 
             if (await GameConfigService.Delete<Class>(classId)) return Ok();
 
@@ -233,7 +267,7 @@ namespace Apollon.Mud.Server.Inbound.Controllers
         [HttpGet]
         [Authorize(Roles = "Player")]
         [Route("{dungeonId}")]
-        [ProducesResponseType(typeof(ICollection<ClassDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ClassDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll([FromRoute] Guid dungeonId)
         {
@@ -241,64 +275,58 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             if (classesDungeon is null) return BadRequest();
 
-            var classes = classesDungeon.ConfiguredClasses;
-
-            if (!(classes is null))
+            var classDtos = classesDungeon.ConfiguredClasses.Select(c => new ClassDto()
             {
-                var ClassDtos = classes.Select(c => new ClassDto()
+                Id = c.Id,
+                Description = c.Description,
+                Name = c.Name,
+                Status = (int)c.Status,
+                DefaultDamage = c.DefaultDamage,
+                DefaultHealth = c.DefaultHealth,
+                DefaultProtection = c.DefaultProtection,
+                InventoryTakeableDtos = c.StartInventory.OfType<Takeable>().Where
+                (x => x is not Consumable and not Wearable and not Usable).Select
+                (x => new TakeableDto
                 {
-                    Id = c.Id,
-                    Description = c.Description,
-                    Name = c.Name,
-                    Status = (int)c.Status,
-                    DefaultDamage = c.DefaultDamage,
-                    DefaultHealth = c.DefaultHealth,
-                    DefaultProtection = c.DefaultProtection,
-                    InventoryTakeableDtos = c.StartInventory.OfType<Takeable>().Where
-                    (x => x is not Consumable and not Wearable and not Usable).Select
-                    (x => new TakeableDto
-                    {
-                        Id = x.Id,
-                        Status = (int)x.Status,
-                        Description = x.Description,
-                        Name = x.Description,
-                        Weight = x.Weight
-                    }).ToList(),
-                    InventoryUsableDtos = c.StartInventory.OfType<Usable>().Select
-                    (x => new UsableDto
-                    {
-                        Id = x.Id,
-                        Status = (int)x.Status,
-                        Description = x.Description,
-                        Name = x.Description,
-                        Weight = x.Weight,
-                        DamageBoost = x.DamageBoost
-                    }).ToList(),
-                    InventoryConsumableDtos = c.StartInventory.OfType<Consumable>().Select
-                    (x => new ConsumableDto
-                    {
-                        Id = x.Id,
-                        Status = (int)x.Status,
-                        Description = x.Description,
-                        Name = x.Description,
-                        Weight = x.Weight,
-                        EffectDescription = x.EffectDescription
-                    }).ToList(),
-                    InventoryWearableDtos = c.StartInventory.OfType<Wearable>().Select
-                    (x => new WearableDto
-                    {
-                        Id = x.Id,
-                        Status = (int)x.Status,
-                        Description = x.Description,
-                        Name = x.Description,
-                        Weight = x.Weight,
-                        ProtectionBoost = x.ProtectionBoost
-                    }).ToList(),
-                }).ToList();
+                    Id = x.Id,
+                    Status = (int)x.Status,
+                    Description = x.Description,
+                    Name = x.Name,
+                    Weight = x.Weight
+                }).ToList(),
+                InventoryUsableDtos = c.StartInventory.OfType<Usable>().Select
+                (x => new UsableDto
+                {
+                    Id = x.Id,
+                    Status = (int)x.Status,
+                    Description = x.Description,
+                    Name = x.Name,
+                    Weight = x.Weight,
+                    DamageBoost = x.DamageBoost
+                }).ToList(),
+                InventoryConsumableDtos = c.StartInventory.OfType<Consumable>().Select
+                (x => new ConsumableDto
+                {
+                    Id = x.Id,
+                    Status = (int)x.Status,
+                    Description = x.Description,
+                    Name = x.Name,
+                    Weight = x.Weight,
+                    EffectDescription = x.EffectDescription
+                }).ToList(),
+                InventoryWearableDtos = c.StartInventory.OfType<Wearable>().Select
+                (x => new WearableDto
+                {
+                    Id = x.Id,
+                    Status = (int)x.Status,
+                    Description = x.Description,
+                    Name = x.Name,
+                    Weight = x.Weight,
+                    ProtectionBoost = x.ProtectionBoost
+                }).ToList(),
+            }).ToArray();
 
-                return Ok(ClassDtos);
-            }
-            return BadRequest();
+            return Ok(classDtos);
         }
 
         [HttpGet]
@@ -314,62 +342,60 @@ namespace Apollon.Mud.Server.Inbound.Controllers
 
             var classToSend = classesDungeon.ConfiguredClasses.FirstOrDefault(c => c.Id == classId);
 
-            if (!(classToSend is null))
-            {
-                var ClassDto = new ClassDto()
-                {
-                    Id = classToSend.Id,
-                    Description = classToSend.Description,
-                    Name = classToSend.Name,
-                    Status = (int)classToSend.Status,
-                    DefaultDamage = classToSend.DefaultDamage,
-                    DefaultHealth = classToSend.DefaultHealth,
-                    DefaultProtection = classToSend.DefaultProtection,
-                    InventoryTakeableDtos = classToSend.StartInventory.OfType<Takeable>().Where
-                    (x => x is not Consumable and not Wearable and not Usable).Select
-                    (x => new TakeableDto
-                    {
-                        Id = x.Id,
-                        Status = (int)x.Status,
-                        Description = x.Description,
-                        Name = x.Description,
-                        Weight = x.Weight
-                    }).ToList(),
-                    InventoryUsableDtos = classToSend.StartInventory.OfType<Usable>().Select
-                    (x => new UsableDto
-                    {
-                        Id = x.Id,
-                        Status = (int)x.Status,
-                        Description = x.Description,
-                        Name = x.Description,
-                        Weight = x.Weight,
-                        DamageBoost = x.DamageBoost
-                    }).ToList(),
-                    InventoryConsumableDtos = classToSend.StartInventory.OfType<Consumable>().Select
-                    (x => new ConsumableDto
-                    {
-                        Id = x.Id,
-                        Status = (int)x.Status,
-                        Description = x.Description,
-                        Name = x.Description,
-                        Weight = x.Weight,
-                        EffectDescription = x.EffectDescription
-                    }).ToList(),
-                    InventoryWearableDtos = classToSend.StartInventory.OfType<Wearable>().Select
-                    (x => new WearableDto
-                    {
-                        Id = x.Id,
-                        Status = (int)x.Status,
-                        Description = x.Description,
-                        Name = x.Description,
-                        Weight = x.Weight,
-                        ProtectionBoost = x.ProtectionBoost
-                    }).ToList(),
-                };
+            if (classToSend is null) return BadRequest();
 
-                return Ok(ClassDto);
-            }
-            return BadRequest();
+            var classDto = new ClassDto()
+            {
+                Id = classToSend.Id,
+                Description = classToSend.Description,
+                Name = classToSend.Name,
+                Status = (int)classToSend.Status,
+                DefaultDamage = classToSend.DefaultDamage,
+                DefaultHealth = classToSend.DefaultHealth,
+                DefaultProtection = classToSend.DefaultProtection,
+                InventoryTakeableDtos = classToSend.StartInventory.OfType<Takeable>().Where
+                    (x => x is not Consumable and not Wearable and not Usable).Select
+                (x => new TakeableDto
+                {
+                    Id = x.Id,
+                    Status = (int)x.Status,
+                    Description = x.Description,
+                    Name = x.Name,
+                    Weight = x.Weight
+                }).ToList(),
+                InventoryUsableDtos = classToSend.StartInventory.OfType<Usable>().Select
+                (x => new UsableDto
+                {
+                    Id = x.Id,
+                    Status = (int)x.Status,
+                    Description = x.Description,
+                    Name = x.Name,
+                    Weight = x.Weight,
+                    DamageBoost = x.DamageBoost
+                }).ToList(),
+                InventoryConsumableDtos = classToSend.StartInventory.OfType<Consumable>().Select
+                (x => new ConsumableDto
+                {
+                    Id = x.Id,
+                    Status = (int)x.Status,
+                    Description = x.Description,
+                    Name = x.Name,
+                    Weight = x.Weight,
+                    EffectDescription = x.EffectDescription
+                }).ToList(),
+                InventoryWearableDtos = classToSend.StartInventory.OfType<Wearable>().Select
+                (x => new WearableDto
+                {
+                    Id = x.Id,
+                    Status = (int)x.Status,
+                    Description = x.Description,
+                    Name = x.Name,
+                    Weight = x.Weight,
+                    ProtectionBoost = x.ProtectionBoost
+                }).ToList(),
+            };
+
+            return Ok(classDto);
         }
     }
 }

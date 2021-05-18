@@ -8,6 +8,7 @@ using Apollon.Mud.Server.Model.Implementations;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
 using Apollon.Mud.Server.Outbound.Hubs;
 using Apollon.Mud.Shared.HubContract;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Apollon.Mud.Server.Domain.Implementations.Chat
@@ -44,52 +45,57 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
             if (senderAvatar is null) return;
 
             var recipientChatConnectionIds = new List<string>();
-            foreach (var inspectable in senderAvatar.CurrentRoom.Inspectables)
+            foreach (var avatar in senderAvatar.CurrentRoom.Avatars)
             {
                 Connection recipientConnection;
-                if (inspectable is Avatar avatar && 
-                        avatar.Status == Status.Approved && 
-                        (recipientConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id)) is not null)
+                if (avatar.Status == Status.Approved && avatar.Id != senderAvatar.Id &&
+                    (recipientConnection = ConnectionService.GetConnectionByAvatarId(avatar.Id)) is not null)
                     recipientChatConnectionIds.Add(recipientConnection.ChatConnectionId);
             }
 
-            ChatHubContext.Clients.Clients(recipientChatConnectionIds).ReceiveChatMessage(senderAvatar.Name, message);
+            await ChatHubContext.Clients.Clients(recipientChatConnectionIds).ReceiveChatMessage(senderAvatar.Name, message);
         }
 
         /// <inheritdoc cref="IChatService.PostWhisperMessage"/>
-        public async Task PostWhisperMessage(Guid dungeonId, Guid? senderAvatarId, string recipientName, string message)      // TODO: In UML anpassen
+        public async Task PostWhisperMessage(Guid dungeonId, Guid? senderAvatarId, string recipientName, string message)
         {
             Connection recipientConnection;
+            Avatar recipientAvatar;
             string senderName;
 
             if (senderAvatarId is null)
             {
-                if ((recipientConnection = ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeonId)) is null) return;
+                if (ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeonId) is null) return;
                 senderName = "Dungeon Master";
             }
             else
             {
-                Avatar recipientAvatar;
-                try
-                {
-                    var avatars = await GameDbService.GetAll<Avatar>();
-                    recipientAvatar = avatars.SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
-                }
-                catch (InvalidOperationException)
-                {
-                    return;
-                }
 
                 var senderAvatar = await GameDbService.Get<Avatar>(senderAvatarId.Value);
-
-                if (senderAvatar is null || recipientAvatar is null ||
-                    (recipientConnection = ConnectionService.GetConnectionByAvatarId(recipientAvatar.Id)) is null)
-                    return;
-
+                if (senderAvatar is null) return;
                 senderName = senderAvatar.Name;
             }
 
-            ChatHubContext.Clients.Client(recipientConnection.ChatConnectionId)
+            
+            try
+            {
+                var avatars = await GameDbService.GetAll<Avatar>();
+                recipientAvatar = avatars.SingleOrDefault(x => x.Name == recipientName && x.Dungeon.Id == dungeonId && x.Status == Status.Approved);
+            }
+            catch (InvalidOperationException)
+            {
+                return;
+            }
+
+            if (recipientAvatar is null && recipientName != "Dungeon Master") return;
+
+            recipientConnection = recipientAvatar is null
+                    ? ConnectionService.GetDungeonMasterConnectionByDungeonId(dungeonId)
+                    : ConnectionService.GetConnectionByAvatarId(recipientAvatar.Id);
+
+            if (recipientConnection is null) return;
+
+            await ChatHubContext.Clients.Client(recipientConnection.ChatConnectionId)
                 .ReceiveChatMessage(senderName, message);
         }
 
@@ -107,7 +113,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Chat
                     recipientChatConnectionIds.Add(recipientConnection.ChatConnectionId);
             }
 
-            ChatHubContext.Clients.Clients(recipientChatConnectionIds).ReceiveChatMessage("Dungeon Master", message);
+            await ChatHubContext.Clients.Clients(recipientChatConnectionIds).ReceiveChatMessage("Dungeon Master", message);
         }
     }
 }

@@ -14,6 +14,7 @@ namespace Apollon.Mud.Client.Data.Models.Dungeon
         /// </summary>
         [Required(ErrorMessage = "Du musst ein lesbares Pattern angeben")]
         [RegularExpression("^(?!([Nn]euer [Bb]efehl)).*$", ErrorMessage = "Dieser Name ist nicht zugelassen")]
+
         public string PatternForPlayer { get; set; }
 
         /// <summary>

@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Apollon.Mud.Server.Domain.Migrations
 {
-    [DbContext(typeof(DungeonDbContext))]
     [ExcludeFromCodeCoverage]
+    [DbContext(typeof(DungeonDbContext))]
     partial class DungeonDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -17,6 +17,64 @@ namespace Apollon.Mud.Server.Domain.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.5");
+
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars.Avatar", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ArmorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChosenClassId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ChosenGender")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ChosenRaceId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CurrentHealth")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CurrentRoomId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DungeonId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HoldingItemId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArmorId");
+
+                    b.HasIndex("ChosenClassId");
+
+                    b.HasIndex("ChosenRaceId");
+
+                    b.HasIndex("CurrentRoomId");
+
+                    b.HasIndex("DungeonId");
+
+                    b.HasIndex("HoldingItemId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Avatars");
+                });
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", b =>
                 {
@@ -76,6 +134,9 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.Property<string>("DungeonOwnerId")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("LastActive")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
@@ -86,7 +147,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
                     b.HasIndex("CurrentDungeonMasterId");
 
-                    b.HasIndex("DefaultRoomId");
+                    b.HasIndex("DefaultRoomId")
+                        .IsUnique();
 
                     b.HasIndex("DungeonOwnerId");
 
@@ -535,54 +597,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.ToTable("RequestableRoom");
                 });
 
-            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars.Avatar", b =>
-                {
-                    b.HasBaseType("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Inspectable");
-
-                    b.Property<string>("ArmorId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ChosenClassId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ChosenGender")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ChosenRaceId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("CurrentHealth")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("CurrentRoomId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DungeonId1")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("HoldingItemId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("TEXT");
-
-                    b.HasIndex("ArmorId");
-
-                    b.HasIndex("ChosenClassId");
-
-                    b.HasIndex("ChosenRaceId");
-
-                    b.HasIndex("CurrentRoomId");
-
-                    b.HasIndex("DungeonId1");
-
-                    b.HasIndex("HoldingItemId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasDiscriminator().HasValue("Avatar");
-                });
-
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", b =>
                 {
                     b.HasBaseType("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Inspectable");
@@ -633,6 +647,58 @@ namespace Apollon.Mud.Server.Domain.Migrations
                     b.HasDiscriminator().HasValue("Wearable");
                 });
 
+            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars.Avatar", b =>
+                {
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables.Wearable", "Armor")
+                        .WithMany("ArmorAvatars")
+                        .HasForeignKey("ArmorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", "ChosenClass")
+                        .WithMany("Avatars")
+                        .HasForeignKey("ChosenClassId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Races.Race", "ChosenRace")
+                        .WithMany("Avatars")
+                        .HasForeignKey("ChosenRaceId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "CurrentRoom")
+                        .WithMany("Avatars")
+                        .HasForeignKey("CurrentRoomId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
+                        .WithMany("RegisteredAvatars")
+                        .HasForeignKey("DungeonId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", "HoldingItem")
+                        .WithMany("HoldingItemAvatars")
+                        .HasForeignKey("HoldingItemId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", "Owner")
+                        .WithMany("Avatars")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Armor");
+
+                    b.Navigation("ChosenClass");
+
+                    b.Navigation("ChosenRace");
+
+                    b.Navigation("CurrentRoom");
+
+                    b.Navigation("Dungeon");
+
+                    b.Navigation("HoldingItem");
+
+                    b.Navigation("Owner");
+                });
+
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", b =>
                 {
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "Dungeon")
@@ -651,8 +717,9 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "DefaultRoom")
-                        .WithMany()
-                        .HasForeignKey("DefaultRoomId");
+                        .WithOne()
+                        .HasForeignKey("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", "DefaultRoomId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", "DungeonOwner")
                         .WithMany("DungeonOwnerDungeons")
@@ -891,54 +958,6 @@ namespace Apollon.Mud.Server.Domain.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars.Avatar", b =>
-                {
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Wearables.Wearable", "Armor")
-                        .WithMany("ArmorAvatars")
-                        .HasForeignKey("ArmorId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", "ChosenClass")
-                        .WithMany("Avatars")
-                        .HasForeignKey("ChosenClassId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Races.Race", "ChosenRace")
-                        .WithMany("Avatars")
-                        .HasForeignKey("ChosenRaceId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", "CurrentRoom")
-                        .WithMany()
-                        .HasForeignKey("CurrentRoomId");
-
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Dungeon", null)
-                        .WithMany("RegisteredAvatars")
-                        .HasForeignKey("DungeonId1");
-
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables.Takeable", "HoldingItem")
-                        .WithMany("HoldingItemAvatars")
-                        .HasForeignKey("HoldingItemId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Apollon.Mud.Server.Model.Implementations.User.DungeonUser", "Owner")
-                        .WithMany("Avatars")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("Armor");
-
-                    b.Navigation("ChosenClass");
-
-                    b.Navigation("ChosenRace");
-
-                    b.Navigation("CurrentRoom");
-
-                    b.Navigation("HoldingItem");
-
-                    b.Navigation("Owner");
-                });
-
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Classes.Class", b =>
                 {
                     b.Navigation("Avatars");
@@ -966,6 +985,8 @@ namespace Apollon.Mud.Server.Domain.Migrations
 
             modelBuilder.Entity("Apollon.Mud.Server.Model.Implementations.Dungeons.Rooms.Room", b =>
                 {
+                    b.Navigation("Avatars");
+
                     b.Navigation("NeighborEast");
 
                     b.Navigation("NeighborSouth");

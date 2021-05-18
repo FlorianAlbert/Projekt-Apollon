@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Inspectables.Takeables;
+using Apollon.Mud.Shared.Implementations.Dungeons;
 
 namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
 {
@@ -13,7 +14,6 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
     /// </summary>
     public class Inventory : ICollection<Takeable>
     {
-        // TODO: diskutieren ob Wert realistisch
         private const int _MaxWeight = 100;
 
         private ICollection<Takeable> _Items;
@@ -26,7 +26,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// Adds all possible Takeables while the WeightSum of the Inventory is less then _MaxWeight.
         /// </summary>
         /// <param name="takeables"></param>
-        public Inventory(IEnumerable<Takeable> takeables):base()
+        public Inventory(IEnumerable<Takeable> takeables)
         {
             foreach (var takeable in takeables)
             {
@@ -37,7 +37,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <summary>
         /// weight sum of all of the items in the inventory
         /// </summary>
-        public int WeightSum => Items.Sum(takeable => takeable.Weight);
+        public int WeightSum => Items.Where(x => x.Status is Status.Approved).Sum(takeable => takeable.Weight);
 
         /// <inheritdoc cref="ICollection{Takeable}.Count"/>
         [ExcludeFromCodeCoverage]
@@ -50,7 +50,7 @@ namespace Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars
         /// <inheritdoc cref="ICollection{Takeable}.Add"/>
         public void Add(Takeable item)
         {
-            if (item != null && WeightSum + item.Weight <= _MaxWeight)
+            if (item != null && (item.Status is Status.Pending || item.Status is Status.Approved && WeightSum + item.Weight <= _MaxWeight))
                 Items.Add(item);
         }
 

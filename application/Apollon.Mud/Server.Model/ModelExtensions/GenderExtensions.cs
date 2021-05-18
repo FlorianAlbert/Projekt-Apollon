@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Apollon.Mud.Server.Model.Implementations.Dungeons.Avatars;
+using Apollon.Mud.Shared.Dungeon.Avatar;
 
 namespace Apollon.Mud.Server.Model.ModelExtensions
 {
@@ -20,7 +21,7 @@ namespace Apollon.Mud.Server.Model.ModelExtensions
             {
                 Gender.Male => "Männlich",
                 Gender.Female => "Weiblich",
-                Gender.Diverse => "Divers",
+                Gender.Divers => "Divers",
                 Gender.Neutral => "Neutral",
                 _ => "Unbekannt",
             };

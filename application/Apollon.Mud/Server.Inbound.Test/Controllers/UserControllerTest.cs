@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Implementations.UserManagement;
 using Apollon.Mud.Server.Domain.Interfaces.UserManagement;
@@ -11,6 +12,7 @@ using Apollon.Mud.Shared.UserManagement.Registration;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
@@ -172,39 +174,6 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
 
             await userServiceMock.Received().DeleteUser(userIdMock);
             result.Should().BeOfType<OkResult>();
-        }
-
-        [Fact]
-        public async Task GetAllUsers_UserListNull_Fails()
-        {
-            var userListMock = (ICollection<DungeonUser>) null;
-
-            var userServiceMock = Substitute.For<IUserService>();
-            userServiceMock.GetAllUsers().Returns(userListMock);
-
-
-            var userController = new UserController(userServiceMock);
-            var result = await userController.GetAllUsers();
-
-
-            result.Should().BeOfType<BadRequestResult>();
-        }
-
-        [Fact]
-        public async Task GetAllUsers_UserListEmpty_Fails()
-        {
-            var userListMock = new List<DungeonUser>();
-
-            var userServiceMock = Substitute.For<IUserService>();
-            userServiceMock.GetAllUsers().Returns(userListMock);
-
-
-            var userController = new UserController(userServiceMock);
-            var result = await userController.GetAllUsers();
-
-
-            await userServiceMock.Received().GetAllUsers();
-            result.Should().BeOfType<BadRequestResult>();
         }
 
         [Fact]
@@ -426,20 +395,132 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
             await userServiceMock.Received().ConfirmPasswordReset(userIdMock, tokenMock.ToString(), newPasswordMock);
             result.Should().BeOfType<OkResult>();
         }
+        
+        [Fact]
+        public async Task ChangePassword_UserIdClaimNull_Fails()
+        {
+            var changePasswordDto = (ChangePasswordDto)null;
+
+            var claimsPrincipal = Substitute.For<ClaimsPrincipal>();
+            claimsPrincipal.Claims.Returns(new List<Claim>());
+
+            var httpContext = _Fixture.Create<HttpContext>();
+            httpContext.User = claimsPrincipal;
+
+            var userServiceMock = Substitute.For<IUserService>();
+
+
+            var userController = new UserController(userServiceMock)
+            {
+                ControllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext
+                }
+            };
+            var result = await userController.ChangePassword(changePasswordDto);
+
+            
+            result.Should().BeOfType<BadRequestResult>();
+        }
+
+        [Fact]
+        public async Task ChangePassword_CouldNotParseUserId_Fails()
+        {
+            var userIdMock = "";
+            var changePasswordDto = (ChangePasswordDto)null;
+            var userMock = _Fixture.Build<DungeonUser>()
+                .With(x => x.Id, userIdMock.ToString)
+                .Create();
+
+            var userIdClaim = new Claim("UserId", userIdMock);
+            
+            var claimsPrincipal = Substitute.For<ClaimsPrincipal>();
+            claimsPrincipal.Claims.Returns(new List<Claim>{userIdClaim});
+
+            var httpContext = _Fixture.Create<HttpContext>();
+            httpContext.User = claimsPrincipal;
+
+            var userServiceMock = Substitute.For<IUserService>();
+
+
+            var userController = new UserController(userServiceMock)
+            {
+                ControllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext
+                }
+            };
+            var result = await userController.ChangePassword(changePasswordDto);
+
+
+            result.Should().BeOfType<BadRequestResult>();
+        }
+
+        [Fact]
+        public async Task ChangePassword_UserNull_Fails()
+        {
+            var userIdMock = Guid.NewGuid();
+            var changePasswordDto = (ChangePasswordDto)null;
+            var userMock = (DungeonUser) null;
+
+            var userIdClaim = new Claim("UserId", userIdMock.ToString());
+
+            var claimsPrincipal = Substitute.For<ClaimsPrincipal>();
+            claimsPrincipal.Claims.Returns(new List<Claim> { userIdClaim });
+
+            var httpContext = _Fixture.Create<HttpContext>();
+            httpContext.User = claimsPrincipal;
+
+            var userServiceMock = Substitute.For<IUserService>();
+            userServiceMock.GetUser(userIdMock).Returns(userMock);
+
+
+            var userController = new UserController(userServiceMock)
+            {
+                ControllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext
+                }
+            };
+            var result = await userController.ChangePassword(changePasswordDto);
+
+
+            await userServiceMock.Received().GetUser(userIdMock);
+            result.Should().BeOfType<BadRequestResult>();
+        }
 
         [Fact]
         public async Task ChangePassword_RequestPasswordResetDtoNull_Fails()
         {
             var userIdMock = Guid.NewGuid();
             var changePasswordDto = (ChangePasswordDto)null;
+            var userMock = _Fixture.Build<DungeonUser>()
+                .With(x => x.Id, userIdMock.ToString)
+                .Create();
+
+            var userIdClaim = new Claim("UserId", userIdMock.ToString());
+
+            var claimsPrincipal = Substitute.For<ClaimsPrincipal>();
+            claimsPrincipal.Claims.Returns(new List<Claim> { userIdClaim });
+
+            var httpContext = _Fixture.Create<HttpContext>();
+            httpContext.User = claimsPrincipal;
 
             var userServiceMock = Substitute.For<IUserService>();
+            userServiceMock.GetUser(userIdMock).Returns(userMock);
 
 
-            var userController = new UserController(userServiceMock);
-            var result = await userController.ChangePassword(changePasswordDto, userIdMock);
+            var userController = new UserController(userServiceMock)
+            {
+                ControllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext
+                }
+            };
+            var result = await userController.ChangePassword(changePasswordDto);
 
 
+            await userServiceMock.Received().GetUser(userIdMock);
             result.Should().BeOfType<BadRequestResult>();
         }
 
@@ -447,9 +528,20 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
         public async Task ChangePassword_NoCorrectEmail_Fails()
         {
             var userIdMock = Guid.NewGuid();
-            var tokenMock = Guid.NewGuid();
             var newPasswordMock = _Fixture.Create<string>();
             var oldPasswordMock = _Fixture.Create<string>();
+
+            var userMock = _Fixture.Build<DungeonUser>()
+                .With(x => x.Id, userIdMock.ToString)
+                .Create();
+
+            var userIdClaim = new Claim("UserId", userIdMock.ToString());
+
+            var claimsPrincipal = Substitute.For<ClaimsPrincipal>();
+            claimsPrincipal.Claims.Returns(new List<Claim> { userIdClaim });
+
+            var httpContext = _Fixture.Create<HttpContext>();
+            httpContext.User = claimsPrincipal;
 
             var changePasswordDto = _Fixture.Build<ChangePasswordDto>()
                 .With(x => x.OldPassword, oldPasswordMock)
@@ -458,12 +550,20 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
 
             var userServiceMock = Substitute.For<IUserService>();
             userServiceMock.ChangePassword(userIdMock, oldPasswordMock, newPasswordMock).Returns(false);
+            userServiceMock.GetUser(userIdMock).Returns(userMock);
 
 
-            var userController = new UserController(userServiceMock);
-            var result = await userController.ChangePassword(changePasswordDto, userIdMock);
+            var userController = new UserController(userServiceMock)
+            {
+                ControllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext
+                }
+            };
+            var result = await userController.ChangePassword(changePasswordDto);
 
 
+            await userServiceMock.Received().GetUser(userIdMock);
             await userServiceMock.Received().ChangePassword(userIdMock, oldPasswordMock, newPasswordMock);
             result.Should().BeOfType<BadRequestResult>();
         }
@@ -472,9 +572,20 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
         public async Task ChangePassword_CorrectEmail_Succeeds()
         {
             var userIdMock = Guid.NewGuid();
-            var tokenMock = Guid.NewGuid();
             var newPasswordMock = _Fixture.Create<string>();
             var oldPasswordMock = _Fixture.Create<string>();
+
+            var userMock = _Fixture.Build<DungeonUser>()
+                .With(x => x.Id, userIdMock.ToString)
+                .Create();
+
+            var userIdClaim = new Claim("UserId", userIdMock.ToString());
+
+            var claimsPrincipal = Substitute.For<ClaimsPrincipal>();
+            claimsPrincipal.Claims.Returns(new List<Claim> { userIdClaim });
+
+            var httpContext = _Fixture.Create<HttpContext>();
+            httpContext.User = claimsPrincipal;
 
             var changePasswordDto = _Fixture.Build<ChangePasswordDto>()
                 .With(x => x.OldPassword, oldPasswordMock)
@@ -483,12 +594,20 @@ namespace Apollon.Mud.Server.Inbound.Test.Controllers
 
             var userServiceMock = Substitute.For<IUserService>();
             userServiceMock.ChangePassword(userIdMock, oldPasswordMock, newPasswordMock).Returns(true);
+            userServiceMock.GetUser(userIdMock).Returns(userMock);
 
 
-            var userController = new UserController(userServiceMock);
-            var result = await userController.ChangePassword(changePasswordDto, userIdMock);
+            var userController = new UserController(userServiceMock)
+            {
+                ControllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext
+                }
+            };
+            var result = await userController.ChangePassword(changePasswordDto);
 
 
+            await userServiceMock.Received().GetUser(userIdMock);
             await userServiceMock.Received().ChangePassword(userIdMock, oldPasswordMock, newPasswordMock);
             result.Should().BeOfType<OkResult>();
         }

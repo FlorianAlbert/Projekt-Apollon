@@ -1,42 +1,233 @@
-﻿
+﻿@using Apollon.Mud.Shared.Game.Chat
+@using Apollon.Mud.Shared.Dungeon
+@using Apollon.Mud.Shared.Dungeon.Avatar
+@using Apollon.Mud.Client.Data
+@using Apollon.Mud.Shared.HubContract
+
+@inject Apollon.Mud.Client.Services.Interfaces.IAvatarService AvatarService
+@inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
+@inject Apollon.Mud.Client.Services.Interfaces.IChatService ChatService
+@inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
+@inject Apollon.Mud.Client.Data.Account.UserContext UserContext
+@inject IJSRuntime JSRuntime
+
+@implements IDisposable
+
 <div class="card ms-2 me-2 bg-secondary" style="display: flex; flex-direction: column; height: 87vh">
     <div style="flex-shrink: 0;">
-        <select class="form-select" aria-label="MessageSelect" >
-            <option selected>Nachricht an:</option>
-            <option value="1">Alle Spieler</option>
-            <option value="2">Spieler 1</option>
-            <option value="3">Spieler 2</option>
+        <select class="form-select" aria-label="MessageSelect" @bind="chosenRecipient">
+            <option value="NoRecipient" hidden selected>Nachricht an:</option>
+            @if (IsDungeonMaster)
+            {
+                <option value="Alle">Alle</option>
+                @foreach (ChatPartnerDto avatarDto in ChatPartners)
+                {
+                    <option value="@avatarDto.AvatarName">@avatarDto.AvatarName</option>
+                }
+            }
+            else
+            {
+                <option value="Raum">Raum</option>
+                @foreach (ChatPartnerDto avatarDto in ChatPartners)
+                {
+                    <option value="@avatarDto.AvatarName">@avatarDto.AvatarName</option>
+                }
+            }
         </select>
     </div>
     <div class="panel panel-body bg-white mt-2" id="chat" style="overflow-y:auto; height: 100%">
         <ul class="chat">
-            @for (int i = 0; i < 15; i++)
+            @foreach (ChatMessage message in Messages)
             {
-                <li class="left clearfix">
-                    <div class="chat-body clearfix">
-                        <div class="header">
-                            <strong class="primary-font">from</strong>
-                            <small class="pull-right text-muted">
-                                <span class="glyphicon glyphicon-time"></span>to:
-                            </small>
+                if (message.MessageIncoming)
+                {
+                    <li class="left clearfix">
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong class="primary-font">Von</strong>
+                                <span>@message.SenderName</span>
+                                <small class="pull-right text-muted">
+                                    <span class="glyphicon glyphicon-time">An: Dich</span>
+                                </small>
+                            </div>
+                            <p>
+                                @message.MessageText
+                            </p>
                         </div>
-                        <p>
-                            message
-                        </p>
-                    </div>
-                </li>
+                    </li>
+                }
+                else
+                {
+                    <li class="left clearfix">
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong class="primary-font">An</strong>
+                                <span>@message.RecipientName</span>
+                                <small class="pull-right text-muted">
+                                    <span class="glyphicon glyphicon-time"></span>Von: Dir
+                                </small>
+                            </div>
+                            <p>
+                                @message.MessageText
+                            </p>
+                        </div>
+                    </li>
+                }
+
             }
         </ul>
     </div>
     <div class="chat mt-2 mb-2" style="flex-shrink: 0;">
-        <div class="prompt d-flex">
-            <input id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
-            <button id="send" class="btn btn-primary ms-2">Senden</button>
+        <div class="prompt d-flex bg-secondary">
+            <input @bind-value="inputMessage" @bind-value:event="oninput" id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" @onkeyup="@CheckForEnter">
+            @if (chosenRecipient != "NoRecipient" && inputMessage != "")
+            {
+                <button @onclick="SendMessage" id="send" class="btn btn-primary ms-2">Senden</button>
+            }
+            else
+            {
+                <button id="send" class="btn btn-primary ms-2" disabled>Senden</button>
+            }
         </div>
-        <span> </span>
+        <span></span>
     </div>
 </div>
 
 @code {
 
+    #region General Attributes
+
+    /// <summary>
+    /// The unqiue identifier of the users avatar
+    /// </summary>
+    [Parameter]
+    public Guid? AvatarId { get; set; }
+
+    /// <summary>
+    /// The unique dungeon identifier
+    /// </summary>
+    [Parameter]
+    public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// List of all Avatars of the dungeon
+    /// </summary>
+    public Queue<ChatMessage> Messages { get; set; }
+
+    /// <summary>
+    /// String of the selected Recipient
+    /// </summary>
+    string chosenRecipient = "NoRecipient";
+
+    /// <summary>
+    /// String of the message written in the input
+    /// </summary>
+    string inputMessage = "";
+
+    /// <summary>
+    /// True when the user is Dungeon Master
+    /// </summary>
+    [Parameter]
+    public bool IsDungeonMaster { get; set; }
+
+    /// <summary>
+    /// The DungeonDto of the current Dungeon
+    /// </summary>
+    public DungeonDto Dungeon { get; set; }
+
+    /// <summary>
+    /// The List of available Chat Partners
+    /// </summary>
+    private List<ChatPartnerDto> _ChatPartners;
+
+    public List<ChatPartnerDto> ChatPartners
+    {
+        get { return _ChatPartners ??= new List<ChatPartnerDto>(); }
+        set { _ChatPartners = value; }
+    }
+
+    #endregion
+
+
+    /// <summary>
+    /// Called when the component is initialized, this method receives data from the backend and saves them locally
+    /// </summary>
+    /// <returns></returns>
+    protected async override Task OnInitializedAsync()
+    {
+        if (Messages is null) Messages = new Queue<ChatMessage>();
+
+        if (DungeonId != Guid.Empty)
+        {
+            var dungeon = await DungeonService.GetDungeon(DungeonId);
+            if (dungeon is not null) Dungeon = dungeon;
+        }
+        await JSRuntime.InvokeVoidAsync("goToBottom", "chat");
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Sends the inputMessage to the selected Recipient
+    /// </summary>
+    public async void SendMessage()
+    {
+        ChatMessageDto message = new ChatMessageDto();
+        message.Message = inputMessage;
+        message.RecipientName = chosenRecipient;
+
+        bool success;
+        switch (chosenRecipient)
+        {
+            case "Alle":
+                success = await ChatService.PostGlobalMessage(message);
+                break;
+            case "Raum":
+                success = await ChatService.PostRoomMessage(message);
+                break;
+            default:
+                success = await ChatService.PostWhisperMessage(message);
+                break;
+        }
+        if (success) Messages.Enqueue(new ChatMessage(chosenRecipient, inputMessage, false));
+        inputMessage = "";
+        StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("goToBottom", "chat");
+    }
+
+    /// <inheritdoc cref="IClientChatHubContract.ReceiveChatMessage"/>
+    public async Task ReceiveChatMessage(string senderName, string message)
+    {
+        Messages.Enqueue(new ChatMessage(senderName, message, true));
+        StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("goToBottom", "chat");
+    }
+
+    /// <summary>
+    /// Updates the Chat Partner List
+    /// </summary>
+    /// <param name="partnerList">The new List of Chat Partners</param>
+    /// <returns></returns>
+    public async Task UpdateChatPartners(ICollection<ChatPartnerDto> partnerList)
+    {
+        ChatPartners = partnerList.ToList();
+        ChatPartners.Remove(ChatPartners.Find(x => x.AvatarId == AvatarId));
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Correctly leaves the dungeon for the user in case he just closes the window
+    /// </summary>
+    public void Dispose()
+    {
+        GameService.LeaveGame();
+    }
+
+    /// <summary>
+    /// This Method enables the user to send chat messages by pressing enter
+    /// </summary>
+    /// <param name="e"></param>
+    public void CheckForEnter(KeyboardEventArgs args)
+    {
+        if (chosenRecipient != "NoRecipient" && inputMessage != "" && args.Key == "Enter") SendMessage();
+    }
 }

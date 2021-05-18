@@ -58,7 +58,8 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             var user = new DungeonUser()
             {
                 UserName = userEmail,
-                Email = userEmail
+                Email = userEmail,
+                LastActive = DateTime.UtcNow
             };
             
             var creationResult = await _userDbService.CreateUser(user, password, !_adminRegistered);
@@ -89,6 +90,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
         }
 
         /// <inheritdoc cref="IUserService.DeleteUser"/>
+        [ExcludeFromCodeCoverage]
         public async Task<bool> DeleteUser(Guid userId)
         {
             return await _userDbService.DeleteUser(userId);
@@ -146,6 +148,35 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
             if (user is null) return false;
             return await _userDbService.UpdateUser(user, oldPassword, newPassword);
         }
+
+        public async Task<bool> IsUserInAdminRole(string userId)
+        {
+            return await _userDbService.IsUserInRole(userId, Roles.Admin.ToString());
+        }
+
+        public async Task<bool> CanDeleteAdmin()
+        {
+            var admins = await _userDbService.GetUsersInRole(Roles.Admin.ToString());
+
+            return admins.Count > 1;
+        }
+
+        public async Task<bool> MakeAdmin(string userId, bool approved)
+        {
+            if (approved)
+            {
+                if (!await _userDbService.IsUserInRole(userId, Roles.Admin.ToString()))
+                    return await _userDbService.AddUserToRole(userId, Roles.Admin.ToString());
+                return true;
+            }
+            else
+            {
+                if (await _userDbService.IsUserInRole(userId, Roles.Admin.ToString()))
+                    return await _userDbService.RemoveUserFromRole(userId, Roles.Admin.ToString());
+                return false;
+            }
+        }
+
         #endregion
     }
 }

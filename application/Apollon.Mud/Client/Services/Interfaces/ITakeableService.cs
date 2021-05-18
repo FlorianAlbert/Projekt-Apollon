@@ -9,58 +9,56 @@ using System.Threading.Tasks;
 namespace Apollon.Mud.Client.Services.Interfaces
 {
     /// <summary>
-    /// TODO
+    /// Interface to provide CRUD Functions for Dungeon Takeables
     /// </summary>
     public interface ITakeableService
     {
         /// <summary>
-        /// TODO
+        /// The Rest Http Client injected into the class
         /// </summary>
         public HttpClient HttpClient { get; }
 
         /// <summary>
-        /// TODO
+        /// Creates Cancellation Tokens for each Http Request
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
-        /// TODO
+        /// Updates the given takeable in the Database
         /// </summary>
-        /// <param name="takeableDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="takeableDto">The takeable with updated information</param>
+        /// <param name="dungeonId">The Dungeon that contains the takeable</param>
+        /// <returns>The old takeable in case the Database transaction failed, otherwise null</returns>
         Task<Guid> CreateNewTakeable(TakeableDto takeableDto, Guid dungeonId);
 
         /// <summary>
-        /// TODO
+        /// Deletes the given takeable in the Database
         /// </summary>
-        /// <param name="takeableDto"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="takeableId">The id of the takeable to delete</param>
+        /// <param name="dungeonId">The Dungeon that contains the takeable</param>
+        /// <returns>Wether the DB transaction was successfull</returns>
         Task<TakeableDto> UpdateTakeable(TakeableDto takeableDto, Guid dungeonId);
 
         /// <summary>
-        /// TODO
+        /// Gets all takeables of a dungeon
         /// </summary>
-        /// <param name="takeableId"></param>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
-        /// 
+        /// <param name="dungeonId">The ID of the dungeon containing the requested takeables</param>
+        /// <returns>A Collection of the requested takeables, otherwise null</returns>
         Task<bool> DeleteTakeable(Guid dungeonId, Guid takeableId);
 
         /// <summary>
-        /// TODO
+        /// Gets all takeables of a dungeon
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the dungeon containing the requested takeables</param>
+        /// <returns>A Collection of the requested takeables, otherwise null</returns>
         Task<ICollection<TakeableDto>> GetAllTakeables(Guid dungeonId);
 
         /// <summary>
-        /// TODO
+        /// Gets one takeable of a dungeon
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <param name="takeableId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the dungeon containing the requested takeable</param>
+        /// <param name="takeableId">The ID of the requested class</param>
+        /// <returns>The requested class, otherwise null</returns>
         Task<TakeableDto> GetTakeable(Guid dungeonId, Guid takeableId);
     }
 }
