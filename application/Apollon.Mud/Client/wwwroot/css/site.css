@@ -26,3 +26,27 @@
     right: 0.75rem;
     top: 0.5rem;
 }
+
+.bg-secondary {
+    background-color: #373e49 !important;
+    outline-color: #373e49 !important;
+}
+
+.btn-danger {
+    background-color: #941c2f !important;
+    outline-color: #941c2f !important;
+}
+
+.btn-success {
+    background-color: #226f54 !important;
+    outline-color: #226f54 !important;
+}
+
+.btn-primary {
+    background-color: #0077b6 !important;
+    outline-color: #0077b6 !important;
+}
+
+btn-info {
+    background-color: #3FB3DA !important;
+}
