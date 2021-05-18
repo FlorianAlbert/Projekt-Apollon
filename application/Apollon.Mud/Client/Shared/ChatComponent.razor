@@ -19,7 +19,7 @@
             <option value="NoRecipient" hidden selected>Nachricht an:</option>
             @if (IsDungeonMaster)
             {
-                <option value="All">Alle</option>
+                <option value="Alle">Alle</option>
                 @foreach (ChatPartnerDto avatarDto in ChatPartners)
                 {
                     <option value="@avatarDto.AvatarName">@avatarDto.AvatarName</option>
@@ -27,7 +27,7 @@
             }
             else
             {
-                <option value="Room">Raum</option>
+                <option value="Raum">Raum</option>
                 @foreach (ChatPartnerDto avatarDto in ChatPartners)
                 {
                     <option value="@avatarDto.AvatarName">@avatarDto.AvatarName</option>
@@ -78,7 +78,7 @@
         </ul>
     </div>
     <div class="chat mt-2 mb-2" style="flex-shrink: 0;">
-        <div class="prompt d-flex">
+        <div class="prompt d-flex bg-secondary">
             <input @bind-value="inputMessage" @bind-value:event="oninput" id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" @onkeyup="@CheckForEnter">
             @if (chosenRecipient != "NoRecipient" && inputMessage != "")
             {
@@ -136,7 +136,7 @@
     public DungeonDto Dungeon { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The List of available Chat Partners
     /// </summary>
     private List<ChatPartnerDto> _ChatPartners;
 
@@ -178,10 +178,10 @@
         bool success;
         switch (chosenRecipient)
         {
-            case "All":
+            case "Alle":
                 success = await ChatService.PostGlobalMessage(message);
                 break;
-            case "Room":
+            case "Raum":
                 success = await ChatService.PostRoomMessage(message);
                 break;
             default:
@@ -203,20 +203,19 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Updates the Chat Partner List
     /// </summary>
-    /// <param name="partnerList"></param>
+    /// <param name="partnerList">The new List of Chat Partners</param>
     /// <returns></returns>
     public async Task UpdateChatPartners(ICollection<ChatPartnerDto> partnerList)
     {
-        //TODO Doppelte Überprüfung?
         ChatPartners = partnerList.ToList();
         ChatPartners.Remove(ChatPartners.Find(x => x.AvatarId == AvatarId));
         StateHasChanged();
     }
 
     /// <summary>
-    /// TODO
+    /// Correctly leaves the dungeon for the user in case he just closes the window
     /// </summary>
     public void Dispose()
     {

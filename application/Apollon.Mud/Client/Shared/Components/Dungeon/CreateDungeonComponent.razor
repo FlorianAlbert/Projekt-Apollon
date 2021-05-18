@@ -343,9 +343,9 @@
                 var responseGuid = await DungeonService.CreateNewDungeon(submitDungeon);
                 if (responseGuid.Item1 != Guid.Empty)
                 {
-                    await OnDungeonSavedOrLoaded.InvokeAsync(responseGuid.Item1);
                     DungeonId = responseGuid.Item1;
                     CurrentDungeon = await DungeonService.GetDungeon(DungeonId) ?? new DungeonDto();
+                    await OnDungeonSavedOrLoaded.InvokeAsync(responseGuid.Item1);
                 }
                 else if (responseGuid.Item2) DungeonNameAlreadyExists = true;
             }
@@ -353,6 +353,7 @@
             {
                 submitDungeon.Id = DungeonId;
                 var oldDungeonDto = await DungeonService.UpdateDungeon(submitDungeon);
+                await OnDungeonSavedOrLoaded.InvokeAsync(Guid.Empty);
                 if (!(oldDungeonDto is null))
                 {
                     DungeonId = oldDungeonDto.Id;
@@ -365,7 +366,6 @@
                     {
                         dungeonModel.DefaultRoom = oldDungeonDto.DefaultRoom.Name;
                     }
-                    //TODO: Maybe den User Benachrichtigen über Fehler?
                 }
 
             }
@@ -373,7 +373,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Saves the Dungeon in case the user just leaves the page
     /// </summary>
     public void Dispose()
     {

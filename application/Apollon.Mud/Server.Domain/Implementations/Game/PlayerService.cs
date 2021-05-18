@@ -182,7 +182,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                         return;
                     }
 
-                    await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage("Diesen Befehl gibt es nicht!");
+                    await HubContext.Clients.Client(avatarConnection.GameConnectionId).ReceiveGameMessage("Diesen Befehl gibt es nicht! Gib \"Hilfe\" ein um Informationen über alle verfügbaren Befehle zu erhalten.\n");
                     return;
             }
         }
@@ -691,20 +691,33 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (room is null) return "Fehler - Keine Raumbeschreibung gefunden!\n";
 
-            var description = $"\t{ room.Description }\n";
+            var description = $"{ room.Description }\n";
 
             if (room.Inspectables.Count != 0)
             {
-                description += "\n\tGegenstände:\n";
+                description += "\nGegenstände:\n";
                 description = room.Inspectables.Where(x => x.Status is Status.Approved).Aggregate(description,
-                    (current, inspectable) => current + $"\t\t{ inspectable.Name }\n");
+                    (current, inspectable) => current + $"\t{ inspectable.Name }\n");
             }
 
-            if (room.Avatars.Count == 0) return description;
+            if (room.Avatars.Count != 0)
+            {
+                description += "\nAvatare:\n";
+                description = room.Avatars.Where(x => x.Status is Status.Approved).Aggregate(description,
+                    (current, avatar) => current + $"\t{ avatar.Name }\n");
+            }
 
-            description += "\n\tAvatare:\n";
-            description = room.Avatars.Where(x => x.Status is Status.Approved).Aggregate(description,
-                (current, avatar) => current + $"\t\t{ avatar.Name }\n");
+            if (room.NeighborNorth is null &&
+                room.NeighborEast is null &&
+                room.NeighborSouth is null &&
+                room.NeighborWest is null) return description;
+
+            description += "\nSichtbare Ausg\u00E4nge:\n";
+
+            if (room.NeighborNorth != null) description += "\tNorden\n";
+            if (room.NeighborEast != null) description += "\tOsten\n";
+            if (room.NeighborSouth != null) description += "\tS\u00FCden\n";
+            if (room.NeighborWest != null) description += "\tWesten\n";
 
             return description;
         }

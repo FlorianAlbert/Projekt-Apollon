@@ -1,5 +1,4 @@
-﻿@page "/dungeon/overview"
-@page "/dungeon/overview/{DungeonId:guid}"
+﻿@page "/dungeon/overview/{DungeonId:guid}"
 
 @using Apollon.Mud.Client.Data.Models.Game
 @using Apollon.Mud.Shared.Dungeon
@@ -119,7 +118,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @{int classIndex = 0;}
+                            @{int classIndex = 1;}
                             @foreach (ClassDto classDto in dungeonClasses)
                             {
                                 int itemCount = classDto.InventoryTakeableDtos.Count()
@@ -158,7 +157,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @{int raceIndex = 0;}
+                            @{int raceIndex = 1;}
                             @foreach (RaceDto raceDto in dungeonRaces)
                             {
                                 <tr>
@@ -191,7 +190,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @{int inspectableIndex = 0;}
+                                @{int inspectableIndex = 1;}
                                 @foreach (InspectableDto inspectableDto in dungeonInspectables)
                                 {
                                     <tr>
@@ -219,7 +218,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @{int takeableIndex = 0;}
+                                @{int takeableIndex = 1;}
                                 @foreach (TakeableDto takeableDto in dungeonTakeables)
                                 {
                                     <tr>
@@ -249,7 +248,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @{int consumableIndex = 0;}
+                                @{int consumableIndex = 1;}
                                 @foreach (ConsumableDto consumableDto in dungeonConsumables)
                                 {
                                     <tr>
@@ -280,7 +279,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @{int usableIndex = 0;}
+                                @{int usableIndex = 1;}
                                 @foreach (UsableDto usableDto in dungeonUsables)
                                 {
                                     <tr>
@@ -311,7 +310,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @{int wearableIndex = 0;}
+                                @{int wearableIndex = 1;}
                                 @foreach (WearableDto wearableDto in dungeonWearables)
                                 {
                                     <tr>
@@ -343,7 +342,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @{int npcIndex = 0;}
+                            @{int npcIndex = 1;}
                             @foreach (NpcDto npcDto in dungeonNpcs)
                             {
                                 <tr>
@@ -372,7 +371,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @{int requestableIndex = 0;}
+                            @{int requestableIndex = 1;}
                             @foreach (RequestableDto requestableDto in dungeonRequestables)
                             {
                                 <tr>
@@ -400,7 +399,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @{int roomIndex = 0;}
+                            @{int roomIndex = 1;}
                             @foreach (RoomDto roomDto in dungeonRooms)
                             {
                                 <tr>

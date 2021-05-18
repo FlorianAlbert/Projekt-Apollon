@@ -2,6 +2,7 @@
 
 @using Apollon.Mud.Client.Shared.Components.MasterView
 @using Apollon.Mud.Client.Shared.Components
+@using Apollon.Mud.Shared.Dungeon
 @using Apollon.Mud.Shared.HubContract
 @using Apollon.Mud.Shared.Dungeon.Avatar
 @using Apollon.Mud.Shared.Game.Chat
@@ -32,14 +33,17 @@
                                         <button class="btn btn-primary nav-item" @onclick="PlayerListButtonClicked">Spielerliste</button>
                                     </div>
                                     <div class="col text-center">
-                                        <button class="btn btn-primary nav-item" @onclick="RequestsButtonClicked">Anfragen</button>
+                                        <button class="btn btn-primary nav-item" @onclick="RequestsButtonClicked">Anfragen <span class="badge text-white bg-info ms-1 top-0 left-100">@RequestQueue.Count</span></button>
                                     </div>
                                     <div class="col text-center">
                                         <button class="btn btn-primary nav-item" @onclick="ConfigurationButtonClicked">Konfiguration</button>
                                     </div>
-                                    <div class="col text-center">
-                                        <button class="btn btn-primary nav-item" @onclick="EnterRequestsButtonClicked">Offene Anfragen</button>
-                                    </div>
+                                    @if (Dungeon is not null && Dungeon.Visibility == 0)
+                                    {
+                                        <div class="col text-center">
+                                            <button class="btn btn-primary nav-item" @onclick="EnterRequestsButtonClicked">Offene Anfragen</button>
+                                        </div>
+                                    }
                                     <div class="col">
                                         <button class="btn btn-danger nav-item float-end" @onclick="EndConnectionButtonClicked">Beenden</button>
                                     </div>
@@ -60,7 +64,7 @@
                                     <MasterPlayerListComponent DungeonId="DungeonId" @ref="PlayerListChildComponent" />
                                     break;
                                 case 1:
-                                    <MasterRequestComponent DungeonId="DungeonId" @ref="RequestChildComponent" RequestRemoved="RemoveRequestFromParentList" ParentRequestQueue="RequestQueue"/>
+                                    <MasterRequestComponent DungeonId="DungeonId" @ref="RequestChildComponent" RequestRemoved="RemoveRequestFromParentList" ParentRequestQueue="RequestQueue" />
                                     break;
                                 case 2:
                                     <MasterConfigurationComponent DungeonId="DungeonId" />
@@ -73,7 +77,7 @@
                     </div>
                     <div class="col-4" style="max-height:87vh; padding-left:0;">
                         <div class="bg-secondary">
-                            <ChatComponent @ref="ChatChildComponent" DungeonId="DungeonId" IsDungeonMaster="true"/>
+                            <ChatComponent @ref="ChatChildComponent" DungeonId="DungeonId" IsDungeonMaster="true" />
                         </div>
                     </div>
                 </div>
@@ -102,6 +106,11 @@
     /// </summary>
     [Parameter]
     public Guid DungeonId { get; set; }
+
+    /// <summary>
+    /// The Dungeon that is being played
+    /// </summary>
+    public DungeonDto Dungeon { get; set; }
 
     /// <summary>
     /// Switches between the different master views
@@ -174,6 +183,7 @@
 
         successfullConnection = enterRequest == HttpStatusCode.OK;
 
+        Dungeon = await DungeonService.GetDungeon(DungeonId);
 
         StateHasChanged();
     }
@@ -203,7 +213,11 @@
     public void ProcessSpecialAction(DungeonMasterRequestDto requestDto)
     {
         if (masterPage == 1) RequestChildComponent.AddMasterRequest(requestDto);
-        else RequestQueue.Add(requestDto);
+        else
+        {
+            RequestQueue.Add(requestDto);
+            StateHasChanged();
+        }
     }
 
     /// <summary>

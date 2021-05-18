@@ -95,8 +95,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
             foreach (var role in Enum.GetNames<Roles>())
             {
-                // TODO Etienne: In UserDbService
-                if (await _userManager.IsInRoleAsync(user, role))
+                if (await _userDbService.IsUserInRole(user.Id, role))
                 {
                     listClaims.Add(new Claim(ClaimTypes.Role, role));
                 }

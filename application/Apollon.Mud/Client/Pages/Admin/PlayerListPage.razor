@@ -11,84 +11,85 @@
     <Authorized>
         @if (UserContext.DungeonUserContext.IsAdmin)
         {
-            <div class="container" style="display: flex; flex-direction: column; height: 87vh">
-                <div class="card mt-5">
-                    <div class="card-header"><h3>Liste aller Spieler</h3></div>
-                    <div class="card-body">
-                        <table class="table text-center">
-                            <thead>
-                                <tr>
-                                    <th scope="col"></th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Verifiziert</th>
-                                    <th scope="col">Zuletzt online</th>
-                                    <th scope="col">Adminrechte</th>
-                                    <th scope="col">Löschen</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @{int userIndex = 1;}
-                                @foreach (DungeonUserDto user in allUsers)
-                                {
-                                    @if (user.Id == UserContext.DungeonUserContext.Id)
+            <div style="display: flex; flex-direction: column; height: 93vh">
+                <div class="container justify-content-start" style="overflow-y:auto; height:100%">
+                    <div class="card mt-5">
+                        <div class="card-header"><h3>Liste aller Spieler</h3></div>
+                        <div class="card-body">
+                            <table class="table text-center">
+                                <thead>
+                                    <tr>
+                                        <th scope="col"></th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Verifiziert</th>
+                                        <th scope="col">Zuletzt online</th>
+                                        <th scope="col">Adminrechte</th>
+                                        <th scope="col">Löschen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int userIndex = 1;}
+                                    @foreach (DungeonUserDto user in allUsers)
                                     {
-                                        <tr>
-                                            <th scope="row">@userIndex</th>
-                                            <td>@user.Email.Split("@")[0]</td>
-                                            @if (user.EmailConfirmed)
-                                            {
-                                                <td><div class="spinner-grow text-success text-muted" role="status" style="width: 1rem; height: 1rem"></div></td>
-                                            }
-                                            else
-                                            {
-                                                <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
-                                            }
-                                            <td>@(TimeZoneInfo.ConvertTimeFromUtc(user.LastActive, TimeZoneInfo.Local))</td>
-                                            <td>
-                                                <div class="form-check form-switch d-flex justify-content-center">
-                                                    <input class="form-check-input" disabled type="checkbox" id="flexSwitchCheckDefault" @bind="@user.IsAdmin" @onclick="() => ChangeAdminRights(user)">
-                                                </div>
-                                            </td>
-                                            <td><button class="btn btn-sm btn-danger" disabled>X</button></td>
-                                        </tr>
-                                        userIndex++;
+                                        @if (user.Id == UserContext.DungeonUserContext.Id)
+                                        {
+                                            <tr>
+                                                <th scope="row">@userIndex</th>
+                                                <td>@user.Email</td>
+                                                @if (user.EmailConfirmed)
+                                                {
+                                                    <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                                }
+                                                else
+                                                {
+                                                    <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                                }
+                                                <td>@(TimeZoneInfo.ConvertTimeFromUtc(user.LastActive, TimeZoneInfo.Local))</td>
+                                                <td>
+                                                    <div class="form-check form-switch d-flex justify-content-center">
+                                                        <input class="form-check-input" disabled type="checkbox" id="flexSwitchCheckDefault" @bind="@user.IsAdmin" @onclick="() => ChangeAdminRights(user)">
+                                                    </div>
+                                                </td>
+                                                <td><button class="btn btn-sm btn-danger" disabled>X</button></td>
+                                            </tr>
+                                            userIndex++;
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <th scope="row">@userIndex</th>
+                                                <td>@user.Email</td>
+                                                @if (user.EmailConfirmed)
+                                                {
+                                                    <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                                }
+                                                else
+                                                {
+                                                    <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
+                                                }
+                                                <td>@(TimeZoneInfo.ConvertTimeFromUtc(user.LastActive, TimeZoneInfo.Local))</td>
+                                                <td>
+                                                    <div class="form-check form-switch d-flex justify-content-center">
+                                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="@user.IsAdmin" @onclick="() => ChangeAdminRights(user)">
+                                                    </div>
+                                                </td>
+                                                <td><button class="btn btn-sm btn-danger" @onclick="() => DeleteUserButtonClicked(user)">X</button></td>
+                                            </tr>
+                                            userIndex++;
+                                        }
                                     }
-                                    else
-                                    {
-                                        <tr>
-                                            <th scope="row">@userIndex</th>
-                                            <td>@user.Email.Split("@")[0]</td>
-                                            @if (user.EmailConfirmed)
-                                            {
-                                                <td><div class="spinner-grow text-success" role="status" style="width: 1rem; height: 1rem"></div></td>
-                                            }
-                                            else
-                                            {
-                                                <td><div class="spinner-grow text-danger" role="status" style="width: 1rem; height: 1rem"></div></td>
-                                            }
-                                            <td>@(TimeZoneInfo.ConvertTimeFromUtc(user.LastActive, TimeZoneInfo.Local))</td>
-                                            <td>
-                                                <div class="form-check form-switch d-flex justify-content-center">
-                                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="@user.IsAdmin" @onclick="() => ChangeAdminRights(user)">
-                                                </div>
-                                            </td>
-                                            <td><button class="btn btn-sm btn-danger" @onclick="() => DeleteUserButtonClicked(user)">X</button></td>
-                                        </tr>
-                                        userIndex++;
-                                    }
-
-                                }
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         }
         else
         {
-            <h3>Diese Seite ist nur für Admins zugänglich!</h3>
+        <h3>Diese Seite ist nur für Admins zugänglich!</h3>
         }
-    </Authorized>
+        </Authorized>
     <NotAuthorized>
         <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent />
     </NotAuthorized>

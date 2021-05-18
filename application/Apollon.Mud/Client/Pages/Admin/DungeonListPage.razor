@@ -9,71 +9,77 @@
 @inject Apollon.Mud.Client.Services.Interfaces.IDungeonService DungeonService
 @inject Apollon.Mud.Client.Services.Interfaces.IGameService GameService
 @inject Apollon.Mud.Client.Data.Account.UserContext UserContext
+@inject NavigationManager NavManager
 
 <AuthorizeView>
     <Authorized>
         @if (UserContext.DungeonUserContext.IsAdmin)
         {
-            <div class="container ">
-                <h1>Liste aller Dungeons</h1>
-                @if (allDungeons.Count == 0)
-                {
-                    <h2 class="text-muted">Momentan gibt es keine Dungeons</h2>
-                }
-                @foreach (DungeonDto dungeon in allDungeons)
-                {
-                    <div class="card mt-2 shadow">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-3">
-                                    <h4>@dungeon.DungeonName</h4>
-                                </div>
-                                <div class="col">
-                                    <div class="row">
-                                        <div class="col-2">
-                                            <h5 class="float-end">Status: </h5>
-                                        </div>
-                                        <div class="col-1 ">
-                                            @if (dungeon.Status == 0)
-                                            {
-                                                <div class="spinner-grow text-success float-start" role="status" style="width: 1rem; height: 1rem"></div>
-                                            }
-                                            else
-                                            {
-                                                <div class="spinner-grow text-danger float-start" role="status" style="width: 1rem; height: 1rem"></div>
-                                            }
-                                        </div>
-                                        <div class="col-3">
-                                            <h5 class="float-end">Zuletzt aktiv: </h5>
-                                        </div>
-                                        <div class="col">
-                                            <div class="float-start"><strong>@(TimeZoneInfo.ConvertTimeFromUtc(dungeon.LastActive, TimeZoneInfo.Local))</strong></div>
+            <div style="display: flex; flex-direction: column; height: 93vh">
+                <div class="container justify-content-start" style="overflow-y:auto; height:100%">
+                    <h1>Liste aller Dungeons</h1>
+                    @if (allDungeons.Count == 0)
+                    {
+                        <h2 class="text-muted">Momentan gibt es keine Dungeons</h2>
+                    }
+                    @foreach (DungeonDto dungeon in allDungeons)
+                    {
+                        <div class="card mt-2 shadow">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <h4>@dungeon.DungeonName</h4>
+                                    </div>
+                                    <div class="col">
+                                        <div class="row">
+                                            <div class="col-2">
+                                                <h5 class="float-end">Status: </h5>
+                                            </div>
+                                            <div class="col-1 ">
+                                                @if (dungeon.Status == 0)
+                                                {
+                                                    <div class="spinner-grow text-success float-start mt-1" role="status" style="width: 1rem; height: 1rem"></div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="spinner-grow text-danger float-start mt-1" role="status" style="width: 1rem; height: 1rem"></div>
+                                                }
+                                            </div>
+                                            <div class="col-3">
+                                                <h5 class="float-end">Zuletzt aktiv: </h5>
+                                            </div>
+                                            <div class="col">
+                                                <div class="float-start"><strong>@(TimeZoneInfo.ConvertTimeFromUtc(dungeon.LastActive, TimeZoneInfo.Local))</strong></div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-1">
-                                    <button class="btn btn-sm btn-danger float-end" @onclick="() => DeleteDungeonButtonClicked(dungeon)">X</button>
+                                    <div class="col-2">
+                                        <button class="btn btn-sm btn-primary float-end" @onclick="() => ViewDungeonButtonClicked(dungeon)">Übersicht</button>
+                                    </div>
+                                    <div class="col-1">
+                                        <button class="btn btn-sm btn-danger float-end" @onclick="() => DeleteDungeonButtonClicked(dungeon)">X</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col">
-                                    <p class="card-text">@dungeon.DungeonDescription</p>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="card-text">@dungeon.DungeonDescription</p>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="card-footer">Erstellt von @dungeon.DungeonOwner.Email.Split("@")[0]</div>
                         </div>
-                        <div class="card-footer">Erstellt von @dungeon.DungeonOwner.Email.Split("@")[0]</div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
         }
         else
         {
-            <h3>Diese Seite ist nur für Admins zugänglich!</h3>
+        <h3>Diese Seite ist nur für Admins zugänglich!</h3>
         }
-    </Authorized>
+        </Authorized>
     <NotAuthorized>
         <Apollon.Mud.Client.Shared.Components.Account.LoginReminderComponent />
     </NotAuthorized>
@@ -120,5 +126,14 @@
                 }
             }
         }
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="dungeonToOpen"></param>
+    private void ViewDungeonButtonClicked(DungeonDto dungeonToOpen)
+    {
+        if (dungeonToOpen is not null) NavManager.NavigateTo("/dungeon/overview/" + dungeonToOpen.Id);
     }
 }
