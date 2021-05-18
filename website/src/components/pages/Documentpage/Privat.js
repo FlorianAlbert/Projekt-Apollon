@@ -13,6 +13,7 @@ import StatusberichtKW15 from '../../../documents/Privat/Apollon_Statusbericht_K
 import StatusberichtKW16 from '../../../documents/Privat/Apollon_Statusbericht_KW16.pdf';
 import StatusberichtKW17 from '../../../documents/Privat/Apollon_Statusbericht_KW17.pdf';
 import StatusberichtKW18 from '../../../documents/Privat/Apollon_Statusbericht_KW18.pdf';
+import StatusberichtKW19 from '../../../documents/Privat/Apollon_Statusbericht_KW19.pdf';
 
 
 
@@ -27,7 +28,7 @@ const Privat = () => {
                                 <h6>Allgemein:</h6>
                                 <ul>
                                     <li><a href={Aufwandserfassung} >Aufwandserfassung.xlsx</a> <span class="badge badge-dark" style={{background: "#31574B"}}>Neu</span></li>
-                                    <li><a href={UserStories}>UserStories.pdf</a> <span class="badge badge-dark" style={{background: "#31574B"}}>Neu</span></li>
+                                    <li><a href={UserStories}>UserStories.pdf</a></li>
                                 </ul>
                                 <h6>Statusberichte:</h6>
                                 <ul>
@@ -39,7 +40,8 @@ const Privat = () => {
                                     <li><a href={StatusberichtKW15} >Statusbericht_KW15.pdf</a></li>
                                     <li><a href={StatusberichtKW16} >Statusbericht_KW16.pdf</a></li>
                                     <li><a href={StatusberichtKW17} >Statusbericht_KW17.pdf</a></li>
-                                    <li><a href={StatusberichtKW18} >Statusbericht_KW18.pdf</a> <span class="badge badge-dark" style={{background: "#31574B"}}>Neu</span></li>
+                                    <li><a href={StatusberichtKW18} >Statusbericht_KW18.pdf</a></li>
+                                    <li><a href={StatusberichtKW19} >Statusbericht_KW19.pdf</a> <span class="badge badge-dark" style={{background: "#31574B"}}>Neu</span></li>
                                 </ul>
                             </div>
                         </div>
