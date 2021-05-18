@@ -95,7 +95,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.UserManagement
 
             foreach (var role in Enum.GetNames<Roles>())
             {
-                if (await _userDbService.IsUserInRole(user.Id, Roles.Admin.ToString()))
+                if (await _userDbService.IsUserInRole(user.Id, role))
                 {
                     listClaims.Add(new Claim(ClaimTypes.Role, role));
                 }

@@ -78,10 +78,10 @@ namespace Apollon.Mud.Client.Services.Implementations
         }
 
         /// <summary>
-        /// TODO
+        /// Kicks an avatar from a dungeon
         /// </summary>
-        /// <param name="avatarId"></param>
-        /// <returns></returns>
+        /// <param name="avatarId">The ID of the avatar to kick</param>
+        /// <returns>The returned Statuscode from the server</returns>
         public async Task<HttpStatusCode> KickAvatar(Guid avatarId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -92,10 +92,10 @@ namespace Apollon.Mud.Client.Services.Implementations
         }
 
         /// <summary>
-        /// TODO
+        /// Kicks all avatars from a dungeon
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the dungeon to kick avatars from</param>
+        /// <returns>The returned Statuscode from the server</returns>
         public async Task<HttpStatusCode> KickAll(Guid dungeonId)
         {
             CancellationToken cancellationToken = CancellationTokenSource.Token;
@@ -106,11 +106,11 @@ namespace Apollon.Mud.Client.Services.Implementations
         }
 
         /// <summary>
-        /// TODO
+        /// Sends the Answer of a dungeon master to a players request to the server
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="avatar"></param>
-        /// <returns></returns>
+        /// <param name="message">The textual answer to show in the players terminal</param>
+        /// <param name="avatar">The avatar that receives the message</param>
+        /// <returns>The returned Statuscode from the server</returns>
         public async Task<HttpStatusCode> AnswerDungeonMasterRequest(string message, AvatarDto avatar)
         {
             DungeonMasterRequestResponseDto answerDto = new DungeonMasterRequestResponseDto()
@@ -127,7 +127,7 @@ namespace Apollon.Mud.Client.Services.Implementations
         }
 
         /// <summary>
-        /// TODO
+        /// Closes the connection of an avatar from all Hubs and saves his status
         /// </summary>
         /// <returns></returns>
         public async Task LeaveGame()
