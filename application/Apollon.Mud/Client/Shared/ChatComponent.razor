@@ -78,7 +78,7 @@
         </ul>
     </div>
     <div class="chat mt-2 mb-2" style="flex-shrink: 0;">
-        <div class="prompt d-flex">
+        <div class="prompt d-flex bg-secondary">
             <input @bind-value="inputMessage" @bind-value:event="oninput" id="chat-prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" @onkeyup="@CheckForEnter">
             @if (chosenRecipient != "NoRecipient" && inputMessage != "")
             {
