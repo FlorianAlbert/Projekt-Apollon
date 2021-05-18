@@ -47,6 +47,10 @@
     outline-color: #0077b6 !important;
 }
 
-btn-info {
+.btn-info {
     background-color: #3FB3DA !important;
+}
+
+.nav-item a:hover {
+    color: #3FB3DA !important;
 }
