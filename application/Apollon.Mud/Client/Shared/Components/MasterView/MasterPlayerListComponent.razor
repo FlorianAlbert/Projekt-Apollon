@@ -210,7 +210,7 @@
     public DungeonUserDto OpenUser { get; set; }
 
     /// <summary>
-    /// TODO
+    /// Differentiates wether the component lists dungeon Masters or normal players
     /// </summary>
     bool showMasters;
 
@@ -236,9 +236,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Updates the Avatar that are currently in the game 
     /// </summary>
-    /// <param name="avatarList"></param>
+    /// <param name="avatarList">The List of active avatars</param>
     /// <returns></returns>
     public async Task UpdateAvatars(ICollection<AvatarDto> avatarList)
     {
@@ -311,7 +311,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Called when a Dungeon Master takes the DM Role of another Master
     /// </summary>
     private async void RemoveDungeonMaster()
     {
@@ -321,7 +321,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Called when a Dungeon Master gives the DM Role to a player
     /// </summary>
     private async void AddDungeonMaster()
     {
@@ -331,9 +331,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Changes the shown List of Players / Masters
     /// </summary>
-    /// <param name="masterOrPlayer"></param>
+    /// <param name="masterOrPlayer">true for master, false for players</param>
     private void ChangeListContent(bool masterOrPlayer)
     {
         showMasters = masterOrPlayer;
@@ -342,9 +342,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Removes a user from the Blacklist of the Dungeon
     /// </summary>
-    /// <param name="user"></param>
+    /// <param name="user">The User to unban</param>
     private void UnbanUser(DungeonUserDto user)
     {
         Dungeon.BlackList.Remove(user);
