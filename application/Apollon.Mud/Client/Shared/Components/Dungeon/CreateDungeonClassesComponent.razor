@@ -571,7 +571,7 @@
     /// <summary>
     /// This function removes the selected Takeable of a class
     /// </summary>
-    /// <param name="item"></param>
+    /// <param name="item">The Consumable to remove</param>
     /// <returns></returns>
     private EventCallback RemoveConsumableButtonClicked(ConsumableDto item)
     {
@@ -582,9 +582,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Removes the given Usable from the local list
     /// </summary>
-    /// <param name="item"></param>
+    /// <param name="item">The Usable to remove</param>
     /// <returns></returns>
     private EventCallback RemoveUsableButtonClicked(UsableDto item)
     {
@@ -595,9 +595,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Removes the given Wearable from the local list
     /// </summary>
-    /// <param name="item"></param>
+    /// <param name="item">The Wearable to delete</param>
     /// <returns></returns>
     private EventCallback RemoveWearableButtonClicked(WearableDto item)
     {
@@ -752,9 +752,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Updates the Dungeons Items from the server
     /// </summary>
-    /// <param name="typeName"></param>
+    /// <param name="typeName">The name of the category to update</param>
     public async void ReloadItems(string typeName)
     {
         switch (typeName)

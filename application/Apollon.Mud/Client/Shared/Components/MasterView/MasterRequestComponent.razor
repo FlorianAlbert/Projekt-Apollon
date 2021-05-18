@@ -74,18 +74,18 @@
     public List<DungeonMasterRequestDto> ParentRequestQueue { get; set; }
 
     /// <summary>
-    /// TODO
+    /// Event called when the DM finishes a request 
     /// </summary>
     [Parameter]
     public EventCallback<DungeonMasterRequestDto> RequestRemoved { get; set; }
 
     /// <summary>
-    /// TODO Abhilfe
+    /// The Model of the form the DM has to fill out
     /// </summary>
     MasterRequestModel masterRequestModel = new MasterRequestModel();
 
     /// <summary>
-    /// TODO Abhilfe
+    /// The forms edit context
     /// </summary>
     EditContext masterRequestContext;
 
@@ -111,7 +111,7 @@
     }
 
     /// <summary>
-    /// TODO Abhilfe
+    /// Sets the EditContext and fills the local queue with the parents requestable queue
     /// </summary>
     protected async override Task OnInitializedAsync()
     {
@@ -121,7 +121,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Handles the submition of a DMs answer to a request, validates it and sends it to the backend
     /// </summary>
     /// <returns></returns>
     private async Task HandleActionAnswerSubmit()
@@ -145,9 +145,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Adds a request to the local list
     /// </summary>
-    /// <param name="requestDto"></param>
+    /// <param name="requestDto">The request to add</param>
     /// <returns></returns>
     public async Task AddMasterRequest(DungeonMasterRequestDto requestDto)
     {
@@ -156,9 +156,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Changes the opened request and fills out the view accordingly
     /// </summary>
-    /// <param name="requestDto"></param>
+    /// <param name="requestDto">The request being opened</param>
     /// <returns></returns>
     private async Task OpenRequest(DungeonMasterRequestDto requestDto)
     {

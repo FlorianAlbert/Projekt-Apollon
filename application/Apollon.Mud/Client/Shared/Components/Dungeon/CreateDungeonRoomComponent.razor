@@ -720,12 +720,12 @@
     DungeonRoomModel dungeonRoomModel = new DungeonRoomModel();
 
     /// <summary>
-    /// TODO
+    /// The EditContext of the Blazor Form
     /// </summary>
     EditContext roomContext;
 
     /// <summary>
-    /// TODO
+    /// The List of Rooms in the dungeon
     /// </summary>
     List<RoomDto> dungeonRooms = new List<RoomDto>();
 
@@ -754,7 +754,7 @@
     string chosenItem = "NoItem";
 
     /// <summary>
-    /// TODO Abhilfe
+    /// The requestables added to the room
     /// </summary>
     List<RequestableDto> roomRequestables = new List<RequestableDto>();
 
@@ -808,12 +808,12 @@
     List<UsableDto> dungeonUsables = new List<UsableDto>();
 
     /// <summary>
-    /// TODO
+    /// The List of Special Actions in the Dungeon
     /// </summary>
     List<RequestableDto> dungeonRequestables = new List<RequestableDto>();
 
     /// <summary>
-    /// TODO
+    /// The List of NPCs in the Dungeon
     /// </summary>
     List<NpcDto> dungeonNpcs = new List<NpcDto>();
 
@@ -828,14 +828,14 @@
     int roomItemCount = 0;
 
     /// <summary>
-    /// TODO
+    /// The amount of special actions added to the room
     /// </summary>
     int specialActionCount = 0;
 
     #endregion
 
     /// <summary>
-    /// TODO Abhilfe
+    /// Reads all Room Information of the dungeon from the backend and fills the local lists
     /// </summary>
     protected async override Task OnInitializedAsync()
     {
@@ -948,7 +948,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Checks wether the user chose a different room and updates the form accordingly
     /// </summary>
     /// <returns></returns>
     private EventCallback RoomSelectionChanged()
@@ -963,7 +963,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Checks wether the user entered a name that already exists
     /// </summary>
     /// <param name="args"></param>
     private void NameFieldLostFocus(System.EventArgs args)
@@ -981,9 +981,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Fills out the form with the information of the given RoomDto
     /// </summary>
-    /// <param name="newRoom"></param>
+    /// <param name="newRoom">The Room to fill the form with</param>
     private void WriteBackRoom(RoomDto newRoom)
     {
         if (!(newRoom is null))
@@ -1075,7 +1075,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Clears all input fields and resets the form to enable the creation of a new item
     /// </summary>
     /// <param name="args"></param>
     private void NewRoomButtonClicked(System.EventArgs args)
@@ -1104,7 +1104,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Deletes the opened room
     /// </summary>
     /// <param name="args"></param>
     private async void RemoveRoomButtonClicked(System.EventArgs args)
@@ -1199,8 +1199,10 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Deletes the opened Inspectable from the room
     /// </summary>
+    /// <param name="item">The Item to remove</param>
+    /// <returns></returns>
     private EventCallback RemoveInspectableButtonClicked(InspectableDto item)
     {
         dungeonRoomModel.Inspectables.Remove(item);
@@ -1210,8 +1212,10 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Deletes the opened Takeable from the room
     /// </summary>
+    /// <param name="item">The Item to remove</param>
+    /// <returns></returns>
     private EventCallback RemoveTakeableButtonClicked(TakeableDto item)
     {
         dungeonRoomModel.Takeables.Remove(item);
@@ -1221,9 +1225,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Deletes the open Consumable from the room
     /// </summary>
-    /// <param name="item"></param>
+    /// <param name="item">The Item to remove</param>
     /// <returns></returns>
     private EventCallback RemoveConsumableButtonClicked(ConsumableDto item)
     {
@@ -1234,9 +1238,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Deletes the open Usable from the room
     /// </summary>
-    /// <param name="item"></param>
+    /// <param name="item">The Item to remove</param>
     /// <returns></returns>
     private EventCallback RemoveUsableButtonClicked(UsableDto item)
     {
@@ -1247,9 +1251,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Deletes the open Wearable from the room
     /// </summary>
-    /// <param name="item"></param>
+    /// <param name="item">The Item to remove</param>
     /// <returns></returns>
     private EventCallback RemoveWearableButtonClicked(WearableDto item)
     {
@@ -1260,7 +1264,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Adds the selected Special Action to the open room
     /// </summary>
     private void AddActionButtonClicked()
     {
@@ -1276,7 +1280,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Removes the given Special Action from the open room
     /// </summary>
     private EventCallback RemoveActionButtonClicked(RequestableDto request)
     {
@@ -1285,9 +1289,9 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Removes the given Npc from the open room
     /// </summary>
-    /// <param name="npc"></param>
+    /// <param name="npc">The Npc to remove</param>
     /// <returns></returns>
     private EventCallback RemoveNpcButtonClicked(NpcDto npc)
     {
@@ -1296,7 +1300,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Adds the selected Npc to the open room
     /// </summary>
     private void AddNpcButtonClicked()
     {
@@ -1382,7 +1386,7 @@
     }
 
     /// <summary>
-    /// TODO
+    /// Reloads the Dungeon from the server
     /// </summary>
     public async void ReloadDungeon()
     {
