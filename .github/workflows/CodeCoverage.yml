@@ -24,15 +24,9 @@ jobs:
       run: dotnet build --no-restore
       working-directory: ${{env.SOLUTION_PATH}}
     - name: Test
-      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" -r ./Codecoverage
+      run: dotnet test --no-build --verbosity normal --settings CodeCoverage.runsettings --collect:"XPlat Code Coverage" -r ./Codecoverage
       working-directory: ${{env.SOLUTION_PATH}}
     - name: Codecov
       uses: codecov/codecov-action@v1.4.1
       with:
         directory: ${{env.SOLUTION_PATH}}/Codecoverage
-    #- name: Install ReportGenerator
-    #  run: dotnet tool install --global dotnet-reportgenerator-globaltool
-    #  working-directory: ${{env.SOLUTION_PATH}}
-    #- name: Creating Test Report
-    #  run: reportgenerator -reports:Codecoverage/**/coverage.cobertura.xml -targetdir:Codecoverage/CoverageReport -reporttypes:Cobertura
-    #  working-directory: ${{env.SOLUTION_PATH}}

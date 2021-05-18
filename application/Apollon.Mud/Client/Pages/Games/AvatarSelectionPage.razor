@@ -15,9 +15,9 @@
 
 <AuthorizeView>
     <Authorized>
-        <div style="height:93vh">
+        <div style="min-height:93vh">
             <div class="container d-flex justify-content-center">
-                <div class="card mt-5" style="width:30rem">
+                <div class="card mt-5 mb-5" style="width:30rem">
                     <div class="card-header">
                         <div class="row">
                             <div class="col-5">
@@ -38,7 +38,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
+                    <div class="card-body text-center" style="display: flex; flex-direction: column; min-height: 70vh">
                         <div class="list-group" style="overflow-y:auto; height:100%">
                             @if (userAvatars.Count == 0)
                             {
