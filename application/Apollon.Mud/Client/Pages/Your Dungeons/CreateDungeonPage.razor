@@ -117,8 +117,13 @@
     /// <param name="guid">the Guid of the saved/loaded dungeon needed in other components</param>
     public void DungeonSavedOrLoaded(Guid guid)
     {
-        dungeonCreated = true;
-        DungeonId = guid;
+        if(guid != Guid.Empty)
+        {
+            dungeonCreated = true;
+            DungeonId = guid;
+        }
+        if(ChildRoomComponent is not null) ChildRoomComponent.ReloadDungeon();
+
     }
 
     /// <summary>
