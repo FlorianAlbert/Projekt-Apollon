@@ -19,12 +19,12 @@
     <Authorized Context="other">
         <div style="min-height:93vh">
             <div class="row w-100">
-                <div class="col-4">
+                <div class="col-3">
 
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <div class="container d-flex justify-content-center">
-                        <div class="card mt-5" style="width:30rem">
+                        <div class="card mt-5">
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-5">
@@ -104,16 +104,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     @if (avatarModel.Race != "NoRace" && avatarModel.Race is not null)
                     {
                         RaceDto race = dungeonRaces.Find(r => r.Name == avatarModel.Race);
-                        <div class="card bg-white mt-5" style="min-height: 35vh">
-                            <div class="card-header"><bold>Rasse: </bold>@race.Name</div>
-                            <div class="row" style="min-height: 33vh">
-                                <div class="col border-end" style="min-height: 33vh">
+                        <div class="card bg-white mt-5" style="min-height: 30vh">
+                            <div class="card-header"><h4>Rasse: @race.Name</h4></div>
+                            <div class="row">
+                                <div class="col border-end" style="min-height: 28vh">
                                     <h5 class="mt-2 text-center">Beschreibung:</h5>
-                                    <p class="ml-2">@race.Description</p>
+                                    <p class="text-center mt-3">@race.Description</p>
                                 </div>
                                 <div class="col" style="height: 100%">
                                     <h5 class="mt-2 text-center">Eigenschaften:</h5>
@@ -148,12 +148,12 @@
                     @if (avatarModel.Class != "NoClass" && avatarModel.Class is not null)
                     {
                         ClassDto classe = dungeonClasses.Find(c => c.Name == avatarModel.Class);
-                        <div class="card bg-white mt-3" style="min-height: 35vh">
-                            <div class="card-header"><bold>Klasse:</bold> @classe.Name</div>
-                            <div class="row" style="min-height: 33vh">
-                                <div class="col border-end" style="min-height: 33vh">
+                        <div class="card bg-white mt-3" style="min-height: 30vh">
+                            <div class="card-header"><h4>Klasse: @classe.Name</h4> </div>
+                            <div class="row">
+                                <div class="col border-end" style="min-height: 28vh">
                                     <h5 class="mt-2 text-center">Beschreibung:</h5>
-                                    <p class="ml-2">@classe.Description</p>
+                                    <p class="text-center mt-3">@classe.Description</p>
                                 </div>
                                 <div class="col" style="height: 100%">
                                     <h5 class="mt-2 text-center">Eigenschaften:</h5>
@@ -199,6 +199,9 @@
                             </div>
                         </div>
                     }
+                </div>
+                <div class="col-3">
+
                 </div>
             </div>
         </div>

@@ -19,7 +19,7 @@
             <option value="NoRecipient" hidden selected>Nachricht an:</option>
             @if (IsDungeonMaster)
             {
-                <option value="All">Alle</option>
+                <option value="Alle">Alle</option>
                 @foreach (ChatPartnerDto avatarDto in ChatPartners)
                 {
                     <option value="@avatarDto.AvatarName">@avatarDto.AvatarName</option>
@@ -27,7 +27,7 @@
             }
             else
             {
-                <option value="Room">Raum</option>
+                <option value="Raum">Raum</option>
                 @foreach (ChatPartnerDto avatarDto in ChatPartners)
                 {
                     <option value="@avatarDto.AvatarName">@avatarDto.AvatarName</option>
@@ -178,10 +178,10 @@
         bool success;
         switch (chosenRecipient)
         {
-            case "All":
+            case "Alle":
                 success = await ChatService.PostGlobalMessage(message);
                 break;
-            case "Room":
+            case "Raum":
                 success = await ChatService.PostRoomMessage(message);
                 break;
             default:
