@@ -44,29 +44,29 @@ namespace Apollon.Mud.Client.Services.Interfaces
         Task<HttpStatusCode> EnterDungeon(bool AsMaster, Guid dungeonId, Guid? avatarId, string chatId, string gameId);
 
         /// <summary>
-        /// Removes the Avatar from the Dungeon
+        /// Kicks an avatar from a dungeon
         /// </summary>
-        /// <param name="avatarId"></param>
-        /// <returns></returns>
+        /// <param name="avatarId">The ID of the avatar to kick</param>
+        /// <returns>The returned Statuscode from the server</returns>
         Task<HttpStatusCode> KickAvatar(Guid avatarId);
 
         /// <summary>
-        /// Kicks a avaters from the Dungeon
+        /// Kicks all avatars from a dungeon
         /// </summary>
-        /// <param name="dungeonId"></param>
-        /// <returns></returns>
+        /// <param name="dungeonId">The ID of the dungeon to kick avatars from</param>
+        /// <returns>The returned Statuscode from the server</returns>
         Task<HttpStatusCode> KickAll(Guid dungeonId);
 
         /// <summary>
-        /// Sends the Dungeon Masters answer to the Player
+        /// Sends the Answer of a dungeon master to a players request to the server
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="avatar"></param>
-        /// <returns></returns>
+        /// <param name="message">The textual answer to show in the players terminal</param>
+        /// <param name="avatar">The avatar that receives the message</param>
+        /// <returns>The returned Statuscode from the server</returns>
         Task<HttpStatusCode> AnswerDungeonMasterRequest(string message, AvatarDto avatar);
 
         /// <summary>
-        /// TODO
+        /// Closes the connection of an avatar from all Hubs and saves his status
         /// </summary>
         /// <returns></returns>
         Task LeaveGame();
