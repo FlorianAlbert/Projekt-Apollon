@@ -11,9 +11,9 @@
 <div class="row bg-white">
     @if (Dungeon is not null)
     {
-        <div class="col-4">
-            <div class="card" style="display: flex; flex-direction: column; height: 87vh">
-                <div class="card-header text-center">
+        <div class="col-4 p-0 bg-secondary" style="padding: 0; margin: 0; margin-top: 0">
+            <div class="card m-0 p-0 border-secondary" style="display: flex; flex-direction: column; height: 87vh">
+                <div class="card-header text-center bg-secondary">
                     <div class="btn-group">
                         @if (showMasters)
                         {
@@ -27,7 +27,7 @@
                         }
                     </div>
                 </div>
-                <div class="list-group border-dark" style="overflow-y:auto; height:100%">
+                <div class="list-group border-dark bg-white" style="overflow-y:auto; height:100%">
 
 
 
@@ -53,7 +53,7 @@
                         }
                         @foreach (DungeonUserDto user in Dungeon.BlackList)
                         {
-                            <div class="list-group-item list-group-item-action bg-secondary">
+                            <div class="list-group-item list-group-item-action" style="background-color: lightgray">
                                 <div class="row">
                                     <div class="col">
                                         <h5>Spieler: @user.Email.Split("@")[0]</h5>

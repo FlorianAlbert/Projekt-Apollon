@@ -11,7 +11,7 @@
     <Authorized>
         @if (UserContext.DungeonUserContext.IsAdmin)
         {
-            <div class="container" style="display: flex; flex-direction: column; height: 87vh">
+            <div class="container">
                 <div class="card mt-5">
                     <div class="card-header"><h3>Liste aller Spieler</h3></div>
                     <div class="card-body">
@@ -76,7 +76,6 @@
                                         </tr>
                                         userIndex++;
                                     }
-
                                 }
                             </tbody>
                         </table>

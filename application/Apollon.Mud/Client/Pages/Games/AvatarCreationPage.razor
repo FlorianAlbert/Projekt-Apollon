@@ -13,7 +13,7 @@
 
 <AuthorizeView>
     <Authorized Context="other">
-        <div style="height:93vh">
+        <div style="min-height:93vh">
             <div class="container d-flex justify-content-center">
                 <div class="card mt-5" style="width:30rem">
                     <div class="card-header">
@@ -29,7 +29,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body text-center" style="display: flex; flex-direction: column; height: 70vh">
+                    <div class="card-body text-center" style="display: flex; flex-direction: column; min-height: 70vh">
                         <h4 class="ml-2">Hier kannst du einen neuen Avatar erstellen</h4>
                         <hr />
                         @if (AvatarNameAlreadyExists)
