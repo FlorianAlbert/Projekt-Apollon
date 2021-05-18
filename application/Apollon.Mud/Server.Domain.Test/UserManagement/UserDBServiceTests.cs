@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Apollon.Mud.Server.Domain.Implementations.UserManagement;
+using Apollon.Mud.Server.Domain.Interfaces.Shared;
 using Apollon.Mud.Server.Model.Implementations.User;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
@@ -42,8 +43,10 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
 
             userManagerMock.GetUsersInRoleAsync(Roles.Admin.ToString()).Returns(dungeonUserListMock);
 
+            var dbServiceMock = Substitute.For<IGameDbService>();
 
-            var userDbService = new UserDbService(userManagerMock);
+
+            var userDbService = new UserDbService(userManagerMock, dbServiceMock);
             var isAdminRegistered = await userDbService.IsAdminRegistered();
 
             
@@ -71,8 +74,10 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
                 null);
             userManagerMock.GetUsersInRoleAsync(Roles.Admin.ToString()).Returns(dungeonUserListMock);
 
+            var dbServiceMock = Substitute.For<IGameDbService>();
 
-            var userDbService = new UserDbService(userManagerMock);
+
+            var userDbService = new UserDbService(userManagerMock, dbServiceMock);
             var isAdminRegistered = await userDbService.IsAdminRegistered();
 
 
@@ -103,7 +108,10 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
                 null);
             userManagerMock.CreateAsync(dungeonUserMock, password).Returns(identInResult);
 
-            var userDbService = new UserDbService(userManagerMock);
+            var dbServiceMock = Substitute.For<IGameDbService>();
+
+
+            var userDbService = new UserDbService(userManagerMock, dbServiceMock);
             var userCreation = await userDbService.CreateUser(dungeonUserMock, password);
 
 
@@ -135,7 +143,10 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             userManagerMock.AddToRoleAsync(dungeonUserMock, Roles.Player.ToString()).Returns(IdentityResult.Failed());
             userManagerMock.DeleteAsync(dungeonUserMock).Returns(IdentityResult.Success);
 
-            var userDbService = new UserDbService(userManagerMock);
+            var dbServiceMock = Substitute.For<IGameDbService>();
+
+
+            var userDbService = new UserDbService(userManagerMock, dbServiceMock);
             var userCreation = await userDbService.CreateUser(dungeonUserMock, password);
 
 
@@ -170,7 +181,10 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             userManagerMock.AddToRoleAsync(dungeonUserMock, Roles.Admin.ToString()).Returns(IdentityResult.Failed());
             userManagerMock.DeleteAsync(dungeonUserMock).Returns(IdentityResult.Success);
 
-            var userDbService = new UserDbService(userManagerMock);
+            var dbServiceMock = Substitute.For<IGameDbService>();
+
+
+            var userDbService = new UserDbService(userManagerMock, dbServiceMock);
             var userCreation = await userDbService.CreateUser(dungeonUserMock, password, true);
 
 
@@ -204,7 +218,10 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             userManagerMock.CreateAsync(dungeonUserMock, password).Returns(IdentityResult.Success);
             userManagerMock.AddToRoleAsync(dungeonUserMock, Roles.Player.ToString()).Returns(IdentityResult.Success);
 
-            var userDbService = new UserDbService(userManagerMock);
+            var dbServiceMock = Substitute.For<IGameDbService>();
+
+
+            var userDbService = new UserDbService(userManagerMock, dbServiceMock);
             var userCreation = await userDbService.CreateUser(dungeonUserMock, password);
 
 
@@ -237,7 +254,10 @@ namespace Apollon.Mud.Server.Domain.Test.UserManagement
             userManagerMock.AddToRoleAsync(dungeonUserMock, Roles.Player.ToString()).Returns(IdentityResult.Success);
             userManagerMock.AddToRoleAsync(dungeonUserMock, Roles.Admin.ToString()).Returns(IdentityResult.Success);
 
-            var userDbService = new UserDbService(userManagerMock);
+            var dbServiceMock = Substitute.For<IGameDbService>();
+
+
+            var userDbService = new UserDbService(userManagerMock, dbServiceMock);
             var userCreation = await userDbService.CreateUser(dungeonUserMock, password, true);
 
 

@@ -248,7 +248,7 @@
     /// <returns></returns>
     public async Task ReceiveGameMessage(string message)
     {
-        TerminalMessages.Enqueue(message);
+        TerminalMessages.Enqueue(message + "\n");
         StateHasChanged();
         await JSRuntime.InvokeVoidAsync("goToBottom", "terminal");
     }
