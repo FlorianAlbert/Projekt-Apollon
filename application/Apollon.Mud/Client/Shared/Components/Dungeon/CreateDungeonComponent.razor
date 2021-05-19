@@ -323,9 +323,13 @@
         {
             DungeonDto submitDungeon;
 
-            if (DungeonId != Guid.Empty) submitDungeon = CurrentDungeon;
+            if (DungeonId != Guid.Empty) { submitDungeon = CurrentDungeon; }
 
-            else submitDungeon = new DungeonDto();
+            else
+            {
+                submitDungeon = new DungeonDto();
+                submitDungeon.DungeonOwner = userContext.DungeonUserContext;
+            }
 
             submitDungeon.DungeonName = dungeonModel.Name;
             submitDungeon.DungeonDescription = dungeonModel.Description;
@@ -335,8 +339,6 @@
             submitDungeon.Status = dungeonModel.Status.Equals("Approved") ? 0 : 1;
 
             if (submitDungeon.Status == 1) await GameService.KickAll(DungeonId);
-
-            submitDungeon.DungeonOwner = userContext.DungeonUserContext;
 
             if (DungeonId == Guid.Empty)
             {
