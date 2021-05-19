@@ -20,30 +20,10 @@
         @if (successfullConnection)
         {
             <div class="container-fluid max-vh-100">
-                <div class="row text-end" style="height: 6vh">
-                    <div class="col" style="background:linear-gradient(90deg, rgba(33,37,41,0) 0%, rgba(255,255,255,1) 100%);" />
-                    <div class="col-8 bg-white">
-                        <div class="row">
-                            <div class="col text-end">
-                                <h5>Du möchtest mehr über MUDs erfahren?</h5>
-                            </div>
-                            <div class="col text-start">
-                                <button class="btn btn-primary mt-2">Zum Wiki</button>
-                            </div>
-                            <div class="col text-end">
-                                <h5>Du suchst Tipps und Tricks fürs Spielen?</h5>
-                            </div>
-                            <div class="col text-start">
-                                <button class="btn btn-primary mt-2" >Zur Hilfe</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col" style="background: linear-gradient(90deg, rgba(255,255,255,1), rgba(33,37,41,0));" />
-                </div>
                 <div class="play">
                     <div class="window">
                         <div class="row">
-                            <div class="col-8" style="display: flex; flex-direction: column; height: 87vh; padding:0;">
+                            <div class="col-8" style="display: flex; flex-direction: column; height: 93vh; padding:0;">
                                 <div id="terminal" class="terminal">
                                     <span> </span>
                                     <span>Wilkommen in den Weiten des Apollon</span>
@@ -66,12 +46,26 @@
                                         <span class="text-break">@entry</span><br />
                                     }
                                 </div>
-                                <div class="prompt d-flex">
+                                <div class="prompt d-flex bg-secondary">
                                     <input @bind="UserInput" @onkeyup="@CheckForEnter" id="prompt" type="text" class="form-control" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" autofocus />
                                     <button type="submit" id="send" class="btn btn-primary" @onclick="ReadAndSendInput">Send</button>
                                 </div>
                             </div>
                             <div class="col-4 bg-secondary" style="padding: 0;">
+                                <nav class="navbar navbar-light bg-secondary" style="height:6vh">
+                                    <div class="row w-100" >
+                                        <div class="col">
+
+                                        </div>
+                                        <div class="col text-center">
+                                            <h4 class="text-light justify-content-center">Chat</h4>
+                                        </div>
+                                        <div class="col">
+                                            <button class="btn btn-danger nav-item float-end" @onclick="EndConnectionButtonClicked">Beenden</button>
+                                        </div>
+                                        
+                                    </div>
+                                </nav>
                                 <ChatComponent @ref="ChatChildComponent" AvatarId="AvatarId" DungeonId="DungeonId" IsDungeonMaster="false" />
                             </div>
                         </div>
@@ -191,8 +185,8 @@
         {
             TerminalMessages.Enqueue("Epoche: \n" + dungeon.DungeonEpoch + "\n");
             TerminalMessages.Enqueue("Beschreibung: \n" + dungeon.DungeonDescription + "\n");
-            TerminalMessages.Enqueue("Raumbeschreibung: \n" + avatar.CurrentRoom.Description + "\n");
-            TerminalMessages.Enqueue("Hallo " + avatar.Name + "\n");
+            TerminalMessages.Enqueue("Raumbeschreibung: \n" + avatar.CurrentRoom.Description + "\n\n\n");
+            TerminalMessages.Enqueue("Hallo " + avatar.Name + "\n\n");
         }
         else
         {
@@ -277,5 +271,10 @@
     }
 
     #endregion
+
+    public void EndConnectionButtonClicked()
+    {
+        NavigationManager.NavigateTo("/dungeons");
+    }
     #endregion
 }

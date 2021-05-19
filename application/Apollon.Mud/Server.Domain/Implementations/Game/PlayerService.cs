@@ -702,7 +702,7 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
 
             if (room.Avatars.Count != 0)
             {
-                description += "\n\tAvatare:\n";
+                description += "\nAvatare:\n";
                 description = room.Avatars.Where(x => x.Status is Status.Approved).Aggregate(description,
                     (current, avatar) => current + $"\t{ avatar.Name }\n");
             }
