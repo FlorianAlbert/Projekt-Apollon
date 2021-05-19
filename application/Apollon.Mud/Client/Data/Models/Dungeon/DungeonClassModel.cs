@@ -75,7 +75,7 @@ namespace Apollon.Mud.Client.Data.Models.Dungeon
         /// <summary>
         /// The dungeon has to have a status. ToDo Abhilfe
         /// </summary>
-        [Required(ErrorMessage = "Du musst dem Dungeon einen Status geben")]
+        [Required(ErrorMessage = "Du musst der Klasse einen Status geben")]
         public string Status { get; set; }
 
     }
