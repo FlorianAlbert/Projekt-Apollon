@@ -265,10 +265,6 @@
                 else await OnRaceSavedOrLoaded.InvokeAsync();
             }
         }
-        else
-        {
-            //TODO Müssen wir was machen, wenn die Form nicht validiert wird?
-        }
     }
 
     /// <summary>
@@ -356,10 +352,6 @@
                 dungeonRaceModel.Status = string.Empty;
                 dungeonRaces.Remove(raceToDelete);
                 StateHasChanged();
-            }
-            else
-            {
-                //TODO Maybe Nutzer informieren
             }
         }
     }
