@@ -338,7 +338,7 @@
             submitDungeon.Visibility = dungeonModel.Visibility.Equals("Private") ? 0 : 1;
             submitDungeon.Status = dungeonModel.Status.Equals("Approved") ? 0 : 1;
 
-            if (submitDungeon.Status == 1) await GameService.KickAll(DungeonId);
+            if (dungeonModel.Status.Equals("Pending")) await GameService.KickAll(DungeonId);
 
             if (DungeonId == Guid.Empty)
             {
