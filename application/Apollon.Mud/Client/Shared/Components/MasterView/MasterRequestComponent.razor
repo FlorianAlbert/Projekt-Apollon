@@ -164,6 +164,7 @@
     {
         CurrentRequest = requestDto;
         masterRequestModel.HealthChange = requestDto.Avatar.CurrentHealth.ToString();
+        masterRequestModel.RequestAnswer = string.Empty;
         StateHasChanged();
     }
 }

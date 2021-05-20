@@ -213,11 +213,8 @@
     public void ProcessSpecialAction(DungeonMasterRequestDto requestDto)
     {
         if (masterPage == 1) RequestChildComponent.AddMasterRequest(requestDto);
-        else
-        {
-            RequestQueue.Add(requestDto);
-            StateHasChanged();
-        }
+        RequestQueue.Add(requestDto);
+        StateHasChanged();
     }
 
     /// <summary>
