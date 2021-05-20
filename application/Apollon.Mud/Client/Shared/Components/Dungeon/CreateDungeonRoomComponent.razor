@@ -1118,7 +1118,8 @@
 
         bool shouldFieldsBeEmptied = true;
 
-        roomToDelete.Status = 1;
+        if(roomToDelete.Status != 1) roomToDelete.Status = 1;
+
 
         if (!(roomToDelete.Id == Guid.Empty))
         {
