@@ -707,17 +707,17 @@ namespace Apollon.Mud.Server.Domain.Implementations.Game
                     (current, avatar) => current + $"\t{ avatar.Name }\n");
             }
 
-            if (room.NeighborNorth is null &&
-                room.NeighborEast is null &&
-                room.NeighborSouth is null &&
-                room.NeighborWest is null) return description;
+            if ((room.NeighborNorth is null || room.NeighborNorth.Status is Status.Pending) &&
+                (room.NeighborEast is null || room.NeighborEast.Status is Status.Pending) &&
+                (room.NeighborSouth is null || room.NeighborSouth.Status is Status.Pending) &&
+                (room.NeighborWest is null || room.NeighborWest.Status is Status.Pending)) return description;
 
             description += "\nSichtbare Ausg\u00E4nge:\n";
 
-            if (room.NeighborNorth != null) description += "\tNorden\n";
-            if (room.NeighborEast != null) description += "\tOsten\n";
-            if (room.NeighborSouth != null) description += "\tS\u00FCden\n";
-            if (room.NeighborWest != null) description += "\tWesten\n";
+            if (room.NeighborNorth?.Status is Status.Approved) description += "\tNorden\n";
+            if (room.NeighborEast?.Status is Status.Approved) description += "\tOsten\n";
+            if (room.NeighborSouth?.Status is Status.Approved) description += "\tS\u00FCden\n";
+            if (room.NeighborWest?.Status is Status.Approved) description += "\tWesten\n";
 
             return description;
         }
