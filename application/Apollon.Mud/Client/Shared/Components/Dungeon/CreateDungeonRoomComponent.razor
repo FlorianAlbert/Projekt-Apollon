@@ -359,11 +359,11 @@
                                 {
 
                                     @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                    !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
-                                    !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
-                                    !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
-                                     (dungeonRoom.NeighborSouthId == Guid.Empty ||
-                                     dungeonRoom.NeighborSouthId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
+                                  !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                                  !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                                  !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
+                                   (dungeonRoom.NeighborSouthId == Guid.Empty ||
+                                   dungeonRoom.NeighborSouthId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -388,11 +388,11 @@
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
                                     @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                 !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
-                                 !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
-                                 !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
-                                 (dungeonRoom.NeighborEastId == Guid.Empty ||
-                                 dungeonRoom.NeighborEastId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
+                               !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                               !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                               !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
+                               (dungeonRoom.NeighborEastId == Guid.Empty ||
+                               dungeonRoom.NeighborEastId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -417,11 +417,11 @@
                                 @foreach (RoomDto dungeonRoom in dungeonRooms)
                                 {
                                     @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                                 !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
-                                 !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
-                                 !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
-                                 (dungeonRoom.NeighborWestId == Guid.Empty ||
-                                 dungeonRoom.NeighborWestId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
+                               !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                               !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                               !dungeonRoom.Name.Equals(dungeonRoomModel.RoomSouth) &&
+                               (dungeonRoom.NeighborWestId == Guid.Empty ||
+                               dungeonRoom.NeighborWestId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
                                     {
                                         <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                     }
@@ -444,11 +444,11 @@
                             @foreach (RoomDto dungeonRoom in dungeonRooms)
                             {
                                 @if (!dungeonRoom.Name.Equals(chosenRoom) &&
-                             !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
-                             !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
-                             !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
-                             (dungeonRoom.NeighborNorthId == Guid.Empty ||
-                             dungeonRoom.NeighborNorthId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
+                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomEast) &&
+                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomWest) &&
+                           !dungeonRoom.Name.Equals(dungeonRoomModel.RoomNorth) &&
+                           (dungeonRoom.NeighborNorthId == Guid.Empty ||
+                           dungeonRoom.NeighborNorthId == (dungeonRooms.Find(x => x.Name == chosenRoom)?.Id ?? Guid.Empty)))
                                 {
                                     <option value="@dungeonRoom.Name">@dungeonRoom.Name</option>
                                 }
@@ -661,15 +661,19 @@
                 <div class="col">
                     <button class="btn btn-success" style="width:20rem" type="submit">Speichern</button>
                 </div>
-                @if (isDefaultRoom)
-                {
-                    <div class="col">
-                        @if (!(chosenRoom == "NoRoom") && !IsDungeonMasterConfigurating)
+                <div class="col">
+                    @if (chosenRoom != "NoRoom" && !IsDungeonMasterConfigurating)
+                    {
+                        @if (isDefaultRoom)
+                        {
+                            <button class="btn btn-danger float-end" type="button" disabled>Entfernen</button>
+                        }
+                        else
                         {
                             <button class="btn btn-danger float-end" type="button" @onclick="RemoveRoomButtonClicked">Entfernen</button>
                         }
-                    </div>
-                }
+                    }
+                </div>
 
             </div>
 
@@ -1114,7 +1118,13 @@
 
         bool shouldFieldsBeEmptied = true;
 
-        if (!(roomToDelete.Id == Guid.Empty)) shouldFieldsBeEmptied = await RoomService.DeleteRoom(roomToDelete.Id, DungeonId);
+        roomToDelete.Status = 1;
+
+        if (!(roomToDelete.Id == Guid.Empty))
+        {
+            shouldFieldsBeEmptied = await RoomService.UpdateRoom(roomToDelete, DungeonId);
+            shouldFieldsBeEmptied = await RoomService.DeleteRoom(roomToDelete.Id, DungeonId);
+        }
 
         if (shouldFieldsBeEmptied)
         {
@@ -1384,6 +1394,7 @@
         {
             dungeonRooms = updatedRooms.ToList();
         }
+        StateHasChanged();
     }
 
     /// <summary>
